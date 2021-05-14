@@ -7,13 +7,13 @@ import neutronclient.v2_0.client
 from novaclient import client
 from pprint import PrettyPrinter
 
-from github_actions_api import link_download_runner
+from vm_creation.github_actions_api import link_download_runner
 
 pprinter = PrettyPrinter()
 
 keystone_endpoint = 'https://scality.cloud/keystone/v3'
 token = os.getenv("CLOUD_9_TOKEN")
-tenant_id = '8a8b4361989f4819b271797eebdc16fc'
+tenant_id = os.getenv("CLOUD_9_TENANT")
 
 region = 'Europe'
 session = keystoneauth1.session.Session(
@@ -30,16 +30,18 @@ def script_init_runner(name, token, labels, group):
     installer = link_download_runner('scalanga-devl')
     return f"""#!/bin/bash
 sudo yum install -y bind-utils yum-utils
-
 sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-sudo yum install -y epel-release
-sudo yum install -y docker-ce docker-ce-cli containerd.io
+sudo yum install -y epel-release docker-ce docker-ce-cli containerd.io
 sudo systemctl start docker
-sudo usermod -aG docker centos
-sudo -H -u centos bash -c 'cd /home/centos/ && mkdir actions-runner && cd actions-runner && curl -O -L {installer['download_url']} && tar xzf ./{installer['filename']}'
-/home/centos/actions-runner/bin/installdependencies.sh
-sudo -H -u centos bash -c '/home/centos/actions-runner/config.sh --url https://github.com/scalanga-devl --token {token} --name {name} --work _work  --labels {','.join(labels)} --runnergroup {group}'
-nohup sudo -H -u centos bash -c '/home/centos/actions-runner/run.sh --once 2> /home/centos/actions-runner/logs'
+
+sudo useradd -m  actions
+sudo usermod -aG docker,root actions
+sudo bash -c "echo 'actions ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers"
+
+sudo -H -u actions bash -c 'cd /home/actions/ && mkdir actions-runner && cd actions-runner && curl -O -L {installer['download_url']} && tar xzf ./{installer['filename']}'
+sudo -H -u actions bash -c 'sudo /home/actions/actions-runner/bin/installdependencies.sh'
+sudo -H -u actions bash -c '/home/actions/actions-runner/config.sh --url https://github.com/scalanga-devl --token {token} --name {name} --work _work  --labels {','.join(labels)} --runnergroup {group}'
+nohup sudo -H -u actions bash -c '/home/actions/actions-runner/run.sh --once 2> /home/actions/actions-runner/logs'
 """
 
 
@@ -63,13 +65,6 @@ def create_vm(name, runner_token):
         userdata=script_init_runner(name, runner_token, ['centos'], 'default'))
     print(instance.name, instance.id)
     inst_status = instance.status
-    print(inst_status)
-    print("instances are in build state... ")
-
-    while inst_status != 'ACTIVE':
-        instance = nova_client.servers.get(instance.id)
-        inst_status = instance.status
-        time.sleep(0.5)
 
     print(f"Instance: {instance.name} is in {inst_status} state ")
     print("vms were successfully created at {} \n".format(datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")))
