@@ -20,6 +20,7 @@ def create_runner(org, runner_counter):
     token = create_runner_token(org)
     return create_vm(name=runner_counter, runner_token=token)
 
+
 def replace_finish_runner(org, runner_counter, to_replace):
     vm_id = create_runner(org, str(runner_counter))
     new_runner = {
