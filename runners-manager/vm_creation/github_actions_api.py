@@ -47,14 +47,8 @@ def create_runner_token(org):
 
 
 def force_delete_runner(org, runner_id):
-<<<<<<< HEAD
     runner_link = f'https://api.github.com/orgs/{org}/actions/runners/{runner_id}'
     response = requests.delete(runner_link, headers=HEADERS)
-=======
-    """
-    :return:
-    """
-    response = requests.delete(f'https://api.github.com/orgs/{org}/actions/runners/{runner_id}', headers=HEADERS)
->>>>>>> 4fa77ef ([RELENG-4473] main-logic)
+
     if response.status_code != 204:
         raise Exception("Error in response")
