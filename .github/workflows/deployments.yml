@@ -38,6 +38,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ./dockerfiles/Dockerfile
+          file: ./Dockerfile
           push: true
           tags: "ghcr.io/${{ github.repository }}:${{ github.event.inputs.tags }}"

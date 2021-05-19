@@ -35,8 +35,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
-          context: ./dockerfiles
-          file: ./dockerfiles/actions.Dockerfile
+          context: .github/dockerfiles
+          file: .github/dockerfiles/Dockerfile
           push: true
           tags: "ghcr.io/${{ github.repository }}:${{ github.sha }}"
 
