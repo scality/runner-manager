@@ -5,9 +5,6 @@ metadata:
   labels:
     {{- include "openstack-actions-runner.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
       {{- include "openstack-actions-runner.selectorLabels" . | nindent 6 }}
@@ -39,17 +36,17 @@ spec:
             - name: "GITHUB_TOKEN"
               valueFrom:
                 secretKeyRef:
-                  key: GITHUB_TOKEN
+                  key: githubToken
                   name: {{ .Release.Name }}-auth
-            - name: "CLOUD_9_TENANT"
+            - name: "CLOUD_NINE_TENANT"
               valueFrom:
                 secretKeyRef:
-                  key: CLOUD_9_TENANT
+                  key: cloudNineTenant
                   name: {{ .Release.Name }}-auth
-            - name: "CLOUD_9_TOKEN"
+            - name: "CLOUD_NINE_TOKEN"
               valueFrom:
                 secretKeyRef:
-                  key: CLOUD_9_TOKEN
+                  key: cloudNineToken
                   name: {{ .Release.Name }}-auth
 
       {{- with .Values.nodeSelector }}

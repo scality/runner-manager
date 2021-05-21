@@ -11,8 +11,8 @@ from vm_creation.github_actions_api import link_download_runner
 pprinter = PrettyPrinter()
 
 keystone_endpoint = 'https://scality.cloud/keystone/v3'
-token = os.getenv("CLOUD_9_TOKEN")
-tenant_id = os.getenv("CLOUD_9_TENANT")
+token = os.getenv("CLOUD_NINE_TOKEN")
+tenant_id = os.getenv("CLOUD_NINE_TENANT")
 
 region = 'Europe'
 session = keystoneauth1.session.Session(
