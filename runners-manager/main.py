@@ -1,5 +1,9 @@
-import sched, time, pprint
-from vm_creation.github_actions_api import infos_runners, create_runner_token, force_delete_runner
+import sched
+import time
+import pprint
+from vm_creation.github_actions_api import (infos_runners,
+                                            create_runner_token,
+                                            force_delete_runner)
 from vm_creation.openstack import create_vm, delete_vm
 
 s = sched.scheduler(time.time, time.sleep)
@@ -33,29 +37,31 @@ def replace_finish_runner(org, runner_counter, to_replace):
     runner_counter += 1
     return new_runner, runner_counter
 
-# runner_infos[str(runner_counter)] =
 
 def maintain_number_of_runner(org, runner_counter, runner_infos):
     """
     check this file if there is an error: sudo cat /var/log/messages
-    :param org: 
-    :param runner_counter: 
-    :param runner_infos: 
-    :return: 
     """
     runners = infos_runners(org)
     pprint.pprint(runners)
     while True:
         runners = infos_runners(org)
         print(f"nb runners: {len(runners['runners'])}")
-        print(f"offline: {len([elem for elem in runners['runners'] if elem['status'] == 'offline'])}")
+        print(
+            f"offline: {len([elem for elem in runners['runners'] if elem['status'] == 'offline'])}"
+        )
 
         for elem in runners['runners']:
+            has_parent = any(key
+                             for (key, value) in runner_infos.items()
+                             if value['parent_name'] == elem['name'])
+
             if runner_infos[elem['name']]['action_id'] is None:
                 pprint.pprint(runner_infos)
                 runner_infos[elem['name']]['action_id'] = elem['id']
 
-            if elem['status'] == 'offline' and runner_infos[elem['name']]['has_run'] and not any(key for (key, value) in runner_infos.items() if value['parent_name'] == elem['name']):
+            if elem['status'] == 'offline' and runner_infos[elem['name']]['has_run'] and \
+                    not has_parent:
                 new_runner, runner_counter = replace_finish_runner(org, runner_counter, elem)
                 runner_infos[new_runner['name']] = new_runner
 
@@ -68,7 +74,9 @@ def maintain_number_of_runner(org, runner_counter, runner_infos):
                 parent_name = runner_infos[elem['name']]['parent_name']
                 if parent_name:
                     print(f"deleting {parent_name}")
-                    remove_runner(org, runner_infos[parent_name]['action_id'], runner_infos[parent_name]['vm_id'])
+                    remove_runner(org,
+                                  runner_infos[parent_name]['action_id'],
+                                  runner_infos[parent_name]['vm_id'])
 
         time.sleep(5)
 

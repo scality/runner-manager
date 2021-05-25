@@ -1,6 +1,6 @@
 import time
 from github_actions_api import list_runners, infos_runners, create_runner_token
-from vm_creation.openstack import create_vm, delete_vm
+from vm_creation.openstack import create_vm
 
 if __name__ == '__main__':
     org = 'scalanga-devl'

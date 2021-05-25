@@ -1,5 +1,4 @@
 import os
-import time
 import datetime
 import keystoneauth1.session
 import keystoneclient.auth.identity.v3
@@ -12,8 +11,8 @@ from vm_creation.github_actions_api import link_download_runner
 pprinter = PrettyPrinter()
 
 keystone_endpoint = 'https://scality.cloud/keystone/v3'
-token = os.getenv("CLOUD_9_TOKEN")
-tenant_id = os.getenv("CLOUD_9_TENANT")
+token = os.getenv("CLOUD_NINE_TOKEN")
+tenant_id = os.getenv("CLOUD_NINE_TENANT")
 
 region = 'Europe'
 session = keystoneauth1.session.Session(
@@ -42,7 +41,7 @@ sudo -H -u actions bash -c 'cd /home/actions/ && mkdir actions-runner && cd acti
 sudo -H -u actions bash -c 'sudo /home/actions/actions-runner/bin/installdependencies.sh'
 sudo -H -u actions bash -c '/home/actions/actions-runner/config.sh --url https://github.com/scalanga-devl --token {token} --name {name} --work _work  --labels {','.join(labels)} --runnergroup {group}'
 nohup sudo -H -u actions bash -c '/home/actions/actions-runner/run.sh --once 2> /home/actions/actions-runner/logs'
-"""
+""" # noqa
 
 
 def create_vm(name, runner_token):
@@ -67,7 +66,9 @@ def create_vm(name, runner_token):
     inst_status = instance.status
 
     print(f"Instance: {instance.name} is in {inst_status} state ")
-    print("vms were successfully created at {} \n".format(datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")))
+    print(
+        f"vms were successfully created at {datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}"
+    )
 
     return instance.id
 
