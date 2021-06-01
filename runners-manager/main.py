@@ -1,36 +1,12 @@
 import sched
 import time
 import pprint
-from actions.Runner import Runner
-from actions.RunnerManager import RunnerManager
-from vm_creation.github_actions_api import (get_runners,
-                                            create_runner_token,
-                                            force_delete_runner)
-from vm_creation.openstack import create_vm, delete_vm
+from vm_creation.github_actions_api import get_runners, force_delete_runner
+from runner.RunnerManager import RunnerManager
 
 s = sched.scheduler(time.time, time.sleep)
 
 pprint = pprint.PrettyPrinter()
-WHANTED_MACHINES = {
-    'centos-8': 2,
-}
-
-
-def remove_runner(org: str, runner_id: int, vm_id: str):
-    force_delete_runner(org, runner_id)
-    delete_vm(vm_id)
-
-
-def create_runner(org: str, runner_counter: str):
-    print(f'create runner: {runner_counter}')
-    token = create_runner_token(org)
-    return create_vm(name=runner_counter, runner_token=token)
-
-
-def replace_finish_runner(org, runner_counter: int, parent_name: str):
-    vm_id = create_runner(org, str(runner_counter))
-    runner_counter += 1
-    return Runner(name=str(runner_counter), vm_id=vm_id, parent_name=parent_name), runner_counter
 
 
 def maintain_number_of_runner(runner_m: RunnerManager):
@@ -49,7 +25,18 @@ def maintain_number_of_runner(runner_m: RunnerManager):
 
 def main():
     org = 'scalanga-devl'
-    runner_m = RunnerManager(org)
+    config = [{
+        'tags': ['centos7', 'small'],
+        'flavor': 'm1.small',
+        'image': 'CentOS 7 (PVHVM)',
+        'quantity': 2,
+    }, {
+        'tags': ['ubuntu', '16.04', 'small'],
+        'flavor': 'm1.small',
+        'image': 'Ubuntu 16.04 LTS (Xenial Xerus) (PVHVM)',
+        'quantity': 2,
+    }]
+    runner_m = RunnerManager(org, config)
     maintain_number_of_runner(runner_m)
 
 
