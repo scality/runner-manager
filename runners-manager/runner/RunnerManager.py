@@ -1,3 +1,6 @@
+from collections.abc import Callable
+
+
 from runner.Runner import Runner
 from vm_creation.github_actions_api import (create_runner_token,
                                             force_delete_runner)
@@ -18,29 +21,54 @@ class RunnerManager(object):
         self.runners = {}
 
         for t in self.runner_management:
-            for index in range(0, t.quantity):
+            for index in range(0, t.quantity['min']):
                 self.create_runner(t)
 
-    def update_runner(self, github_runner: dict):
-        runner = self.runners[github_runner['name']]
+    def update(self, github_runners: list[dict]):
+        for elem in github_runners:
+            runner = self.runners[elem['name']]
+            runner.update_status(elem)
 
-        if runner.action_id is None:
-            runner.action_id = github_runner['id']
+            if runner.action_id is None:
+                runner.action_id = elem['id']
 
-        if github_runner['status'] == 'offline' and runner.has_run and not runner.has_child:
-            self.create_runner(runner.vm_type, parent=runner)
-            runner.has_child = True
+        for vm_type in self.runner_management:
+            current_online = len(
+                self.filter_runners(vm_type, lambda r: not r.has_run and r.action_id)
+            )
+            offlines = self.filter_runners(vm_type, lambda r: r.has_run)
 
-        if not runner.has_run and github_runner['status'] != 'offline':
-            self.runner_started(runner)
+            print(','.join([f"{elem.name} {elem.status}" for elem in self.filter_runners(vm_type)]))
+            print(','.join([f"{elem.name} {elem.status}" for elem in offlines]))
 
-    def filter_by_tags(self, tags: list[str]):
-        pass
+            while self.need_new_runner(vm_type):
+                self.create_runner(vm_type)
+
+            if current_online > 0 and len(offlines) > 0:
+                for elem in offlines:
+                    self.delete_runner(elem)
+
+    def need_new_runner(self, vm_type: VmType):
+        current_online_or_creating = self.filter_runners(vm_type, lambda r: not r.has_run).__len__()
+        current_running = self.filter_runners(vm_type, lambda r: r.status == 'running').__len__()
+
+        return current_online_or_creating - current_running < vm_type.quantity['min'] and \
+            current_online_or_creating < vm_type.quantity['max']
+
+    def filter_runners(self, vm_type: VmType, cond: Callable[[Runner], bool] or None = None):
+        if cond:
+            return list(filter(
+                lambda e: e.vm_type.tags == vm_type.tags and cond(e),
+                self.runners.values()
+            ))
+        return list(filter(
+            lambda e: e.vm_type.tags == vm_type.tags,
+            self.runners.values()
+        ))
 
     def create_runner(self, vm_type: VmType, parent=None):
         name = self.next_runner_name()
         parent_name = parent.name if parent else None
-        print(f'create runner: {name}')
 
         vm_id = create_vm(
             name=name,
@@ -51,7 +79,6 @@ class RunnerManager(object):
                                     vm_id=vm_id,
                                     vm_type=vm_type,
                                     parent_name=parent_name)
-        self.runner_counter += 1
 
     def delete_runner(self, runner: Runner):
         if runner.action_id:
@@ -62,14 +89,10 @@ class RunnerManager(object):
 
         del self.runners[runner.name]
 
-    def runner_started(self, runner: Runner):
-        runner.has_run = True
-
-        if runner.parent_name:
-            self.delete_runner(self.runners[runner.parent_name])
-
     def next_runner_name(self):
-        return f'{self.runner_counter}'
+        name = f'{self.runner_counter}'
+        self.runner_counter += 1
+        return name
 
     def __del__(self):
         for runner in [elem for elem in self.runners.values()]:
