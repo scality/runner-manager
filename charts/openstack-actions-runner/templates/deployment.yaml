@@ -38,6 +38,11 @@ spec:
                 secretKeyRef:
                   key: githubToken
                   name: {{ .Release.Name }}-auth
+            - name: "GITHUB_ORGANIZATION"
+              valueFrom:
+                secretKeyRef:
+                  key: githubOrganization
+                  name: {{ .Release.Name }}-auth
             - name: "CLOUD_NINE_TENANT"
               valueFrom:
                 secretKeyRef:

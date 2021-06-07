@@ -15,15 +15,30 @@ pprinter = PrettyPrinter()
 keystone_endpoint = 'https://scality.cloud/keystone/v3'
 token = os.getenv("CLOUD_NINE_TOKEN")
 tenant_id = os.getenv("CLOUD_NINE_TENANT")
-github_organization = os.getenv('GITHUB_ORGANIZATION')
+username = os.getenv("CLOUD_NINE_USERNAME")
+password = os.getenv("CLOUD_NINE_PASSWORD")
+region = os.getenv('CLOUD_NINE_REGION')
 
-region = 'Europe'
-session = keystoneauth1.session.Session(
-    auth=keystoneclient.auth.identity.v3.Token(
-        auth_url=keystone_endpoint,
-        token=token,
-        project_id=tenant_id)
-)
+github_organization = os.getenv('GITHUB_ORGANIZATION')
+if username and password:
+    session = keystoneauth1.session.Session(
+        auth=keystoneclient.auth.identity.v3.Password(
+            auth_url=keystone_endpoint,
+            username=username,
+            password=password,
+            user_domain_name='default',
+            project_name=tenant_id,
+            project_domain_id='default')
+    )
+else:
+    session = keystoneauth1.session.Session(
+        auth=keystoneclient.auth.identity.v3.Token(
+            auth_url=keystone_endpoint,
+            token=token,
+            project_id=tenant_id,
+            project_domain_id='default')
+    )
+
 nova_client = client.Client(version=2, session=session, region_name=region)
 neutron = neutronclient.v2_0.client.Client(session=session, region_name=region)
 
@@ -54,7 +69,7 @@ def create_vm(name: str, runner_token: int, vm_type: VmType):
     # print("----------------------------")
     instance = nova_client.servers.create(
         name=name, image=nova_client.glance.find_image(vm_type.image),
-        flavor=nova_client.flavors.find(name=vm_type.flavor), key_name='laptot',
+        flavor=nova_client.flavors.find(name=vm_type.flavor),
         security_groups=[sec_group_id], nics=[nic],
         userdata=script_init_runner(name, runner_token, vm_type, 'default'))
     print(instance.name, instance.id)
