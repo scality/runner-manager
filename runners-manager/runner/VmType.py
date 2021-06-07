@@ -2,7 +2,7 @@ class VmType:
     tags: list[str]
     flavor: str
     image: str
-    quantity: int
+    quantity: dict[str, int]
 
     def __init__(self, config):
         self.tags = config['tags']

@@ -14,6 +14,7 @@ pprinter = PrettyPrinter()
 keystone_endpoint = 'https://scality.cloud/keystone/v3'
 token = os.getenv("CLOUD_NINE_TOKEN")
 tenant_id = os.getenv("CLOUD_NINE_TENANT")
+github_organization = os.getenv('GITHUB_ORGANIZATION')
 
 region = 'Europe'
 session = keystoneauth1.session.Session(
@@ -53,7 +54,7 @@ sudo apt-get install --yes --force-yes docker-ce docker-ce-cli containerd.io
 
 
 def script_init_runner(name: str, token: int, vm_type: VmType, group: str):
-    installer = link_download_runner('scalanga-devl')
+    installer = link_download_runner(github_organization)
     return f"""#!/bin/bash
 {install_docker(vm_type.image)}
 sudo systemctl start docker
@@ -64,7 +65,7 @@ sudo bash -c "echo 'actions ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers"
 
 sudo -H -u actions bash -c 'cd /home/actions/ && mkdir actions-runner && cd actions-runner && curl -O -L {installer['download_url']} && tar xzf ./{installer['filename']}'
 sudo -H -u actions bash -c 'sudo /home/actions/actions-runner/bin/installdependencies.sh'
-sudo -H -u actions bash -c '/home/actions/actions-runner/config.sh --url https://github.com/scalanga-devl --token {token} --name {name} --work _work  --labels {','.join(vm_type.tags)} --runnergroup {group}'
+sudo -H -u actions bash -c '/home/actions/actions-runner/config.sh --url https://github.com/{github_organization} --token {token} --name {name} --work _work  --labels {','.join(vm_type.tags)} --runnergroup {group}'
 nohup sudo -H -u actions bash -c '/home/actions/actions-runner/run.sh --once 2> /home/actions/actions-runner/logs'
 """ # noqa
 
