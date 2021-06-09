@@ -32,6 +32,6 @@ COPY ./requirements.txt .
 RUN pip3 install -r ./requirements.txt
 
 # Set the desired version of Helm
-ENV DESIRED_VERSION v3.5.4
+ENV DESIRED_VERSION v2.17.0
 # Install helm
 RUN curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > /tmp/get_helm.sh && bash /tmp/get_helm.sh
