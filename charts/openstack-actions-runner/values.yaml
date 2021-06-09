@@ -60,7 +60,9 @@ affinity: {}
 
 githubToken: ""
 githubOrganization: ""
+
 cloudNineTenant: ""
 cloudNineToken: ""
 cloudNineUsername: ""
 cloudNinePassword: ""
+cloudNineRegion: ""
