@@ -4,6 +4,7 @@ import keystoneauth1.session
 import keystoneclient.auth.identity.v3
 import neutronclient.v2_0.client
 from novaclient import client
+from jinja2 import FileSystemLoader, Environment
 from pprint import PrettyPrinter
 
 from vm_creation.github_actions_api import link_download_runner
@@ -27,47 +28,18 @@ nova_client = client.Client(version=2, session=session, region_name=region)
 neutron = neutronclient.v2_0.client.Client(session=session, region_name=region)
 
 
-def install_docker(image: str):
-    if 'centos' in image.lower():
-        return """
-sudo yum install -y bind-utils yum-utils
-sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-sudo yum install -y epel-release docker-ce docker-ce-cli containerd.io
-""" # noqa
-    elif 'ubuntu' in image.lower():
-        return """
-sudo apt-get update
-sudo apt-get install apt-transport-https \
-    ca-certificates \
-    curl \
-    gnupg \
-   lsb-release
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-echo \
-  "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
-  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get update --yes --force-yes
-sudo apt-get install --yes --force-yes docker-ce docker-ce-cli containerd.io
-""" # noqa
-    else:
-        ""
-
-
 def script_init_runner(name: str, token: int, vm_type: VmType, group: str):
     installer = link_download_runner(github_organization)
-    return f"""#!/bin/bash
-{install_docker(vm_type.image)}
-sudo systemctl start docker
-
-sudo useradd -m  actions
-sudo usermod -aG docker,root actions
-sudo bash -c "echo 'actions ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers"
-
-sudo -H -u actions bash -c 'cd /home/actions/ && mkdir actions-runner && cd actions-runner && curl -O -L {installer['download_url']} && tar xzf ./{installer['filename']}'
-sudo -H -u actions bash -c 'sudo /home/actions/actions-runner/bin/installdependencies.sh'
-sudo -H -u actions bash -c '/home/actions/actions-runner/config.sh --url https://github.com/{github_organization} --token {token} --name {name} --work _work  --labels {','.join(vm_type.tags)} --runnergroup {group}'
-nohup sudo -H -u actions bash -c '/home/actions/actions-runner/run.sh --once 2> /home/actions/actions-runner/logs'
-""" # noqa
+    file_loader = FileSystemLoader('templates')
+    env = Environment(loader=file_loader)
+    env.trim_blocks = True
+    env.lstrip_blocks = True
+    env.rstrip_blocks = True
+    template = env.get_template('init_runner_script.sh')
+    output = template.render(image=vm_type.image.lower(), installer=installer,
+                             github_organization=github_organization,
+                             token=token, name=name, tags=','.join(vm_type.tags))
+    return output
 
 
 def create_vm(name: str, runner_token: int, vm_type: VmType):
