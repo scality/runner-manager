@@ -1,30 +1,33 @@
-import os
-import sched
 import time
-import pprint
+import logging
+
 from vm_creation.github_actions_api import get_runners, force_delete_runner
 from runner.RunnerManager import RunnerManager
 
-s = sched.scheduler(time.time, time.sleep)
-
-pprint = pprint.PrettyPrinter()
+logger = logging.getLogger("runner_manager")
 
 
 def maintain_number_of_runner(runner_m: RunnerManager):
     while True:
         runners = get_runners(runner_m.github_organization)
-        print(f"nb runners: {len(runners['runners'])}")
-        print(
+        logger.info(f"nb runners: {len(runners['runners'])}")
+        logger.info(
             f"offline: {len([e for e in runners['runners'] if e['status'] == 'offline'])}"
         )
 
-        print(runners)
+        logger.debug(runners)
         runner_m.update(runners['runners'])
 
         time.sleep(5)
 
 
 def main(org):
+    runners = get_runners(org)
+    logger.debug("Delete all runners")
+    logger.debug(runners)
+    for elem in runners['runners']:
+        force_delete_runner(org, elem['id'])
+
     config = [{
         'tags': ['centos7', 'small'],
         'flavor': 'm1.small',
@@ -36,14 +39,3 @@ def main(org):
     }]
     runner_m = RunnerManager(org, config)
     maintain_number_of_runner(runner_m)
-
-
-if __name__ == "__main__":
-    organization = os.getenv('GITHUB_ORGANIZATION')
-    runners = get_runners(organization)
-    pprint.pprint(runners)
-    for elem in runners['runners']:
-        force_delete_runner(organization, elem['id'])
-    # s.enter(60, 1, main, (s,))
-    # s.run()
-    main(organization)
