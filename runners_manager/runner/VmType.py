@@ -9,3 +9,6 @@ class VmType:
         self.flavor = config['flavor']
         self.image = config['image']
         self.quantity = config['quantity']
+
+    def __str__(self):
+        return f"{self.flavor}: {self.image}"

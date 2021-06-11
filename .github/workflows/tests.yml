@@ -52,4 +52,4 @@ jobs:
         uses: actions/checkout@v2
       - run: flake8 ./runners-manager
       - run: helm lint charts/openstack-actions-runner
-      - run: cd runners-manager && python3 -m unittest
+      - run: tox -e utests

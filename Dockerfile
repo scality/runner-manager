@@ -31,6 +31,6 @@ WORKDIR /app
 COPY ./requirements.txt .
 RUN pip3 install -r ./requirements.txt
 
-COPY ./runners-manager /app
+COPY runners_manager /app
 
 CMD python3 ./main.py
