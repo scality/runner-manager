@@ -20,8 +20,9 @@ def link_download_runner(org: str, archi='x64'):
 
 
 def get_runners(org: str):
-    print(HEADERS)
     info_link = f'https://api.github.com/orgs/{org}/actions/runners'
+    print(HEADERS)
+    print(info_link)
     return requests.get(info_link, headers=HEADERS).json()
 
 

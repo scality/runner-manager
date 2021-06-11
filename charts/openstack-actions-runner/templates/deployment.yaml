@@ -32,28 +32,11 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          env:
-            - name: "GITHUB_TOKEN"
-              valueFrom:
-                secretKeyRef:
-                  key: githubToken
-                  name: {{ .Release.Name }}-auth
-            - name: "GITHUB_ORGANIZATION"
-              valueFrom:
-                secretKeyRef:
-                  key: githubOrganization
-                  name: {{ .Release.Name }}-auth
-            - name: "CLOUD_NINE_TENANT"
-              valueFrom:
-                secretKeyRef:
-                  key: cloudNineTenant
-                  name: {{ .Release.Name }}-auth
-            - name: "CLOUD_NINE_TOKEN"
-              valueFrom:
-                secretKeyRef:
-                  key: cloudNineToken
-                  name: {{ .Release.Name }}-auth
-
+          envFrom:
+          - configMapRef:
+              name: {{ .Release.Name }}-config
+          - secretRef:
+              name: {{ .Release.Name }}-auth
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
