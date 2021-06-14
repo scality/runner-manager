@@ -11,3 +11,7 @@
 
 ## Alpha
  - Database to synchronise the runners infos
+
+# For the test writing
+ - API / github and openstack
+ - Redis mock library

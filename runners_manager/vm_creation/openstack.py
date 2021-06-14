@@ -1,16 +1,15 @@
 import os
-import datetime
+import logging
 import keystoneauth1.session
 import keystoneclient.auth.identity.v3
 import neutronclient.v2_0.client
 from novaclient import client
 from jinja2 import FileSystemLoader, Environment
-from pprint import PrettyPrinter
 
 from vm_creation.github_actions_api import link_download_runner
 from runner.VmType import VmType
 
-pprinter = PrettyPrinter()
+logger = logging.getLogger("runner_manager")
 
 keystone_endpoint = 'https://scality.cloud/keystone/v3'
 token = os.getenv("CLOUD_NINE_TOKEN")
@@ -21,6 +20,7 @@ region = os.getenv('CLOUD_NINE_REGION')
 
 github_organization = os.getenv('GITHUB_ORGANIZATION')
 if username and password:
+    logger.info("Openstack auth with basic credentials")
     session = keystoneauth1.session.Session(
         auth=keystoneclient.auth.identity.v3.Password(
             auth_url=keystone_endpoint,
@@ -31,11 +31,12 @@ if username and password:
             project_domain_id='default')
     )
 else:
+    logger.info("Openstack auth with token")
     session = keystoneauth1.session.Session(
         auth=keystoneclient.auth.identity.v3.Token(
             auth_url=keystone_endpoint,
             token=token,
-            project_id=tenant_id,
+            project_name=tenant_id,
             project_domain_id='default')
     )
 
@@ -59,26 +60,18 @@ def script_init_runner(name: str, token: int, vm_type: VmType, group: str):
 
 def create_vm(name: str, runner_token: int, vm_type: VmType):
     """
-    Create a small vm base on  CentOS-7-x86_64-GenericCloud-latest , with my sshkey
+    Create a new VM with the parameters in VmType
     """
     sec_group_id = neutron.list_security_groups()['security_groups'][0]['id']
     nic = {'net-id': neutron.list_networks(name='tenantnetwork1')['networks'][0]['id']}
-    print("creating virtual machine")
-    print("----------------------------")
-    # print(script_init_runner(name, runner_token, ['centos'], 'default'))
-    # print("----------------------------")
+    logger.info("creating virtual machine")
     instance = nova_client.servers.create(
         name=name, image=nova_client.glance.find_image(vm_type.image),
         flavor=nova_client.flavors.find(name=vm_type.flavor),
         security_groups=[sec_group_id], nics=[nic],
         userdata=script_init_runner(name, runner_token, vm_type, 'default'))
-    print(instance.name, instance.id)
-    inst_status = instance.status
-
-    print(f"Instance: {instance.name} is in {inst_status} state ")
-    print(
-        f"vms were successfully created at {datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}"
-    )
+    logger.debug(f"{instance.name}, {instance.id}")
+    logger.info("vm is successfully created}")
 
     return instance.id
 

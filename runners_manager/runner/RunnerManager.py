@@ -1,3 +1,4 @@
+import logging
 from collections.abc import Callable
 
 
@@ -6,6 +7,8 @@ from vm_creation.github_actions_api import (create_runner_token,
                                             force_delete_runner)
 from vm_creation.openstack import create_vm, delete_vm
 from runner.VmType import VmType
+
+logger = logging.getLogger("runner_manager")
 
 
 class RunnerManager(object):
@@ -38,8 +41,13 @@ class RunnerManager(object):
             )
             offlines = self.filter_runners(vm_type, lambda r: r.has_run)
 
-            print(','.join([f"{elem.name} {elem.status}" for elem in self.filter_runners(vm_type)]))
-            print(','.join([f"{elem.name} {elem.status}" for elem in offlines]))
+            logger.info("type" + str(vm_type))
+            logger.info(f"Currently online: {current_online}")
+            logger.debug('Online runners')
+            logger.debug(','.join([f"{elem.name} {elem.status}"
+                                   for elem in self.filter_runners(vm_type)]))
+            logger.debug('Offline runners')
+            logger.debug(','.join([f"{elem.name} {elem.status}" for elem in offlines]))
 
             while self.need_new_runner(vm_type):
                 self.create_runner(vm_type)
@@ -67,6 +75,7 @@ class RunnerManager(object):
         ))
 
     def create_runner(self, vm_type: VmType, parent=None):
+        logger.info(f"Create new runner for {vm_type}")
         name = self.next_runner_name()
         parent_name = parent.name if parent else None
 
@@ -79,8 +88,10 @@ class RunnerManager(object):
                                     vm_id=vm_id,
                                     vm_type=vm_type,
                                     parent_name=parent_name)
+        logger.info("Create success")
 
     def delete_runner(self, runner: Runner):
+        logger.info(f"Deleting {runner.name}: type {runner.vm_type}")
         if runner.action_id:
             force_delete_runner(self.github_organization, runner.action_id)
 
@@ -88,6 +99,7 @@ class RunnerManager(object):
             delete_vm(runner.vm_id)
 
         del self.runners[runner.name]
+        logger.info("Delete success")
 
     def next_runner_name(self):
         name = f'{self.runner_counter}'

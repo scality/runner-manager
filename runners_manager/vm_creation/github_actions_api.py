@@ -1,8 +1,5 @@
 import requests
 import os
-from pprint import PrettyPrinter
-
-pprinter = PrettyPrinter()
 
 HEADERS = {
     'Accept': 'application/vnd.github.v3+json',
@@ -21,15 +18,12 @@ def link_download_runner(org: str, archi='x64'):
 
 def get_runners(org: str):
     info_link = f'https://api.github.com/orgs/{org}/actions/runners'
-    print(HEADERS)
-    print(info_link)
     return requests.get(info_link, headers=HEADERS).json()
 
 
 def list_runners(org: str):
     list_link = f'https://api.github.com/orgs/{org}/actions/runners'
     response = requests.get(list_link, headers=HEADERS)
-    pprinter.pprint(response.json())
     return response.json()
 
 
@@ -43,7 +37,6 @@ def create_runner_token(org: str):
     token_link = f'https://api.github.com/orgs/{org}/actions/runners/registration-token'
     response = requests.post(token_link, headers=HEADERS).json()
 
-    pprinter.pprint(response)
     return response['token']
 
 
