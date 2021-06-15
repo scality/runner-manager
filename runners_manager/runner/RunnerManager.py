@@ -7,6 +7,7 @@ from vm_creation.github_actions_api import (create_runner_token,
                                             force_delete_runner)
 from vm_creation.openstack import create_vm, delete_vm
 from runner.VmType import VmType
+from vm_creation.Exception import APIException
 
 logger = logging.getLogger("runner_manager")
 
@@ -92,14 +93,19 @@ class RunnerManager(object):
 
     def delete_runner(self, runner: Runner):
         logger.info(f"Deleting {runner.name}: type {runner.vm_type}")
-        if runner.action_id:
-            force_delete_runner(self.github_organization, runner.action_id)
+        try:
+            if runner.action_id:
+                force_delete_runner(self.github_organization, runner.action_id)
+                runner.action_id = None
 
-        if runner.vm_id:
-            delete_vm(runner.vm_id)
+            if runner.vm_id:
+                delete_vm(runner.vm_id)
+                runner.vm_id = None
 
-        del self.runners[runner.name]
-        logger.info("Delete success")
+            del self.runners[runner.name]
+            logger.info("Delete success")
+        except APIException:
+            logger.info(f'APIException catch, for runner: {str(runner)}')
 
     def next_runner_name(self):
         name = f'{self.runner_counter}'

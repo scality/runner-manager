@@ -1,7 +1,7 @@
 import time
 import logging
 
-from vm_creation.github_actions_api import get_runners, force_delete_runner
+from vm_creation.github_actions_api import get_runners
 from runner.RunnerManager import RunnerManager
 
 logger = logging.getLogger("runner_manager")
@@ -22,12 +22,6 @@ def maintain_number_of_runner(runner_m: RunnerManager):
 
 
 def main(org):
-    runners = get_runners(org)
-    logger.debug("Delete all runners")
-    logger.debug(runners)
-    for elem in runners['runners']:
-        force_delete_runner(org, elem['id'])
-
     config = [{
         'tags': ['centos7', 'small'],
         'flavor': 'm1.small',
