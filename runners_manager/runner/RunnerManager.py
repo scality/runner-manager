@@ -1,5 +1,6 @@
 import logging
 from collections.abc import Callable
+from uuid import uuid4, UUID
 
 
 from runner.Runner import Runner
@@ -7,11 +8,13 @@ from vm_creation.github_actions_api import (create_runner_token,
                                             force_delete_runner)
 from vm_creation.openstack import create_vm, delete_vm
 from runner.VmType import VmType
+from vm_creation.Exception import APIException
 
 logger = logging.getLogger("runner_manager")
 
 
 class RunnerManager(object):
+    id: UUID
     runner_counter: int
     github_organization: str
     runners: dict[str, Runner]
@@ -22,13 +25,14 @@ class RunnerManager(object):
         self.github_organization = org
         self.runner_management = [VmType(elem) for elem in config]
         self.runners = {}
+        self.id = uuid4()
 
         for t in self.runner_management:
             for index in range(0, t.quantity['min']):
                 self.create_runner(t)
 
     def update(self, github_runners: list[dict]):
-        for elem in github_runners:
+        for elem in [elem for elem in github_runners if elem['name'].startswith(str(self.id))]:
             runner = self.runners[elem['name']]
             runner.update_status(elem)
 
@@ -92,17 +96,22 @@ class RunnerManager(object):
 
     def delete_runner(self, runner: Runner):
         logger.info(f"Deleting {runner.name}: type {runner.vm_type}")
-        if runner.action_id:
-            force_delete_runner(self.github_organization, runner.action_id)
+        try:
+            if runner.action_id:
+                force_delete_runner(self.github_organization, runner.action_id)
+                runner.action_id = None
 
-        if runner.vm_id:
-            delete_vm(runner.vm_id)
+            if runner.vm_id:
+                delete_vm(runner.vm_id)
+                runner.vm_id = None
 
-        del self.runners[runner.name]
-        logger.info("Delete success")
+            del self.runners[runner.name]
+            logger.info("Delete success")
+        except APIException:
+            logger.info(f'APIException catch, for runner: {str(runner)}')
 
     def next_runner_name(self):
-        name = f'{self.runner_counter}'
+        name = f'{self.id}-{self.runner_counter}'
         self.runner_counter += 1
         return name
 

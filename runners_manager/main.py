@@ -1,6 +1,7 @@
 import time
 import logging
 
+from vm_creation.Exception import APIException
 from vm_creation.github_actions_api import get_runners, force_delete_runner
 from runner.RunnerManager import RunnerManager
 
@@ -25,8 +26,11 @@ def main(org):
     runners = get_runners(org)
     logger.debug("Delete all runners")
     logger.debug(runners)
-    for elem in runners['runners']:
-        force_delete_runner(org, elem['id'])
+    # for elem in runners['runners']:
+    #     try:
+    #         force_delete_runner(org, elem['id'])
+    #     except APIException:
+    #         print('API exception')
 
     config = [{
         'tags': ['centos7', 'small'],
