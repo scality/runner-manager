@@ -1,6 +1,9 @@
+import logging
 import requests
 import os
+from vm_creation.Exception import APIException
 
+logger = logging.getLogger("runner_manager")
 HEADERS = {
     'Accept': 'application/vnd.github.v3+json',
     'Authorization': f'token {os.getenv("GITHUB_TOKEN")}'
@@ -45,4 +48,5 @@ def force_delete_runner(org: str, runner_id: int):
     response = requests.delete(runner_link, headers=HEADERS)
 
     if response.status_code != 204:
-        raise Exception("Error in response")
+        logger.error(f"Error in response: {response.status_code} {response.json()['message']}")
+        raise APIException("Error in response")
