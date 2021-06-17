@@ -1,7 +1,7 @@
 import logging
 import requests
 import os
-from vm_creation.Exception import APIException
+from runners_manager.vm_creation.Exception import APIException
 
 logger = logging.getLogger("runner_manager")
 HEADERS = {

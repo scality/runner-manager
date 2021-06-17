@@ -1,8 +1,8 @@
 import time
 import logging
 
-from vm_creation.github_actions_api import get_runners
-from runner.RunnerManager import RunnerManager
+from runners_manager.vm_creation.github_actions_api import get_runners
+from runners_manager.runner.RunnerManager import RunnerManager
 
 logger = logging.getLogger("runner_manager")
 

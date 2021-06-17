@@ -3,7 +3,7 @@
 from os.path import abspath, dirname, join
 import pip
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 # Besides not advised,
@@ -46,11 +46,11 @@ setup(
     url='https://https://github.com/scality/openstack-actions-runner',
     license='Apache',
     include_package_data=True,
-    package_dir={'': 'runners_manager'},
+    packages=find_packages(include=['runners_manager', 'runners_manager.*']),
     install_requires=requires(),
     entry_points={
         'console_scripts': [
-            'runner-manager=start:start',
+            'runner-manager=runners_manager.start:start',
         ],
     }
 )
