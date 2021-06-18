@@ -9,6 +9,7 @@ on:
       - 'bugfix/**'
       - 'w/**'
       - 'q/**'
+      - 'dependabot/**'
 
 jobs:
   publish:
