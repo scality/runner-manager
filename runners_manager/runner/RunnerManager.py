@@ -3,9 +3,8 @@ from collections.abc import Callable
 
 
 from runners_manager.runner.Runner import Runner
-from runners_manager.vm_creation.github_actions_api import (create_runner_token,
-                                                            force_delete_runner)
-from runners_manager.vm_creation.openstack import create_vm, delete_vm
+from runners_manager.vm_creation.github_actions_api import GithubManager
+from runners_manager.vm_creation.openstack import OpenstackManager
 from runners_manager.vm_creation.Exception import APIException
 from runners_manager.runner.VmType import VmType
 
@@ -19,14 +18,20 @@ class RunnerManager(object):
     runner_management: list[VmType]
     runner_name_format: str
 
-    def __init__(self, org: str,
-                 config: list,
+    openstack_manager: OpenstackManager
+    github_manager: GithubManager
+
+    def __init__(self, org: str, config: list,
+                 openstack_manager: OpenstackManager,
+                 github_manager: GithubManager,
                  runner_name_format: str = 'runner-{organization}-{tags}-{index}'):
         self.runner_counter = 0
         self.github_organization = org
         self.runner_management = [VmType(elem) for elem in config]
         self.runners = {}
         self.runner_name_format = runner_name_format
+        self.openstack_manager = openstack_manager
+        self.github_manager = github_manager
 
         for t in self.runner_management:
             for index in range(0, t.quantity['min']):
@@ -83,11 +88,13 @@ class RunnerManager(object):
         logger.info(f"Create new runner for {vm_type}")
         name = self.generate_runner_name(vm_type)
         parent_name = parent.name if parent else None
-
-        vm_id = create_vm(
+        installer = self.github_manager.link_download_runner()
+        vm_id = self.openstack_manager.create_vm(
             name=name,
-            runner_token=create_runner_token(self.github_organization),
-            vm_type=vm_type
+            runner_token=self.github_manager.create_runner_token(),
+            vm_type=vm_type,
+            github_organization=self.github_organization,
+            installer=installer
         )
         self.runners[name] = Runner(name=name,
                                     vm_id=vm_id,
@@ -100,11 +107,11 @@ class RunnerManager(object):
         logger.info(f"Deleting {runner.name}: type {runner.vm_type}")
         try:
             if runner.action_id:
-                force_delete_runner(self.github_organization, runner.action_id)
+                self.github_manager.force_delete_runner(runner.action_id)
                 runner.action_id = None
 
             if runner.vm_id:
-                delete_vm(runner.vm_id)
+                self.openstack_manager.delete_vm(runner.vm_id)
                 runner.vm_id = None
 
             del self.runners[runner.name]
