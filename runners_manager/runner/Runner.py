@@ -1,4 +1,4 @@
-from runner.VmType import VmType
+from runners_manager.runner.VmType import VmType
 
 
 class Runner(object):

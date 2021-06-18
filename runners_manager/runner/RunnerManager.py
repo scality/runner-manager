@@ -2,12 +2,12 @@ import logging
 from collections.abc import Callable
 
 
-from runner.Runner import Runner
-from vm_creation.github_actions_api import (create_runner_token,
-                                            force_delete_runner)
-from vm_creation.openstack import create_vm, delete_vm
-from runner.VmType import VmType
-from vm_creation.Exception import APIException
+from runners_manager.runner.Runner import Runner
+from runners_manager.vm_creation.github_actions_api import (create_runner_token,
+                                                            force_delete_runner)
+from runners_manager.vm_creation.openstack import create_vm, delete_vm
+from runners_manager.vm_creation.Exception import APIException
+from runners_manager.runner.VmType import VmType
 
 logger = logging.getLogger("runner_manager")
 

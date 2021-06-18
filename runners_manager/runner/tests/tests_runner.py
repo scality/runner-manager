@@ -1,8 +1,8 @@
 import unittest
 from unittest.mock import patch, Mock
 
-from runner.RunnerManager import RunnerManager
-from runner.Runner import Runner
+from runners_manager.runner.RunnerManager import RunnerManager
+from runners_manager.runner.Runner import Runner
 
 
 class TestSum(unittest.TestCase):
@@ -10,9 +10,9 @@ class TestSum(unittest.TestCase):
     def test_initialisation_runner_manager(self):
         pass
 
-    @patch('runner.RunnerManager.create_runner_token')
-    @patch('runner.RunnerManager.create_vm')
-    @patch('runner.RunnerManager.RunnerManager.delete_runner')
+    @patch('runners_manager.runner.RunnerManager.create_runner_token')
+    @patch('runners_manager.runner.RunnerManager.create_vm')
+    @patch('runners_manager.runner.RunnerManager.RunnerManager.delete_runner')
     def test_no_config(self, delete_runner: Mock, create_vm: Mock, c_r_token: Mock):
         r = RunnerManager('test', [])
         self.assertEqual(r.runner_counter, 0)
@@ -23,9 +23,9 @@ class TestSum(unittest.TestCase):
         c_r_token.assert_not_called()
         create_vm.assert_not_called()
 
-    @patch('runner.RunnerManager.create_runner_token', return_value='c')
-    @patch('runner.RunnerManager.create_vm', return_value='1')
-    @patch('runner.RunnerManager.RunnerManager.delete_runner')
+    @patch('runners_manager.runner.RunnerManager.create_runner_token', return_value='c')
+    @patch('runners_manager.runner.RunnerManager.create_vm', return_value='1')
+    @patch('runners_manager.runner.RunnerManager.RunnerManager.delete_runner')
     def test_config_vm_type(self, delete_runner: Mock, create_vm: Mock, create_runner_token: Mock):
         r = RunnerManager('test', [{
             'tags': ['centos7', 'small'],
@@ -48,10 +48,10 @@ class TestSum(unittest.TestCase):
         create_runner_token.assert_called()
         create_vm.assert_called()
 
-    @patch('runner.RunnerManager.create_runner_token', return_value='c')
-    @patch('runner.RunnerManager.create_vm', return_value='1')
-    @patch('runner.RunnerManager.force_delete_runner')
-    @patch('runner.RunnerManager.delete_vm')
+    @patch('runners_manager.runner.RunnerManager.create_runner_token', return_value='c')
+    @patch('runners_manager.runner.RunnerManager.create_vm', return_value='1')
+    @patch('runners_manager.runner.RunnerManager.force_delete_runner')
+    @patch('runners_manager.runner.RunnerManager.delete_vm')
     def test_update_runner(self, delete_vm: Mock,
                            force_delete_runner: Mock,
                            create_vm: Mock,

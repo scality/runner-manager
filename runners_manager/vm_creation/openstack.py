@@ -6,8 +6,8 @@ import neutronclient.v2_0.client
 from novaclient import client
 from jinja2 import FileSystemLoader, Environment
 
-from vm_creation.github_actions_api import link_download_runner
-from runner.VmType import VmType
+from runners_manager.vm_creation.github_actions_api import link_download_runner
+from runners_manager.runner.VmType import VmType
 
 logger = logging.getLogger("runner_manager")
 

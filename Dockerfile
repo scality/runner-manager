@@ -28,9 +28,7 @@ RUN apt-get --assume-yes update \
 
 
 WORKDIR /app
-COPY ./requirements.txt .
-RUN pip3 install -r ./requirements.txt
+COPY . /app
+RUN pip3 install . --use-feature=in-tree-build
 
-COPY runners_manager /app
-
-CMD python3 ./main.py
+CMD runner-manager

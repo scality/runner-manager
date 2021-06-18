@@ -1,7 +1,7 @@
 import os
 
-import settings.settings_local # noqa
-from main import main
+import runners_manager.settings.settings_local # noqa
+from runners_manager.main import main
 
 
 organization = os.getenv('GITHUB_ORGANIZATION')
