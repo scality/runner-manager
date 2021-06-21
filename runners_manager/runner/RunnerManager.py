@@ -17,12 +17,16 @@ class RunnerManager(object):
     github_organization: str
     runners: dict[str, Runner]
     runner_management: list[VmType]
+    runner_name_format: str
 
-    def __init__(self, org: str, config: list):
+    def __init__(self, org: str,
+                 config: list,
+                 runner_name_format: str = 'runner-{organization}-{tags}-{index}'):
         self.runner_counter = 0
         self.github_organization = org
         self.runner_management = [VmType(elem) for elem in config]
         self.runners = {}
+        self.runner_name_format = runner_name_format
 
         for t in self.runner_management:
             for index in range(0, t.quantity['min']):
@@ -77,7 +81,7 @@ class RunnerManager(object):
 
     def create_runner(self, vm_type: VmType, parent=None):
         logger.info(f"Create new runner for {vm_type}")
-        name = self.next_runner_name()
+        name = self.generate_runner_name(vm_type)
         parent_name = parent.name if parent else None
 
         vm_id = create_vm(
@@ -89,6 +93,7 @@ class RunnerManager(object):
                                     vm_id=vm_id,
                                     vm_type=vm_type,
                                     parent_name=parent_name)
+        self.runner_counter += 1
         logger.info("Create success")
 
     def delete_runner(self, runner: Runner):
@@ -107,10 +112,11 @@ class RunnerManager(object):
         except APIException:
             logger.info(f'APIException catch, for runner: {str(runner)}')
 
-    def next_runner_name(self):
-        name = f'{self.runner_counter}'
-        self.runner_counter += 1
-        return name
+    def generate_runner_name(self, vm_type: VmType):
+        vm_type.tags.sort()
+        return self.runner_name_format.format(index=self.runner_counter,
+                                              organization=self.github_organization,
+                                              tags='-'.join(vm_type.tags))
 
     def __del__(self):
         for runner in [elem for elem in self.runners.values()]:

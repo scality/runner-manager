@@ -3,6 +3,7 @@ from unittest.mock import patch, Mock
 
 from runners_manager.runner.RunnerManager import RunnerManager
 from runners_manager.runner.Runner import Runner
+from runners_manager.runner.VmType import VmType
 
 
 class TestSum(unittest.TestCase):
@@ -23,10 +24,31 @@ class TestSum(unittest.TestCase):
         c_r_token.assert_not_called()
         create_vm.assert_not_called()
 
+    @patch('runners_manager.runner.RunnerManager.create_runner_token')
+    @patch('runners_manager.runner.RunnerManager.create_vm')
+    @patch('runners_manager.runner.RunnerManager.RunnerManager.delete_runner')
+    def test_runner_naming_generator(self, delete_runner: Mock, create_vm: Mock, c_r_token: Mock):
+        vm_type_centos = VmType({'tags': ['small_tag', 'centos_tag'], 'flavor': 'small',
+                                 'image': 'centos', 'quantity': 1})
+        vm_type_ubuntu = VmType({'tags': ['medium_tag', 'ubuntu_tag'], 'flavor': 'medium',
+                                 'image': 'ubuntu', 'quantity': 1})
+        r = RunnerManager('test', [])
+        r.runner_counter = 1
+        g = r.generate_runner_name(vm_type_centos)
+        self.assertEqual(g, 'runner-test-centos_tag-small_tag-1')
+
+        r.runner_counter += 1
+        g = r.generate_runner_name(vm_type_ubuntu)
+        self.assertEqual(g, 'runner-test-medium_tag-ubuntu_tag-2')
+
     @patch('runners_manager.runner.RunnerManager.create_runner_token', return_value='c')
     @patch('runners_manager.runner.RunnerManager.create_vm', return_value='1')
     @patch('runners_manager.runner.RunnerManager.RunnerManager.delete_runner')
-    def test_config_vm_type(self, delete_runner: Mock, create_vm: Mock, create_runner_token: Mock):
+    @patch('runners_manager.runner.RunnerManager.RunnerManager.generate_runner_name')
+    def test_config_vm_type(self, name_generator: Mock,
+                            delete_runner: Mock,
+                            create_vm: Mock, create_runner_token: Mock):
+        name_generator.side_effect = ['0', '1', '2', '3']
         r = RunnerManager('test', [{
             'tags': ['centos7', 'small'],
             'flavor': 'm1.small',
@@ -52,10 +74,13 @@ class TestSum(unittest.TestCase):
     @patch('runners_manager.runner.RunnerManager.create_vm', return_value='1')
     @patch('runners_manager.runner.RunnerManager.force_delete_runner')
     @patch('runners_manager.runner.RunnerManager.delete_vm')
-    def test_update_runner(self, delete_vm: Mock,
+    @patch('runners_manager.runner.RunnerManager.RunnerManager.generate_runner_name')
+    def test_update_runner(self, name_generator: Mock,
+                           delete_vm: Mock,
                            force_delete_runner: Mock,
                            create_vm: Mock,
                            create_runner_token: Mock):
+        name_generator.side_effect = ['0', '1', '2']
         r = RunnerManager('test', [{
             'tags': ['centos7', 'small'],
             'flavor': 'm1.small',
