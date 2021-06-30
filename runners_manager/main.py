@@ -1,7 +1,10 @@
+import argparse
 import time
 import logging
+import importlib
 
-from runners_manager.vm_creation.github_actions_api import get_runners
+from runners_manager.vm_creation.github_actions_api import GithubManager
+from runners_manager.vm_creation.openstack import OpenstackManager
 from runners_manager.runner.RunnerManager import RunnerManager
 
 logger = logging.getLogger("runner_manager")
@@ -9,7 +12,7 @@ logger = logging.getLogger("runner_manager")
 
 def maintain_number_of_runner(runner_m: RunnerManager):
     while True:
-        runners = get_runners(runner_m.github_organization)
+        runners = runner_m.github_manager.get_runners()
         logger.info(f"nb runners: {len(runners['runners'])}")
         logger.info(
             f"offline: {len([e for e in runners['runners'] if e['status'] == 'offline'])}"
@@ -21,15 +24,16 @@ def maintain_number_of_runner(runner_m: RunnerManager):
         time.sleep(5)
 
 
-def main(org):
-    config = [{
-        'tags': ['centos7', 'small'],
-        'flavor': 'm1.small',
-        'image': 'CentOS 7 (PVHVM)',
-        'quantity': {
-            'min': 2,
-            'max': 4,
-        },
-    }]
-    runner_m = RunnerManager(org, config)
+def main(settings: dict, args: argparse.Namespace):
+    importlib.import_module(settings['python_config'])
+    openstack_manager = OpenstackManager(project_name=settings['cloud_nine_tenant'],
+                                         token=args.cloud_nine_token,
+                                         username=args.cloud_nine_user,
+                                         password=args.cloud_nine_password,
+                                         region=settings['cloud_nine_region'])
+    github_manager = GithubManager(organization=settings['github_organization'],
+                                   token=args.github_token)
+    runner_m = RunnerManager(settings['github_organization'],
+                             settings['runner_pool'],
+                             openstack_manager, github_manager)
     maintain_number_of_runner(runner_m)

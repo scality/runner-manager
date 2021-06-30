@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-settings
+data:
+  settings.yml: |-
+    github_organization: {{ .Values.githubOrganization }}
+    cloud_nine_region: {{ .Values.cloudNineRegion }}
+    cloud_nine_tenant: {{ .Values.cloudNineTenant }}
+    python_config: {{ .Values.pythonConfigModule }}
+    runner_pool:
+{{ .Values.runnerPool | toYaml | indent 6 }}
