@@ -40,7 +40,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: "registry.scality.com/${{ github.repository }}/${{ github.repository }}:${{ github.event.inputs.tag }}"
+          tags: "registry.scality.com/openstack-actions-runner/openstack-actions-runner:${{ github.event.inputs.tag }}"
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
