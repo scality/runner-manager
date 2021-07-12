@@ -10,3 +10,5 @@ data:
     python_config: {{ .Values.pythonConfigModule }}
     runner_pool:
 {{ .Values.runnerPool | toYaml | indent 6 }}
+    extra_runner_timer:
+{{ .Values.extraRunnerTimer | toYaml | indent 6 }}

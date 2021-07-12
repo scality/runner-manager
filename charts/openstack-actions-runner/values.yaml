@@ -89,3 +89,7 @@ pythonConfigModule: "runners_manager.settings.settings_tests"
 #        - centos7
 #        - small
 runnerPool: []
+
+extraRunnerTimer:
+  minutes: 10
+  hours: 0
