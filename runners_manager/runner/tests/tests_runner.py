@@ -2,7 +2,6 @@ import unittest
 from unittest.mock import patch, Mock, MagicMock
 
 from runners_manager.runner.RunnerManager import RunnerManager
-from runners_manager.runner.Runner import Runner
 from runners_manager.runner.VmType import VmType
 
 
@@ -95,9 +94,14 @@ class TestRunnerManager(unittest.TestCase):
         self.assertEqual(r.runner_management.__len__(), 1)
 
         self.assertEqual(r.runners.__len__(), 2)
-        self.assertEqual(r.runners['0'], Runner('0', '1', r.runner_management[0]))
-        self.assertEqual(r.runners['1'].__dict__,
-                         Runner('1', '2', r.runner_management[0]).__dict__)
+        self.assertEqual(r.runners['0'].name, '0')
+        self.assertEqual(r.runners['0'].vm_id, '1')
+        self.assertEqual(r.runners['0'].vm_type, r.runner_management[0])
+
+        self.assertEqual(r.runners['1'].name, '1')
+        self.assertEqual(r.runners['1'].vm_id, '2')
+        self.assertEqual(r.runners['1'].vm_type, r.runner_management[0])
+
         self.assertEqual(r.runner_counter, 2)
         self.github_manager.create_runner_token.assert_called()
         self.openstack_manager.create_vm.assert_called()
