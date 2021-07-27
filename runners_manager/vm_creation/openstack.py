@@ -1,4 +1,5 @@
 import logging
+import time
 
 import keystoneauth1.session
 import keystoneclient.auth.identity.v3
@@ -74,9 +75,16 @@ class OpenstackManager(object):
             userdata=self.script_init_runner(runner, runner_token, github_organization,
                                              installer)
         )
+        while instance.status not in ['ACTIVE', 'ERROR']:
+            instance = self.nova_client.servers.get(instance.id)
+            time.sleep(2)
+        if instance.status == 'ERROR':
+            logger.info('vm failed, creating a new one')
+            self.delete_vm(instance.id)
+            return self.create_vm(runner, runner_token, github_organization, installer)
 
         logger.info("vm is successfully created")
         return instance
 
-    def delete_vm(self, id):
+    def delete_vm(self, id: str):
         self.nova_client.servers.delete(id)
