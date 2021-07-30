@@ -5,12 +5,12 @@ import importlib
 
 from runners_manager.vm_creation.github_actions_api import GithubManager
 from runners_manager.vm_creation.openstack import OpenstackManager
-from runners_manager.runner.RunnerManager import RunnerManager
+from runners_manager.runner.Manager import Manager
 
 logger = logging.getLogger("runner_manager")
 
 
-def maintain_number_of_runner(runner_m: RunnerManager, github_manager: GithubManager):
+def maintain_number_of_runner(runner_m: Manager, github_manager: GithubManager):
     while True:
         runners = github_manager.get_runners()
         logger.info(f"nb runners: {len(runners['runners'])}")
@@ -33,5 +33,5 @@ def main(settings: dict, args: argparse.Namespace):
                                          region=settings['cloud_nine_region'])
     github_manager = GithubManager(organization=settings['github_organization'],
                                    token=args.github_token)
-    runner_m = RunnerManager(settings, openstack_manager, github_manager)
+    runner_m =Manager(settings, openstack_manager, github_manager)
     maintain_number_of_runner(runner_m, github_manager)
