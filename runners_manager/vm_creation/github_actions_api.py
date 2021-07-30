@@ -8,25 +8,27 @@ logger = logging.getLogger("runner_manager")
 class GithubManager(object):
     organization: str
     headers: dict
+    session: requests.Session
 
     def __init__(self, organization, token):
         self.organization = organization
-        self.headers = {
+        self.session = requests.Session()
+        self.session.headers.update({
             'Accept': 'application/vnd.github.v3+json',
             'Authorization': f'token {token}'
-        }
+        })
 
     def link_download_runner(self, archi='x64'):
         download_link = f'https://api.github.com/orgs/{self.organization}/actions/runners/downloads'
         return next(
             elem
-            for elem in requests.get(download_link, headers=self.headers).json()
+            for elem in self.session.get(download_link).json()
             if elem['os'] == 'linux' and elem['architecture'] == archi
         )
 
     def get_runners(self):
         info_link = f'https://api.github.com/orgs/{self.organization}/actions/runners'
-        return requests.get(info_link, headers=self.headers).json()
+        return self.session.get(info_link).json()
 
     def create_runner_token(self):
         """
@@ -37,13 +39,13 @@ class GithubManager(object):
         """
         token_link = \
             f'https://api.github.com/orgs/{self.organization}/actions/runners/registration-token'
-        response = requests.post(token_link, headers=self.headers).json()
+        response = self.session.post(token_link).json()
 
         return response['token']
 
     def force_delete_runner(self, runner_id: int):
         runner_link = f'https://api.github.com/orgs/{self.organization}/actions/runners/{runner_id}'
-        response = requests.delete(runner_link, headers=self.headers)
+        response = self.session.delete(runner_link)
 
         if response.status_code != 204:
             logger.error(f"Error in response: {response.status_code} {response.json()['message']}")

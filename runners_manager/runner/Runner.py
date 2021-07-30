@@ -53,6 +53,10 @@ class Runner(object):
         self.status = status
 
     @property
+    def time_since_created(self):
+        return datetime.datetime.now() - self.created_at
+
+    @property
     def time_online(self):
         return datetime.datetime.now() - self.started_at
 
