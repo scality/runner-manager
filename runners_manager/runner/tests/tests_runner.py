@@ -31,8 +31,8 @@ class TestRunnerManager(unittest.TestCase):
     def test_initialisation_runner_manager(self):
         pass
 
-    @patch('runners_manager.runner.RunnerManager.RunnerManager.create_runner')
-    @patch('runners_manager.runner.RunnerManager.RunnerManager.delete_runner')
+    @patch('runners_manager.runner.RunnerManager.RunnerFactory.create_runner')
+    @patch('runners_manager.runner.RunnerManager.RunnerFactory.delete_runner')
     def test_no_config(self, delete_runner: Mock, create_vm: Mock):
         r = RunnerManager({
             'github_organization': 'test', 'runner_pool': [],
@@ -40,15 +40,15 @@ class TestRunnerManager(unittest.TestCase):
                 'minutes': 10,
                 'hours': 10
             }}, self.openstack_manager, self.github_manager)
-        self.assertEqual(r.runner_counter, 0)
+        self.assertEqual(r.factory.runner_counter, 0)
         self.assertEqual(r.github_organization, 'test')
         self.assertEqual(r.runner_management, [])
         self.assertEqual(r.runners, {})
 
         create_vm.assert_not_called()
 
-    @patch('runners_manager.runner.RunnerManager.RunnerManager.create_runner')
-    @patch('runners_manager.runner.RunnerManager.RunnerManager.delete_runner')
+    @patch('runners_manager.runner.RunnerManager.RunnerFactory.create_runner')
+    @patch('runners_manager.runner.RunnerManager.RunnerFactory.delete_runner')
     def test_runner_naming_generator(self, delete_runner: Mock, create_vm: Mock):
         vm_type_centos = VmType({'tags': ['small_tag', 'centos_tag'], 'flavor': 'small',
                                  'image': 'centos', 'quantity': 1})
@@ -61,16 +61,16 @@ class TestRunnerManager(unittest.TestCase):
                 'hours': 10
             }
         }, self.openstack_manager, self.github_manager)
-        r.runner_counter = 1
-        g = r.generate_runner_name(vm_type_centos)
+        r.factory.runner_counter = 1
+        g = r.factory.generate_runner_name(vm_type_centos)
         self.assertEqual(g, 'runner-test-centos_tag-small_tag-1')
 
-        r.runner_counter += 1
-        g = r.generate_runner_name(vm_type_ubuntu)
+        r.factory.runner_counter += 1
+        g = r.factory.generate_runner_name(vm_type_ubuntu)
         self.assertEqual(g, 'runner-test-medium_tag-ubuntu_tag-2')
 
-    @patch('runners_manager.runner.RunnerManager.RunnerManager.delete_runner')
-    @patch('runners_manager.runner.RunnerManager.RunnerManager.generate_runner_name')
+    @patch('runners_manager.runner.RunnerManager.RunnerFactory.delete_runner')
+    @patch('runners_manager.runner.RunnerManager.RunnerFactory.generate_runner_name')
     def test_config_vm_type(self, name_generator: Mock,
                             delete_runner: Mock):
         name_generator.side_effect = ['0', '1', '2', '3']
@@ -94,7 +94,6 @@ class TestRunnerManager(unittest.TestCase):
         self.assertEqual(r.runner_management.__len__(), 1)
 
         self.assertEqual(r.runners.__len__(), 2)
-        # Runner('0', '1', r.runner_management[0])
         self.assertEqual(r.runners['0'].name, '0')
         self.assertEqual(r.runners['0'].vm_id, '1')
         self.assertEqual(r.runners['0'].vm_type, r.runner_management[0])
@@ -103,12 +102,12 @@ class TestRunnerManager(unittest.TestCase):
         self.assertEqual(r.runners['1'].vm_id, '2')
         self.assertEqual(r.runners['1'].vm_type, r.runner_management[0])
 
-        self.assertEqual(r.runner_counter, 2)
+        self.assertEqual(r.factory.runner_counter, 2)
         self.github_manager.create_runner_token.assert_called()
         self.openstack_manager.create_vm.assert_called()
 
-    @patch('runners_manager.runner.RunnerManager.RunnerManager.delete_runner')
-    @patch('runners_manager.runner.RunnerManager.RunnerManager.generate_runner_name')
+    @patch('runners_manager.runner.RunnerManager.RunnerFactory.delete_runner')
+    @patch('runners_manager.runner.RunnerManager.RunnerFactory.generate_runner_name')
     def test_update_runner(self, name_generator: Mock, delete_mock):
         name_generator.side_effect = ['0', '1', '2']
         self.openstack_manager.create_vm.side_effect = [ObjectId('1'), ObjectId('2'), ObjectId('3')]
@@ -126,7 +125,7 @@ class TestRunnerManager(unittest.TestCase):
                 'hours': 10
             }
         }, self.openstack_manager, self.github_manager)
-        self.assertEqual(r.runner_counter, 2)
+        self.assertEqual(r.factory.runner_counter, 2)
         self.assertEqual(r.github_organization, 'test')
         self.assertEqual(r.runners['0'].action_id, None)
         self.assertEqual(r.runners['0'].has_run, False)
@@ -145,7 +144,7 @@ class TestRunnerManager(unittest.TestCase):
         self.assertEqual(r.runners['0'].action_id, 0)
         self.assertEqual(r.runners['0'].has_run, False)
         self.assertEqual(r.runners['0'].status, 'online')
-        self.assertEqual(r.runner_counter, 2)
+        self.assertEqual(r.factory.runner_counter, 2)
 
         self.openstack_manager.create_vm.assert_not_called()
         self.openstack_manager.delete_vm.assert_not_called()
@@ -183,8 +182,8 @@ class TestRunnerManager(unittest.TestCase):
         self.openstack_manager.delete_vm.assert_not_called()
         self.openstack_manager.create_vm.assert_not_called()
 
-    @patch('runners_manager.runner.RunnerManager.RunnerManager.delete_runner')
-    @patch('runners_manager.runner.RunnerManager.RunnerManager.generate_runner_name')
+    @patch('runners_manager.runner.RunnerManager.RunnerFactory.delete_runner')
+    @patch('runners_manager.runner.RunnerManager.RunnerFactory.generate_runner_name')
     def test_need_new_runner_current_updated(self, mock_naming, delete_mock):
         mock_naming.side_effect = ['0', '1', '2']
         type_dict = {
@@ -224,8 +223,8 @@ class TestRunnerManager(unittest.TestCase):
         r.runners['1'].status = 'running'
         self.assertEqual(r.need_new_runner(vm_type), True)
 
-    @patch('runners_manager.runner.RunnerManager.RunnerManager.delete_runner')
-    @patch('runners_manager.runner.RunnerManager.RunnerManager.generate_runner_name')
+    @patch('runners_manager.runner.RunnerManager.RunnerFactory.delete_runner')
+    @patch('runners_manager.runner.RunnerManager.RunnerFactory.generate_runner_name')
     def test_need_new_runner_current_full(self, mock_naming, delete_mock):
         mock_naming.side_effect = ['0', '1', '2', '3', '4']
         type_dict = {

@@ -25,6 +25,7 @@ class RunnerFactory(object):
         self.github_manager = github_manager
         self.github_organization = organization
         self.runner_name_format = 'runner-{organization}-{tags}-{index}'
+        self.runner_counter = 0
 
     def create_runner(self, vm_type: VmType):
         logger.info(f"Create new runner for {vm_type}")

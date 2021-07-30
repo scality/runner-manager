@@ -24,14 +24,16 @@ class RunnerManager(object):
     def __init__(self, settings: dict,
                  openstack_manager: OpenstackManager,
                  github_manager: GithubManager):
-        self.runner_counter = 0
-
         self.github_organization = settings['github_organization']
         self.runner_management = [VmType(elem) for elem in settings['runner_pool']]
         self.extra_runner_online_timer = settings['extra_runner_timer']
 
         self.runners = {}
         self.factory = RunnerFactory(openstack_manager, github_manager, settings['github_organization'])
+        for v_type in self.runner_management:
+            for index in range(0, v_type.quantity['min']):
+                r = self.factory.create_runner(v_type)
+                self.runners[r.name] = r
 
     def update(self, github_runners: list[dict]):
         # Update status of each runner
@@ -63,9 +65,17 @@ class RunnerManager(object):
                         and time_since_spawn > datetime.timedelta(minutes=15):
                     self.factory.respawn_replace(elem)
 
+            # Respawn runner if they are offline for more then 15min after spawn
+            # TODO add this timer in the config file
+            for runner in self.filter_runners(vm_type, lambda r: r.status == 'offline'):
+                time_since_spawn = datetime.datetime.now() - runner.created_at
+                if runner.has_run is False \
+                        and time_since_spawn > datetime.timedelta(minutes=15):
+                    self.respawn_replace(runner)
+
             # Delete if you have too many and they are not used for the last x hours / minutes
-            for elem in self.filter_runners(vm_type, lambda r: r.status == 'online'):
-                if elem.time_online > datetime.timedelta(**self.extra_runner_online_timer) \
+            for runner in self.filter_runners(vm_type, lambda r: r.status == 'online'):
+                if runner.time_online > datetime.timedelta(**self.extra_runner_online_timer) \
                         and self.too_much_runner(vm_type):
                     self.factory.delete_runner(elem)
                     del self.runners[elem.name]
