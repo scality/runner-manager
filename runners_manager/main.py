@@ -10,9 +10,9 @@ from runners_manager.runner.RunnerManager import RunnerManager
 logger = logging.getLogger("runner_manager")
 
 
-def maintain_number_of_runner(runner_m: RunnerManager):
+def maintain_number_of_runner(runner_m: RunnerManager, github_manager: GithubManager):
     while True:
-        runners = runner_m.github_manager.get_runners()
+        runners = github_manager.get_runners()
         logger.info(f"nb runners: {len(runners['runners'])}")
         logger.info(
             f"offline: {len([e for e in runners['runners'] if e['status'] == 'offline'])}"
@@ -34,4 +34,4 @@ def main(settings: dict, args: argparse.Namespace):
     github_manager = GithubManager(organization=settings['github_organization'],
                                    token=args.github_token)
     runner_m = RunnerManager(settings, openstack_manager, github_manager)
-    maintain_number_of_runner(runner_m)
+    maintain_number_of_runner(runner_m, github_manager)

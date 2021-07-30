@@ -6,7 +6,7 @@ from collections.abc import Callable
 from runners_manager.runner.Runner import Runner
 from runners_manager.vm_creation.github_actions_api import GithubManager
 from runners_manager.vm_creation.openstack import OpenstackManager
-from runners_manager.vm_creation.Exception import APIException
+from runners_manager.runner.RunnerFactory import RunnerFactory
 from runners_manager.runner.VmType import VmType
 
 logger = logging.getLogger("runner_manager")
@@ -16,18 +16,14 @@ class RunnerManager(object):
     runner_counter: int
     github_organization: str
 
+    factories: RunnerFactory
     runners: dict[str, Runner]
     runner_management: list[VmType]
-    runner_name_format: str
     extra_runner_online_timer: dict
-
-    openstack_manager: OpenstackManager
-    github_manager: GithubManager
 
     def __init__(self, settings: dict,
                  openstack_manager: OpenstackManager,
-                 github_manager: GithubManager,
-                 runner_name_format: str = 'runner-{organization}-{tags}-{index}'):
+                 github_manager: GithubManager):
         self.runner_counter = 0
 
         self.github_organization = settings['github_organization']
@@ -35,13 +31,7 @@ class RunnerManager(object):
         self.extra_runner_online_timer = settings['extra_runner_timer']
 
         self.runners = {}
-        self.runner_name_format = runner_name_format
-        self.openstack_manager = openstack_manager
-        self.github_manager = github_manager
-
-        for t in self.runner_management:
-            for index in range(0, t.quantity['min']):
-                self.create_runner(t)
+        self.factory = RunnerFactory(openstack_manager, github_manager, settings['github_organization'])
 
     def update(self, github_runners: list[dict]):
         # Update status of each runner
@@ -59,24 +49,26 @@ class RunnerManager(object):
             # Always Respawn Vm
             offline_runners = self.filter_runners(vm_type, lambda r: r.has_run)
             for r in offline_runners:
-                self.respawn_replace(r)
+                self.factory.respawn_replace(r)
 
             # Create if it's still not enough
             while self.need_new_runner(vm_type):
-                self.create_runner(vm_type)
+                r = self.factory.create_runner(vm_type)
+                self.runners[r.name] = r
 
             # Respawn runner if they are offline for more then 10min after spawn
             for elem in self.filter_runners(vm_type, lambda r: r.status == 'offline'):
                 time_since_spawn = datetime.datetime.now() - elem.created_at
                 if elem.has_run is False \
                         and time_since_spawn > datetime.timedelta(minutes=15):
-                    self.respawn_replace(elem)
+                    self.factory.respawn_replace(elem)
 
             # Delete if you have too many and they are not used for the last x hours / minutes
             for elem in self.filter_runners(vm_type, lambda r: r.status == 'online'):
                 if elem.time_online > datetime.timedelta(**self.extra_runner_online_timer) \
                         and self.too_much_runner(vm_type):
-                    self.delete_runner(elem)
+                    self.factory.delete_runner(elem)
+                    del self.runners[elem.name]
 
     def too_much_runner(self, vm_type: VmType):
         current_online = len(
@@ -111,60 +103,6 @@ class RunnerManager(object):
             self.runners.values()
         ))
 
-    def create_runner(self, vm_type: VmType):
-        logger.info(f"Create new runner for {vm_type}")
-        name = self.generate_runner_name(vm_type)
-        installer = self.github_manager.link_download_runner()
-        runner = Runner(name=name, vm_id=None, vm_type=vm_type)
-
-        vm = self.openstack_manager.create_vm(
-            runner=runner,
-            runner_token=self.github_manager.create_runner_token(),
-            github_organization=self.github_organization,
-            installer=installer
-        )
-        runner.vm_id = vm.id
-
-        self.runners[name] = runner
-        self.runner_counter += 1
-        logger.info("Create success")
-
-    def respawn_replace(self, runner: Runner):
-        logger.info(f"respawn runner: {runner.name}")
-        self.openstack_manager.delete_vm(runner.vm_id)
-
-        runner_token = self.github_manager.create_runner_token()
-        installer = self.github_manager.link_download_runner()
-        vm = self.openstack_manager.create_vm(
-            runner=runner,
-            runner_token=runner_token,
-            github_organization=self.github_organization,
-            installer=installer
-        )
-        runner.status_history = []
-        runner.vm_id = vm.id
-        runner.created_at = datetime.datetime.now()
-
-    def delete_runner(self, runner: Runner):
-        logger.info(f"Deleting {runner.name}: type {runner.vm_type}")
-        try:
-            if runner.action_id:
-                self.github_manager.force_delete_runner(runner.action_id)
-
-            if runner.vm_id:
-                self.openstack_manager.delete_vm(runner.vm_id)
-
-            del self.runners[runner.name]
-            logger.info("Delete success")
-        except APIException:
-            logger.info(f'APIException catch, when try to delete the runner: {str(runner)}')
-
-    def generate_runner_name(self, vm_type: VmType):
-        vm_type.tags.sort()
-        return self.runner_name_format.format(index=self.runner_counter,
-                                              organization=self.github_organization,
-                                              tags='-'.join(vm_type.tags))
-
     def log_runners_infos(self):
         for vm_type in self.runner_management:
             offline_runners = self.filter_runners(vm_type, lambda r: r.has_run)
@@ -183,4 +121,4 @@ class RunnerManager(object):
         :return:
         """
         for runner in self.runners.copy().values():
-            self.delete_runner(runner)
+            self.factory.delete_runner(runner)
