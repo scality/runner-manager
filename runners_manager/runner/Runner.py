@@ -9,6 +9,7 @@ logger = logging.getLogger("runner_manager")
 class Runner(object):
     name: str
     started_at: datetime.datetime or None
+    created_at: datetime.datetime
     status: str
     status_history: list[str]
 
@@ -21,6 +22,7 @@ class Runner(object):
         self.vm_id = vm_id
         self.vm_type = vm_type
 
+        self.created_at = datetime.datetime.now()
         self.status = 'offline'
         self.status_history = []
         self.action_id = None

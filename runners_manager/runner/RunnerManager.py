@@ -65,11 +65,19 @@ class RunnerManager(object):
             while self.need_new_runner(vm_type):
                 self.create_runner(vm_type)
 
+            # Respawn runner if they are offline for more then 15min after spawn
+            # TODO add this timer in the config file
+            for runner in self.filter_runners(vm_type, lambda r: r.status == 'offline'):
+                time_since_spawn = datetime.datetime.now() - runner.created_at
+                if runner.has_run is False \
+                        and time_since_spawn > datetime.timedelta(minutes=15):
+                    self.respawn_replace(runner)
+
             # Delete if you have too many and they are not used for the last x hours / minutes
-            for elem in self.filter_runners(vm_type, lambda r: r.status == 'online'):
-                if elem.time_online > datetime.timedelta(**self.extra_runner_online_timer) \
+            for runner in self.filter_runners(vm_type, lambda r: r.status == 'online'):
+                if runner.time_online > datetime.timedelta(**self.extra_runner_online_timer) \
                         and self.too_much_runner(vm_type):
-                    self.delete_runner(elem)
+                    self.delete_runner(runner)
 
     def too_much_runner(self, vm_type: VmType):
         current_online = len(
@@ -136,6 +144,7 @@ class RunnerManager(object):
         )
         runner.status_history = []
         runner.vm_id = vm.id
+        runner.created_at = datetime.datetime.now()
 
     def delete_runner(self, runner: Runner):
         logger.info(f"Deleting {runner.name}: type {runner.vm_type}")
