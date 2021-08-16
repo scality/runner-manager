@@ -1,4 +1,7 @@
 class VmType:
+    """
+    Define the Virtual machines and who much to spawn
+    """
     tags: list[str]
     flavor: str
     image: str

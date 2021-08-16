@@ -68,13 +68,14 @@ class TestRunnerManager(unittest.TestCase):
     @patch('runners_manager.runner.Manager.RunnerManager.__init__', return_value=None)
     @patch('runners_manager.runner.Manager.RunnerManager.update')
     @patch('runners_manager.runner.Manager.RunnerManager.respawn_runner')
-    @patch('runners_manager.runner.Manager.RunnerManager.need_new_runner', return_value=False)
     @patch('runners_manager.runner.Manager.RunnerManager.create_runner')
     @patch('runners_manager.runner.Manager.RunnerManager.delete_runner')
+    @patch('runners_manager.runner.Manager.RunnerManager.min_runner_number', return_value=3)
     @patch('runners_manager.runner.Manager.RunnerManager.filter_runners', return_value=[])
+    @patch('runners_manager.runner.Manager.Manager.need_new_runner', return_value=False)
     @patch('runners_manager.runner.Manager.Manager.log_runners_infos')
     @patch('runners_manager.runner.Manager.RunnerFactory')
-    def test_update_withou_changes(self, *args, **kwargs):
+    def test_update_without_changes(self, *args, **kwargs):
         r = Manager({'github_organization': 'test',
                      'runner_pool': [{
                          'tags': ['centos7', 'small'],

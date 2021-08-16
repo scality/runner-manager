@@ -11,6 +11,9 @@ logger = logging.getLogger("runner_manager")
 
 
 class RunnerFactory(object):
+    """
+    Create / Delete / replace Runners and Virtual machine from Github and Openstack
+    """
     github_organization: str
     runner_name_format: str
     runner_counter: int
