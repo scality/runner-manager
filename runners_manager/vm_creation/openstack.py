@@ -54,7 +54,7 @@ class OpenstackManager(object):
         env.rstrip_blocks = True
 
         template = env.get_template('init_runner_script.sh')
-        output = template.render(installer=installer,
+        output = template.render(installer=installer, image=runner.vm_type.image.lower(),
                                  github_organization=github_organization,
                                  token=token, name=runner.name, tags=','.join(runner.vm_type.tags),
                                  group='default')
