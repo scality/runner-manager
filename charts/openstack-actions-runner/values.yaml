@@ -71,7 +71,7 @@ cloudNineRegion: ""
 # The python module, used for configuration
 # example:
 #  'runners_manager.settings.settings_local'
-pythonConfigModule: "runners_manager.settings.settings_tests"
+pythonConfigModule: ""
 
 # Represent the infos about each group of runners
 # Define by:
@@ -93,3 +93,12 @@ runnerPool: []
 extraRunnerTimer:
   minutes: 10
   hours: 0
+
+
+# Redis database config
+redis:
+  fullnameOverride: redis
+  redisPort: 6379
+  networkPolicy:
+    enabled: true
+

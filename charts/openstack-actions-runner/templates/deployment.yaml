@@ -37,6 +37,12 @@ spec:
         args: ["--settings-file", "/app/config/settings.yml"]
         resources:
           {{- toYaml .Values.resources | nindent 12 }}
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.redis.fullnameOverride }}
+              key: redis-password
         envFrom:
         - configMapRef:
             name: {{ .Release.Name }}-config

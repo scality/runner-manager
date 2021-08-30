@@ -2,6 +2,7 @@ import argparse
 import time
 import logging
 import importlib
+import redis
 
 from runners_manager.vm_creation.github_actions_api import GithubManager
 from runners_manager.vm_creation.openstack import OpenstackManager
@@ -33,5 +34,8 @@ def main(settings: dict, args: argparse.Namespace):
                                          region=settings['cloud_nine_region'])
     github_manager = GithubManager(organization=settings['github_organization'],
                                    token=args.github_token)
-    runner_m = Manager(settings, openstack_manager, github_manager)
+    redis_database = redis.Redis(host=settings['redis']['host'],
+                                 port=settings['redis']['port'],
+                                 password=args.redis_password)
+    runner_m = Manager(settings, openstack_manager, github_manager, redis_database)
     maintain_number_of_runner(runner_m, github_manager)

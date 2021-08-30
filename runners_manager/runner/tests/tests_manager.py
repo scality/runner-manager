@@ -1,4 +1,5 @@
 import unittest
+import fakeredis
 from unittest.mock import patch, MagicMock
 
 from runners_manager.runner.Manager import Manager
@@ -11,6 +12,7 @@ class ObjectId(object):
 
 class TestRunnerManager(unittest.TestCase):
     def setUp(self) -> None:
+        self.fake_redis = fakeredis.FakeStrictRedis()
         self.github_manager = MagicMock()
         self.openstack_manager = MagicMock()
 
@@ -25,18 +27,24 @@ class TestRunnerManager(unittest.TestCase):
 
     @patch('runners_manager.runner.Manager.RunnerManager')
     @patch('runners_manager.runner.Manager.RunnerFactory')
-    def test_no_config(self, factory, manager):
+    @patch('runners_manager.runner.Manager.redis.Redis')
+    def test_no_config(self, redis, factory, manager):
         r = Manager({
             'github_organization': 'test', 'runner_pool': [],
+            'redis': {
+                'host': 'test',
+                'port': 1234
+            },
             'extra_runner_timer': {
                 'minutes': 10,
                 'hours': 10
-            }}, self.openstack_manager, self.github_manager)
+            }}, self.openstack_manager, self.github_manager, self.fake_redis)
         self.assertEqual(r.runner_managers, [])
 
     @patch('runners_manager.runner.Manager.RunnerManager')
     @patch('runners_manager.runner.Manager.RunnerFactory')
-    def test_config_vm_type(self, factory, manager):
+    @patch('runners_manager.runner.Manager.redis.Redis')
+    def test_config_vm_type(self, redis, factory, manager):
         r = Manager({'github_organization': 'test',
                      'runner_pool': [{
                          'tags': ['centos7', 'small'],
@@ -47,14 +55,17 @@ class TestRunnerManager(unittest.TestCase):
                              'max': 4
                          },
                      }],
+                     'redis': {
+                         'host': 'test',
+                         'port': 1234
+                     },
                      'extra_runner_timer': {
                          'minutes': 10,
                          'hours': 10
-                     }}, self.openstack_manager, self.github_manager)
+                     }}, self.openstack_manager, self.github_manager, self.fake_redis)
         self.assertEqual(r.runner_managers.__len__(), 1)
 
     @patch('runners_manager.runner.Manager.RunnerManager.__init__', return_value=None)
-    @patch('runners_manager.runner.Manager.RunnerManager.__del__')
     @patch('runners_manager.runner.Manager.RunnerManager.update')
     @patch('runners_manager.runner.Manager.RunnerManager.respawn_runner')
     @patch('runners_manager.runner.Manager.RunnerManager.need_new_runner', return_value=False)
@@ -74,10 +85,14 @@ class TestRunnerManager(unittest.TestCase):
                              'max': 4
                          },
                      }],
+                     'redis': {
+                         'host': 'test',
+                         'port': 1234
+                     },
                      'extra_runner_timer': {
                          'minutes': 10,
                          'hours': 10
-                     }}, self.openstack_manager, self.github_manager)
+                     }}, self.openstack_manager, self.github_manager, self.fake_redis)
         r.update([{'id': 1, 'name': '1',
                    'os': 'linux', 'status': 'online',
                    'busy': False,

@@ -1,7 +1,6 @@
 import datetime
 import logging
-from collections.abc import Callable
-
+import redis
 
 from runners_manager.runner.Runner import Runner
 from runners_manager.vm_creation.github_actions_api import GithubManager
@@ -18,18 +17,21 @@ class Manager(object):
     This object contain the main logic to maintain the number of needed runners
     """
     factory: RunnerFactory
+    redis: redis.Redis
     runner_managers: list[RunnerManager]
     extra_runner_online_timer: dict
 
     def __init__(self, settings: dict,
                  openstack_manager: OpenstackManager,
-                 github_manager: GithubManager):
+                 github_manager: GithubManager,
+                 r: redis.Redis):
         self.factory = RunnerFactory(openstack_manager,
                                      github_manager,
                                      settings['github_organization'])
+        self.redis = r
         self.runner_managers = []
         for v_type in settings['runner_pool']:
-            self.runner_managers.append(RunnerManager(VmType(v_type), self.factory))
+            self.runner_managers.append(RunnerManager(VmType(v_type), self.factory, self.redis))
 
         self.extra_runner_online_timer = settings['extra_runner_timer']
 
@@ -55,13 +57,13 @@ class Manager(object):
                 manager.respawn_runner(elem)
 
             # Delete if you have too many and they are not used for the last x hours / minutes
-            for runner in manager.filter_runners(self.need_less_runner(manager)):
-                manager.delete_runner(runner)
+            for runner in manager.filter_runners(self.need_less_runner):
+                if manager.too_much_runner():
+                    manager.delete_runner(runner)
 
-    def need_less_runner(self, manager: RunnerManager) -> Callable[Runner, bool]:
-        return lambda runner: runner.status == 'online' and not runner.has_run \
-            and runner.time_online > datetime.timedelta(**self.extra_runner_online_timer) \
-            and manager.too_much_runner()
+    def need_less_runner(self, runner: Runner) -> bool:
+        return runner.status == 'online' and not runner.has_run \
+            and runner.time_online > datetime.timedelta(**self.extra_runner_online_timer)
 
     @staticmethod
     def runner_should_never_spawn(runner: Runner) -> bool:

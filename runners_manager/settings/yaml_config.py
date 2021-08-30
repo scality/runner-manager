@@ -22,6 +22,11 @@ class RunnerPool(Schema):
     quantity = fields.Nested(RunnerQuantity, required=True)
 
 
+class RedisDatabase(Schema):
+    host = fields.Str(required=True)
+    port = fields.Str(required=True)
+
+
 class Settings(Schema):
     github_organization = fields.Str(required=True)
     cloud_nine_region = fields.Str(required=True)
@@ -29,6 +34,7 @@ class Settings(Schema):
     runner_pool = fields.Nested(RunnerPool, many=True, required=True)
     python_config = fields.Str(required=True)
     extra_runner_timer = fields.Nested(ExtraRunnerTimer, required=True)
+    redis = fields.Nested(RedisDatabase, required=True)
 
 
 def setup_settings(settings_file: str) -> dict:
