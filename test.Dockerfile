@@ -28,8 +28,8 @@ RUN apt-get --assume-yes update \
 
 
 WORKDIR /app
-COPY ./requirements.txt .
-RUN pip3 install -r ./requirements.txt
+COPY ./manager-requirements.txt .
+RUN pip3 install -r ./manager-requirements.txt
 
 # Set the desired version of Helm
 ENV DESIRED_VERSION v2.17.0

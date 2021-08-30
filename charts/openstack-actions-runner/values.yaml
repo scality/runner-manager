@@ -5,10 +5,14 @@
 replicaCount: 1
 
 image:
-  repository: registry.scality.com/openstack-actions-runner/openstack-actions-runner
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
   tag: "0.1.0"
+  manager:
+      repository: registry.scality.com/openstack-actions-runner/openstack-actions-runner
+      # Overrides the image tag whose default is the chart appVersion.
+  web:
+    repository: registry.scality.com/openstack-actions-runner/web-interface
+    # Overrides the image tag whose default is the chart appVersion.
 
 imagePullSecrets: []
 nameOverride: ""
@@ -36,9 +40,44 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
-service:
-  type: ClusterIP
-  port: 80
+## Kubernetes deployment configuration
+deployment:
+  ## Kubernetes service configuration
+  service:
+    type: ClusterIP
+    port: 80
+
+  ## Configure the ingress resource that allows you to access the service.
+  ingress:
+    ## enabled sets the ingress record generation or not.
+    ##
+    ##   Defaults to false.
+    ##
+    enabled: false
+
+    ## fqdn is the protocol/hostname to be covered with this ingress record.
+    ##
+    fqdn: "http://runner-manager.local"
+
+    ## path contains the subpath where to access the HTTP service.
+    ##
+    ##   Defaults to '/'.
+    ##
+    path: "/"
+
+    ## tls is set to true in order to enable TLS on the ingress record.
+    ##
+    ##   Defaults to false.
+    ##
+    tls: false
+
+    ## tlsSecret specifies a secret that contains the key/certificate for TLS
+    ##
+    tlsSecret: "tls-secret"
+
+    ## annotations contains the Ingress annotations done as key:value pairs
+    ##
+    annotations: {}
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

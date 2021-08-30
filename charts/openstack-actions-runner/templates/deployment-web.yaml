@@ -1,13 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "openstack-actions-runner.fullname" . }}
+  name: {{ include "openstack-actions-runner.fullname" . }}-web
   labels:
+    role: web
     {{- include "openstack-actions-runner.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
-      {{- include "openstack-actions-runner.selectorLabels" . | nindent 6 }}
+      {{- include "openstack-actions-runner.selectorLabels" . | nindent 8 }}
   template:
     metadata:
       annotations:
@@ -18,6 +19,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
+        role: web
         {{- include "openstack-actions-runner.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
@@ -31,10 +33,10 @@ spec:
       - name: {{ .Chart.Name }}
         securityContext:
           {{- toYaml .Values.securityContext | nindent 12 }}
-        image: "{{ .Values.image.manager.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        image: "{{ .Values.image.web.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        command: ["runner-manager"]
-        args: ["--settings-file", "/app/config/settings.yml"]
+        command: ["uvicorn"]
+        args: ["web.main:app", "--host", "0.0.0.0", "--port", "80"]
         resources:
           {{- toYaml .Values.resources | nindent 12 }}
         env:
@@ -43,9 +45,13 @@ spec:
             secretKeyRef:
               name: {{ .Values.redis.fullnameOverride }}
               key: redis-password
+        - name: REDIS_HOST
+          value: {{ .Values.redis.fullnameOverride  }}-master
+        - name: REDIS_PORT
+          value: "{{ .Values.redis.redisPort }}"
         envFrom:
         - configMapRef:
-            name: {{ .Release.Name }}-config
+            name: "{{ .Release.Name }}-config"
         - secretRef:
             name: {{ .Release.Name }}-auth
         volumeMounts:
