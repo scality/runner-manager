@@ -24,7 +24,7 @@ CWD = dirname(abspath(__file__))
 
 
 def requires():
-    reqs_file = join(CWD, 'requirements.txt')
+    reqs_file = join(CWD, 'manager-requirements.txt')
     reqs_install = parse_requirements(reqs_file, session=PipSession())
 
     try:

@@ -13,7 +13,7 @@ on:
         default: false
 
 jobs:
-  release:
+  release-manager:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -38,9 +38,47 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ./Dockerfile
+          file: ./manager.Dockerfile
           push: true
           tags: "registry.scality.com/openstack-actions-runner/openstack-actions-runner:${{ github.event.inputs.tag }}"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.event.inputs.tag }}
+          release_name: Release ${{ github.event.inputs.tag }}
+          prerelease: ${{ github.event.inputs.prerelease }}
+
+  release-web-interface:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildk
+        uses: docker/setup-buildx-action@v1
+        with:
+          buildkitd-flags: --debug
+
+      - name: Login to Registry
+        uses: docker/login-action@v1
+        with:
+          registry: registry.scality.com
+          username: ${{ secrets.REGISTRY_LOGIN }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./web.Dockerfile
+          push: true
+          tags: "registry.scality.com/openstack-actions-runner/web-interface:${{ github.event.inputs.tag }}"
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
