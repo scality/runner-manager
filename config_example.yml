@@ -32,3 +32,8 @@ runner_pool: []
 extra_runner_timer:
   minutes: 10
   hours: 0
+
+# Define the credentials to connect your redis database
+redis:
+  host: redis
+  port: 6379

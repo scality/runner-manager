@@ -30,6 +30,10 @@ def setup_parser():
         '--cloud-nine-token',
         default=os.getenv('CLOUD_NINE_TOKEN'),
         help="Token for cloud nine connection")
+    parser.add_argument(
+        '--redis-password',
+        default=os.getenv('REDIS_PASSWORD'),
+        help="Password for redis database")
     return parser
 
 

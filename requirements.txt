@@ -9,3 +9,5 @@ jinja2==2.11.3
 coverage==5.5
 marshmallow==3.12.1
 wheel==0.36.2
+redis==3.5.3
+fakeredis==1.6.0

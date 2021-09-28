@@ -27,7 +27,7 @@ LOGGING_CONFIG = {
         },
     },
     "loggers": {
-        '': {
+        'runner_manager': {  # if __name__ == '__main__'
             "handlers": ["default", "file"],
             'level': DEFAULT_LOG_LEVEL,
             'propagate': True
