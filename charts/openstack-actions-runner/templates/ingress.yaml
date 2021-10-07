@@ -1,0 +1,28 @@
+{{- if .Values.deployment.ingress.enabled }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ include "openstack-actions-runner.fullname" . }}-web
+  labels:
+    role: web
+    {{- include "openstack-actions-runner.labels" . | nindent 4 }}
+  annotations:
+    {{- range $key, $value := .Values.deployment.ingress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+  rules:
+  - host: {{ .Values.deployment.ingress.fqdn }}
+    http:
+      paths:
+        - path: {{ .Values.deployment.ingress.path | quote }}
+          backend:
+            serviceName: {{ include "openstack-actions-runner.fullname" . }}-web
+            servicePort: {{ $.Values.deployment.service.port }}
+  {{- if .Values.deployment.ingress.tls }}
+  tls:
+  - hosts:
+    - {{ .Values.deployment.ingress.fqdn }}
+    secretName: {{ .Values.deployment.ingress.tlsSecret }}
+  {{- end }}
+{{- end }}

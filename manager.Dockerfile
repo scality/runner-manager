@@ -30,7 +30,7 @@ RUN apt-get --assume-yes update \
 
 
 WORKDIR /app
-COPY . /app
+COPY ./ /app/
 RUN pip3 install . --use-feature=in-tree-build
 
 CMD runner-manager
