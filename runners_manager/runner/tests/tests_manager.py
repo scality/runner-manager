@@ -30,7 +30,9 @@ class TestRunnerManager(unittest.TestCase):
     @patch('runners_manager.runner.Manager.redis.Redis')
     def test_no_config(self, redis, factory, manager):
         r = Manager({
-            'github_organization': 'test', 'runner_pool': [],
+            'github_organization': 'test',
+            'github_repo': None,
+            'runner_pool': [],
             'redis': {
                 'host': 'test',
                 'port': 1234
@@ -46,6 +48,7 @@ class TestRunnerManager(unittest.TestCase):
     @patch('runners_manager.runner.Manager.redis.Redis')
     def test_config_vm_type(self, redis, factory, manager):
         r = Manager({'github_organization': 'test',
+                     'github_repo': None,
                      'runner_pool': [{
                          'tags': ['centos7', 'small'],
                          'flavor': 'm1.small',
@@ -76,6 +79,7 @@ class TestRunnerManager(unittest.TestCase):
     @patch('runners_manager.runner.Manager.RunnerFactory')
     def test_update_withou_changes(self, *args, **kwargs):
         r = Manager({'github_organization': 'test',
+                     'github_repo': None,
                      'runner_pool': [{
                          'tags': ['centos7', 'small'],
                          'flavor': 'm1.small',

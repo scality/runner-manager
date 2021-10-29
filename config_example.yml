@@ -1,6 +1,9 @@
 # Your github organization on witch you want to attache your self-hosted runners
 github_organization: ""
 
+# Optional: your GitHub repository if you want to setup self-hosted runners at the repository scope.
+github_repo: ""
+
 # Cloud nine connection infos
 cloud_nine_region: ""
 cloud_nine_tenant: ""
