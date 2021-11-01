@@ -87,18 +87,15 @@ class Manager(object):
     def manage_runners(self):
         # runner logic For each type of VM
         for manager in self.runner_managers:
-            # Always Respawn Vm
+            # Always Delete and re create new Vm when they finished running
             offline_runners = manager.filter_runners(lambda r: r.has_run)
             for r in offline_runners:
-                manager.respawn_runner(r)
-
-            # Create if it's still not enough
-            while self.need_new_runner(manager):
+                manager.delete_runner(r)
                 manager.create_runner()
 
-            # Respawn runner if they are offline for more then 10min after spawn
+            # Delete runner if they are offline for more then 10min after spawn
             for elem in manager.filter_runners(self.runner_should_never_spawn):
-                manager.respawn_runner(elem)
+                manager.delete_runner(elem)
 
             # Delete last runners if you have too many and they are not used for the last x minutes
             runners_to_delete = manager.filter_runners(
@@ -106,6 +103,10 @@ class Manager(object):
             )[manager.min_runner_number():]
             for runner in runners_to_delete:
                 manager.delete_runner(runner)
+
+            # Create if it's still not enough
+            while self.need_new_runner(manager):
+                manager.create_runner()
 
     @staticmethod
     def need_new_runner(manager: RunnerManager) -> bool:
