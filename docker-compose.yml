@@ -18,6 +18,8 @@ services:
     environment:
       - PYTHONUNBUFFERED=0
       - PYTHONIOENCODING=UTF-8
+    ports:
+      - 5000:5000
 
   web:
     build:

@@ -4,6 +4,10 @@ import logging
 import importlib
 import redis
 
+
+from prometheus_client import start_http_server
+
+
 from runners_manager.vm_creation.github_actions_api import GithubManager
 from runners_manager.vm_creation.openstack import OpenstackManager
 from runners_manager.runner.Manager import Manager
@@ -38,4 +42,5 @@ def main(settings: dict, args: argparse.Namespace):
                                  port=settings['redis']['port'],
                                  password=args.redis_password)
     runner_m = Manager(settings, openstack_manager, github_manager, redis_database)
+    start_http_server(settings['metrics_port'])
     maintain_number_of_runner(runner_m, github_manager)

@@ -3,10 +3,12 @@ kind: Deployment
 metadata:
   name: {{ include "openstack-actions-runner.fullname" . }}
   labels:
+    role: manager
     {{- include "openstack-actions-runner.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
+      role: manager
       {{- include "openstack-actions-runner.selectorLabels" . | nindent 6 }}
   template:
     metadata:
@@ -18,6 +20,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
+        role: manager
         {{- include "openstack-actions-runner.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
@@ -37,6 +40,9 @@ spec:
         args: ["--settings-file", "/app/config/settings.yml"]
         resources:
           {{- toYaml .Values.resources | nindent 12 }}
+        ports:
+        - name: metrics
+          containerPort: {{ .Values.metricsPort }}
         env:
         - name: REDIS_PASSWORD
           valueFrom:
