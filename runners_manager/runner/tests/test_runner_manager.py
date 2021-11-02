@@ -170,7 +170,7 @@ class TestRunnerManager(unittest.TestCase):
         r.create_runner()
 
         r2 = RunnerManager(self.vm_type_full, self.factory, self.fake_redis)
-        self.assertEqual(r._redis_key_name(), f'managers:centos7-small')
+        self.assertEqual(r._redis_key_name(), 'managers:centos7-small')
         self.assertEqual(r._redis_key_name(), r2._redis_key_name())
         self.assertListEqual(list(r.runners.keys()), list(r2.runners.keys()))
         self.assertEqual(r.runners['0'], r2.runners['0'])

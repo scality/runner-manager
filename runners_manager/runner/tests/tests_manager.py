@@ -37,9 +37,18 @@ class TestRunnerManager(unittest.TestCase):
             },
             'extra_runner_timer': {
                 'minutes': 10,
-                'hours': 10
+                'hours': 0
+            },
+            'timeout_runner_timer': {
+                'minutes': 0,
+                'hours': 1
             }}, self.openstack_manager, self.github_manager, self.fake_redis)
         self.assertEqual(r.runner_managers, [])
+        self.assertEqual((r.timeout_runner_timer.seconds // 60) % 60, 0)
+        self.assertEqual(r.timeout_runner_timer.seconds // 3600, 1)
+
+        self.assertEqual((r.extra_runner_online_timer.seconds // 60) % 60, 10)
+        self.assertEqual(r.extra_runner_online_timer.seconds // 3600, 0)
 
     @patch('runners_manager.runner.Manager.RunnerManager')
     @patch('runners_manager.runner.Manager.RunnerFactory')
@@ -60,6 +69,10 @@ class TestRunnerManager(unittest.TestCase):
                          'port': 1234
                      },
                      'extra_runner_timer': {
+                         'minutes': 10,
+                         'hours': 10
+                     },
+                     'timeout_runner_timer': {
                          'minutes': 10,
                          'hours': 10
                      }}, self.openstack_manager, self.github_manager, self.fake_redis)
@@ -91,6 +104,10 @@ class TestRunnerManager(unittest.TestCase):
                          'port': 1234
                      },
                      'extra_runner_timer': {
+                         'minutes': 10,
+                         'hours': 10
+                     },
+                     'timeout_runner_timer': {
                          'minutes': 10,
                          'hours': 10
                      }}, self.openstack_manager, self.github_manager, self.fake_redis)

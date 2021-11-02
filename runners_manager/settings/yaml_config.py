@@ -10,6 +10,11 @@ class ExtraRunnerTimer(Schema):
     hours = fields.Int()
 
 
+class TimeoutRunnerTimer(Schema):
+    minutes = fields.Int()
+    hours = fields.Int()
+
+
 class RunnerQuantity(Schema):
     min = fields.Int()
     max = fields.Int()
@@ -34,6 +39,7 @@ class Settings(Schema):
     runner_pool = fields.Nested(RunnerPool, many=True, required=True)
     python_config = fields.Str(required=True)
     extra_runner_timer = fields.Nested(ExtraRunnerTimer, required=True)
+    timeout_runner_timer = fields.Nested(TimeoutRunnerTimer, required=True)
     redis = fields.Nested(RedisDatabase, required=True)
 
 

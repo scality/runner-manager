@@ -21,6 +21,7 @@ class Manager(object):
     redis: redis.Redis
     runner_managers: list[RunnerManager]
     extra_runner_online_timer: datetime.timedelta
+    timeout_runner_timer: datetime.timedelta
 
     def __init__(self, settings: dict,
                  openstack_manager: OpenstackManager,
@@ -35,6 +36,7 @@ class Manager(object):
             self.runner_managers.append(RunnerManager(VmType(v_type), self.factory, self.redis))
 
         self.extra_runner_online_timer = datetime.timedelta(**settings['extra_runner_timer'])
+        self.timeout_runner_timer = datetime.timedelta(**settings['timeout_runner_timer'])
 
     def update(self, github_runners: list[dict]):
         """
@@ -91,11 +93,9 @@ class Manager(object):
         return runner.is_online and not runner.has_run \
             and runner.time_online > self.extra_runner_online_timer
 
-    @staticmethod
-    def runner_should_never_spawn(runner: Runner) -> bool:
-        # TODO add this 15 min timer in the config file
+    def runner_should_never_spawn(self, runner: Runner) -> bool:
         return runner.is_offline and not runner.has_run \
-            and runner.time_since_created > datetime.timedelta(minutes=15)
+            and runner.time_since_created > self.timeout_runner_timer
 
     def log_runners_infos(self):
         for manager in self.runner_managers:
