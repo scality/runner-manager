@@ -37,3 +37,5 @@ sudo -H -u actions bash -c 'cd /home/actions/actions-runner && curl -O -L {{ ins
 sudo -H -u actions bash -c 'sudo /home/actions/actions-runner/bin/installdependencies.sh'
 sudo -H -u actions bash -c '/home/actions/actions-runner/config.sh --url https://github.com/{{ github_organization }} --token {{ token }} --name "{{ name }}" --work _work  --labels {{ tags }} --runnergroup {{ group }} --replace --unattended'
 nohup sudo -H -u actions bash -c '/home/actions/actions-runner/run.sh --once 2> /home/actions/actions-runner/logs'
+sleep 4
+curl {{ api_url }}/runners/refresh

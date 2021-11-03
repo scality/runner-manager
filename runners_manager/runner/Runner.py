@@ -7,6 +7,10 @@ logger = logging.getLogger("runner_manager")
 
 
 class Runner(object):
+    """
+    Represent a self-hosted runner
+    It should always be synchronised with Github and Openstack data
+    """
     name: str
     started_at: datetime.datetime or None
     created_at: datetime.datetime
@@ -27,9 +31,10 @@ class Runner(object):
         self.status_history = []
         self.action_id = None
         self.started_at = None
+        logger.info('object created')
 
     def __eq__(self, other):
-        return self.__dict__ == other.__dict__
+        return self.toJson() == other.toJson()
 
     def __unicode__(self):
         return f"{self.name}, github id: {self.action_id}, scality.cloud: {self.vm_id}"
@@ -89,7 +94,7 @@ class Runner(object):
         if self.status == status:
             return
 
-        if self.status == 'offline' and status != 'offline':
+        if self.is_offline and status != 'offline':
             self.started_at = datetime.datetime.now()
 
         self.status_history.append(self.status)
@@ -105,5 +110,5 @@ class Runner(object):
 
     @property
     def has_run(self) -> bool:
-        return self.status == 'offline' and \
+        return self.is_offline and \
             ('online' in self.status_history or 'running' in self.status_history)

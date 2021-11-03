@@ -1,3 +1,4 @@
+import datetime
 import logging
 import redis
 import json
@@ -14,6 +15,7 @@ class RunnerManager(object):
     """
     This object create, delete and update runners infos bout VM and github runner
     We save every infos updated on the redis database
+    This class is a tool and is here to join Github and local data
     """
     redis: redis.Redis
     vm_type: VmType
@@ -84,27 +86,10 @@ class RunnerManager(object):
         self.factory.respawn_replace(runner)
         self._save_runners()
 
-    def too_much_runner(self):
-        current_online = len(
-            self.filter_runners(lambda r: r.action_id and r.status == 'online')
-        )
-        return current_online > self.vm_type.quantity['min']
-
-    def need_new_runner(self):
-        """
-        This function define if we need new runners or not.
-        This logic is based on the statement: They should be always x runner waiting,
-            when x is the `min` variable set in the config file
-        :param vm_type: Type of runner
-        :return: True if can and need a new runner
-        """
-        current_online_or_creating = len(
-            self.filter_runners(lambda r: not r.has_run and not r.status == 'running')
-        )
-        current_running = len(self.filter_runners(lambda r: r.status == 'running'))
-
-        return current_online_or_creating < self.vm_type.quantity['min'] and \
-            current_running + current_online_or_creating < self.vm_type.quantity['max']
+    def runners_not_used_for(self, duration: datetime.timedelta):
+        return self.filter_runners(lambda runner: runner.status == 'online'
+                                   and not runner.has_run
+                                   and runner.time_online > duration)
 
     def filter_runners(self, cond: Callable[[Runner], bool]):
         """
@@ -116,3 +101,9 @@ class RunnerManager(object):
             lambda e: e.vm_type.tags == self.vm_type.tags and cond(e),
             self.runners.values()
         ))
+
+    def min_runner_number(self):
+        return self.vm_type.quantity['min']
+
+    def max_runner_number(self):
+        return self.vm_type.quantity['max']
