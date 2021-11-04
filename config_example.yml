@@ -33,6 +33,11 @@ extra_runner_timer:
   minutes: 10
   hours: 0
 
+# The runner will be killed if it isn't available after this timer
+timeout_runner_timer:
+  minutes: 15
+  hours: 0
+
 # Define the credentials to connect your redis database
 redis:
   host: redis
