@@ -71,3 +71,5 @@ jobs:
       - run: flake8 ./runners_manager
       - run: helm lint charts/openstack-actions-runner
       - run: tox -e utests
+      - name: Upload test coverage
+        uses: codecov/codecov-action@v2
