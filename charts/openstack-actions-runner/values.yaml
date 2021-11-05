@@ -133,6 +133,9 @@ extraRunnerTimer:
   minutes: 10
   hours: 0
 
+timeoutRunnerTimer:
+  minutes: 15
+  hours: 0
 
 # Redis database config
 redis:
