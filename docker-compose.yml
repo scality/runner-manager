@@ -1,7 +1,9 @@
 version: "3.9"
 services:
   runner_manager:
-    build: .
+    build:
+      context: .
+      dockerfile: manager.Dockerfile
     command:
       - python3
       - /app/runners_manager/start.py
@@ -16,6 +18,8 @@ services:
     environment:
       - PYTHONUNBUFFERED=0
       - PYTHONIOENCODING=UTF-8
+    ports:
+      - 5000:5000
 
   web:
     build:
@@ -39,3 +43,5 @@ services:
       - "8080:8080"
   redis:
     image: "redis:alpine"
+    ports:
+      - 6379:6379

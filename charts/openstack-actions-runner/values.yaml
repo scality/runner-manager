@@ -144,3 +144,10 @@ redis:
   networkPolicy:
     enabled: true
 
+metricsPort: 5000
+
+serviceMonitor:
+  enabled: false
+  labels: {}
+  interval: 30s
+  timeout: 30s

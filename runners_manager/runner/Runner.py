@@ -2,8 +2,10 @@ import datetime
 import logging
 
 from runners_manager.runner.VmType import VmType
+from runners_manager.monitoring.prometheus import Metrics
 
 logger = logging.getLogger("runner_manager")
+metrics = Metrics()
 
 
 class Runner(object):
@@ -27,7 +29,7 @@ class Runner(object):
         self.vm_type = vm_type
 
         self.created_at = datetime.datetime.now()
-        self.status = 'offline'
+        self.status = ''
         self.status_history = []
         self.action_id = None
         self.started_at = None
@@ -84,20 +86,40 @@ class Runner(object):
 
         return d
 
-    def update_status(self, elem):
-        if elem['status'] == 'online' and elem['busy'] is True:
-            status = 'running'
-        else:
-            status = elem['status']
-
+    def update_status(self, status: str):
         if self.status == status:
             return
 
-        if self.is_offline and status != 'offline':
+        if self.is_offline and status in ['online', 'running']:
             self.started_at = datetime.datetime.now()
 
         self.status_history.append(self.status)
+
+        logger.info(f'Runner {self.name} updating status from {self.status} to {status}')
         self.status = status
+
+        metrics.runner_status.labels(
+            name=self.name,
+            flavor=self.vm_type.flavor,
+            image=self.vm_type.image
+        ).state(self.status)
+
+        if self.status == 'deleting':
+            metrics.runner_status.remove(
+                self.name, self.vm_type.flavor, self.vm_type.image
+            )
+
+    def update_from_github(self, github_runner: dict):
+        """Take all information from github and update the runner state"""
+        # Update status
+        if github_runner['status'] == 'online' and github_runner['busy'] is True:
+            self.update_status('running')
+        else:
+            self.update_status(github_runner['status'])
+
+        # Set the action id
+        if self.action_id is None:
+            self.action_id = github_runner['id']
 
     @property
     def time_since_created(self):
@@ -106,6 +128,11 @@ class Runner(object):
     @property
     def time_online(self):
         return datetime.datetime.now() - self.started_at
+
+    @property
+    def is_offline(self) -> bool:
+        """Return bool regarding runner status from GitHub point of view."""
+        return self.status not in ['online', 'running']
 
     @property
     def has_run(self) -> bool:
@@ -119,7 +146,3 @@ class Runner(object):
     @property
     def is_online(self) -> bool:
         return self.status == 'online'
-
-    @property
-    def is_offline(self) -> bool:
-        return self.status == 'offline'

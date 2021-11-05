@@ -8,6 +8,7 @@ data:
     cloud_nine_region: {{ .Values.cloudNineRegion }}
     cloud_nine_tenant: {{ .Values.cloudNineTenant }}
     python_config: {{ .Values.pythonConfigModule }}
+    metrics_port: {{ .Values.metricsPort }}
     runner_pool:
 {{ .Values.runnerPool | toYaml | indent 6 }}
     extra_runner_timer:

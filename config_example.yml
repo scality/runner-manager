@@ -1,4 +1,4 @@
-# Your github organization on witch you want to attache your self-hosted runners
+# Your github organization where you want to attach your self-hosted runners
 github_organization: ""
 
 # Cloud nine connection infos
@@ -42,3 +42,7 @@ timeout_runner_timer:
 redis:
   host: redis
   port: 6379
+
+
+# The Openmetrics port
+metrics_port: 5000

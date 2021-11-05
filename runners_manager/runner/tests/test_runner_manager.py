@@ -6,6 +6,7 @@ from runners_manager.runner.Manager import Manager
 from runners_manager.runner.Runner import Runner
 from runners_manager.runner.RunnerManager import RunnerManager
 from runners_manager.runner.VmType import VmType
+from runners_manager.monitoring.prometheus import Metrics
 
 
 class ObjectId(object):
@@ -174,3 +175,60 @@ class TestRunnerManager(unittest.TestCase):
         self.assertEqual(r._redis_key_name(), r2._redis_key_name())
         self.assertListEqual(list(r.runners.keys()), list(r2.runners.keys()))
         self.assertEqual(r.runners['0'], r2.runners['0'])
+
+    def test_runner_status(self):
+        """Ensure runner status is updated accordingly"""
+        metrics = Metrics()
+        self.factory.create_runner.side_effect = [
+            Runner('0', None, self.vm_type_normal),
+            Runner('1', None, self.vm_type_normal)
+        ]
+        r = RunnerManager(self.vm_type_normal, self.factory, self.fake_redis)
+
+        r.create_runner()
+        r.create_runner()
+
+        self.assertEqual(r.runners['0'].status, 'creating')
+        self.assertEqual(r.runners['1'].status, 'creating')
+
+        # Ensure Prometheus metrics are set accordingly
+        for sample in metrics.runner_status.collect()[0].samples:
+            if sample.labels['openstack_actions_runner_status'] == 'creating':
+                self.assertEqual(sample.value, 1)
+
+        r.update([
+            {
+                'name': '0',
+                'id': 0,
+                'status': 'online',
+                'busy': False
+            },
+            {
+                'name': '1',
+                'id': 1,
+                'status': 'online',
+                'busy': True
+            }
+        ])
+
+        self.assertEqual(r.runners['0'].status, 'online')
+        self.assertEqual(r.runners['1'].status, 'running')
+        # Check if runner are running and online on Prometheus metrics
+        for sample in metrics.runner_status.collect()[0].samples:
+            if (sample.labels['name'] == '0'
+                    and sample.labels['openstack_actions_runner_status'] == 'online'):
+                self.assertEqual(sample.value, 1)
+            elif (sample.labels['name'] == '1'
+                  and sample.labels['openstack_actions_runner_status'] == 'running'):
+                self.assertEqual(sample.value, 1)
+
+        r.respawn_runner(r.runners['0'])
+        self.assertEqual(r.runners['0'].status, 'respawning')
+        # Check if runner 0 is respawning on Prometheus metrics
+        for sample in metrics.runner_status.collect()[0].samples:
+            if (sample.labels['name'] == '0'
+                    and sample.labels['openstack_actions_runner_status'] == 'respawning'):
+                self.assertEqual(sample.value, 1)
+
+        r.delete_runner(r.runners['1'])
+        self.assertNotIn('1', r.runners.keys())
