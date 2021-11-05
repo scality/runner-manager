@@ -12,6 +12,8 @@ data:
 {{ .Values.runnerPool | toYaml | indent 6 }}
     extra_runner_timer:
 {{ .Values.extraRunnerTimer | toYaml | indent 6 }}
+    timeout_runner_timer:
+{{ .Values.timeoutRunnerTimer | toYaml | indent 6 }}
     redis:
       host: {{ .Values.redis.fullnameOverride  }}-master
       port: {{ .Values.redis.redisPort }}

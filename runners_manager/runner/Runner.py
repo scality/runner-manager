@@ -111,3 +111,15 @@ class Runner(object):
     def has_run(self) -> bool:
         return self.is_offline and \
             ('online' in self.status_history or 'running' in self.status_history)
+
+    @property
+    def is_running(self) -> bool:
+        return self.status == 'running'
+
+    @property
+    def is_online(self) -> bool:
+        return self.status == 'online'
+
+    @property
+    def is_offline(self) -> bool:
+        return self.status == 'offline'
