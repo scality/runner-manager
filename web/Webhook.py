@@ -10,7 +10,6 @@ class Webhook(object):
     payload: dict
 
     def __init__(self, payload: dict, event: str):
-        logger.info(f'Get event: {event}')
         self.event = event
         self.payload = payload
 
@@ -19,13 +18,13 @@ class Webhook(object):
         if self.event not in [methode for methode in dir(self) if methode[:2] != "__"]:
             logger.info(f"Event {self.event} not managed")
         else:
+            logger.info(f'Get event: {event}')
             getattr(self, self.event)(self.payload)
 
     def workflow_run(self, payload):
         pass
 
     def workflow_job(self, payload):
-        # logger.info(payload)
         status = {}
         if payload['action'] == 'queued' or "self-hosted" in payload["workflow_job"]["labels"]:
             return
@@ -46,13 +45,6 @@ class Webhook(object):
             'labels': payload["workflow_job"]["labels"],
         })
         runner_m.update_runner_status(status)
-        # payload["action"] is "queued" then "in_progress" then "complete"
-        # payload["workflow_job"]["runner_name"] is the runner name
-        # With there name it can be use to change the runner status without calling the github API
-        # runner_m.update(None)
 
     def ping(self, payload):
         logger.info('Ping from Github')
-
-    def __del__(self):
-        pass
