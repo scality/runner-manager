@@ -101,6 +101,9 @@ affinity: {}
 githubToken: ""
 githubOrganization: ""
 
+redhatUsername: ""
+redhatPassword: ""
+
 # Cloud nine connection infos
 cloudNineTenant: ""
 cloudNineToken: ""

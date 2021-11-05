@@ -5,6 +5,10 @@ github_organization: ""
 cloud_nine_region: ""
 cloud_nine_tenant: ""
 
+# RedHat credentials
+redhat_username: ""
+redhat_password: ""
+
 # The python module, used for configuration
 # example:
 #  'settings.settings_local'
