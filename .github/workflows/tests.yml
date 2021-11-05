@@ -1,15 +1,6 @@
 name: basic tests
 
-on:
-  push:
-    branches:
-      - 'user/**'
-      - 'feature/**'
-      - 'improvement/**'
-      - 'bugfix/**'
-      - 'w/**'
-      - 'q/**'
-      - 'dependabot/**'
+on: push
 
 jobs:
   publish:
