@@ -58,7 +58,10 @@ class Manager(object):
 
     def update_runner_status(self, runner: dict):
         logger.info(runner)
-        manager = next([manager for manager in self.runner_managers if manager.vm_type.tags == runner["labels"]])
+        manager = next([
+            manager
+            for manager in self.runner_managers if manager.vm_type.tags == runner["labels"]
+        ])
         logger.info(manager)
         manager.update([runner])
         self.log_runners_infos()

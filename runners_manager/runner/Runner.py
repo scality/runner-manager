@@ -31,7 +31,6 @@ class Runner(object):
         self.status_history = []
         self.action_id = None
         self.started_at = None
-        logger.info('object created')
 
     def __eq__(self, other):
         return self.toJson() == other.toJson()
