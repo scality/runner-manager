@@ -24,5 +24,5 @@ RUN pip install -r ./requirements.txt
 COPY backend /app/backend
 COPY ./settings.yml /app
 COPY ./templates /app/templates
-CMD ["uvicorn", "backend.web.app:app", "--host", "0.0.0.0", "--port", "80", "--reload", "--log-level", "trace"]
+CMD ["uvicorn", "srcs.web.app:app", "--host", "0.0.0.0", "--port", "80", "--reload", "--log-level", "trace"]
 

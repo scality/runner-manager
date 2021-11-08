@@ -6,7 +6,7 @@ services:
       dockerfile: ./Dockerfile
     command:
       - "uvicorn"
-      - "backend.web:app"
+      - "srcs.web.app:app"
       - "--host"
       - "0.0.0.0"
       - "--port"
