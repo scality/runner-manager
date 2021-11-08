@@ -15,7 +15,7 @@ class Webhook(object):
 
     def __call__(self, *args, **kwargs):
         # Check if we managed this event
-        if self.event not in [methode for methode in dir(self) if methode[:2] != "__"]:
+        if self.event not in [method for method in dir(self) if method[:2] != "__"]:
             logger.info(f"Event {self.event} not managed")
         else:
             logger.info(f'Get event: {self.event}')
@@ -26,7 +26,7 @@ class Webhook(object):
 
     def workflow_job(self, payload):
         status = {}
-        if payload['action'] == 'queued' or "self-hosted" in payload["workflow_job"]["labels"]:
+        if payload['action'] == 'queued' or "self-hosted" not in payload["workflow_job"]["labels"]:
             return
         elif payload['action'] == 'in_progress':
             status = {
