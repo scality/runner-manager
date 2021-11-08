@@ -35,6 +35,7 @@ async def reset_reset_runners(request: Request):
     runner_m.remove_all_runners()
     g_runners = github_manager.get_runners()
     runner_m.update_all_runners(g_runners['runners'])
+    return Response(status_code=200)
 
 
 @app.post('/webhook')
