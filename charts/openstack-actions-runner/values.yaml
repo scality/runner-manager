@@ -10,9 +10,6 @@ image:
   manager:
       repository: registry.scality.com/openstack-actions-runner/openstack-actions-runner
       # Overrides the image tag whose default is the chart appVersion.
-  web:
-    repository: registry.scality.com/openstack-actions-runner/web-interface
-    # Overrides the image tag whose default is the chart appVersion.
 
 imagePullSecrets: []
 nameOverride: ""

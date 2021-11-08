@@ -1,9 +1,8 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "openstack-actions-runner.fullname" . }}-manager
+  name: {{ include "openstack-actions-runner.fullname" . }}
   labels:
-    role: manager
     {{- include "openstack-actions-runner.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.deployment.service.type }}
@@ -11,6 +10,9 @@ spec:
     - name: metrics
       port: {{ .Values.metricsPort }}
       protocol: TCP
+    - name: {{ include "openstack-actions-runner.fullname" . }}
+      port: {{ .Values.deployment.service.port }}
+      targetPort: 80
+      protocol: TCP
   selector:
-    role: manager
     {{- include "openstack-actions-runner.selectorLabels" . | nindent 4 }}

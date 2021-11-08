@@ -2,6 +2,5 @@
 .gitignore
 config_example.yml
 docker-compose.yml
-web.Dockerfile
-manager.Dockerfile
+Dockerfile
 README.md

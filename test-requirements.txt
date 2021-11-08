@@ -1,0 +1,4 @@
+coverage==5.5
+mock==4.0.3
+flake8==3.9.2
+fakeredis==1.6.0

@@ -24,7 +24,7 @@ CWD = dirname(abspath(__file__))
 
 
 def requires():
-    reqs_file = join(CWD, 'manager-requirements.txt')
+    reqs_file = join(CWD, 'requirements.txt')
     reqs_install = parse_requirements(reqs_file, session=PipSession())
 
     try:
@@ -46,11 +46,6 @@ setup(
     url='https://https://github.com/scality/openstack-actions-runner',
     license='Apache',
     include_package_data=True,
-    packages=find_packages(include=['runners_manager', 'runners_manager.*']),
+    packages=find_packages(include=['runners_manager.*', 'settings.*', 'web.*']),
     install_requires=requires(),
-    entry_points={
-        'console_scripts': [
-            'runner-manager=runners_manager.start:start',
-        ],
-    }
 )

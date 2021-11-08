@@ -1,37 +1,12 @@
 version: "3.9"
 services:
-  runner_manager:
-    build:
-      context: .
-      dockerfile: manager.Dockerfile
-    command:
-      - python3
-      - /app/runners_manager/start.py
-      - --settings-file=/app/settings.yaml
-    volumes:
-      - ./runners_manager:/app/runners_manager
-      - ./settings.yaml:/app/settings.yaml
-    depends_on:
-      - redis
-    env_file:
-      - .env
-    environment:
-      - PYTHONUNBUFFERED=0
-      - PYTHONIOENCODING=UTF-8
-    ports:
-      - 5000:5000
-
   web:
     build:
       context: .
-      dockerfile: ./web.Dockerfile
-    command:
-      - "uvicorn"
-      - "web.main:app"
-      - "--host"
-      - "0.0.0.0"
-      - "--port"
-      - "8080"
+      dockerfile: ./Dockerfile
+    command: python3 /app/srcs/web/app.py
+    volumes:
+      - "./srcs:/app/srcs"
     depends_on:
       - redis
     env_file:
@@ -43,5 +18,3 @@ services:
       - "8080:8080"
   redis:
     image: "redis:alpine"
-    ports:
-      - 6379:6379
