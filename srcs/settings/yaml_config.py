@@ -1,8 +1,19 @@
-from os.path import exists
-
+import os
 import yaml
+
+from os.path import exists
 from marshmallow import Schema, fields
-from runners_manager.settings.exceptions import SettingsFileNotFound, IncorrectSettingsFile
+from settings.exceptions import SettingsFileNotFound, IncorrectSettingsFile
+
+
+class EnvSettings(object):
+    def __init__(self):
+        self.setting_file = os.getenv('SETTING_FILE', default='./settings.yml')
+        self.github_token = os.getenv('GITHUB_TOKEN')
+        self.cloud_nine_user = os.getenv('CLOUD_NINE_USERNAME')
+        self.cloud_nine_password = os.getenv('CLOUD_NINE_PASSWORD')
+        self.cloud_nine_token = os.getenv('CLOUD_NINE_TOKEN')
+        self.redis_password = os.getenv('REDIS_PASSWORD')
 
 
 class ExtraRunnerTimer(Schema):
@@ -41,7 +52,6 @@ class Settings(Schema):
     extra_runner_timer = fields.Nested(ExtraRunnerTimer, required=True)
     timeout_runner_timer = fields.Nested(TimeoutRunnerTimer, required=True)
     redis = fields.Nested(RedisDatabase, required=True)
-    metrics_port = fields.Int(required=False, default=5000)
 
 
 def setup_settings(settings_file: str) -> dict:

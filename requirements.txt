@@ -1,13 +1,13 @@
+fastapi==0.68.1
+uvicorn==0.15.0
+redis==3.5.3
+
 python-novaclient==17.4.0
 python-neutronclient==7.3.0
 keystoneauth1~=4.3.1
 requests~=2.25.1
-flake8==3.9.2
-mock==4.0.3
 jinja2==2.11.3
-coverage==5.5
 marshmallow==3.12.1
 wheel==0.36.2
 redis==3.5.3
 fakeredis==1.6.0
-prometheus-client==0.12.0

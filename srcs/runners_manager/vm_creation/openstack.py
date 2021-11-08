@@ -87,9 +87,4 @@ class OpenstackManager(object):
         return instance
 
     def delete_vm(self, id: str):
-        try:
-            self.nova_client.servers.delete(id)
-        except novaclient.exceptions.NotFound as exp:
-            # If the machine was already deleted, move along
-            logger.info(exp)
-            pass
+        self.nova_client.servers.delete(id)

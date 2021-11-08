@@ -4,7 +4,6 @@ import redis
 import json
 from collections.abc import Callable
 
-
 from runners_manager.runner.Runner import Runner
 from runners_manager.runner.RunnerFactory import RunnerFactory
 from runners_manager.runner.VmType import VmType
@@ -67,25 +66,23 @@ class RunnerManager(object):
         for elem in github_runners:
             if elem['name'] in self.runners:
                 runner = self.runners[elem['name']]
-                runner.update_from_github(elem)
+                runner.update_status(elem)
 
+                if runner.action_id is None:
+                    runner.action_id = elem['id']
         self._save_runners()
 
     def create_runner(self):
         r = self.factory.create_runner(self.vm_type)
-        r.update_status('creating')
         self.runners[r.name] = r
         self._save_runners()
 
-    def delete_runner(self, runner: Runner):
-        runner.update_status('deleting')
+    def delete_runner(self, runner):
         self.factory.delete_runner(runner)
         del self.runners[runner.name]
-        del runner
         self._save_runners()
 
     def respawn_runner(self, runner: Runner):
-        runner.update_status('respawning')
         self.factory.respawn_replace(runner)
         self._save_runners()
 
