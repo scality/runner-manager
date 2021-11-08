@@ -1,6 +1,6 @@
 import logging
 
-from web import runner_m
+from . import runner_m
 
 logger = logging.getLogger("runner_manager")
 
@@ -18,7 +18,7 @@ class Webhook(object):
         if self.event not in [methode for methode in dir(self) if methode[:2] != "__"]:
             logger.info(f"Event {self.event} not managed")
         else:
-            logger.info(f'Get event: {event}')
+            logger.info(f'Get event: {self.event}')
             getattr(self, self.event)(self.payload)
 
     def workflow_run(self, payload):

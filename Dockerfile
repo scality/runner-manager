@@ -1,6 +1,7 @@
 FROM python:3.9.5-slim
 
 ENV PYTHONUNBUFFERED=0
+ENV PYTHONPATH=$PYTHONPATH:/app/backend
 
 #
 # Install packages needed by the buildchain
@@ -17,15 +18,11 @@ RUN apt-get --assume-yes update \
 
 WORKDIR /app
 
-COPY ./web-requirements.txt .
-RUN pip install -r ./web-requirements.txt
+COPY ./requirements.txt .
+RUN pip install -r ./requirements.txt
 
-COPY . /install-runner
-RUN pip3 install /install-runner --use-feature=in-tree-build
-RUN rm -rf /install-runner
-
-COPY ./web /app/web
+COPY backend /app/backend
 COPY ./settings.yml /app
 COPY ./templates /app/templates
-CMD ["uvicorn", "web.main:app", "--host", "0.0.0.0", "--port", "80", "--reload", "--log-level", "trace"]
+CMD ["uvicorn", "backend.web:app", "--host", "0.0.0.0", "--port", "80", "--reload", "--log-level", "trace"]
 

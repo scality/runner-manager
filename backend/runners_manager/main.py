@@ -6,7 +6,7 @@ import redis
 from runners_manager.vm_creation.github_actions_api import GithubManager
 from runners_manager.vm_creation.openstack import OpenstackManager
 from runners_manager.runner.Manager import Manager
-from runners_manager.settings.yaml_config import EnvSettings
+from settings.yaml_config import EnvSettings
 
 logger = logging.getLogger("runner_manager")
 

@@ -1,9 +1,9 @@
-from os.path import exists
 import os
-
 import yaml
+
+from os.path import exists
 from marshmallow import Schema, fields
-from runners_manager.settings.exceptions import SettingsFileNotFound, IncorrectSettingsFile
+from settings.exceptions import SettingsFileNotFound, IncorrectSettingsFile
 
 
 class EnvSettings(object):

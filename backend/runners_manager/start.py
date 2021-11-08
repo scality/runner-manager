@@ -1,5 +1,5 @@
-from runners_manager.settings.yaml_config import setup_settings, EnvSettings
 from runners_manager.main import main
+from settings.yaml_config import setup_settings, EnvSettings
 
 
 def start():

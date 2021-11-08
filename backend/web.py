@@ -5,7 +5,7 @@ from fastapi import FastAPI, Request, Form
 from fastapi.responses import Response
 
 from . import redis_database, runner_m, github_manager
-from .Webhook import Webhook
+from Webhook import Webhook
 
 logger = logging.getLogger("runner_manager")
 app = FastAPI()
