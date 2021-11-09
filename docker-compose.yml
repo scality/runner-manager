@@ -7,6 +7,7 @@ services:
     command: python3 /app/srcs/web/app.py
     volumes:
       - "./srcs:/app/srcs"
+      - ./test_settings.yml:/app/test_settings.yml
     depends_on:
       - redis
     env_file:
@@ -14,6 +15,8 @@ services:
     environment:
       - PYTHONUNBUFFERED=0
       - PYTHONIOENCODING=UTF-8
+      - REDIS_HOST=redis
+      - SETTING_FILE=/app/test_settings.yml
     ports:
       - "8080:8080"
   redis:
