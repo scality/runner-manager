@@ -5,7 +5,7 @@ LINUX_OS=${ID}
 if [ "${LINUX_OS}" = "ubuntu" ]
 then
 sudo apt-get -y update
-sudo apt-get -y install apt-transport-https \
+sudo DEBIAN_FRONTEND=noninteractive apt-get -y install apt-transport-https \
     ca-certificates \
     curl \
     gnupg \
