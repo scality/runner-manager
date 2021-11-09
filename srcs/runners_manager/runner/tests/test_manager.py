@@ -111,13 +111,13 @@ class TestRunnerManager(unittest.TestCase):
                          'minutes': 10,
                          'hours': 10
                      }}, self.openstack_manager, self.github_manager, self.fake_redis)
-        r.update([{'id': 1, 'name': '1',
-                   'os': 'linux', 'status': 'online',
-                   'busy': False,
-                   'labels': [{'id': 77, 'name': 'self-hosted', 'type': 'read-only'}]},
-                  {'id': 2, 'name': '2',
-                   'os': 'linux', 'status': 'online', 'busy': False,
-                   'labels': [{'id': 77, 'name': 'self-hosted', 'type': 'read-only'}]}])
+        r.update_all_runners([{'id': 1, 'name': '1',
+                               'os': 'linux', 'status': 'online',
+                               'busy': False,
+                               'labels': [{'id': 77, 'name': 'self-hosted', 'type': 'read-only'}]},
+                              {'id': 2, 'name': '2',
+                               'os': 'linux', 'status': 'online', 'busy': False,
+                               'labels': [{'id': 77, 'name': 'self-hosted', 'type': 'read-only'}]}])
         self.assertEqual(r.runner_managers[0].update.call_count, 1)
         self.assertEqual(r.runner_managers[0].filter_runners.call_count, 3)
         self.assertEqual(r.runner_managers[0].respawn_runner.call_count, 0)

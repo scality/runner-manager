@@ -3,12 +3,10 @@ kind: Deployment
 metadata:
   name: {{ include "openstack-actions-runner.fullname" . }}
   labels:
-    role: manager
     {{- include "openstack-actions-runner.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
-      role: manager
       {{- include "openstack-actions-runner.selectorLabels" . | nindent 6 }}
   template:
     metadata:
@@ -20,7 +18,6 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        role: manager
         {{- include "openstack-actions-runner.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
@@ -36,8 +33,8 @@ spec:
           {{- toYaml .Values.securityContext | nindent 12 }}
         image: "{{ .Values.image.manager.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        command: ["runner-manager"]
-        args: ["--settings-file", "/app/config/settings.yml"]
+        command: ["uvicorn"]
+        args: ["srcs.web.app:app", "--host", "0.0.0.0", "--port", "80"]
         resources:
           {{- toYaml .Values.resources | nindent 12 }}
         ports:
@@ -49,6 +46,8 @@ spec:
             secretKeyRef:
               name: {{ .Values.redis.fullnameOverride }}
               key: redis-password
+        - name: SETTING_FILE
+          value: /app/config/settings.yml
         envFrom:
         - configMapRef:
             name: {{ .Release.Name }}-config

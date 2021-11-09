@@ -4,7 +4,6 @@ import redis
 import json
 from collections.abc import Callable
 
-
 from runners_manager.runner.Runner import Runner
 from runners_manager.runner.RunnerFactory import RunnerFactory
 from runners_manager.runner.VmType import VmType
@@ -72,9 +71,9 @@ class RunnerManager(object):
         self._save_runners()
 
     def create_runner(self):
-        r = self.factory.create_runner(self.vm_type)
-        r.update_status('creating')
-        self.runners[r.name] = r
+        runner = self.factory.create_runner(self.vm_type)
+        runner.update_status('creating')
+        self.runners[runner.name] = runner
         self._save_runners()
 
     def delete_runner(self, runner: Runner):

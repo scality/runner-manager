@@ -2,9 +2,8 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ include "openstack-actions-runner.fullname" . }}-web
+  name: {{ include "openstack-actions-runner.fullname" . }}
   labels:
-    role: web
     {{- include "openstack-actions-runner.labels" . | nindent 4 }}
   annotations:
     {{- range $key, $value := .Values.deployment.ingress.annotations }}
@@ -17,7 +16,7 @@ spec:
       paths:
         - path: {{ .Values.deployment.ingress.path | quote }}
           backend:
-            serviceName: {{ include "openstack-actions-runner.fullname" . }}-web
+            serviceName: {{ include "openstack-actions-runner.fullname" . }}
             servicePort: {{ $.Values.deployment.service.port }}
   {{- if .Values.deployment.ingress.tls }}
   tls:

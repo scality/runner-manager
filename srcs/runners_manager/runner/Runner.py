@@ -29,7 +29,7 @@ class Runner(object):
         self.vm_type = vm_type
 
         self.created_at = datetime.datetime.now()
-        self.status = ''
+        self.status = 'offline'
         self.status_history = []
         self.action_id = None
         self.started_at = None

@@ -2,7 +2,7 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "openstack-actions-runner.fullname" . }}-manager
+  name: {{ include "openstack-actions-runner.fullname" . }}
   labels:
     {{- include "openstack-actions-runner.labels" . | nindent 4 }}
     {{- if .Values.serviceMonitor.labels }}
@@ -16,7 +16,6 @@ spec:
     path: "/"
   selector:
     matchLabels:
-      role: manager
       {{- include "openstack-actions-runner.labels" . | nindent 6 }}
   namespaceSelector:
     matchNames:

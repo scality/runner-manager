@@ -38,7 +38,13 @@ class Manager(object):
         self.extra_runner_online_timer = datetime.timedelta(**settings['extra_runner_timer'])
         self.timeout_runner_timer = datetime.timedelta(**settings['timeout_runner_timer'])
 
-    def update(self, github_runners: list[dict]):
+    def remove_all_runners(self):
+        for manager in self.runner_managers:
+            runners = list(manager.runners.values())
+            for runner in runners:
+                manager.delete_runner(runner)
+
+    def update_all_runners(self, github_runners: list[dict]):
         """
         Here we update runners states with github api data
         And recalculate the need to spawn or delete runners
@@ -48,7 +54,20 @@ class Manager(object):
             runner_manager.update(github_runners)
 
         self.log_runners_infos()
+        self.manage_runners()
 
+    def update_runner_status(self, runner: dict):
+        logger.info(runner)
+        manager = next([
+            manager
+            for manager in self.runner_managers if manager.vm_type.tags == runner["labels"]
+        ])
+        logger.info(manager)
+        manager.update([runner])
+        self.log_runners_infos()
+        self.manage_runners()
+
+    def manage_runners(self):
         # runner logic For each type of VM
         for manager in self.runner_managers:
             # Always Respawn Vm

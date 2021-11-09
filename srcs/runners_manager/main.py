@@ -1,16 +1,14 @@
-import argparse
 import time
 import logging
 import importlib
 import redis
 
-
 from prometheus_client import start_http_server
-
 
 from runners_manager.vm_creation.github_actions_api import GithubManager
 from runners_manager.vm_creation.openstack import OpenstackManager
 from runners_manager.runner.Manager import Manager
+from settings.yaml_config import EnvSettings
 
 logger = logging.getLogger("runner_manager")
 
@@ -24,12 +22,13 @@ def maintain_number_of_runner(runner_m: Manager, github_manager: GithubManager):
         )
 
         logger.debug(runners)
-        runner_m.update(runners['runners'])
+        runner_m.update_all_runners(runners['runners'])
 
         time.sleep(10)
 
 
-def main(settings: dict, args: argparse.Namespace):
+def init(settings: dict, args: EnvSettings):
+    logger.info('Initialisation')
     importlib.import_module(settings['python_config'])
     openstack_manager = OpenstackManager(project_name=settings['cloud_nine_tenant'],
                                          token=args.cloud_nine_token,
@@ -42,5 +41,10 @@ def main(settings: dict, args: argparse.Namespace):
                                  port=settings['redis']['port'],
                                  password=args.redis_password)
     runner_m = Manager(settings, openstack_manager, github_manager, redis_database)
+    return runner_m, redis_database, github_manager, openstack_manager
+
+
+def main(settings: dict, args: EnvSettings):
+    runner_m, redis_database, github_manager, openstack_manager = init(settings, args)
     start_http_server(settings['metrics_port'])
     maintain_number_of_runner(runner_m, github_manager)
