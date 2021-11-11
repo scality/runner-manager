@@ -4,3 +4,11 @@ config_example.yml
 docker-compose.yml
 Dockerfile
 README.md
+dist/
+.git
+charts/
+.tox
+.eggs/
+.pytest_cache/
+__pycache__
+.github/
