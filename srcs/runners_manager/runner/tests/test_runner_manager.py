@@ -6,7 +6,7 @@ from runners_manager.runner.Manager import Manager
 from runners_manager.runner.Runner import Runner
 from runners_manager.runner.RunnerManager import RunnerManager
 from runners_manager.runner.VmType import VmType
-from runners_manager.monitoring.prometheus import Metrics
+from runners_manager.monitoring.prometheus import metrics
 
 
 class ObjectId(object):
@@ -178,7 +178,6 @@ class TestRunnerManager(unittest.TestCase):
 
     def test_runner_status(self):
         """Ensure runner status is updated accordingly"""
-        metrics = Metrics()
         self.factory.create_runner.side_effect = [
             Runner('0', None, self.vm_type_normal),
             Runner('1', None, self.vm_type_normal)

@@ -38,8 +38,8 @@ spec:
         resources:
           {{- toYaml .Values.resources | nindent 12 }}
         ports:
-        - name: metrics
-          containerPort: {{ .Values.metricsPort }}
+        - name: http
+          containerPort: 80
         env:
         - name: REDIS_PASSWORD
           valueFrom:

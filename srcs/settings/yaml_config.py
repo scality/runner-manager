@@ -52,7 +52,6 @@ class Settings(Schema):
     extra_runner_timer = fields.Nested(ExtraRunnerTimer, required=True)
     timeout_runner_timer = fields.Nested(TimeoutRunnerTimer, required=True)
     redis = fields.Nested(RedisDatabase, required=True)
-    metrics_port = fields.Int(required=False, default=5000)
 
 
 def setup_settings(settings_file: str) -> dict:

@@ -23,4 +23,3 @@ RUN pip install -r ./requirements.txt
 COPY srcs /app/srcs
 COPY ./templates /app/templates
 CMD ["uvicorn", "srcs.web.app:app", "--host", "0.0.0.0", "--port", "80"]
-
