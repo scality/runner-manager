@@ -12,8 +12,8 @@ spec:
   endpoints:
   - interval: {{ .Values.serviceMonitor.interval }}
     scrapeTimeout: {{ .Values.serviceMonitor.timeout }}
-    port: metrics
-    path: "/"
+    port: http
+    path: "/metrics"
   selector:
     matchLabels:
       {{- include "openstack-actions-runner.labels" . | nindent 6 }}

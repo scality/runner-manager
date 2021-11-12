@@ -141,8 +141,6 @@ redis:
   networkPolicy:
     enabled: true
 
-metricsPort: 5000
-
 serviceMonitor:
   enabled: false
   labels: {}

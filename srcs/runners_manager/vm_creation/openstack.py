@@ -9,8 +9,11 @@ import novaclient.v2.servers
 from jinja2 import FileSystemLoader, Environment
 
 from runners_manager.runner.Runner import Runner
+from runners_manager.monitoring.prometheus import metrics
+
 
 logger = logging.getLogger("runner_manager")
+
 
 keystone_endpoint = 'https://scality.cloud/keystone/v3'
 
@@ -60,6 +63,7 @@ class OpenstackManager(object):
                                  group='default')
         return output
 
+    @metrics.runner_creation_time_seconds.time()
     def create_vm(self, runner: Runner, runner_token: int or None,
                   github_organization: str, installer: str):
         """
@@ -86,6 +90,7 @@ class OpenstackManager(object):
         logger.info("vm is successfully created")
         return instance
 
+    @metrics.runner_delete_time_seconds.time()
     def delete_vm(self, id: str):
         try:
             self.nova_client.servers.delete(id)

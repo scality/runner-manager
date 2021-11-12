@@ -2,10 +2,9 @@ import datetime
 import logging
 
 from runners_manager.runner.VmType import VmType
-from runners_manager.monitoring.prometheus import Metrics
+from runners_manager.monitoring.prometheus import metrics
 
 logger = logging.getLogger("runner_manager")
-metrics = Metrics()
 
 
 class Runner(object):

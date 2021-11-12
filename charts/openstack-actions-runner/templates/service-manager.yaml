@@ -7,12 +7,9 @@ metadata:
 spec:
   type: {{ .Values.deployment.service.type }}
   ports:
-    - name: metrics
-      port: {{ .Values.metricsPort }}
-      protocol: TCP
     - name: {{ include "openstack-actions-runner.fullname" . }}
       port: {{ .Values.deployment.service.port }}
-      targetPort: 80
+      targetPort: http
       protocol: TCP
   selector:
     {{- include "openstack-actions-runner.selectorLabels" . | nindent 4 }}

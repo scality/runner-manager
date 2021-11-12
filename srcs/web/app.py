@@ -6,9 +6,13 @@ from fastapi.responses import Response
 
 from web import redis_database, runner_m, github_manager
 from web.Webhook import Webhook
+from runners_manager.monitoring.prometheus import prometheus_metrics
 
 logger = logging.getLogger("runner_manager")
 app = FastAPI()
+
+
+app.add_route('/metrics', prometheus_metrics)
 
 
 @app.get("/")
