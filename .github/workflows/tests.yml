@@ -42,7 +42,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ./test.Dockerfile
+          file: ./Dockerfile
           push: true
           tags: "ghcr.io/${{ github.repository }}:${{ github.sha }}"
           cache-from: type=local,src=/tmp/.buildx-cache
@@ -56,7 +56,7 @@ jobs:
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-  lint:
+  tests:
     runs-on: ubuntu-latest
     container:
       image: "ghcr.io/${{ github.repository }}:${{ github.sha }}"
@@ -66,8 +66,23 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - run: tox -e flake8
+      - name: Poetry deps cache
+        uses: actions/cache@v2
+        with:
+          path: "~/.cache/pypoetry"
+          key: poetry-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+      - name: Install all dependencies
+        run: poetry install
+      - name: Install helm
+        run: |
+          curl -sSL https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar -xvz
+          install linux-amd64/helm /usr/local/bin
+          rm -rf linux-amd64
+        env:
+          HELM_VERSION: 2.17.0
+      - name: Lint python
+        run: poetry run flake8
       - run: helm lint charts/openstack-actions-runner
-      - run: tox -e utests
+      - run: poetry run pytest --cov=. --cov-report=xml
       - name: Upload test coverage
         uses: codecov/codecov-action@v2
