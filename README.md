@@ -1,17 +1,12 @@
 # openstack-actions-runner
 
-## POC
- - Specific number of runnner
- - With one specific tag
+The openstack actions runner is designed to work with GitHub Actions CI.
 
-## Beta
- - Use an url with secret / id to say the worker is of to us, so avoid spam github API
- - Manage defined VM type and image
- - Set min / max number of runner by github tags, VM type and image
+The goal is to create VMs on OpenStack and attach them as self-hosted runners, in order to be able to execute CI jobs on GitHub Actions with your OpenStack infrastructure.
 
-## Alpha
- - Database to synchronise the runners infos
+To find more about how to get your OpenStack Actions Runner up and running follow the following sections:
 
-# For the test writing
- - API / github and openstack
- - Redis mock library
+1. [Config](docs/config.md)
+1. [Local install](docs/local-install.md)
+1. [k8s install](charts/openstack-actions-runner/README.md)
+
