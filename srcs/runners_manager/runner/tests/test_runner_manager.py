@@ -69,6 +69,11 @@ class TestRunnerManager(unittest.TestCase):
             'id': 0,
             'status': 'online',
             'busy': False
+        }, {
+            'name': '1',
+            'id': 1,
+            'status': 'online',
+            'busy': False
         }])
         self.assertEqual(r.runners.__len__(), 2)
         self.assertEqual(r.runners['0'].action_id, 0)
@@ -83,6 +88,11 @@ class TestRunnerManager(unittest.TestCase):
             'id': 0,
             'status': 'offline',
             'busy': False
+        }, {
+            'name': '1',
+            'id': 1,
+            'status': 'online',
+            'busy': False
         }])
         self.assertEqual(r.runners['0'].action_id, 0)
         self.assertEqual(r.runners['0'].has_run, True)
@@ -91,6 +101,11 @@ class TestRunnerManager(unittest.TestCase):
         self.factory.respawn_runner.assert_not_called()
 
         r.update([{
+            'name': '0',
+            'id': 0,
+            'status': 'offline',
+            'busy': False
+        }, {
             'name': '1',
             'id': 1,
             'status': 'offline',
@@ -102,6 +117,11 @@ class TestRunnerManager(unittest.TestCase):
         self.factory.respawn_runner.assert_not_called()
 
         r.update([{
+            'name': '0',
+            'id': 0,
+            'status': 'offline',
+            'busy': False
+        }, {
             'name': '1',
             'id': 1,
             'status': 'online',
@@ -231,3 +251,24 @@ class TestRunnerManager(unittest.TestCase):
 
         r.delete_runner(r.runners['1'])
         self.assertNotIn('1', r.runners.keys())
+
+    def test_runners_not_listed_on_github(self):
+        self.factory.create_runner.side_effect = [
+            Runner('0', None, self.vm_type_normal),
+            Runner('1', None, self.vm_type_normal),
+            Runner('2', None, self.vm_type_normal)
+        ]
+        r = RunnerManager(self.vm_type_normal, self.factory, self.fake_redis)
+        r.create_runner()
+        r.create_runner()
+        self.factory.create_runner.reset_mock()
+        self.factory.delete_runner.reset_mock()
+        self.factory.respawn_runner.reset_mock()
+
+        r.update([{
+            'name': '0',
+            'id': 0,
+            'status': 'online',
+            'busy': False
+        }])
+        self.assertEqual(r.runners.__len__(), 1)
