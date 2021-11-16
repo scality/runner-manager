@@ -33,7 +33,7 @@ class Webhook(object):
                 'status': 'online',
                 'busy': True,
             }
-        elif payload['action'] == 'complete':
+        elif payload['action'] == 'completed':
             status = {
                 'status': 'offline',
                 'busy': False,
