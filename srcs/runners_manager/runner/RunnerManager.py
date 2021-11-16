@@ -62,6 +62,13 @@ class RunnerManager(object):
         :return:
         """
         self._get_runners()
+
+        # Remove runners not listed on github
+        github_r_names = [r['name'] for r in github_runners]
+        runners_to_deletes = [r for r in self.runners.keys() if r not in github_r_names]
+        for name in runners_to_deletes:
+            self.delete_runner(self.runners[name])
+
         # Update status of each runner
         for elem in github_runners:
             if elem['name'] in self.runners:
