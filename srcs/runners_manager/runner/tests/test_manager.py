@@ -3,6 +3,7 @@ import fakeredis
 from unittest.mock import patch, MagicMock
 
 from runners_manager.runner.Manager import Manager
+from runners_manager.runner.RedisManager import RedisManager
 
 
 class ObjectId(object):
@@ -12,7 +13,7 @@ class ObjectId(object):
 
 class TestRunnerManager(unittest.TestCase):
     def setUp(self) -> None:
-        self.fake_redis = fakeredis.FakeStrictRedis()
+        self.fake_redis = RedisManager(fakeredis.FakeStrictRedis())
         self.github_manager = MagicMock()
         self.openstack_manager = MagicMock()
 
@@ -27,8 +28,7 @@ class TestRunnerManager(unittest.TestCase):
 
     @patch('runners_manager.runner.Manager.RunnerManager')
     @patch('runners_manager.runner.Manager.RunnerFactory')
-    @patch('runners_manager.runner.Manager.redis.Redis')
-    def test_no_config(self, redis, factory, manager):
+    def test_no_config(self, factory, manager):
         r = Manager({
             'github_organization': 'test', 'runner_pool': [],
             'redis': {
@@ -52,8 +52,7 @@ class TestRunnerManager(unittest.TestCase):
 
     @patch('runners_manager.runner.Manager.RunnerManager')
     @patch('runners_manager.runner.Manager.RunnerFactory')
-    @patch('runners_manager.runner.Manager.redis.Redis')
-    def test_config_vm_type(self, redis, factory, manager):
+    def test_config_vm_type(self, factory, manager):
         r = Manager({'github_organization': 'test',
                      'runner_pool': [{
                          'tags': ['centos7', 'small'],
@@ -79,7 +78,7 @@ class TestRunnerManager(unittest.TestCase):
         self.assertEqual(r.runner_managers.__len__(), 1)
 
     @patch('runners_manager.runner.Manager.RunnerManager.__init__', return_value=None)
-    @patch('runners_manager.runner.Manager.RunnerManager.update')
+    @patch('runners_manager.runner.Manager.RunnerManager.update_runners')
     @patch('runners_manager.runner.Manager.RunnerManager.respawn_runner')
     @patch('runners_manager.runner.Manager.RunnerManager.create_runner')
     @patch('runners_manager.runner.Manager.RunnerManager.delete_runner')
@@ -118,7 +117,7 @@ class TestRunnerManager(unittest.TestCase):
                               {'id': 2, 'name': '2',
                                'os': 'linux', 'status': 'online', 'busy': False,
                                'labels': [{'id': 77, 'name': 'self-hosted', 'type': 'read-only'}]}])
-        self.assertEqual(r.runner_managers[0].update.call_count, 1)
+        self.assertEqual(r.runner_managers[0].update_runners.call_count, 1)
         self.assertEqual(r.runner_managers[0].filter_runners.call_count, 3)
         self.assertEqual(r.runner_managers[0].respawn_runner.call_count, 0)
         self.assertEqual(r.runner_managers[0].create_runner.call_count, 0)

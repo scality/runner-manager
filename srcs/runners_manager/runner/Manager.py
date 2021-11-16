@@ -1,6 +1,5 @@
 import datetime
 import logging
-import redis
 
 from runners_manager.runner.Runner import Runner
 from runners_manager.vm_creation.github_actions_api import GithubManager
@@ -8,6 +7,7 @@ from runners_manager.vm_creation.openstack import OpenstackManager
 from runners_manager.runner.RunnerFactory import RunnerFactory
 from runners_manager.runner.RunnerManager import RunnerManager
 from runners_manager.runner.VmType import VmType
+from runners_manager.runner.RedisManager import RedisManager
 
 logger = logging.getLogger("runner_manager")
 
@@ -18,7 +18,6 @@ class Manager(object):
     It manage all runners for one repository
     """
     factory: RunnerFactory
-    redis: redis.Redis
     runner_managers: list[RunnerManager]
     extra_runner_online_timer: datetime.timedelta
     timeout_runner_timer: datetime.timedelta
@@ -26,22 +25,20 @@ class Manager(object):
     def __init__(self, settings: dict,
                  openstack_manager: OpenstackManager,
                  github_manager: GithubManager,
-                 r: redis.Redis):
+                 r: RedisManager):
         self.factory = RunnerFactory(openstack_manager,
                                      github_manager,
                                      settings['github_organization'])
-        self.redis = r
         self.runner_managers = []
         for v_type in settings['runner_pool']:
-            self.runner_managers.append(RunnerManager(VmType(v_type), self.factory, self.redis))
+            self.runner_managers.append(RunnerManager(VmType(v_type), self.factory, r))
 
         self.extra_runner_online_timer = datetime.timedelta(**settings['extra_runner_timer'])
         self.timeout_runner_timer = datetime.timedelta(**settings['timeout_runner_timer'])
 
     def remove_all_runners(self):
         for manager in self.runner_managers:
-            runners = list(manager.runners.values())
-            for runner in runners:
+            for runner in manager.get_runners().values():
                 manager.delete_runner(runner)
 
     def update_all_runners(self, github_runners: list[dict]):
@@ -51,7 +48,7 @@ class Manager(object):
         :param github_runners:  Github api infos about self-hosted runners
         """
         for runner_manager in self.runner_managers:
-            runner_manager.update(github_runners)
+            runner_manager.update_runners(github_runners)
 
         self.log_runners_infos()
         self.manage_runners()
@@ -59,10 +56,11 @@ class Manager(object):
     def update_runner_status(self, runner: dict):
         logger.info(runner)
         manager = next(
-            manager for manager in self.runner_managers if manager.vm_type.tags == runner["labels"]
+            manager for manager in self.runner_managers if runner["name"] in manager.runners.keys()
         )
+
         logger.info(manager)
-        manager.update([runner])
+        manager.update_runner(runner)
         self.log_runners_infos()
         self.manage_runners()
 

@@ -1,5 +1,6 @@
 import logging
 import datetime
+import asyncio
 
 from runners_manager.vm_creation.github_actions_api import GithubManager
 from runners_manager.vm_creation.openstack import OpenstackManager
@@ -33,38 +34,41 @@ class RunnerFactory(object):
         self.runner_name_format = 'runner-{organization}-{tags}-{index}'
         self.runner_counter = 0
 
-    def create_runner(self, vm_type: VmType):
-        logger.info(f"Create new runner for {vm_type}")
-        name = self.generate_runner_name(vm_type)
-        installer = self.github_manager.link_download_runner()
-        runner = Runner(name=name, vm_id=None, vm_type=vm_type)
+    def async_create_vm(self, runner: Runner):
+        from web import redis_database
+        logger.info("Start creating VM")
 
-        vm = self.openstack_manager.create_vm(
+        installer = self.github_manager.link_download_runner()
+        instance = self.openstack_manager.create_vm(
             runner=runner,
             runner_token=self.github_manager.create_runner_token(),
             github_organization=self.github_organization,
             installer=installer
         )
-        runner.vm_id = vm.id
+
+        runner = redis_database.get_runner(runner.redis_key_name())
+        runner.vm_id = instance.id
+        redis_database.update_runner(runner)
+        logger.info("Create success")
+
+    def create_runner(self, vm_type: VmType):
+        logger.info(f"Create new runner for {vm_type}")
+        name = self.generate_runner_name(vm_type)
+        runner = Runner(name=name, vm_id=None, vm_type=vm_type)
+
+        asyncio.get_event_loop().run_in_executor(None, self.async_create_vm, runner)
 
         self.runner_counter += 1
-        logger.info("Create success")
         return runner
 
     def respawn_replace(self, runner: Runner):
         logger.info(f"respawn runner: {runner.name}")
         self.openstack_manager.delete_vm(runner.vm_id)
 
-        runner_token = self.github_manager.create_runner_token()
-        installer = self.github_manager.link_download_runner()
-        vm = self.openstack_manager.create_vm(
-            runner=runner,
-            runner_token=runner_token,
-            github_organization=self.github_organization,
-            installer=installer
-        )
+        asyncio.get_event_loop().run_in_executor(None, self.async_create_vm, runner)
+
         runner.status_history = []
-        runner.vm_id = vm.id
+        runner.vm_id = None
         runner.created_at = datetime.datetime.now()
         return runner
 

@@ -1,7 +1,6 @@
-import json
 import logging
 
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Request
 from fastapi.responses import Response
 
 from web import redis_database, runner_m, github_manager
@@ -18,8 +17,8 @@ app.add_route('/metrics', prometheus_metrics)
 @app.get("/")
 async def root():
     keys = {}
-    for elem in redis_database.keys():
-        keys[elem] = redis_database.get(elem)
+    for elem in redis_database.redis.keys():
+        keys[elem] = redis_database.redis.get(elem)
 
     return {"message": "Hello World", "redis_database": keys}
 
@@ -46,8 +45,9 @@ async def reset_reset_runners(request: Request):
 
 
 @app.post('/webhook')
-async def webhook_post(payload: str = Form(...), request: Request = None):
-    Webhook(payload=json.loads(payload), event=request.headers['X-Github-Event'])()
+async def webhook_post(request: Request = None):
+    data = await request.json()
+    Webhook(payload=data, event=request.headers['X-Github-Event'])()
     return Response(status_code=200)
 
 if __name__ == "__main__":

@@ -1,12 +1,11 @@
 import datetime
 import logging
-import redis
-import json
 from collections.abc import Callable
 
 from runners_manager.runner.Runner import Runner
 from runners_manager.runner.RunnerFactory import RunnerFactory
 from runners_manager.runner.VmType import VmType
+from runners_manager.runner.RedisManager import RedisManager
 
 logger = logging.getLogger("runner_manager")
 
@@ -17,85 +16,83 @@ class RunnerManager(object):
     We save every infos updated on the redis database
     This class is a tool and is here to join Github and local data
     """
-    redis: redis.Redis
+    redis: RedisManager
     vm_type: VmType
     runners: dict[str, Runner]
     factory: RunnerFactory
 
-    def __init__(self, vm_type: VmType, factory: RunnerFactory, redis: redis.Redis):
+    def __init__(self, vm_type: VmType, factory: RunnerFactory, redis: RedisManager):
         self.redis = redis
         self.vm_type = vm_type
         self.factory = factory
         self.runners = {}
-        self._get_runners()
+        self.runners = self.redis.get_runners(self.redis_key_name())
 
-    def _redis_key_name(self):
+    def get_runners(self):
+        self.runners = self.redis.get_runners(self.redis_key_name())
+        return self.runners
+
+    def redis_key_name(self):
         """
         Define the redis key name for this instance
         :return:
         """
         return f'managers:{"-".join(self.vm_type.tags)}'
 
-    def _get_runners(self):
-        """
-        Build runners from redis
-        :return:
-        """
-        value = self.redis.get(self._redis_key_name())
-        if value is None:
-            self.runners = {}
-        else:
-            self.runners = dict([(k, Runner.fromJson(v)) for k, v in json.loads(value).items()])
+    def update_runner(self, github_runner: dict):
+        if github_runner['name'] in self.runners:
+            runner = self.runners[github_runner['name']]
+            runner.update_from_github(github_runner)
+            self.redis.update_runner(runner)
 
-    def _save_runners(self):
-        """
-        Save runners json data in redis
-        :return:
-        """
-        d = dict([(k, v.toJson()) for k, v in self.runners.items()])
-        self.redis.set(self._redis_key_name(), json.dumps(d))
-
-    def update(self, github_runners: list[dict]):
+    def update_runners(self, github_runners: list[dict]):
         """
         Update internal runners info from github.com
         :param github_runners:
         :return:
         """
-        self._get_runners()
+        self.runners = self.redis.get_runners(self.redis_key_name())
 
         # Remove runners not listed on github
         github_r_names = [r['name'] for r in github_runners]
-        runners_to_deletes = [r for r in self.runners.keys() if r not in github_r_names]
+        runners_to_deletes = [name for name, r in self.runners.items()
+                              if name not in github_r_names and r.status != 'creating']
         for name in runners_to_deletes:
             self.delete_runner(self.runners[name])
 
         # Update status of each runner
         for elem in github_runners:
-            if elem['name'] in self.runners:
-                runner = self.runners[elem['name']]
-                runner.update_from_github(elem)
-
-        self._save_runners()
+            self.update_runner(elem)
 
     def create_runner(self):
+        self.runners = self.redis.get_runners(self.redis_key_name())
         runner = self.factory.create_runner(self.vm_type)
         runner.update_status('creating')
         self.runners[runner.name] = runner
-        self._save_runners()
+
+        self.redis.update_runner(runner)
+        self.redis.update_manager_runners(self.redis_key_name(), list(self.runners.values()))
 
     def delete_runner(self, runner: Runner):
+        self.runners = self.redis.get_runners(self.redis_key_name())
         runner.update_status('deleting')
         self.factory.delete_runner(runner)
         del self.runners[runner.name]
+
+        self.redis.delete_runner(runner)
+        self.redis.update_manager_runners(self.redis_key_name(), list(self.runners.values()))
+
         del runner
-        self._save_runners()
 
     def respawn_runner(self, runner: Runner):
+        self.runners = self.redis.get_runners(self.redis_key_name())
         runner.update_status('respawning')
+        self.runners[runner.name] = runner
         self.factory.respawn_replace(runner)
-        self._save_runners()
+        self.redis.update_runner(runner)
 
     def runners_not_used_for(self, duration: datetime.timedelta):
+        self.runners = self.redis.get_runners(self.redis_key_name())
         return self.filter_runners(lambda runner: runner.status == 'online'
                                    and not runner.has_run
                                    and runner.time_online > duration)
@@ -106,6 +103,7 @@ class RunnerManager(object):
         :param cond:
         :return:
         """
+        self.runners = self.redis.get_runners(self.redis_key_name())
         return list(filter(
             lambda e: e.vm_type.tags == self.vm_type.tags and cond(e),
             self.runners.values()
