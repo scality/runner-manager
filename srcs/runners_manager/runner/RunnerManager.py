@@ -65,7 +65,8 @@ class RunnerManager(object):
 
         # Remove runners not listed on github
         github_r_names = [r['name'] for r in github_runners]
-        runners_to_deletes = [r for r in self.runners.keys() if r not in github_r_names]
+        runners_to_deletes = [name for name, r in self.runners.items()
+                              if name not in github_r_names and r.status != 'creating']
         for name in runners_to_deletes:
             self.delete_runner(self.runners[name])
 

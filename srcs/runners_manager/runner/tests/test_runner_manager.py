@@ -270,5 +270,17 @@ class TestRunnerManager(unittest.TestCase):
             'id': 0,
             'status': 'online',
             'busy': False
+        }, {
+            'name': '1',
+            'id': 1,
+            'status': 'online',
+            'busy': False
+        }])
+
+        r.update([{
+            'name': '0',
+            'id': 0,
+            'status': 'online',
+            'busy': True
         }])
         self.assertEqual(r.runners.__len__(), 1)
