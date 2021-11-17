@@ -46,10 +46,14 @@ class RunnerFactory(object):
             installer=installer
         )
 
-        runner = redis_database.get_runner(runner.redis_key_name())
-        runner.vm_id = instance.id
-        redis_database.update_runner(runner)
-        logger.info("Create success")
+        if instance is None:
+            logger.error(f"Creation of runner {runner} failed")
+            redis_database.delete_runner(runner)
+        else:
+            runner = redis_database.get_runner(runner.redis_key_name())
+            runner.vm_id = instance.id
+            redis_database.update_runner(runner)
+            logger.info("Create success")
 
     def create_runner(self, vm_type: VmType):
         logger.info(f"Create new runner for {vm_type}")

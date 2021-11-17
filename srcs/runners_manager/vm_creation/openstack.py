@@ -65,10 +65,13 @@ class OpenstackManager(object):
 
     @metrics.runner_creation_time_seconds.time()
     def create_vm(self, runner: Runner, runner_token: int or None,
-                  github_organization: str, installer: str):
+                  github_organization: str, installer: str, call_number=0):
         """
         TODO `tenantnetwork1` is a hardcoded network we should put this in config later on
         """
+
+        if call_number > 5:
+            return None
 
         sec_group_id = self.neutron.list_security_groups()['security_groups'][0]['id']
         nic = {'net-id': self.neutron.list_networks(name='tenantnetwork1')['networks'][0]['id']}
@@ -85,7 +88,10 @@ class OpenstackManager(object):
         if instance.status == 'ERROR':
             logger.info('vm failed, creating a new one')
             self.delete_vm(instance.id)
-            return self.create_vm(runner, runner_token, github_organization, installer)
+            time.sleep(2)
+            metrics.runner_creation_failed.inc()
+            return self.create_vm(runner, runner_token, github_organization,
+                                  installer, call_number + 1)
 
         logger.info("vm is successfully created")
         return instance
