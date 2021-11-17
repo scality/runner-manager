@@ -26,6 +26,11 @@ class Metrics(object):
             labelnames=self.common_labels,
         )
 
+        self.runner_creation_failed = Gauge(
+            'openstack_action_runner_creation_failed',
+            'Metrics display the number runners creations failed because of VM creation errors'
+        )
+
         self.runner_creation_time_seconds = Gauge(
             'openstack_actions_runner_resource_creation_time',
             'Metrics displaying the time to create the runner resource',
