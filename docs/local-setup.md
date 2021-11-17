@@ -80,7 +80,7 @@ Setup a webhook at the organization level, should be on a link like the followin
 * Click on Add Webhook
 * In payload url, enter your ngrok url, like the following:
 `https://ngrok.url/webhook`
-* Content type: x-www-form-urlencoded
+* Content type: application/json
 * Click on `Let me select individual events.`
 * Select: `Workflow jobs` and `Workflow runs`
 

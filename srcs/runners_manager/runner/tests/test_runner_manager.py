@@ -7,6 +7,7 @@ from runners_manager.runner.Runner import Runner
 from runners_manager.runner.RunnerManager import RunnerManager
 from runners_manager.runner.VmType import VmType
 from runners_manager.monitoring.prometheus import metrics
+from runners_manager.runner.RedisManager import RedisManager
 
 
 class ObjectId(object):
@@ -20,7 +21,7 @@ class TestRunnerManager(unittest.TestCase):
     @patch('runners_manager.vm_creation.github_actions_api.GithubManager')
     @patch('runners_manager.vm_creation.openstack.OpenstackManager')
     def setUp(self, return_github_manager, return_openstack_manager) -> None:
-        self.fake_redis = fakeredis.FakeStrictRedis()
+        self.fake_redis = RedisManager(fakeredis.FakeStrictRedis())
         self.factory = MagicMock()
         self.vm_type_normal = VmType({
             'tags': ['centos7', 'small'],
@@ -64,7 +65,7 @@ class TestRunnerManager(unittest.TestCase):
         self.factory.delete_runner.reset_mock()
         self.factory.respawn_runner.reset_mock()
 
-        r.update([{
+        r.update_runners([{
             'name': '0',
             'id': 0,
             'status': 'online',
@@ -83,7 +84,7 @@ class TestRunnerManager(unittest.TestCase):
         self.factory.delete_runner.assert_not_called()
         self.factory.respawn_runner.assert_not_called()
 
-        r.update([{
+        r.update_runners([{
             'name': '0',
             'id': 0,
             'status': 'offline',
@@ -100,7 +101,7 @@ class TestRunnerManager(unittest.TestCase):
         self.factory.delete_runner.assert_not_called()
         self.factory.respawn_runner.assert_not_called()
 
-        r.update([{
+        r.update_runners([{
             'name': '0',
             'id': 0,
             'status': 'offline',
@@ -116,7 +117,7 @@ class TestRunnerManager(unittest.TestCase):
         self.factory.delete_runner.assert_not_called()
         self.factory.respawn_runner.assert_not_called()
 
-        r.update([{
+        r.update_runners([{
             'name': '0',
             'id': 0,
             'status': 'offline',
@@ -143,8 +144,12 @@ class TestRunnerManager(unittest.TestCase):
 
         self.assertEqual(Manager.need_new_runner(r), False)
 
-        r.runners['0'].status_history = ['online']
-        r.runners['0'].status = 'running'
+        r.update_runner({
+            'name': '0',
+            'status': 'online',
+            'busy': True,
+            'id': '0'
+        })
         self.assertEqual(Manager.need_new_runner(r), True)
 
         r.runners['0'].status_history = ['online', 'running']
@@ -191,8 +196,8 @@ class TestRunnerManager(unittest.TestCase):
         r.create_runner()
 
         r2 = RunnerManager(self.vm_type_full, self.factory, self.fake_redis)
-        self.assertEqual(r._redis_key_name(), 'managers:centos7-small')
-        self.assertEqual(r._redis_key_name(), r2._redis_key_name())
+        self.assertEqual(r.redis_key_name(), 'managers:centos7-small')
+        self.assertEqual(r.redis_key_name(), r2.redis_key_name())
         self.assertListEqual(list(r.runners.keys()), list(r2.runners.keys()))
         self.assertEqual(r.runners['0'], r2.runners['0'])
 
@@ -215,7 +220,7 @@ class TestRunnerManager(unittest.TestCase):
             if sample.labels['openstack_actions_runner_status'] == 'creating':
                 self.assertEqual(sample.value, 1)
 
-        r.update([
+        r.update_runners([
             {
                 'name': '0',
                 'id': 0,
@@ -265,7 +270,7 @@ class TestRunnerManager(unittest.TestCase):
         self.factory.delete_runner.reset_mock()
         self.factory.respawn_runner.reset_mock()
 
-        r.update([{
+        r.update_runners([{
             'name': '0',
             'id': 0,
             'status': 'online',
@@ -277,7 +282,7 @@ class TestRunnerManager(unittest.TestCase):
             'busy': False
         }])
 
-        r.update([{
+        r.update_runners([{
             'name': '0',
             'id': 0,
             'status': 'online',

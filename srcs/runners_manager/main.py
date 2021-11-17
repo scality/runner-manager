@@ -6,6 +6,7 @@ import redis
 from runners_manager.vm_creation.github_actions_api import GithubManager
 from runners_manager.vm_creation.openstack import OpenstackManager
 from runners_manager.runner.Manager import Manager
+from runners_manager.runner.RedisManager import RedisManager
 from settings.yaml_config import EnvSettings
 
 logger = logging.getLogger("runner_manager")
@@ -35,9 +36,10 @@ def init(settings: dict, args: EnvSettings):
                                          region=settings['cloud_nine_region'])
     github_manager = GithubManager(organization=settings['github_organization'],
                                    token=args.github_token)
-    redis_database = redis.Redis(host=settings['redis']['host'],
-                                 port=settings['redis']['port'],
-                                 password=args.redis_password)
+    r = redis.Redis(host=settings['redis']['host'],
+                    port=settings['redis']['port'],
+                    password=args.redis_password)
+    redis_database = RedisManager(r)
     runner_m = Manager(settings, openstack_manager, github_manager, redis_database)
     return runner_m, redis_database, github_manager, openstack_manager
 

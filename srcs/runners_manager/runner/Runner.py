@@ -42,24 +42,30 @@ class Runner(object):
     def __str__(self):
         return self.__unicode__()
 
+    def redis_key_name(self):
+        """
+        Define the redis key name for this instance
+        :return:
+        """
+        return f'runners:{self.name}'
+
     @staticmethod
-    def fromJson(dict):
+    def fromJson(data: dict):
         """
         Build a Runner from json data
         :param dict:
         :return:
         """
-        logger.info(dict)
-        runner = Runner(dict["name"], dict["vm_id"], VmType(dict["vm_type"]))
+        runner = Runner(data["name"], data["vm_id"], VmType(data["vm_type"]))
 
-        runner.status = dict["status"]
-        runner.status_history = dict["status_history"]
-        runner.action_id = dict["action_id"]
-        runner.created_at = datetime.datetime.strptime(dict["created_at"], "%Y-%m-%d %H:%M:%S.%f")
+        runner.status = data["status"]
+        runner.status_history = data["status_history"]
+        runner.action_id = data["action_id"]
+        runner.created_at = datetime.datetime.strptime(data["created_at"], "%Y-%m-%d %H:%M:%S.%f")
 
-        if dict["started_at"]:
+        if data["started_at"]:
             runner.started_at = datetime.datetime.strptime(
-                dict["started_at"], "%Y-%m-%d %H:%M:%S.%f"
+                data["started_at"], "%Y-%m-%d %H:%M:%S.%f"
             )
         else:
             runner.started_at = None
