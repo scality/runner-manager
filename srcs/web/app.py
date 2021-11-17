@@ -4,7 +4,8 @@ from fastapi import FastAPI, Request
 from fastapi.responses import Response
 
 from web import redis_database, runner_m, github_manager
-from web.Webhook import Webhook
+from web.WebhookManager import WebHookManager
+from web.models import WebHook
 from runners_manager.monitoring.prometheus import prometheus_metrics
 
 logger = logging.getLogger("runner_manager")
@@ -45,9 +46,8 @@ async def reset_reset_runners(request: Request):
 
 
 @app.post('/webhook')
-async def webhook_post(request: Request = None):
-    data = await request.json()
-    Webhook(payload=data, event=request.headers['X-Github-Event'])()
+async def webhook_post(data: WebHook, request: Request):
+    WebHookManager(payload=data, event=request.headers['X-Github-Event'])()
     return Response(status_code=200)
 
 if __name__ == "__main__":
