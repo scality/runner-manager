@@ -23,6 +23,7 @@ wheel = "0.36.2"
 redis = "3.5.3"
 prometheus-client = "0.12.0"
 python-multipart = "0.0.5"
+fastapi-utils = "^0.2.1"
 
 [tool.poetry.dev-dependencies]
 mock = "4.0.3"
