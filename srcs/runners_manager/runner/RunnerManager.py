@@ -40,6 +40,7 @@ class RunnerManager(object):
         return f'managers:{"-".join(self.vm_type.tags)}'
 
     def update_runner(self, github_runner: dict):
+        self.runners = self.redis.get_runners(self.redis_key_name())
         if github_runner['name'] in self.runners:
             runner = self.runners[github_runner['name']]
             runner.update_from_github(github_runner)

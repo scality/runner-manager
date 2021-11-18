@@ -60,7 +60,10 @@ class RunnerFactory(object):
         name = self.generate_runner_name(vm_type)
         runner = Runner(name=name, vm_id=None, vm_type=vm_type)
 
-        asyncio.get_event_loop().run_in_executor(None, self.async_create_vm, runner)
+        try:
+            asyncio.get_running_loop().run_in_executor(None, self.async_create_vm, runner)
+        except RuntimeError:
+            self.async_create_vm(runner)
 
         self.runner_counter += 1
         return runner
@@ -69,7 +72,10 @@ class RunnerFactory(object):
         logger.info(f"respawn runner: {runner.name}")
         self.openstack_manager.delete_vm(runner.vm_id)
 
-        asyncio.get_event_loop().run_in_executor(None, self.async_create_vm, runner)
+        try:
+            asyncio.get_running_loop().run_in_executor(None, self.async_create_vm, runner)
+        except RuntimeError:
+            self.async_create_vm(runner)
 
         runner.status_history = []
         runner.vm_id = None
