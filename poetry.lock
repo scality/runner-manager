@@ -986,7 +986,7 @@ six = ">=1.4.0"
 
 [[package]]
 name = "python-neutronclient"
-version = "7.3.0"
+version = "7.7.0"
 description = "CLI and Client Library for OpenStack Networking"
 category = "main"
 optional = false
@@ -996,7 +996,7 @@ python-versions = ">=3.6"
 cliff = ">=3.4.0"
 debtcollector = ">=1.2.0"
 iso8601 = ">=0.1.11"
-keystoneauth1 = ">=3.4.0"
+keystoneauth1 = ">=3.8.0"
 netaddr = ">=0.7.18"
 os-client-config = ">=1.28.0"
 osc-lib = ">=1.12.0"
@@ -1268,7 +1268,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "6b00054049ee4b34b70f018f5403cf8508a3bac03943cbeaa13b1e0207c434ab"
+content-hash = "89b2b3f39d0de1939446418498bdb093e3a0b4163d2a6d34b0909cb14c8e4470"
 
 [metadata.files]
 appdirs = [
@@ -1923,8 +1923,8 @@ python-multipart = [
     {file = "python-multipart-0.0.5.tar.gz", hash = "sha256:f7bb5f611fc600d15fa47b3974c8aa16e93724513b49b5f95c81e6624c83fa43"},
 ]
 python-neutronclient = [
-    {file = "python-neutronclient-7.3.0.tar.gz", hash = "sha256:41b9a4bab8ebb2428f926cd1f7077df6c1d997f384e48aa0cbec049b8b54536c"},
-    {file = "python_neutronclient-7.3.0-py3-none-any.whl", hash = "sha256:5f02bfc5a2f9f738b2d70d82ec70d78de3b7695c33ee6c4ee8cae406b57f8464"},
+    {file = "python-neutronclient-7.7.0.tar.gz", hash = "sha256:9190174b1b848ff9d7fff1a131f76c045dc90f59dc03448ae27c4a89f925fffc"},
+    {file = "python_neutronclient-7.7.0-py3-none-any.whl", hash = "sha256:42ae50a42d011ad6ade35c3d9b2d230a4e3309cb54fcf7ff218d7276cce164a7"},
 ]
 python-novaclient = [
     {file = "python-novaclient-17.4.0.tar.gz", hash = "sha256:bca1a3899c0ecf0f63a9b3e97c5d56557186bece1e2a585b26d7c5727d461822"},
