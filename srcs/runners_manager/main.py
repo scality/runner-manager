@@ -33,7 +33,9 @@ def init(settings: dict, args: EnvSettings):
                                          token=args.cloud_nine_token,
                                          username=args.cloud_nine_user,
                                          password=args.cloud_nine_password,
-                                         region=settings['cloud_nine_region'])
+                                         region=settings['cloud_nine_region'],
+                                         redhat_username=args.redhat_username,
+                                         redhat_password=args.redhat_password)
     github_manager = GithubManager(organization=settings['github_organization'],
                                    token=args.github_token)
     r = redis.Redis(host=settings['redis']['host'],

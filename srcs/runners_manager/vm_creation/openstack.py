@@ -22,7 +22,11 @@ class OpenstackManager(object):
     nova_client: novaclient.client.Client
     neutron: neutronclient.v2_0.client.Client
 
-    def __init__(self, project_name, token, username, password, region):
+    redhat_username = ""
+    redhat_password = ""
+
+    def __init__(self, project_name, token, username, password, region, redhat_username,
+                 redhat_password):
         if username and password:
             logger.info("Openstack auth with basic credentials")
             session = keystoneauth1.session.Session(
@@ -44,11 +48,12 @@ class OpenstackManager(object):
                     project_domain_id='default')
             )
 
+        self.redhat_username = redhat_username
+        self.redhat_password = redhat_password
         self.nova_client = novaclient.client.Client(version=2, session=session, region_name=region)
         self.neutron = neutronclient.v2_0.client.Client(session=session, region_name=region)
 
-    @staticmethod
-    def script_init_runner(runner: Runner, token: int,
+    def script_init_runner(self, runner: Runner, token: int,
                            github_organization: str, installer: str):
         file_loader = FileSystemLoader('templates')
         env = Environment(loader=file_loader)
@@ -60,6 +65,8 @@ class OpenstackManager(object):
         output = template.render(installer=installer,
                                  github_organization=github_organization,
                                  token=token, name=runner.name, tags=','.join(runner.vm_type.tags),
+                                 redhat_username=self.redhat_username,
+                                 redhat_password=self.redhat_password,
                                  group='default')
         return output
 

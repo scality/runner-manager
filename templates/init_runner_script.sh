@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 source /etc/os-release
 LINUX_OS=${ID}
+LINUX_OS_VERSION=$(echo ${VERSION_ID} | sed -E 's/^([0-9]+)\..*$/\1/')
+DOCKER_SERVICE_START="yes"
 
 if [ "${LINUX_OS}" = "ubuntu" ]
 then
@@ -21,12 +23,51 @@ then
 sudo yum install -y bind-utils yum-utils
 sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 sudo yum install -y epel-release docker-ce docker-ce-cli containerd.io
+elif [ "${LINUX_OS}" = "rhel" ]
+then
+sudo bash -c 'cat <<EOF > /etc/systemd/system/redhat_registration.service
+[Unit]
+Description=Redhat registration
+After=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+TimeoutStartSec=300
+ExecStart=/sbin/subscription-manager register --username={{ redhat_username }} --password={{ redhat_password }} --auto-attach
+TimeoutStopSec=300
+ExecStop=-/sbin/subscription-manager unregister
+
+[Install]
+WantedBy=multi-user.target
+EOF'
+sudo chmod 600 /etc/systemd/system/redhat_registration.service
+sudo systemctl daemon-reload
+sudo systemctl enable redhat_registration.service
+sudo systemctl start redhat_registration.service
+if [ "${LINUX_OS_VERSION}" = "7" ]
+then
+# Enable repos to install docker
+sudo subscription-manager repos --enable=rhel-7-server-extras-rpms --enable=rhel-7-server-optional-rpms
+sudo yum install -y docker
+elif [ "${LINUX_OS_VERSION}" = "8" ]
+then
+sudo dnf install -y podman-docker
+DOCKER_SERVICE_START="no"
+else
+echo "RHEL version not managed by the runner-manager"
+exit 1
+fi
 else
 echo "OS not managed by the runner-manager"
 exit 1
 fi
 
+if [ "${DOCKER_SERVICE_START}" = "yes" ]
+then
 sudo systemctl start docker
+fi
+
 sudo groupadd -f docker
 sudo useradd -m  actions
 sudo usermod -aG docker,root actions

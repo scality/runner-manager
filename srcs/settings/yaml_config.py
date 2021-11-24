@@ -10,6 +10,8 @@ class EnvSettings(object):
     def __init__(self):
         self.setting_file = os.getenv('SETTING_FILE', default='./settings.yml')
         self.github_token = os.getenv('GITHUB_TOKEN')
+        self.redhat_username = os.getenv('REDHAT_USERNAME')
+        self.redhat_password = os.getenv('REDHAT_PASSWORD')
         self.cloud_nine_user = os.getenv('CLOUD_NINE_USERNAME')
         self.cloud_nine_password = os.getenv('CLOUD_NINE_PASSWORD')
         self.cloud_nine_token = os.getenv('CLOUD_NINE_TOKEN')
