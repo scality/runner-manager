@@ -75,38 +75,64 @@ class OpenstackManager(object):
                   github_organization: str, installer: str, call_number=0):
         """
         TODO `tenantnetwork1` is a hardcoded network we should put this in config later on
+        Every call with nova_client looks very unstable.
         """
 
         if call_number > 5:
             return None
 
-        sec_group_id = self.neutron.list_security_groups()['security_groups'][0]['id']
-        nic = {'net-id': self.neutron.list_networks(name='tenantnetwork1')['networks'][0]['id']}
-        instance = self.nova_client.servers.create(
-            name=runner.name, image=self.nova_client.glance.find_image(runner.vm_type.image),
-            flavor=self.nova_client.flavors.find(name=runner.vm_type.flavor),
-            security_groups=[sec_group_id], nics=[nic],
-            userdata=self.script_init_runner(runner, runner_token, github_organization,
-                                             installer)
-        )
-        while instance.status not in ['ACTIVE', 'ERROR']:
-            instance = self.nova_client.servers.get(instance.id)
-            time.sleep(2)
-        if instance.status == 'ERROR':
-            logger.info('vm failed, creating a new one')
-            self.delete_vm(instance.id)
-            time.sleep(2)
+        # Delete all VMs with the same name
+        vm_list = self.nova_client.servers.list(search_opts={'name': runner.name},
+                                                sort_keys=['created_at'])
+        for vm in vm_list:
+            self.nova_client.servers.delete(vm.id)
+
+        instance = None
+        try:
+
+            sec_group_id = self.neutron.list_security_groups()['security_groups'][0]['id']
+            nic = {'net-id': self.neutron.list_networks(name='tenantnetwork1')['networks'][0]['id']}
+            image = self.nova_client.glance.find_image(runner.vm_type.image)
+            flavor = self.nova_client.flavors.find(name=runner.vm_type.flavor)
+
+            instance = self.nova_client.servers.create(
+                name=runner.name,
+                image=image,
+                flavor=flavor,
+                security_groups=[sec_group_id], nics=[nic],
+                userdata=self.script_init_runner(runner, runner_token, github_organization,
+                                                 installer)
+            )
+
+            while instance.status not in ['ACTIVE', 'ERROR']:
+                instance = self.nova_client.servers.get(instance.id)
+                time.sleep(2)
+
+            if instance.status == 'ERROR':
+                logger.info('vm failed, creating a new one')
+                self.delete_vm(instance.id)
+                time.sleep(2)
+                metrics.runner_creation_failed.inc()
+                return self.create_vm(runner, runner_token, github_organization,
+                                      installer, call_number + 1)
+        except Exception as e:
+            logger.error(f"Vm creation raised an error, {e}")
+
+        if not instance or not instance.id:
             metrics.runner_creation_failed.inc()
-            return self.create_vm(runner, runner_token, github_organization,
-                                  installer, call_number + 1)
+            logger.error(f"""VM not found on openstack, recreating it.
+VM id: {instance.id if instance else 'Vm not created'}""")
+            return self.create_vm(runner, runner_token,
+                                  github_organization, installer,
+                                  call_number + 1)
 
         logger.info("vm is successfully created")
         return instance
 
     @metrics.runner_delete_time_seconds.time()
-    def delete_vm(self, id: str):
+    def delete_vm(self, vm_id: str):
         try:
-            self.nova_client.servers.delete(id)
+            self.nova_client.servers.delete(vm_id)
         except novaclient.exceptions.NotFound as exp:
             # If the machine was already deleted, move along
             logger.info(exp)
