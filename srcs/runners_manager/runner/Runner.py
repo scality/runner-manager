@@ -92,7 +92,13 @@ class Runner(object):
         return d
 
     def update_status(self, status: str):
-        if self.status == status:
+        """
+        Update a runner status,
+        Skip if the status didn't change or the runner is respawning and still offline
+        :param status:
+        :return:
+        """
+        if self.status == status or (self.status == 'respawning' and status == 'offline'):
             return
 
         if self.is_offline and status in ['online', 'running']:

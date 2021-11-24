@@ -15,7 +15,6 @@ services:
     environment:
       - PYTHONUNBUFFERED=0
       - PYTHONIOENCODING=UTF-8
-      - REDIS_HOST=redis
       - SETTING_FILE=/app/test_settings.yml
     ports:
       - "8080:8080"

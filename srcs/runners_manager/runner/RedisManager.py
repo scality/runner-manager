@@ -10,6 +10,12 @@ class RedisManager(object):
     def __init__(self, redis: redis.Redis):
         self.redis = redis
 
+    def get_all_runners_managers(self) -> list[str]:
+        return self.redis.keys('managers:*')
+
+    def delete_runners_manager(self, runner_manager):
+        self.redis.delete(runner_manager)
+
     def update_manager_runners(self, runner_manager: str, runners: list[Runner]):
         runners_name = [r.redis_key_name() for r in runners]
         self.redis.set(runner_manager, json.dumps(runners_name))
@@ -21,6 +27,8 @@ class RedisManager(object):
         self.redis.set(runner.redis_key_name(), json.dumps(runner.toJson()))
 
     def get_runner(self, name: str) -> Runner:
+        if not self.redis.get(name):
+            return None
         data = json.loads(self.redis.get(name))
         return Runner.fromJson(data)
 
