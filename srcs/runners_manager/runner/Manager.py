@@ -35,11 +35,23 @@ class Manager(object):
 
         self.extra_runner_online_timer = datetime.timedelta(**settings['extra_runner_timer'])
         self.timeout_runner_timer = datetime.timedelta(**settings['timeout_runner_timer'])
+        self.redis = r
+        self.synchronize_managed_runner_with_local_settings()
 
     def remove_all_runners(self):
         for manager in self.runner_managers:
             for runner in manager.get_runners().values():
-                manager.delete_runner(runner)
+                if not runner.is_running:
+                    manager.delete_runner(runner)
+
+    def synchronize_managed_runner_with_local_settings(self):
+        for key_runners_manager in self.redis.get_all_runners_managers():
+            logger.info(key_runners_manager)
+            # If the runner manager is not in the local manager runner delete it
+            if key_runners_manager not in [rm.redis_key_name() for rm in self.runner_managers]:
+                for name, runner in self.redis.get_runners(key_runners_manager).items():
+                    self.factory.delete_runner(runner)
+                self.redis.delete_runners_manager(key_runners_manager)
 
     def update_all_runners(self, github_runners: list[dict]):
         """

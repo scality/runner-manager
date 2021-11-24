@@ -50,7 +50,9 @@ class RunnerFactory(object):
             logger.error(f"Creation of runner {runner} failed")
             redis_database.delete_runner(runner)
         else:
-            runner = redis_database.get_runner(runner.redis_key_name())
+            runner_exist = redis_database.get_runner(runner.redis_key_name())
+            if runner_exist:
+                runner = runner_exist
             runner.vm_id = instance.id
             redis_database.update_runner(runner)
             logger.info("Create success")
