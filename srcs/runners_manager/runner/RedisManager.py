@@ -11,7 +11,10 @@ class RedisManager(object):
         self.redis = redis
 
     def get_all_runners_managers(self) -> list[str]:
-        return self.redis.keys('managers:*')
+        return [name.decode('ascii') for name in self.redis.keys('managers:*')]
+
+    def get_all_runners(self) -> list[Runner]:
+        return [self.get_runner(name) for name in self.redis.keys('runners:*')]
 
     def delete_runners_manager(self, runner_manager):
         self.redis.delete(runner_manager)
