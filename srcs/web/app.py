@@ -45,6 +45,8 @@ async def refresh_data():
 
 @app.post('/runners/reset')
 async def reset_reset_runners(request: Request):
+    g_runners = github_manager.get_runners()
+    runner_m.update_all_runners(g_runners['runners'])
     runner_m.remove_all_runners()
     g_runners = github_manager.get_runners()
     runner_m.update_all_runners(g_runners['runners'])

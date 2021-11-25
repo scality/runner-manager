@@ -149,7 +149,8 @@ class Runner(object):
     @property
     def has_run(self) -> bool:
         return self.is_offline and \
-            ('online' in self.status_history or 'running' in self.status_history)
+            ('online' in self.status_history or 'running' in self.status_history
+             or 'creating' in self.status_history or 'respawning' in self.status_history)
 
     @property
     def is_running(self) -> bool:
@@ -158,3 +159,7 @@ class Runner(object):
     @property
     def is_online(self) -> bool:
         return self.status == 'online'
+
+    @property
+    def is_creating(self) -> bool:
+        return self.status in ['creating', 'respawning']

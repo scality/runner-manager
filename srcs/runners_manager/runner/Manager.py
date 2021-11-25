@@ -45,6 +45,12 @@ class Manager(object):
                 if not runner.is_running:
                     manager.delete_runner(runner)
 
+        # Remove orphan runners
+        for runner in self.redis.get_all_runners():
+            if runner:
+                self.factory.delete_runner(runner)
+                self.redis.delete_runner(runner)
+
     def synchronize_managed_runner_with_local_settings(self):
         for key_runners_manager in self.redis.get_all_runners_managers():
             logger.info(key_runners_manager)
@@ -52,6 +58,7 @@ class Manager(object):
             if key_runners_manager not in [rm.redis_key_name() for rm in self.runner_managers]:
                 for name, runner in self.redis.get_runners(key_runners_manager).items():
                     self.factory.delete_runner(runner)
+                    self.redis.delete_runner(runner)
                 self.redis.delete_runners_manager(key_runners_manager)
 
     def update_all_runners(self, github_runners: list[dict]):
@@ -111,7 +118,7 @@ class Manager(object):
         """
 
         current_online_or_creating = len(
-            manager.filter_runners(lambda r: not r.has_run and not r.is_running)
+            manager.filter_runners(lambda r: r.is_online or r.is_creating)
         )
         current_running = len(manager.filter_runners(lambda r: r.is_running))
 
@@ -123,16 +130,19 @@ class Manager(object):
             and runner.time_online > self.extra_runner_online_timer
 
     def runner_should_never_spawn(self, runner: Runner) -> bool:
-        return runner.is_offline and not runner.has_run \
+        return runner.is_creating \
             and runner.time_since_created > self.timeout_runner_timer
 
     def log_runners_infos(self):
         for manager in self.runner_managers:
             offline_runners = manager.filter_runners(lambda r: r.has_run)
+            creating_runners = manager.filter_runners(lambda r: r.is_creating)
             online_runners = manager.filter_runners(lambda r: r.is_online)
 
             logger.info("type" + str(manager.vm_type))
             logger.debug('Online runners')
             logger.debug(','.join([f"{elem.name} {elem.status}" for elem in online_runners]))
+            logger.debug('Creating runners')
+            logger.debug(','.join([f"{elem.name} {elem.status}" for elem in creating_runners]))
             logger.debug('Offline runners')
             logger.debug(','.join([f"{elem.name} {elem.status}" for elem in offline_runners]))
