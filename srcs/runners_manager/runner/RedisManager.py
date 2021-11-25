@@ -43,8 +43,9 @@ class RedisManager(object):
         runners_json = self.redis.mget(json.loads(runner_names))
         runners = {}
         for runner in runners_json:
-            r = Runner.fromJson(json.loads(runner))
-            runners[r.name] = r
+            if runner:
+                r = Runner.fromJson(json.loads(runner))
+                runners[r.name] = r
 
         return runners
 

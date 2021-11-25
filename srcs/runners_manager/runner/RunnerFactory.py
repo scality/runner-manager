@@ -4,6 +4,7 @@ import asyncio
 
 from runners_manager.vm_creation.github_actions_api import GithubManager
 from runners_manager.vm_creation.openstack import OpenstackManager
+from runners_manager.runner.RedisManager import RedisManager
 from runners_manager.runner.Runner import Runner
 from runners_manager.vm_creation.Exception import APIException
 from runners_manager.runner.VmType import VmType
@@ -24,7 +25,8 @@ class RunnerFactory(object):
 
     def __init__(self, openstack_manager: OpenstackManager,
                  github_manager: GithubManager,
-                 organization):
+                 organization: str,
+                 redis: RedisManager):
         """
         This object spawn and delete the runner and spawn the VM
         """
@@ -33,9 +35,9 @@ class RunnerFactory(object):
         self.github_organization = organization
         self.runner_name_format = 'runner-{organization}-{tags}-{index}'
         self.runner_counter = 0
+        self.redis = redis
 
     def async_create_vm(self, runner: Runner):
-        from web import redis_database
         logger.info("Start creating VM")
 
         installer = self.github_manager.link_download_runner()
@@ -48,13 +50,13 @@ class RunnerFactory(object):
 
         if instance is None:
             logger.error(f"Creation of runner {runner} failed")
-            redis_database.delete_runner(runner)
+            self.redis.delete_runner(runner)
         else:
-            runner_exist = redis_database.get_runner(runner.redis_key_name())
+            runner_exist = self.redis.get_runner(runner.redis_key_name())
             if runner_exist:
                 runner = runner_exist
             runner.vm_id = instance.id
-            redis_database.update_runner(runner)
+            self.redis.update_runner(runner)
             logger.info("Create success")
 
     def create_runner(self, vm_type: VmType):
@@ -67,7 +69,6 @@ class RunnerFactory(object):
         except RuntimeError:
             self.async_create_vm(runner)
 
-        self.runner_counter += 1
         return runner
 
     def respawn_replace(self, runner: Runner):
@@ -98,7 +99,17 @@ class RunnerFactory(object):
             logger.info(f'APIException catch, when try to delete the runner: {str(runner)}')
 
     def generate_runner_name(self, vm_type: VmType):
+        """
+        Generating unused name for runner, used in Redis in Github
+        :param vm_type:
+        :return:
+        """
         vm_type.tags.sort()
-        return self.runner_name_format.format(index=self.runner_counter,
+        name = self.runner_name_format.format(index=self.runner_counter,
                                               organization=self.github_organization,
                                               tags='-'.join(vm_type.tags))
+        self.runner_counter += 1
+        # Check that a virtual machine hasn't this name already
+        if self.redis.redis.get(f'runners:{name}') is not None:
+            return self.generate_runner_name(vm_type)
+        return name

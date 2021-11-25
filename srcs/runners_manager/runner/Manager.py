@@ -28,7 +28,8 @@ class Manager(object):
                  r: RedisManager):
         self.factory = RunnerFactory(openstack_manager,
                                      github_manager,
-                                     settings['github_organization'])
+                                     settings['github_organization'],
+                                     r)
         self.runner_managers = []
         for v_type in settings['runner_pool']:
             self.runner_managers.append(RunnerManager(VmType(v_type), self.factory, r))

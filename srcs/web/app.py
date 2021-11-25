@@ -18,8 +18,9 @@ app.add_route('/metrics', prometheus_metrics)
 
 # TODO if we have multiple instances it might bug ?
 @app.on_event("startup")
-@repeat_every(seconds=60 * 5)
+@repeat_every(seconds=60 * 2)
 def refresh():
+    logger.info("Refresh runners")
     try:
         runners = github_manager.get_runners()
         runner_m.update_all_runners(runners['runners'])
