@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+trap 'if [ -f /etc/systemd/system/redhat_registration.service ]; then systemctl stop redhat_registration.service; fi' EXIT
+
 source /etc/os-release
 LINUX_OS=${ID}
 LINUX_OS_VERSION=$(echo ${VERSION_ID} | sed -E 's/^([0-9]+)\..*$/\1/')
@@ -77,4 +80,5 @@ sudo -H -u actions bash -c 'mkdir -p /home/actions/actions-runner'
 sudo -H -u actions bash -c 'cd /home/actions/actions-runner && curl -O -L {{ installer["download_url"] }} && tar xzf ./{{ installer["filename"] }}'
 sudo -H -u actions bash -c 'sudo /home/actions/actions-runner/bin/installdependencies.sh'
 sudo -H -u actions bash -c '/home/actions/actions-runner/config.sh --url https://github.com/{{ github_organization }} --token {{ token }} --name "{{ name }}" --work _work  --labels {{ tags }} --runnergroup {{ group }} --replace --unattended'
+
 nohup sudo -H -u actions bash -c '/home/actions/actions-runner/run.sh --once 2> /home/actions/actions-runner/logs'
