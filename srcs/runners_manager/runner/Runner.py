@@ -130,8 +130,7 @@ class Runner(object):
             self.update_status(github_runner['status'])
 
         # Set the action id
-        if self.action_id is None:
-            self.action_id = github_runner['id']
+        self.action_id = github_runner['id']
 
     @property
     def time_since_created(self):
