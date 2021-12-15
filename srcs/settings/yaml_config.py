@@ -49,6 +49,7 @@ class Settings(Schema):
     github_organization = fields.Str(required=True)
     cloud_nine_region = fields.Str(required=True)
     cloud_nine_tenant = fields.Str(required=True)
+    allowed_ssh_keys = fields.Str(required=False, default="")
     runner_pool = fields.Nested(RunnerPool, many=True, required=True)
     python_config = fields.Str(required=True)
     extra_runner_timer = fields.Nested(ExtraRunnerTimer, required=True)

@@ -5,6 +5,16 @@ LINUX_OS=${ID}
 LINUX_OS_VERSION=$(echo ${VERSION_ID} | sed -E 's/^([0-9]+)\..*$/\1/')
 DOCKER_SERVICE_START="yes"
 
+sudo groupadd -f docker
+sudo useradd -m  actions
+sudo usermod -aG docker,root actions
+sudo bash -c "echo 'actions ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers"
+sudo -H -u actions bash -c 'mkdir -p /home/actions/.ssh'
+{% if ssh_keys %}
+sudo -H -u actions bash -c 'echo "{{ ssh_keys }}" >>  /home/actions/.ssh/authorized_keys'
+{% endif %}
+
+
 if [ "${LINUX_OS}" = "ubuntu" ]
 then
 sudo apt-get -y update
@@ -68,11 +78,6 @@ if [ "${DOCKER_SERVICE_START}" = "yes" ]
 then
 sudo systemctl start docker
 fi
-
-sudo groupadd -f docker
-sudo useradd -m  actions
-sudo usermod -aG docker,root actions
-sudo bash -c "echo 'actions ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers"
 
 sudo -H -u actions bash -c 'mkdir -p /home/actions/actions-runner'
 sudo -H -u actions bash -c 'cd /home/actions/actions-runner && curl -O -L {{ installer["download_url"] }} && tar xzf ./{{ installer["filename"] }}'

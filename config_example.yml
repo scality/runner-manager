@@ -4,6 +4,7 @@ github_organization: ""
 # Cloud nine connection infos
 cloud_nine_region: ""
 cloud_nine_tenant: ""
+allowed_ssh_keys: ""
 
 # RedHat credentials
 redhat_username: ""

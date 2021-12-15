@@ -26,7 +26,7 @@ class OpenstackManager(object):
     redhat_password = ""
 
     def __init__(self, project_name, token, username, password, region, redhat_username,
-                 redhat_password):
+                 redhat_password, ssh_keys):
         if username and password:
             logger.info("Openstack auth with basic credentials")
             session = keystoneauth1.session.Session(
@@ -52,6 +52,7 @@ class OpenstackManager(object):
         self.redhat_password = redhat_password
         self.nova_client = novaclient.client.Client(version=2, session=session, region_name=region)
         self.neutron = neutronclient.v2_0.client.Client(session=session, region_name=region)
+        self.ssh_keys = ssh_keys
 
     def script_init_runner(self, runner: Runner, token: int,
                            github_organization: str, installer: str):
@@ -67,7 +68,8 @@ class OpenstackManager(object):
                                  token=token, name=runner.name, tags=','.join(runner.vm_type.tags),
                                  redhat_username=self.redhat_username,
                                  redhat_password=self.redhat_password,
-                                 group='default')
+                                 group='default',
+                                 ssh_keys=self.ssh_keys)
         return output
 
     @metrics.runner_creation_time_seconds.time()
