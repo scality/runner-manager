@@ -7,6 +7,7 @@ data:
     github_organization: {{ .Values.githubOrganization }}
     cloud_nine_region: {{ .Values.cloudNineRegion }}
     cloud_nine_tenant: {{ .Values.cloudNineTenant }}
+    allowed_ssh_keys: {{ .Values.allowedSshKeys | toYaml | indent 6  }}
     python_config: {{ .Values.pythonConfigModule }}
     runner_pool:
 {{ .Values.runnerPool | toYaml | indent 6 }}

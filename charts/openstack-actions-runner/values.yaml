@@ -110,6 +110,7 @@ cloudNineToken: ""
 cloudNineUsername: ""
 cloudNinePassword: ""
 cloudNineRegion: ""
+cloudNineSshKeys: ""
 
 # The python module, used for configuration
 # example:

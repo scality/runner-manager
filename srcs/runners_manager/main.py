@@ -30,12 +30,13 @@ def init(settings: dict, args: EnvSettings):
     logger.info('Initialisation')
     importlib.import_module(settings['python_config'])
     openstack_manager = OpenstackManager(project_name=settings['cloud_nine_tenant'],
+                                         region=settings['cloud_nine_region'],
                                          token=args.cloud_nine_token,
                                          username=args.cloud_nine_user,
                                          password=args.cloud_nine_password,
-                                         region=settings['cloud_nine_region'],
                                          redhat_username=args.redhat_username,
-                                         redhat_password=args.redhat_password)
+                                         redhat_password=args.redhat_password,
+                                         ssh_keys=settings['allowed_ssh_keys'])
     github_manager = GithubManager(organization=settings['github_organization'],
                                    token=args.github_token)
     r = redis.Redis(host=settings['redis']['host'],
