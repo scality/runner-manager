@@ -99,7 +99,7 @@ class Runner(object):
         :return:
         """
         if self.status == status or \
-                (self.status in ['createing', 'respawning'] and status == 'offline'):
+                (self.status in ['creating', 'respawning'] and status == 'offline'):
             return
 
         if self.is_offline and status in ['online', 'running']:
