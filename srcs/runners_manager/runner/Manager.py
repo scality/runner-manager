@@ -93,8 +93,9 @@ class Manager(object):
                 manager.delete_runner(r)
                 manager.create_runner()
 
-            # Delete runner if they are offline for more then 10min after spawn
+            # Delete runner if they are offline for more then Xmin after spawn
             for elem in manager.filter_runners(self.runner_should_never_spawn):
+                logger.info("Runner will never be online")
                 manager.delete_runner(elem)
 
             # Delete last runners if you have too many and they are not used for the last x minutes
@@ -102,10 +103,12 @@ class Manager(object):
                 self.too_much_runner_online
             )[manager.min_runner_number():]
             for runner in runners_to_delete:
+                logger.info('Reducing the number of runners online')
                 manager.delete_runner(runner)
 
             # Create if it's still not enough
             while self.need_new_runner(manager):
+                logger.info('Need new runner')
                 manager.create_runner()
 
     @staticmethod
