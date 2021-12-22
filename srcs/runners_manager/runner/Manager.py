@@ -75,9 +75,14 @@ class Manager(object):
 
     def update_runner_status(self, runner: dict):
         logger.info(runner)
-        manager = next(
-            manager for manager in self.runner_managers if runner["name"] in manager.runners.keys()
-        )
+        try:
+            manager = next(
+                manager for manager in self.runner_managers
+                if runner["name"] in manager.runners.keys()
+            )
+        except StopIteration:
+            logger.info('Runner not managed')
+            return
 
         logger.info(manager)
         manager.update_runner(runner)

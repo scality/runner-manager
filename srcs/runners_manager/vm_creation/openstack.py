@@ -1,5 +1,6 @@
 import logging
 import time
+import asyncio
 
 import keystoneauth1.session
 import keystoneclient.auth.identity.v3
@@ -132,8 +133,32 @@ VM id: {instance.id if instance else 'Vm not created'}""")
         return instance
 
     @metrics.runner_delete_time_seconds.time()
-    def delete_vm(self, vm_id: str):
+    def delete_vm(self, vm_id: str, image_name=None):
         try:
+            asyncio.get_running_loop().run_in_executor(None,
+                                                       self.async_delete_vm,
+                                                       vm_id,
+                                                       image_name)
+        except RuntimeError:
+            self.async_delete_vm(vm_id, image_name)
+
+    def async_delete_vm(self, vm_id: str, image_name):
+        try:
+            if image_name and 'rhel' in image_name:
+                try:
+                    self.nova_client.servers.shelve(vm_id)
+                    s = self.nova_client.servers.get(vm_id).status
+                    while s not in ['SHUTOFF', 'SHELVED_OFFLOADED']:
+                        time.sleep(5)
+                        try:
+                            s = self.nova_client.servers.get(vm_id).status
+                            logger.info(s)
+                        except Exception as e:
+                            logger.error(f'Error {e}')
+
+                except Exception:
+                    pass
+
             self.nova_client.servers.delete(vm_id)
         except novaclient.exceptions.NotFound as exp:
             # If the machine was already deleted, move along
