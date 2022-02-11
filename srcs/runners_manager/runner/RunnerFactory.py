@@ -50,6 +50,7 @@ class RunnerFactory(object):
 
         if instance is None:
             logger.error(f"Creation of runner {runner} failed")
+            runner.update_status('deleting')
             self.redis.delete_runner(runner)
         else:
             runner_exist = self.redis.get_runner(runner.redis_key_name())
