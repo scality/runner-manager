@@ -29,7 +29,7 @@ echo \
   $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt-get update --yes --force-yes
 sudo apt-get install --yes --force-yes docker-ce docker-ce-cli containerd.io
-elif [ "${LINUX_OS}" = "centos" ]
+elif [ "${LINUX_OS}" = "centos" ]  ||  [ "${LINUX_OS}" = "rocky" ] || [ "${LINUX_OS}" = "alma" ]
 then
 sudo yum install -y bind-utils yum-utils
 sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
