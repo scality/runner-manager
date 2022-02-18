@@ -26,9 +26,19 @@ class GithubManager(object):
             if elem['os'] == 'linux' and elem['architecture'] == archi
         )
 
-    def get_runners(self):
+    def _get_runner_page(self, page=1, per_page=30):
         info_link = f'https://api.github.com/orgs/{self.organization}/actions/runners'
-        return self.session.get(info_link).json()
+        return self.session.get(info_link, params={'page': page, 'per_page': per_page}).json()
+
+    def get_runners(self, per_page=100):
+        index = 1
+        page = self._get_runner_page(page=index, per_page=per_page)
+
+        while index * per_page < page['total_count']:
+            index += 1
+            page['runners'] += self._get_runner_page(page=index, per_page=per_page)['runners']
+
+        return page
 
     def create_runner_token(self):
         """
