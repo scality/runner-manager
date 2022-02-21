@@ -35,7 +35,7 @@ class RedisManager(object):
         data = json.loads(self.redis.get(name))
         return Runner.fromJson(data)
 
-    def get_runners(self, manager_name: str) -> dict:
+    def get_runners(self, manager_name: str) -> dict[str, Runner]:
         """
         Get all runners name from the manager name and build each of them with there json
         """

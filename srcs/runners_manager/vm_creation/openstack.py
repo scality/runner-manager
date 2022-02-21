@@ -73,6 +73,10 @@ class OpenstackManager(object):
                                  ssh_keys=self.ssh_keys)
         return output
 
+    def get_all_vms(self, organization: str):
+        return [vm for vm in self.nova_client.servers.list(sort_keys=['created_at'])
+                if vm.name.startswith(f'runner-{organization}')]
+
     @metrics.runner_creation_time_seconds.time()
     def create_vm(self, runner: Runner, runner_token: int or None,
                   github_organization: str, installer: str, call_number=0):
