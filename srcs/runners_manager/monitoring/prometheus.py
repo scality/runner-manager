@@ -20,6 +20,16 @@ class Metrics(object):
             'image',
         ]
 
+        self.runner_vm_orphan_delete = Gauge(
+            'openstack_actions_runner_vm_orphan_delete',
+            'Metrics displaying the number of vm not tracked deleted',
+        )
+
+        self.runner_github_orphan_delete = Gauge(
+            'openstack_actions_runner_github_orphan_delete',
+            'Metrics displaying the number of vm not tracked deleted',
+        )
+
         self.runner_status = Enum(
             'openstack_actions_runner_status', 'Metrics displaying the status of a runner',
             states=['creating', 'deleting', 'respawning', 'online', 'running', 'offline'],
