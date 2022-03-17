@@ -12,8 +12,8 @@ logger = logging.getLogger("runner_manager")
 
 class RunnerManager(object):
     """
-    This object create, delete and update runners infos bout VM and github runner
-    We save every infos updated on the redis database
+    This object creates, delete and update runners infos bout VM and github runner
+    We save every info updated on the redis database
     This class is a tool and is here to join Github and local data
     """
     redis: RedisManager

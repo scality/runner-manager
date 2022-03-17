@@ -6,6 +6,10 @@ logger = logging.getLogger("runner_manager")
 
 
 class GithubManager(object):
+    """
+    Manage runners api call for an organization
+    TODO add the possibility to manage an organization or a project
+    """
     organization: str
     headers: dict
     session: requests.Session
@@ -18,7 +22,10 @@ class GithubManager(object):
             'Authorization': f'token {token}'
         })
 
-    def link_download_runner(self, archi='x64'):
+    def link_download_runner(self, archi='x64') -> str:
+        """
+        Get the download link of the runner binary tar ball for linux
+        """
         download_link = f'https://api.github.com/orgs/{self.organization}/actions/runners/downloads'
         return next(
             elem
@@ -26,11 +33,17 @@ class GithubManager(object):
             if elem['os'] == 'linux' and elem['architecture'] == archi
         )
 
-    def _get_runner_page(self, page=1, per_page=30):
+    def _get_runner_page(self, page=1, per_page=30) -> [dict]:
+        """
+        Get the runner list by page
+        """
         info_link = f'https://api.github.com/orgs/{self.organization}/actions/runners'
         return self.session.get(info_link, params={'page': page, 'per_page': per_page}).json()
 
-    def get_runners(self, per_page=100):
+    def get_runners(self, per_page=100) -> [dict]:
+        """
+        Get the list of all runners
+        """
         index = 1
         page = self._get_runner_page(page=index, per_page=per_page)
 
@@ -40,7 +53,7 @@ class GithubManager(object):
 
         return page
 
-    def create_runner_token(self):
+    def create_runner_token(self) -> str:
         """
         Create  a token used as paramert of the github action script start,
         this token is available one hour.

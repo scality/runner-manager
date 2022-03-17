@@ -1,6 +1,6 @@
 class VmType:
     """
-    Define the Virtual machines and who much to spawn
+    Define a Virtual machine and the quantity needed
     """
     tags: list[str]
     flavor: str
