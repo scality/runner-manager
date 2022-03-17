@@ -7,6 +7,10 @@ logger = logging.getLogger("runner_manager")
 
 
 class WebHookManager(object):
+    """
+    Run a function depending on webhook's event type
+    https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads
+    """
     event: str
     payload: WebHook
 
@@ -15,6 +19,10 @@ class WebHookManager(object):
         self.payload = payload
 
     def __call__(self, *args, **kwargs):
+        """
+        Call the method with the same name as the event
+        Raise an error if the methde does not exist
+        """
         # Check if we managed this event
         if self.event not in [method for method in dir(self) if method[:2] != "__"]:
             logger.info(f"Event {self.event} not managed")
@@ -23,9 +31,16 @@ class WebHookManager(object):
             getattr(self, self.event)(self.payload)
 
     def workflow_run(self, payload: WebHook):
+        """
+        https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#workflow_run
+        """
         pass
 
     def workflow_job(self, payload: WebHook):
+        """
+        Github Action Workflow job event, received when a job
+        https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#workflow_job
+        """
         status = {}
         if (payload.action == 'queued'
                 or "self-hosted" not in payload.workflow_job.labels

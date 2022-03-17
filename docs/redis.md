@@ -12,7 +12,10 @@ redis:
 ```
 
 ## Usage in the code base
-On creation each `RunnerManager` load his data from redis. 
+The database is set and manage by the object `RedisManager`, and is instanced as global in `srcs/web/init.py`.
+
+On creation each `RunnerManager` load his data from redis.
+There Runner list is always up-to-date with the redis data, same for `Runner` data.
 Then, when it creates or update a runner, it automatically updates the data in redis.
 
 

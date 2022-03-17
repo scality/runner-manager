@@ -14,8 +14,8 @@ logger = logging.getLogger("runner_manager")
 
 class Manager(object):
     """
-    This object contain the main logic to maintain the number of needed runners
-    It manage all runners for one repository
+    This object contains the main logic to maintain the number of needed runners
+    It manages all runners for one repository
     """
     factory: RunnerFactory
     runner_managers: list[RunnerManager]

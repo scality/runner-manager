@@ -19,6 +19,10 @@ app.add_route('/metrics', prometheus_metrics)
 @app.on_event("startup")
 @repeat_every(seconds=60 * 60)
 def delete_orphan_runners():
+    """
+    Delete Virtual Machine if there are not tracked by the runner manager and
+    Delete Github Runner if there are not tracked as well
+    """
     logger.info("list not tracked VM")
     gh_runners = [elem['id'] for elem in github_manager.get_runners()['runners']]
     server_list = [(vm.id, vm.flavor, vm.name)
@@ -55,6 +59,9 @@ def refresh():
 
 @app.get("/")
 async def root():
+    """
+    List redis database
+    """
     keys = {}
     for elem in redis_database.redis.keys():
         keys[elem] = redis_database.redis.get(elem)
@@ -70,6 +77,9 @@ async def refresh_data():
 
 @app.post('/runners/reset')
 async def reset_reset_runners(request: Request):
+    """
+    Delete Virutal machine and runner on githu and create new runner
+    """
     g_runners = github_manager.get_runners()
     runner_m.update_all_runners(g_runners['runners'])
     runner_m.remove_all_runners()
@@ -80,6 +90,9 @@ async def reset_reset_runners(request: Request):
 
 @app.post('/webhook')
 async def webhook_post(data: WebHook, request: Request):
+    """
+    Webhook point for Github
+    """
     WebHookManager(payload=data, event=request.headers['X-Github-Event'])()
     return Response(status_code=200)
 
