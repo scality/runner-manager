@@ -128,18 +128,17 @@ class OpenstackManager(CloudManager):
         """
         self.CONFIG_VM_TYPE_SCHEMA().load(runner.vm_type.config)
 
-        if call_number > 5:
+        if call_number > 10:
             return None
-
-        # Delete all VMs with the same name
-        vm_list = self.nova_client.servers.list(
-            search_opts={"name": runner.name}, sort_keys=["created_at"]
-        )
-        for vm in vm_list:
-            self.nova_client.servers.delete(vm.id)
 
         instance = None
         try:
+            # Delete all VMs with the same name
+            vm_list = self.nova_client.servers.list(
+                search_opts={"name": runner.name}, sort_keys=["created_at"]
+            )
+            for vm in vm_list:
+                self.nova_client.servers.delete(vm.id)
 
             sec_group_id = self.neutron.list_security_groups()["security_groups"][0][
                 "id"

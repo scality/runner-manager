@@ -70,6 +70,16 @@ class RunnerManager(object):
             self.update_runner(elem)
 
     def create_runner(self) -> None:
+        """
+        Here we create an VM with the factory and
+           if everything succeed we store the result in the redis Database.
+
+        It won't create a Runner if we are already at the maximum we want.
+        In the case the max is set at 0 we don't have a maximum.
+        """
+        if 0 < self.vm_type.quantity["max"] <= len(self.runners):
+            logger.info("Runner not created, already to much")
+            return
         self.runners = self.redis.get_runners(self.redis_key_name())
         runner = self.factory.create_runner(self.vm_type)
         runner.update_status("creating")

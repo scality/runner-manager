@@ -94,7 +94,7 @@ async def refresh_data():
 @app.post("/runners/reset")
 async def reset_reset_runners(request: Request):
     """
-    Delete Virutal machine and runner on githu and create new runner
+    Delete Virutal machine and runner on github and create new runner
     """
     g_runners = github_manager.get_runners(runner_m.factory.runner_prefix)
     runner_m.update_all_runners(g_runners["runners"])

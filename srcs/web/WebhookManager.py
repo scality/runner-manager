@@ -46,9 +46,32 @@ class WebHookManager(object):
         status = {}
         if (
             payload.action == "queued"
-            or "self-hosted" not in payload.workflow_job.labels
-            or payload.workflow_job.runner_id is None
+            and "self-hosted" in payload.workflow_job.labels
+            and payload.workflow_job.runner_id is None
         ):
+            payload.workflow_job.labels.remove("self-hosted")
+            try:
+                r_m = next(
+                    iter(
+                        runner_m.get_runner_manager_on_demand(
+                            lambda elem: elem.vm_type.tags
+                            == payload.workflow_job.labels
+                        )
+                    ),
+                    None,
+                )
+            except Exception as e:
+                logger.error(e.with_traceback())
+                return 0
+
+            logger.info(f"{r_m} Runner manager found")
+            if r_m:
+                logger.info("Start create new runner " + r_m.redis_key_name())
+                try:
+                    r_m.create_runner()
+                except Exception as e:
+                    logger.error(e)
+
             return
         elif payload.action == "in_progress":
             status = {
