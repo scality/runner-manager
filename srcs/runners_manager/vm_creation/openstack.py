@@ -4,6 +4,7 @@ import asyncio
 
 import keystoneauth1.session
 import keystoneclient.auth.identity.v3
+import glanceclient.client as glance_client
 import neutronclient.v2_0.client
 import novaclient.client
 import novaclient.v2.servers
@@ -56,6 +57,7 @@ class OpenstackManager(object):
         self.redhat_password = redhat_password
         self.nova_client = novaclient.client.Client(version=2, session=session, region_name=region)
         self.neutron = neutronclient.v2_0.client.Client(session=session, region_name=region)
+        self.glance = glance_client.Client('2', session=session, region_name=region)
         self.ssh_keys = ssh_keys
 
     def script_init_runner(self, runner: Runner, token: int,
@@ -194,3 +196,12 @@ VM id: {instance.id if instance else 'Vm not created'}""")
             # If the machine was already deleted, move along
             logger.info(exp)
             pass
+
+    def delete_images_from_shelved(self, name):
+        images = self.glance.images.list()
+
+        for i in images:
+            print(i.name, name)
+            if name in i.name:
+                print(i.name)
+                self.glance.images.delete(i.id)
