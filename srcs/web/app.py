@@ -57,6 +57,12 @@ def refresh():
         logger.info(e)
 
 
+@app.on_event("startup")
+@repeat_every(seconds=60 * 2)
+def delete_images():
+    openstack_manager.delete_images_from_shelved(f'runner-{github_manager.organization}')
+
+
 @app.get("/")
 async def root():
     """
