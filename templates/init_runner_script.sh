@@ -72,11 +72,12 @@ if [ "${LINUX_OS_VERSION}" = "7" ]
 then
 # Enable repos to install docker
 sudo mkdir /etc/docker/
-sudo bash -c "cat >  /etc/docker/daemon.json << EOF
+# TODO: RELENG-5810 make dns config a setting for the runner
+sudo bash -c 'cat >  /etc/docker/daemon.json << EOF
 {
   "dns": ["10.100.1.1", "10.100.1.2", "10.100.1.3"]
 }
-EOF"
+EOF'
 
 sudo subscription-manager repos --enable=rhel-7-server-extras-rpms --enable=rhel-7-server-optional-rpms
 sudo yum install -y docker
