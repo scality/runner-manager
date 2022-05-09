@@ -4,9 +4,10 @@ metadata:
   name: {{ .Release.Name }}-settings
 data:
   settings.yml: |-
+    cloud_name: {{ .Values.cloudName }}
+    cloud_config:
+{{ .Values.cloudConfig | toYaml | indent 6 }}
     github_organization: {{ .Values.githubOrganization }}
-    cloud_nine_region: {{ .Values.cloudNineRegion }}
-    cloud_nine_tenant: {{ .Values.cloudNineTenant }}
     allowed_ssh_keys: {{ .Values.allowedSshKeys | toYaml | indent 6  }}
     python_config: {{ .Values.pythonConfigModule }}
     runner_pool:

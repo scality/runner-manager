@@ -19,8 +19,6 @@ Create an account on ngrok.com and configure ngrok on your laptop following the 
 
 Considering you have followed the instruction on the [config](config.md) section. Create a `.env` file, and set the following vars:
 ```bash
-CLOUD_NINE_USERNAME=your.username
-CLOUD_NINE_TOKEN=your.token
 GITHUB_TOKEN=your.github.token
 ```
 

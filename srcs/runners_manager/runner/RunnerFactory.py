@@ -3,7 +3,7 @@ import datetime
 import asyncio
 
 from runners_manager.vm_creation.github_actions_api import GithubManager
-from runners_manager.vm_creation.openstack import OpenstackManager
+from runners_manager.vm_creation.CloudManager import CloudManager
 from runners_manager.runner.RedisManager import RedisManager
 from runners_manager.runner.Runner import Runner
 from runners_manager.vm_creation.Exception import APIException
@@ -20,10 +20,10 @@ class RunnerFactory(object):
     runner_name_format: str
     runner_counter: int
 
-    openstack_manager: OpenstackManager
+    openstack_manager: CloudManager
     github_manager: GithubManager
 
-    def __init__(self, openstack_manager: OpenstackManager,
+    def __init__(self, openstack_manager: CloudManager,
                  github_manager: GithubManager,
                  organization: str,
                  redis: RedisManager):

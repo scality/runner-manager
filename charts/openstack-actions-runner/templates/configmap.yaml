@@ -3,6 +3,4 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-config
 data:
-  CLOUD_NINE_REGION:  {{ .Values.cloudNineRegion }}
   GITHUB_ORGANIZATION:   {{ .Values.githubOrganization }}
-  CLOUD_NINE_TENANT: {{ .Values.cloudNineTenant }}
