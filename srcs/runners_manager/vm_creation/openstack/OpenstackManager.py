@@ -30,10 +30,10 @@ class OpenstackManager(CloudManager):
     redhat_username = ""
     redhat_password = ""
 
-    def __init__(self, openstack_settings: dict,
+    def __init__(self, settings: dict,
                  redhat_username: str, redhat_password: str,
                  ssh_keys: str):
-        settings = OpenstackConfig().load(openstack_settings)
+        settings = OpenstackConfig().load(settings)
 
         if settings.get('username') and settings.get('password'):
             logger.info("Openstack auth with basic credentials")

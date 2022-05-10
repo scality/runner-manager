@@ -20,7 +20,7 @@ class TestRunnerManager(unittest.TestCase):
 
     @patch('runners_manager.vm_creation.github_actions_api.GithubManager')
     @patch('runners_manager.vm_creation.openstack.OpenstackManager')
-    def setUp(self, return_github_manager, return_openstack_manager) -> None:
+    def setUp(self, return_github_manager, return_cloud_manager) -> None:
         self.fake_redis = RedisManager(fakeredis.FakeStrictRedis())
         self.factory = MagicMock()
         self.vm_type_normal = VmType({

@@ -23,10 +23,10 @@ class Manager(object):
     timeout_runner_timer: datetime.timedelta
 
     def __init__(self, settings: dict,
-                 openstack_manager: CloudManager,
+                 cloud_manager: CloudManager,
                  github_manager: GithubManager,
                  r: RedisManager):
-        self.factory = RunnerFactory(openstack_manager,
+        self.factory = RunnerFactory(cloud_manager,
                                      github_manager,
                                      settings['github_organization'],
                                      r)

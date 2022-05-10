@@ -15,16 +15,16 @@ class TestRunnerManager(unittest.TestCase):
     def setUp(self) -> None:
         self.fake_redis = RedisManager(fakeredis.FakeStrictRedis())
         self.github_manager = MagicMock()
-        self.openstack_manager = MagicMock()
+        self.cloud_manager = MagicMock()
 
         self.github_manager.link_download_runner.return_value = 'fake_link'
         self.github_manager.create_runner_token.return_value = ''
         self.github_manager.get_runners.return_value = []
         self.github_manager.force_delete_runner.return_value = None
 
-        self.openstack_manager.script_init_runner.return_value = ''
-        self.openstack_manager.create_vm.return_value = ObjectId('str')
-        self.openstack_manager.delete_vm.return_value = None
+        self.cloud_manager.script_init_runner.return_value = ''
+        self.cloud_manager.create_vm.return_value = ObjectId('str')
+        self.cloud_manager.delete_vm.return_value = None
 
     @patch('runners_manager.runner.Manager.RunnerManager')
     @patch('runners_manager.runner.Manager.RunnerFactory')
@@ -42,7 +42,7 @@ class TestRunnerManager(unittest.TestCase):
             'timeout_runner_timer': {
                 'minutes': 0,
                 'hours': 1
-            }}, self.openstack_manager, self.github_manager, self.fake_redis)
+            }}, self.cloud_manager, self.github_manager, self.fake_redis)
         self.assertEqual(r.runner_managers, [])
         self.assertEqual((r.timeout_runner_timer.seconds // 60) % 60, 0)
         self.assertEqual(r.timeout_runner_timer.seconds // 3600, 1)
@@ -74,7 +74,7 @@ class TestRunnerManager(unittest.TestCase):
                      'timeout_runner_timer': {
                          'minutes': 10,
                          'hours': 10
-                     }}, self.openstack_manager, self.github_manager, self.fake_redis)
+                     }}, self.cloud_manager, self.github_manager, self.fake_redis)
         self.assertEqual(r.runner_managers.__len__(), 1)
 
     @patch('runners_manager.runner.Manager.RunnerManager.__init__', return_value=None)
@@ -109,7 +109,7 @@ class TestRunnerManager(unittest.TestCase):
                      'timeout_runner_timer': {
                          'minutes': 10,
                          'hours': 10
-                     }}, self.openstack_manager, self.github_manager, self.fake_redis)
+                     }}, self.cloud_manager, self.github_manager, self.fake_redis)
         r.update_all_runners([{'id': 1, 'name': '1',
                                'os': 'linux', 'status': 'online',
                                'busy': False,

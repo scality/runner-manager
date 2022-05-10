@@ -14,23 +14,23 @@ logger = logging.getLogger("runner_manager")
 
 class RunnerFactory(object):
     """
-    Create / Delete / replace Runners and Virtual machine from Github and Openstack
+    Create / Delete / replace Runners and Virtual machine from Github and your cloud provider
     """
     github_organization: str
     runner_name_format: str
     runner_counter: int
 
-    openstack_manager: CloudManager
+    cloud_manager: CloudManager
     github_manager: GithubManager
 
-    def __init__(self, openstack_manager: CloudManager,
+    def __init__(self, cloud_manager: CloudManager,
                  github_manager: GithubManager,
                  organization: str,
                  redis: RedisManager):
         """
         This object spawn and delete the runner and spawn the VM
         """
-        self.openstack_manager = openstack_manager
+        self.cloud_manager = cloud_manager
         self.github_manager = github_manager
         self.github_organization = organization
         self.runner_name_format = 'runner-{organization}-{tags}-{index}'
@@ -41,7 +41,7 @@ class RunnerFactory(object):
         logger.info("Start creating VM")
 
         installer = self.github_manager.link_download_runner()
-        instance = self.openstack_manager.create_vm(
+        instance = self.cloud_manager.create_vm(
             runner=runner,
             runner_token=self.github_manager.create_runner_token(),
             github_organization=self.github_organization,
@@ -74,7 +74,7 @@ class RunnerFactory(object):
 
     def respawn_replace(self, runner: Runner):
         logger.info(f"respawn runner: {runner.name}")
-        self.openstack_manager.delete_vm(runner.vm_id, runner.vm_type.image)
+        self.cloud_manager.delete_vm(runner.vm_id, runner.vm_type.image)
 
         try:
             asyncio.get_running_loop().run_in_executor(None, self.async_create_vm, runner)
@@ -93,7 +93,7 @@ class RunnerFactory(object):
                 self.github_manager.force_delete_runner(runner.action_id)
 
             if runner.vm_id:
-                self.openstack_manager.delete_vm(runner.vm_id, runner.vm_type.image)
+                self.cloud_manager.delete_vm(runner.vm_id, runner.vm_type.image)
 
             logger.info("Delete success")
         except APIException:

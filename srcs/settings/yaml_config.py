@@ -44,7 +44,7 @@ class RedisDatabase(Schema):
 
 class Settings(Schema):
     github_organization = fields.Str(required=True)
-    cloud_name = fields.Str(required=True, default='openstack')
+    cloud_name = fields.Str(required=True)
     cloud_config = fields.Dict(required=True)
     allowed_ssh_keys = fields.Str(required=False, default="")
     runner_pool = fields.Nested(RunnerPool, many=True, required=True)
