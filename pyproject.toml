@@ -33,6 +33,7 @@ fakeredis = "1.6.0"
 pytest = "^6.2.5"
 docker-compose = "^1.29.2"
 pytest-cov = "^3.0.0"
+pre-commit = "^2.19.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

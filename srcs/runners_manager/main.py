@@ -27,9 +27,9 @@ def maintain_number_of_runner(runner_m: Manager, github_manager: GithubManager):
 
 
 def get_cloud_manager(settings: dict, args: EnvSettings) -> CloudManager:
-    CloudManager = importlib.import_module(f'runners_manager.vm_creation.{settings["cloud_name"]}')
+    cloud_module = importlib.import_module(f'runners_manager.vm_creation.{settings["cloud_name"]}')
 
-    return CloudManager.CloudManager(settings=settings['cloud_config'],
+    return cloud_module.CloudManager(settings=settings['cloud_config'],
                                      redhat_username=args.redhat_username,
                                      redhat_password=args.redhat_password,
                                      ssh_keys=settings['allowed_ssh_keys'])
