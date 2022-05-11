@@ -1,14 +1,20 @@
 # Your github organization where you want to attach your self-hosted runners
 github_organization: ""
 
-# Cloud nine connection infos
-cloud_nine_region: ""
-cloud_nine_tenant: ""
-allowed_ssh_keys: ""
+# Cloud connection infos
+cloud_name: 'openstack'
+cloud_config:
+    endpoint: ""
+    region: ""
+    project_name: ""
 
-# RedHat credentials
-redhat_username: ""
-redhat_password: ""
+    username: ""
+    password: ""
+    token: ""
+    network_name: ""
+
+# SSH key added on each runner
+allowed_ssh_keys: ""
 
 # The python module, used for configuration
 # example:

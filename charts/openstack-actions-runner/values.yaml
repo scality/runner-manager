@@ -104,18 +104,18 @@ githubOrganization: ""
 redhatUsername: ""
 redhatPassword: ""
 
-# Cloud nine connection infos
-cloudNineTenant: ""
-cloudNineToken: ""
-cloudNineUsername: ""
-cloudNinePassword: ""
-cloudNineRegion: ""
-cloudNineSshKeys: ""
+# Cloud connection name
+cloud_name: 'openstack'
+# Cloud config, it will changes depending your cloud
+cloud_config: {}
+
+
+allowedSshKeys: ''
 
 # The python module, used for configuration
 # example:
 #  'runners_manager.settings.settings_local'
-pythonConfigModule: ""
+pythonConfigModule: ''
 
 # Represent the infos about each group of runners
 # Define by:

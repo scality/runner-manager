@@ -4,9 +4,9 @@ import importlib
 import redis
 
 from runners_manager.vm_creation.github_actions_api import GithubManager
-from runners_manager.vm_creation.openstack import OpenstackManager
 from runners_manager.runner.Manager import Manager
 from runners_manager.runner.RedisManager import RedisManager
+from runners_manager.vm_creation.CloudManager import CloudManager
 from settings.yaml_config import EnvSettings
 
 logger = logging.getLogger("runner_manager")
@@ -26,27 +26,29 @@ def maintain_number_of_runner(runner_m: Manager, github_manager: GithubManager):
         time.sleep(10)
 
 
+def get_cloud_manager(settings: dict, args: EnvSettings) -> CloudManager:
+    CloudManager = importlib.import_module(f'runners_manager.vm_creation.{settings["cloud_name"]}')
+
+    return CloudManager.CloudManager(settings=settings['cloud_config'],
+                                     redhat_username=args.redhat_username,
+                                     redhat_password=args.redhat_password,
+                                     ssh_keys=settings['allowed_ssh_keys'])
+
+
 def init(settings: dict, args: EnvSettings):
     logger.info('Initialisation')
     importlib.import_module(settings['python_config'])
-    openstack_manager = OpenstackManager(project_name=settings['cloud_nine_tenant'],
-                                         region=settings['cloud_nine_region'],
-                                         token=args.cloud_nine_token,
-                                         username=args.cloud_nine_user,
-                                         password=args.cloud_nine_password,
-                                         redhat_username=args.redhat_username,
-                                         redhat_password=args.redhat_password,
-                                         ssh_keys=settings['allowed_ssh_keys'])
+    cloud_manager = get_cloud_manager(settings, args)
     github_manager = GithubManager(organization=settings['github_organization'],
                                    token=args.github_token)
     r = redis.Redis(host=settings['redis']['host'],
                     port=settings['redis']['port'],
                     password=args.redis_password)
     redis_database = RedisManager(r)
-    runner_m = Manager(settings, openstack_manager, github_manager, redis_database)
-    return runner_m, redis_database, github_manager, openstack_manager
+    runner_m = Manager(settings, cloud_manager, github_manager, redis_database)
+    return runner_m, redis_database, github_manager, cloud_manager
 
 
 def main(settings: dict, args: EnvSettings):
-    runner_m, redis_database, github_manager, openstack_manager = init(settings, args)
+    runner_m, redis_database, github_manager, cloud_manager = init(settings, args)
     maintain_number_of_runner(runner_m, github_manager)

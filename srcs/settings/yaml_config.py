@@ -12,9 +12,6 @@ class EnvSettings(object):
         self.github_token = os.getenv('GITHUB_TOKEN')
         self.redhat_username = os.getenv('REDHAT_USERNAME')
         self.redhat_password = os.getenv('REDHAT_PASSWORD')
-        self.cloud_nine_user = os.getenv('CLOUD_NINE_USERNAME')
-        self.cloud_nine_password = os.getenv('CLOUD_NINE_PASSWORD')
-        self.cloud_nine_token = os.getenv('CLOUD_NINE_TOKEN')
         self.redis_password = os.getenv('REDIS_PASSWORD')
 
 
@@ -47,8 +44,8 @@ class RedisDatabase(Schema):
 
 class Settings(Schema):
     github_organization = fields.Str(required=True)
-    cloud_nine_region = fields.Str(required=True)
-    cloud_nine_tenant = fields.Str(required=True)
+    cloud_name = fields.Str(required=True)
+    cloud_config = fields.Dict(required=True)
     allowed_ssh_keys = fields.Str(required=False, default="")
     runner_pool = fields.Nested(RunnerPool, many=True, required=True)
     python_config = fields.Str(required=True)

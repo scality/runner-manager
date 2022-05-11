@@ -3,7 +3,7 @@ import logging
 
 from runners_manager.runner.Runner import Runner
 from runners_manager.vm_creation.github_actions_api import GithubManager
-from runners_manager.vm_creation.openstack import OpenstackManager
+from runners_manager.vm_creation.CloudManager import CloudManager
 from runners_manager.runner.RunnerFactory import RunnerFactory
 from runners_manager.runner.RunnerManager import RunnerManager
 from runners_manager.runner.VmType import VmType
@@ -23,10 +23,10 @@ class Manager(object):
     timeout_runner_timer: datetime.timedelta
 
     def __init__(self, settings: dict,
-                 openstack_manager: OpenstackManager,
+                 cloud_manager: CloudManager,
                  github_manager: GithubManager,
                  r: RedisManager):
-        self.factory = RunnerFactory(openstack_manager,
+        self.factory = RunnerFactory(cloud_manager,
                                      github_manager,
                                      settings['github_organization'],
                                      r)

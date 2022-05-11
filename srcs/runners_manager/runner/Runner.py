@@ -10,7 +10,7 @@ logger = logging.getLogger("runner_manager")
 class Runner(object):
     """
     Represent a self-hosted runner
-    It should always be synchronised with Github and Openstack data
+    It should always be synchronised with Github and your Cloud provider data
     """
     name: str
     started_at: datetime.datetime or None

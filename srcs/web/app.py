@@ -4,7 +4,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import Response
 from fastapi_utils.tasks import repeat_every
 
-from web import redis_database, runner_m, github_manager, openstack_manager
+from web import redis_database, runner_m, github_manager, cloud_manager
 from web.WebhookManager import WebHookManager
 from web.models import WebHook
 from runners_manager.monitoring.prometheus import prometheus_metrics, metrics
@@ -26,7 +26,7 @@ def delete_orphan_runners():
     logger.info("list not tracked VM")
     gh_runners = [elem['id'] for elem in github_manager.get_runners()['runners']]
     server_list = [(vm.id, vm.flavor, vm.name)
-                   for vm in openstack_manager.get_all_vms(github_manager.organization)]
+                   for vm in cloud_manager.get_all_vms(github_manager.organization)]
 
     rd_runners = []
     for m in runner_m.runner_managers:
@@ -36,7 +36,7 @@ def delete_orphan_runners():
         if not next(filter(lambda r: r.vm_id == server_id, rd_runners), None):
             logger.info(f'VM {server_id} deleted')
             metrics.runner_vm_orphan_delete.inc()
-            openstack_manager.delete_vm(server_id, flavor)
+            cloud_manager.delete_vm(server_id, flavor)
 
     for runner_id in gh_runners:
         if not next(filter(lambda r: r.action_id == runner_id, rd_runners), None):
@@ -60,7 +60,7 @@ def refresh():
 @app.on_event("startup")
 @repeat_every(seconds=60 * 2)
 def delete_images():
-    openstack_manager.delete_images_from_shelved(f'runner-{github_manager.organization}')
+    cloud_manager.delete_images_from_shelved(f'runner-{github_manager.organization}')
 
 
 @app.get("/")

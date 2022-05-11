@@ -21,7 +21,7 @@ LOGGING_CONFIG = {
             'class': 'logging.handlers.RotatingFileHandler',
             'formatter': 'standard',
             'level': FILE_LOG_LEVEL,
-            'filename': '/var/log/openstack_runner.log',
+            'filename': '/var/log/runner_manager.log',
             'maxBytes': 1024 * 1000,
             'backupCount': 20
         },

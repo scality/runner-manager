@@ -12,52 +12,61 @@ from jinja2 import FileSystemLoader, Environment
 
 from runners_manager.runner.Runner import Runner
 from runners_manager.monitoring.prometheus import metrics
+from runners_manager.vm_creation.openstack.schema import OpenstackConfig
+from runners_manager.vm_creation.CloudManager import CloudManager
 
 
 logger = logging.getLogger("runner_manager")
 
 
-keystone_endpoint = 'https://scality.cloud/keystone/v3'
-
-
-class OpenstackManager(object):
+class OpenstackManager(CloudManager):
     """
     Manager related to Openstack virtual machines
     """
     nova_client: novaclient.client.Client
     neutron: neutronclient.v2_0.client.Client
+    network_name = str
 
     redhat_username = ""
     redhat_password = ""
 
-    def __init__(self, project_name, token, username, password, region, redhat_username,
-                 redhat_password, ssh_keys):
-        if username and password:
+    def __init__(self, settings: dict,
+                 redhat_username: str, redhat_password: str,
+                 ssh_keys: str):
+        settings = OpenstackConfig().load(settings)
+
+        if settings.get('username') and settings.get('password'):
             logger.info("Openstack auth with basic credentials")
             session = keystoneauth1.session.Session(
                 auth=keystoneclient.auth.identity.v3.Password(
-                    auth_url=keystone_endpoint,
-                    username=username,
-                    password=password,
+                    auth_url=settings['endpoint'],
+                    username=settings['username'],
+                    password=settings['password'],
                     user_domain_name='default',
-                    project_name=project_name,
+                    project_name=settings['project_name'],
                     project_domain_id='default')
             )
-        else:
+        elif settings.get('username') and settings.get('token'):
             logger.info("Openstack auth with token")
             session = keystoneauth1.session.Session(
                 auth=keystoneclient.auth.identity.v3.Token(
-                    auth_url=keystone_endpoint,
-                    token=token,
-                    project_name=project_name,
+                    auth_url=settings['endpoint'],
+                    token=settings['token'],
+                    project_name=settings['project_name'],
                     project_domain_id='default')
             )
+        else:
+            raise Exception('You should have infos for openstack / cloud nine connection')
 
+        self.network_name = settings['network_name']
         self.redhat_username = redhat_username
         self.redhat_password = redhat_password
-        self.nova_client = novaclient.client.Client(version=2, session=session, region_name=region)
-        self.neutron = neutronclient.v2_0.client.Client(session=session, region_name=region)
-        self.glance = glance_client.Client('2', session=session, region_name=region)
+        self.nova_client = novaclient.client.Client(version=2, session=session,
+                                                    region_name=settings['region'])
+        self.neutron = neutronclient.v2_0.client.Client(session=session,
+                                                        region_name=settings['region'])
+        self.glance = glance_client.Client('2', session=session,
+                                           region_name=settings['region'])
         self.ssh_keys = ssh_keys
 
     def script_init_runner(self, runner: Runner, token: int,
@@ -115,7 +124,8 @@ class OpenstackManager(object):
         try:
 
             sec_group_id = self.neutron.list_security_groups()['security_groups'][0]['id']
-            nic = {'net-id': self.neutron.list_networks(name='tenantnetwork1')['networks'][0]['id']}
+            net = self.neutron.list_networks(name=self.network_name)['networks'][0]['id']
+            nic = {'net-id': net}
             image = self.nova_client.glance.find_image(runner.vm_type.image)
             flavor = self.nova_client.flavors.find(name=runner.vm_type.flavor)
 
