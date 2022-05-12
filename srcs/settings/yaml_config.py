@@ -10,6 +10,7 @@ class EnvSettings(object):
     def __init__(self):
         self.setting_file = os.getenv('SETTING_FILE', default='./settings.yml')
         self.github_token = os.getenv('GITHUB_TOKEN')
+        self.google_application_credentials = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
         self.redhat_username = os.getenv('REDHAT_USERNAME')
         self.redhat_password = os.getenv('REDHAT_PASSWORD')
         self.redis_password = os.getenv('REDIS_PASSWORD')

@@ -9,13 +9,14 @@ services:
       - uvicorn
       - srcs.web.app:app
       - --host
-      - 0.0.0.0
+      - '0.0.0.0'
       - --port
-      - 8080
+      - '8080'
       - --reload
     volumes:
       - "./srcs:/app/srcs"
       - ./test_settings.yml:/app/test_settings.yml
+      - ${HOME}/.config/gcloud/application_default_credentials.json:/app/application_default_credentials.json
     depends_on:
       - redis
     env_file:
@@ -24,6 +25,7 @@ services:
       - PYTHONUNBUFFERED=0
       - PYTHONIOENCODING=UTF-8
       - SETTING_FILE=/app/test_settings.yml
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/application_default_credentials.json
     ports:
       - "8080:8080"
   redis:

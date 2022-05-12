@@ -1,4 +1,3 @@
-import asyncio
 import datetime
 import logging
 
@@ -42,7 +41,7 @@ class RunnerFactory(object):
         self.runner_counter = 0
         self.redis = redis
 
-    def async_create_vm(self, runner: Runner) -> None:
+    def create_instance(self, runner: Runner) -> None:
         logger.info("Start creating VM")
 
         installer = self.github_manager.link_download_runner()
@@ -70,25 +69,14 @@ class RunnerFactory(object):
         name = self.generate_runner_name(vm_type)
         runner = Runner(name=name, vm_id=None, vm_type=vm_type)
 
-        try:
-            asyncio.get_running_loop().run_in_executor(
-                None, self.async_create_vm, runner
-            )
-        except RuntimeError:
-            self.async_create_vm(runner)
+        self.create_instance(runner)
 
         return runner
 
     def respawn_replace(self, runner: Runner) -> Runner:
         logger.info(f"respawn runner: {runner.name}")
         self.cloud_manager.delete_vm(runner)
-
-        try:
-            asyncio.get_running_loop().run_in_executor(
-                None, self.async_create_vm, runner
-            )
-        except RuntimeError:
-            self.async_create_vm(runner)
+        self.create_instance(runner)
 
         runner.status_history = []
         runner.vm_id = None
