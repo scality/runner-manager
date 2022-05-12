@@ -6,9 +6,9 @@ ENV PYTHONPATH=/app/srcs
 #
 # Install packages needed by the buildchain
 #
-RUN apt-get upgrade
 RUN apt-get --assume-yes update \
  && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends --assume-yes \
+    ca-certificates \
     curl \
     git
 
