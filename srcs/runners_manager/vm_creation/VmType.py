@@ -2,17 +2,18 @@ class VmType:
     """
     Define a Virtual machine and the quantity needed
     """
+
     tags: list[str]
     flavor: str
     image: str
     quantity: dict[str, int]
 
     def __init__(self, config):
-        config['tags'].sort()
-        self.tags = config['tags']
-        self.flavor = config['flavor']
-        self.image = config['image']
-        self.quantity = config['quantity']
+        config["tags"].sort()
+        self.tags = config["tags"]
+        self.flavor = config["flavor"]
+        self.image = config["image"]
+        self.quantity = config["quantity"]
 
     def toJson(self):
         """
