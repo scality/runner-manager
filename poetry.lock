@@ -86,7 +86,7 @@ pycparser = "*"
 name = "cfgv"
 version = "3.3.1"
 description = "Validate configuration and produce human readable error messages."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6.1"
 
@@ -212,7 +212,7 @@ python-versions = ">=3.5"
 name = "distlib"
 version = "0.3.4"
 description = "Distribution utilities"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -350,7 +350,7 @@ sqlalchemy = ">=1.3.12,<2.0.0"
 name = "filelock"
 version = "3.6.0"
 description = "A platform independent file lock."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -394,7 +394,7 @@ python-versions = ">=3.6"
 name = "identify"
 version = "2.5.0"
 description = "File identification library for Python"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -592,7 +592,7 @@ python-versions = "*"
 name = "nodeenv"
 version = "1.6.0"
 description = "Node.js virtual environment builder"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -803,7 +803,7 @@ python-versions = ">=2.6"
 name = "platformdirs"
 version = "2.5.2"
 description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -827,7 +827,7 @@ testing = ["pytest", "pytest-benchmark"]
 name = "pre-commit"
 version = "2.19.0"
 description = "A framework for managing and maintaining multi-language pre-commit hooks."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -1120,7 +1120,7 @@ simplejson = ">=3.5.1"
 
 [[package]]
 name = "python-novaclient"
-version = "17.4.0"
+version = "17.7.0"
 description = "Client library for OpenStack Compute API"
 category = "main"
 optional = false
@@ -1298,7 +1298,7 @@ python-versions = "*"
 name = "toml"
 version = "0.10.2"
 description = "Python Library for Tom's Obvious, Minimal Language"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
@@ -1351,7 +1351,7 @@ standard = ["websockets (>=9.1)", "httptools (>=0.2.0,<0.3.0)", "watchgod (>=0.6
 name = "virtualenv"
 version = "20.14.1"
 description = "Virtual Python Environment builder"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 
@@ -1408,7 +1408,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "ac38d22354a15b6c2f5a923e4f3bad1d1a91c743b2bbd64c7a9b33fdf435569b"
+content-hash = "869dcc96159e82fa1fa7db6cc83be8c1c41d390436eb2259e02286b0babae00d"
 
 [metadata.files]
 appdirs = [
@@ -2105,8 +2105,8 @@ python-neutronclient = [
     {file = "python_neutronclient-7.3.0-py3-none-any.whl", hash = "sha256:5f02bfc5a2f9f738b2d70d82ec70d78de3b7695c33ee6c4ee8cae406b57f8464"},
 ]
 python-novaclient = [
-    {file = "python-novaclient-17.4.0.tar.gz", hash = "sha256:bca1a3899c0ecf0f63a9b3e97c5d56557186bece1e2a585b26d7c5727d461822"},
-    {file = "python_novaclient-17.4.0-py3-none-any.whl", hash = "sha256:47c33f896d72ce7229d82c9aa77db2dda89543688494a2d0b9d7c9815878af7b"},
+    {file = "python-novaclient-17.7.0.tar.gz", hash = "sha256:4ebc27f4ce06c155b8e991a44463b9358596e6856cf171c9af8dc7568d868bed"},
+    {file = "python_novaclient-17.7.0-py3-none-any.whl", hash = "sha256:7f3cbe33a65f8fc3be4d34b29c09c16f50faa5465fd78fc9615b03c1880a8e6b"},
 ]
 pytz = [
     {file = "pytz-2021.3-py2.py3-none-any.whl", hash = "sha256:3672058bc3453457b622aab7a1c3bfd5ab0bdae451512f6cf25f64ed37f5b87c"},
