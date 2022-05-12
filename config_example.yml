@@ -4,14 +4,14 @@ github_organization: ""
 # Cloud connection infos
 cloud_name: 'openstack'
 cloud_config:
-    auth_url: ""
-    region_name: ""
-    project_name: ""
+  auth_url: ""
+  region_name: ""
+  project_name: ""
 
-    username: ""
-    password: ""
-    token: ""
-    network_name: ""
+  username: ""
+  password: ""
+  token: ""
+  network_name: ""
 
 # SSH key added on each runner
 allowed_ssh_keys: ""
