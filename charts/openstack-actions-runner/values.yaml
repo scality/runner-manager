@@ -106,6 +106,8 @@ cloudName: 'openstack'
 # Cloud config, it will change depending on your cloud
 cloudConfig: {}
 
+# Content of Google cloud service account json file
+gcloudServiceAccount: ''
 
 allowedSshKeys: ''
 

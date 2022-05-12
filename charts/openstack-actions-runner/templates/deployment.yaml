@@ -14,6 +14,7 @@ spec:
         checksum/settings: {{ include (print $.Template.BasePath "/settings.yml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
         checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/gcloud-service-account: {{ include (print $.Template.BasePath "/google-service-account.yaml") . | sha256sum }}
       {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -48,6 +49,10 @@ spec:
               key: redis-password
         - name: SETTING_FILE
           value: /app/config/settings.yml
+        {{- if .Values.gcloudServiceAccount }}
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /secrets/service_account/credentials.json
+        {{- end }}
         envFrom:
         - configMapRef:
             name: {{ .Release.Name }}-config
@@ -56,11 +61,23 @@ spec:
         volumeMounts:
         - name: config
           mountPath: /app/config
+        {{- if .Values.gcloudServiceAccount }}
+        - name: gcloud-service-account
+          mountPath: /secrets/service_account
+          readOnly: true
+        {{- end }}
       volumes:
       - name: config
         configMap:
           name: {{ .Release.Name }}-settings
-
+      {{- if .Values.gcloudServiceAccount }}
+      - name: gcloud-service-account
+        secret:
+          secretName: '{{ .Release.Name }}-gcloud-service-account'
+          items:
+          - key: credentials.json
+            path: credentials.json
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
