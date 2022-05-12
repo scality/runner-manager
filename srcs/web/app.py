@@ -21,36 +21,42 @@ app.add_route("/metrics", prometheus_metrics)
 
 
 @app.on_event("startup")
-@repeat_every(seconds=30)
+@repeat_every(seconds=60 * 60 * 2)
 def delete_orphan_runners():
     """
     Delete Virtual Machine if there are not tracked by the runner manager and
     Delete Github Runner if there are not tracked as well
     """
-    logger.info("list not tracked VM")
-    gh_runners = [
-        (elem["id"], elem["name"]) for elem in github_manager.get_runners()["runners"]
-    ]
-    server_list = cloud_manager.get_all_vms(runner_m.factory.runner_prefix)
+    try:
+        logger.info("list not tracked VM")
+        gh_runners = [
+            (elem["id"], elem["name"])
+            for elem in github_manager.get_runners()["runners"]
+        ]
+        server_list = cloud_manager.get_all_vms(runner_m.factory.runner_prefix)
 
-    rd_runners = []
-    for m in runner_m.runner_managers:
-        rd_runners += m.get_runners().values()
+        rd_runners = []
+        for m in runner_m.runner_managers:
+            rd_runners += m.get_runners().values()
 
-    for server in server_list:
-        if not next(filter(lambda r: r.vm_id == server.vm_id, rd_runners), None):
-            logger.info(f"VM {server.vm_id} deleted")
-            metrics.runner_vm_orphan_delete.inc()
-            cloud_manager.delete_vm(server)
+        for server in server_list:
+            if not next(filter(lambda r: r.vm_id == server.vm_id, rd_runners), None):
+                logger.info(f"VM {server.vm_id} deleted")
+                metrics.runner_vm_orphan_delete.inc()
+                cloud_manager.delete_vm(server)
 
-    for runner_name, runner_id in gh_runners:
-        if not next(filter(lambda r: r.name == runner_name, rd_runners), None):
-            logger.info(f"self-hosted {runner_name} deleted")
-            metrics.runner_github_orphan_delete.inc()
-            github_manager.force_delete_runner(runner_id)
+        for runner_id, runner_name in gh_runners:
+            if not next(filter(lambda r: r.name == runner_name, rd_runners), None):
+                logger.info(f"self-hosted {runner_name} deleted")
+                metrics.runner_github_orphan_delete.inc()
+                github_manager.force_delete_runner(runner_id)
+    except Exception as e:
+        logger.error(f"error type {type(e)}")
+        logger.error(e)
 
 
-# TODO if we have multiple instances it might bug ?
+# TODO: RELENG-6041 There could be an issue with this call when multiple
+# runners are deployed
 @app.on_event("startup")
 @repeat_every(seconds=60 * 2)
 def refresh():
@@ -80,6 +86,8 @@ async def root():
     return {"message": "Hello World", "redis_database": keys}
 
 
+# TODO: RELENG-6041 There could be an issue with this call when multiple
+# runners are deployed
 @app.post("/runners/refresh")
 async def refresh_data():
     await refresh()
