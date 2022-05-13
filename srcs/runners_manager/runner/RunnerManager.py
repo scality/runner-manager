@@ -29,7 +29,7 @@ class RunnerManager(object):
         self.runners = {}
         self.runners = self.redis.get_runners(self.redis_key_name())
 
-    def get_runners(self) -> [Runner]:
+    def get_runners(self) -> dict[str, Runner]:
         self.runners = self.redis.get_runners(self.redis_key_name())
         return self.runners
 

@@ -22,6 +22,7 @@ class Manager(object):
     runner_managers: list[RunnerManager]
     extra_runner_online_timer: datetime.timedelta
     timeout_runner_timer: datetime.timedelta
+    redis: RedisManager
 
     def __init__(
         self,

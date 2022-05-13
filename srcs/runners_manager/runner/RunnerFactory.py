@@ -37,23 +37,23 @@ class RunnerFactory(object):
         self.cloud_manager = cloud_manager
         self.github_manager = github_manager
         self.github_organization = organization
-        self.runner_name_format = "-{organization}-{tags}-{index}"
-        self.runner_prefix = "runner-{cloud}"
+        self.runner_name_format = "{organization}-{tags}-{index}"
+        self.runner_prefix_format = "runner-{cloud}"
         self.runner_counter = 0
         self.redis = redis
 
-    def async_create_vm(self, runner: Runner):
+    def async_create_vm(self, runner: Runner) -> None:
         logger.info("Start creating VM")
 
         installer = self.github_manager.link_download_runner()
-        instance = self.cloud_manager.create_vm(
+        instance_id = self.cloud_manager.create_vm(
             runner=runner,
             runner_token=self.github_manager.create_runner_token(),
             github_organization=self.github_organization,
             installer=installer,
         )
 
-        if instance is None:
+        if instance_id is None:
             logger.error(f"Creation of runner {runner} failed")
             runner.update_status("deleting")
             self.redis.delete_runner(runner)
@@ -61,11 +61,11 @@ class RunnerFactory(object):
             runner_exist = self.redis.get_runner(runner.redis_key_name())
             if runner_exist:
                 runner = runner_exist
-            runner.vm_id = instance.id
+            runner.vm_id = instance_id
             self.redis.update_runner(runner)
             logger.info("Create success")
 
-    def create_runner(self, vm_type: VmType):
+    def create_runner(self, vm_type: VmType) -> Runner:
         logger.info(f"Create new runner for {vm_type}")
         name = self.generate_runner_name(vm_type)
         runner = Runner(name=name, vm_id=None, vm_type=vm_type)
@@ -79,9 +79,9 @@ class RunnerFactory(object):
 
         return runner
 
-    def respawn_replace(self, runner: Runner):
+    def respawn_replace(self, runner: Runner) -> Runner:
         logger.info(f"respawn runner: {runner.name}")
-        self.cloud_manager.delete_vm(runner.vm_id, runner.vm_type.image)
+        self.cloud_manager.delete_vm(runner)
 
         try:
             asyncio.get_running_loop().run_in_executor(
@@ -102,7 +102,7 @@ class RunnerFactory(object):
                 self.github_manager.force_delete_runner(runner.action_id)
 
             if runner.vm_id:
-                self.cloud_manager.delete_vm(runner.vm_id, runner.vm_type.image)
+                self.cloud_manager.delete_vm(runner)
 
             logger.info("Delete success")
         except APIException:
@@ -110,14 +110,17 @@ class RunnerFactory(object):
                 f"APIException catch, when try to delete the runner: {str(runner)}"
             )
 
-    def generate_runner_name(self, vm_type: VmType):
+    @property
+    def runner_prefix(self):
+        return self.runner_prefix_format.format(cloud=self.cloud_manager.name)
+
+    def generate_runner_name(self, vm_type: VmType) -> str:
         """
         Generating unused name for runner, used in Redis in Github
         :param vm_type:
         :return:
         """
         vm_type.tags.sort()
-        prefix = self.runner_prefix.format(cloud=self.cloud_manager.name)
         name = self.runner_name_format.format(
             index=self.runner_counter,
             organization=self.github_organization,
@@ -127,4 +130,4 @@ class RunnerFactory(object):
         # Check that a virtual machine hasn't this name already
         if self.redis.redis.get(f"runners:{name}") is not None:
             return self.generate_runner_name(vm_type)
-        return f"{prefix} {name}"
+        return f"{self.runner_prefix}-{name}"
