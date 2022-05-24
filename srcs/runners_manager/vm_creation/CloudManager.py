@@ -6,6 +6,7 @@ from runners_manager.runner.Runner import Runner
 
 class CloudManager(abc.ABC):
     CONFIG_SCHEMA: Schema = Schema
+    CONFIG_VM_TYPE_SCHEMA: Schema = Schema
     name: str
     redhat_username: str
     redhat_password: str
@@ -28,7 +29,7 @@ class CloudManager(abc.ABC):
         self.redhat_password = redhat_password
 
     @abc.abstractmethod
-    def get_all_vms(self, organization: str) -> [str]:
+    def get_all_vms(self, prefix: str) -> list[Runner]:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -39,11 +40,11 @@ class CloudManager(abc.ABC):
         github_organization: str,
         installer: str,
         call_number=0,
-    ):
+    ) -> int or None:
         raise NotImplementedError
 
     @abc.abstractmethod
-    def delete_vm(self, vm_id: str, image_name=None):
+    def delete_vm(self, runner: Runner):
         raise NotImplementedError
 
     @abc.abstractmethod
