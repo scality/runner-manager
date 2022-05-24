@@ -2,6 +2,7 @@ FROM python:3.9.5-slim
 
 ENV PYTHONUNBUFFERED=0
 ENV POETRY_VERSION=1.1.11
+ENV PYTHONPATH=/app/srcs
 #
 # Install packages needed by the buildchain
 #
@@ -17,7 +18,8 @@ WORKDIR /app
 
 COPY poetry.lock pyproject.toml /app/
 
-RUN poetry install --no-interaction --no-ansi --no-dev --no-root
+RUN poetry config virtualenvs.create false && \
+    poetry install --no-interaction --no-ansi --no-dev --no-root
 
 COPY . /app/
 
