@@ -1,4 +1,11 @@
-# Local Setup
+# Run it locally
+
+## TLDR;
+- Install docker-compose or podman-compose
+- Setup Github's and your cloud provider credentials
+- Create your `settings.yaml` file
+- Run everything :D
+
 
 A docker-compose file has been created to help you run the required components for the openstack-actions-runner.
 
@@ -6,14 +13,6 @@ To install `docker-compose` run:
 ```shell
 pip install docker-compose
 ```
-
-## Ngrok setup
-
-As the openstack-actions-runner depends on webhook to work properly.
-
-Ngrok can help you setup a public url to be used with GitHub webhooks.
-
-Create an account on ngrok.com and configure ngrok on your laptop following the doc on the website.
 
 ## Credentials
 
@@ -67,6 +66,15 @@ Once the configuration has been set you can boot your docker-compose file like t
 ```bash
 docker-compose up --build
 ```
+
+
+## (Optional) Ngrok setup
+
+As the openstack-actions-runner depends on webhook to work properly.
+
+Ngrok can help you setup a public url to be used with GitHub webhooks.
+
+Create an account on ngrok.com and configure ngrok on your laptop following the doc on the website.
 
 And on the side you can run ngrok to create a public url for you to work with webhooks.
 

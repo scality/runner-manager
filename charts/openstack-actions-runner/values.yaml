@@ -103,7 +103,7 @@ githubOrganization: ""
 
 # Cloud connection name
 cloudName: 'openstack'
-# Cloud config, it will changes depending your cloud
+# Cloud config, it will change depending on your cloud
 cloudConfig: {}
 
 
@@ -111,8 +111,8 @@ allowedSshKeys: ''
 
 # The python module, used for configuration
 # example:
-#  'runners_manager.settings.settings_local'
-pythonConfigModule: ''
+#  'settings.settings_local'
+pythonConfigModule: 'settings.settings_local'
 
 # Represent the infos about each group of runners
 # Define by:
@@ -132,10 +132,12 @@ pythonConfigModule: ''
 #       - small
 runnerPool: []
 
+# If a runner is not used for the extraRunnerTime, and there is enough runners, he is deleted
 extraRunnerTimer:
   minutes: 10
   hours: 0
 
+# If the runner is not spawned after this timer, it is considered as dead, and is deleted.
 timeoutRunnerTimer:
   minutes: 15
   hours: 0
