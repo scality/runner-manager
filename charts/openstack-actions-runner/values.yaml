@@ -101,13 +101,10 @@ affinity: {}
 githubToken: ""
 githubOrganization: ""
 
-redhatUsername: ""
-redhatPassword: ""
-
 # Cloud connection name
-cloud_name: 'openstack'
+cloudName: 'openstack'
 # Cloud config, it will changes depending your cloud
-cloud_config: {}
+cloudConfig: {}
 
 
 allowedSshKeys: ''

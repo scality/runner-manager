@@ -5,7 +5,14 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-    command: python3 /app/srcs/web/app.py
+    command:
+      - uvicorn
+      - srcs.web.app:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - 8080
+      - --reload
     volumes:
       - "./srcs:/app/srcs"
       - ./test_settings.yml:/app/test_settings.yml
