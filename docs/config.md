@@ -22,3 +22,34 @@ Here is a list of current backend managed:
 When configuring the runner, a `settings.yaml` file needs to be created. The path of this file can be set with the `SETTING_FILE` environment variable.
 
 A [config_example.yml](../config_example.yml) is available with proper description on all the available settings.
+
+Depending on your need you should set this config:
+
+### GitHub and Cloud provider
+`cloud_name` must match the folder name in `./srcs/runners_manager/vm_creation` containing a `CloudManager` object matching
+[CloudManager](../srcs/runners_manager/vm_creation/CloudManager.py) interface.
+```yaml
+# Your github organization where you want to attach your self-hosted runners
+github_organization: ""
+
+# Cloud connection infos
+cloud_name: 'cloud_manager_name'
+cloud_config:
+  "See your cloud config docs"
+```
+
+###  Your Runners pool
+```yaml
+runner_pool:
+  - config:
+      - "Look at your Cloud Manager conig"
+    quantity:
+      min: 2
+      max: 10
+    tags:
+      - bionic
+      - small
+# To ease up testing on this specific pool of runner
+# Add a very unique tag so that you can select, precisely, your runner
+      - myspecifictag
+```

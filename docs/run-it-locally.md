@@ -30,36 +30,7 @@ cp config_example.yml test_settings.yml
 
 You can keep most of the settings there, but you should change the following:
 
-### GitHub and Cloud provider
-`cloud_name` must match the folder name in `./srcs/runners_manager/vm_creation` containing a `CloudManager` object matching
-[CloudManager](../srcs/runners_manager/vm_creation/CloudManager.py) interface.
-```yaml
-# Your github organization where you want to attach your self-hosted runners
-github_organization: ""
-
-# Cloud connection infos
-cloud_name: 'cloud_manager_name'
-cloud_config:
-  "See your cloud config docs"
-```
-
-###  Your Runners pool
-```yaml
-runner_pool:
-  - config:
-      flavor: 'm1.small'
-      image: 'bionic-server-cloudimg-amd64_20181011.qcow2'
-    quantity:
-      min: 2
-      max: 10
-    tags:
-      - bionic
-      - small
-# To ease up testing on this specific pool of runner
-# Add a very unique tag so that you can select, precisely, your runner
-      - myspecifictag
-```
-
+[Config file setup](docs/config.md)
 ## Run
 
 Once the configuration has been set you can boot your docker-compose file like the following:
