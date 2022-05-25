@@ -8,4 +8,5 @@ To find more about how to get your OpenStack Actions Runner up and running follo
 
 1. [Run it locally](docs/run-it-locally.md)
 1. [Config file setup](docs/config.md)
+1. [Code setup](docs/coding-setup.md)
 1. [k8s install](charts/openstack-actions-runner/README.md)
