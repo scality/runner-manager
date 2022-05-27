@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 import logging
+from hashlib import shake_256
 
 from runners_manager.runner.RedisManager import RedisManager
 from runners_manager.runner.Runner import Runner
@@ -37,7 +38,7 @@ class RunnerFactory(object):
         self.cloud_manager = cloud_manager
         self.github_manager = github_manager
         self.github_organization = organization
-        self.runner_name_format = "{organization}-{tags}-{index}"
+        self.runner_name_format = "{organization}-{tags_hash}-{index}"
         self.runner_prefix_format = "runner-{cloud}"
         self.runner_counter = 0
         self.redis = redis
@@ -121,10 +122,13 @@ class RunnerFactory(object):
         :return:
         """
         vm_type.tags.sort()
+        # Hashing tags due to limit in runner length name
+        # set by cloud providers and GitHub
+        tags_hash = shake_256("".join(vm_type.tags).encode()).hexdigest(5)
         name = self.runner_name_format.format(
             index=self.runner_counter,
             organization=self.github_organization,
-            tags="-".join(vm_type.tags),
+            tags_hash=tags_hash,
         )
         self.runner_counter += 1
         # Check that a virtual machine hasn't this name already
