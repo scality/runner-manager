@@ -1,7 +1,20 @@
 import logging
 
-import googleapiclient.discovery
-from googleapiclient.errors import HttpError
+from google.api_core.extended_operation import ExtendedOperation
+from google.cloud.compute import AccessConfig
+from google.cloud.compute import AttachedDisk
+from google.cloud.compute import AttachedDiskInitializeParams
+from google.cloud.compute import Image
+from google.cloud.compute import ImagesClient
+from google.cloud.compute import Instance
+from google.cloud.compute import InstancesClient
+from google.cloud.compute import Items
+from google.cloud.compute import Metadata
+from google.cloud.compute import NetworkInterface
+from google.cloud.compute import Operation
+from google.cloud.compute import ServiceAccount
+from google.cloud.compute import Tags
+from google.cloud.compute import ZoneOperationsClient
 from runners_manager.runner.Runner import Runner
 from runners_manager.runner.Runner import VmType
 from runners_manager.vm_creation.CloudManager import CloudManager
@@ -12,62 +25,12 @@ from runners_manager.vm_creation.gcloud.schema import GcloudConfigVmType
 logger = logging.getLogger("runner_manager")
 
 
-def get_vm_config(
-    runner, machine_type, disk_size_gb, disk_type, source_disk_image, startup_script
-):
-    return {
-        "name": runner.name,
-        "machineType": machine_type,
-        # Specify the boot disk and the image to use as a source.
-        "disks": [
-            {
-                "boot": True,
-                "autoDelete": True,
-                "initializeParams": {
-                    "diskSizeGb": disk_size_gb,
-                    "diskType": disk_type,
-                    "sourceImage": source_disk_image,
-                },
-            }
-        ],
-        # Specify a network interface with NAT to access the public
-        # internet.
-        "networkInterfaces": [
-            {
-                "network": "global/networks/default",
-                "accessConfigs": [{"type": "ONE_TO_ONE_NAT", "name": "External NAT"}],
-            }
-        ],
-        # Allow the instance to access cloud storage and logging.
-        "serviceAccounts": [
-            {
-                "email": "default",
-                "scopes": [
-                    "https://www.googleapis.com/auth/devstorage.read_write",
-                    "https://www.googleapis.com/auth/logging.write",
-                ],
-            }
-        ],
-        "tags": {"items": runner.vm_type.tags},
-        # Metadata is readable from the instance and allows you to
-        # pass configuration from deployment scripts to instances.
-        "metadata": {
-            "items": [
-                {
-                    # Startup script is automatically executed by the
-                    # instance upon startup.
-                    "key": "startup-script",
-                    "value": startup_script,
-                }
-            ]
-        },
-    }
-
-
 class GcloudManager(CloudManager):
     CONFIG_SCHEMA = GcloudConfig
     CONFIG_VM_TYPE_SCHEMA = GcloudConfigVmType
-    compute = googleapiclient.discovery.build("compute", "v1")
+    instances: InstancesClient = InstancesClient()
+    images: ImagesClient = ImagesClient()
+    operations: ZoneOperationsClient = ZoneOperationsClient()
 
     def __init__(
         self,
@@ -92,14 +55,58 @@ class GcloudManager(CloudManager):
         logger.info(f"No existing instance for runner {runner.name} has been found")
         return None
 
-    def get_operation(self, operation):
-        """Return the current result state of an gcloud operation"""
-        result = (
-            self.compute.zoneOperations()
-            .get(project=self.project_id, zone=self.zone, operation=operation["name"])
-            .execute()
+    def configure_instance(
+        self, runner, runner_token, github_organization, installer
+    ) -> Instance:
+        source_disk_image: Image = self.images.get_from_family(
+            project=runner.vm_type.config["project"],
+            family=runner.vm_type.config["family"],
         )
-        return result
+        machine_type = (
+            f"zones/{self.zone}/machineTypes/{runner.vm_type.config['machine_type']}"
+        )
+        startup_script = self.script_init_runner(
+            runner, runner_token, github_organization, installer
+        )
+        disk_size_gb = runner.vm_type.config["disk_size_gb"]
+        disk_type = f"projects/{self.project_id}/zones/{self.zone}/diskTypes/pd-ssd"
+        instance: Instance = Instance(
+            name=runner.name,
+            machine_type=machine_type,
+            disks=[
+                AttachedDisk(
+                    boot=True,
+                    auto_delete=True,
+                    initialize_params=AttachedDiskInitializeParams(
+                        disk_size_gb=disk_size_gb,
+                        disk_type=disk_type,
+                        source_image=source_disk_image.self_link,
+                    ),
+                )
+            ],
+            network_interfaces=[
+                NetworkInterface(
+                    network="global/networks/default",
+                    access_configs=[
+                        AccessConfig(type="ONE_TO_ONE_NAT", name="External NAT")
+                    ],
+                )
+            ],
+            service_accounts=[
+                ServiceAccount(
+                    email="default",
+                    scopes=[
+                        "https://www.googleapis.com/auth/devstorage.read_write",
+                        "https://www.googleapis.com/auth/logging.write",
+                    ],
+                )
+            ],
+            tags=Tags(items=runner.vm_type.tags),
+            metadata=Metadata(
+                items=[Items(key="startup-script", value=startup_script)]
+            ),
+        )
+        return instance
 
     def create_vm(
         self,
@@ -111,40 +118,20 @@ class GcloudManager(CloudManager):
     ):
         try:
             logger.info(f"Creating {runner.name} instance")
-            self.delete_existing_runner(runner)
-            source_disk_image = (
-                self.compute.images()
-                .getFromFamily(
-                    project=runner.vm_type.config["project"],
-                    family=runner.vm_type.config["family"],
-                )
-                .execute()["selfLink"]
-            )
-            machine_type = f"zones/{self.zone}/machineTypes/{runner.vm_type.config['machine_type']}"
-            startup_script = self.script_init_runner(
+            # self.delete_existing_runner(runner)
+
+            instance = self.configure_instance(
                 runner, runner_token, github_organization, installer
             )
-            disk_size_gb = runner.vm_type.config["disk_size_gb"]
-            disk_type = f"projects/{self.project_id}/zones/{self.zone}/diskTypes/pd-ssd"
-
-            config = get_vm_config(
-                runner,
-                machine_type,
-                disk_size_gb,
-                disk_type,
-                source_disk_image,
-                startup_script,
+            ext_operation: ExtendedOperation = self.instances.insert(
+                instance_resource=instance, project=self.project_id, zone=self.zone
             )
-
-            operation = (
-                self.compute.instances()
-                .insert(project=self.project_id, zone=self.zone, body=config)
-                .execute()
+            operation: Operation = self.operations.get(
+                project=self.project_id, zone=self.zone, operation=ext_operation.name
             )
-            # https://cloud.google.com/python/docs/reference/compute/latest/google.cloud.compute_v1.types.Operation
-            result = self.get_operation(operation)
             logger.info(f"{runner.name} instance has been created")
-            return result["targetId"]
+
+            return operation.target_id
         except Exception as e:
             logger.error(e)
             raise e
@@ -152,50 +139,29 @@ class GcloudManager(CloudManager):
     def delete_vm(self, runner: Runner):
         try:
             logger.info(f"Deleting instance of runner {runner.name}...")
-            self.compute.instances().delete(
-                project=self.project_id, zone=self.zone, instance=runner.vm_id
-            ).execute()
+            self.instances.delete(
+                project=self.project_id, zone=self.zone, instance=runner.name
+            )
             logger.info(f"Instance of runner {runner.name} has been deleted")
-        except HttpError as e:
-            if e.status_code == 404:
-                logger.info(f"Instance of runner {runner.name} was already deleted")
-                pass
-
-    def get_boot_disk(self, disks: list[dict]) -> dict or None:
-        for disk in disks:
-            if disk["boot"]:
-                return disk
-        return None
+        except Exception as e:
+            logger.info(f"Instance of runner {runner.name} {e}")
+            pass
 
     def get_all_vms(self, prefix: str) -> list[Runner]:
         logger.info(
             f"Retrieving runner instances hosted on gcloud with prefix {prefix}"
         )
-        result = (
-            self.compute.instances()
-            .list(project=self.project_id, zone=self.zone)
-            .execute()
+        instances = self.instances.list(
+            project=self.project_id,
+            zone=self.zone,
         )
-        instances = result.get("items", [])
-        if not instances:
-            return []
-
         runners: list[Runner] = []
-
-        # For ref on objects:
-        # instances:
-        # https://cloud.google.com/python/docs/reference/compute/latest/google.cloud.compute_v1.types.Instance
-        # disk:
-        # https://cloud.google.com/python/docs/reference/compute/latest/google.cloud.compute_v1.types.AttachedDisk
-        # initialize_params:
-        # https://cloud.google.com/python/docs/reference/compute/latest/google.cloud.compute_v1.types.AttachedDiskInitializeParams
-        #
-        for vm in instances:
-            if vm["name"].startswith(prefix):
+        for instance in instances:
+            if instance.name.startswith(prefix):
                 runners.append(
                     Runner(
-                        vm["name"],
-                        vm["id"],
+                        instance.name,
+                        instance.id,
                         VmType(
                             {
                                 "tags": [],
