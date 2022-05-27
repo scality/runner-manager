@@ -3,7 +3,6 @@ FROM python:3.9.13-slim
 ENV PYTHONUNBUFFERED=0
 ENV POETRY_VERSION=1.1.11
 ENV PYTHONPATH=/app/srcs
-ENV WEB_CONCURRENCY=1
 ENV DEBIAN_FRONTEND=noninteractive
 #
 # Install packages needed by the buildchain
