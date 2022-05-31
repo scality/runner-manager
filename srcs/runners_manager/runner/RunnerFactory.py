@@ -38,8 +38,8 @@ class RunnerFactory(object):
         self.cloud_manager = cloud_manager
         self.github_manager = github_manager
         self.github_organization = organization
-        self.runner_name_format = "{organization}-{tags_hash}-{index}"
-        self.runner_prefix_format = "runner-{cloud}"
+        self.runner_name_format = "{tags_hash}-{index}"
+        self.runner_prefix_format = "runner-{cloud}-{organization}"
         self.runner_counter = 0
         self.redis = redis
 
@@ -113,7 +113,9 @@ class RunnerFactory(object):
 
     @property
     def runner_prefix(self):
-        return self.runner_prefix_format.format(cloud=self.cloud_manager.name)
+        return self.runner_prefix_format.format(
+            cloud=self.cloud_manager.name, organization=self.github_organization
+        )
 
     def generate_runner_name(self, vm_type: VmType) -> str:
         """
@@ -127,7 +129,6 @@ class RunnerFactory(object):
         tags_hash = shake_256("".join(vm_type.tags).encode()).hexdigest(5)
         name = self.runner_name_format.format(
             index=self.runner_counter,
-            organization=self.github_organization,
             tags_hash=tags_hash,
         )
         self.runner_counter += 1
