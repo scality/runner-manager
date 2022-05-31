@@ -15,9 +15,12 @@ from google.cloud.compute import Operation
 from google.cloud.compute import ServiceAccount
 from google.cloud.compute import Tags
 from google.cloud.compute import ZoneOperationsClient
+from runners_manager.monitoring.prometheus import metrics
 from runners_manager.runner.Runner import Runner
 from runners_manager.runner.Runner import VmType
 from runners_manager.vm_creation.CloudManager import CloudManager
+from runners_manager.vm_creation.CloudManager import create_vm_metric
+from runners_manager.vm_creation.CloudManager import delete_vm_metric
 from runners_manager.vm_creation.gcloud.schema import GcloudConfig
 from runners_manager.vm_creation.gcloud.schema import GcloudConfigVmType
 
@@ -108,6 +111,7 @@ class GcloudManager(CloudManager):
         )
         return instance
 
+    @create_vm_metric
     def create_vm(
         self,
         runner: Runner,
@@ -133,9 +137,11 @@ class GcloudManager(CloudManager):
 
             return operation.target_id
         except Exception as e:
+            metrics.runner_creation_failed.labels(cloud=self.name).inc()
             logger.error(e)
             raise e
 
+    @delete_vm_metric
     def delete_vm(self, runner: Runner):
         try:
             logger.info(f"Deleting instance of runner {runner.name}...")
@@ -169,6 +175,7 @@ class GcloudManager(CloudManager):
                                 "quantity": {},
                             }
                         ),
+                        self.name,
                     )
                 )
         logger.info(

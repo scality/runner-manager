@@ -12,6 +12,8 @@ from runners_manager.monitoring.prometheus import metrics
 from runners_manager.runner.Runner import Runner
 from runners_manager.runner.Runner import VmType
 from runners_manager.vm_creation.CloudManager import CloudManager
+from runners_manager.vm_creation.CloudManager import create_vm_metric
+from runners_manager.vm_creation.CloudManager import delete_vm_metric
 from runners_manager.vm_creation.openstack.schema import OpenstackConfig
 from runners_manager.vm_creation.openstack.schema import OpenstackConfigVmType
 
@@ -96,12 +98,13 @@ class OpenstackManager(CloudManager):
                         "quantity": {},
                     }
                 ),
+                self.name,
             )
             for vm in self.nova_client.servers.list(sort_keys=["created_at"])
             if vm.name.startswith(prefix)
         ]
 
-    @metrics.runner_creation_time_seconds.time()
+    @create_vm_metric
     def create_vm(
         self,
         runner: Runner,
@@ -162,7 +165,7 @@ class OpenstackManager(CloudManager):
                 logger.info("vm failed, creating a new one")
                 self.delete_vm(runner)
                 time.sleep(2)
-                metrics.runner_creation_failed.inc()
+                metrics.runner_creation_failed.labels(cloud=self.name).inc()
                 return self.create_vm(
                     runner,
                     runner_token,
@@ -174,7 +177,7 @@ class OpenstackManager(CloudManager):
             logger.error(f"Vm creation raised an error, {e}")
 
         if not instance or not instance.id:
-            metrics.runner_creation_failed.inc()
+            metrics.runner_creation_failed.labels(cloud=self.name).inc()
             logger.error(
                 f"""VM not found on openstack, recreating it.
 VM id: {instance.id if instance else 'Vm not created'}"""
@@ -186,7 +189,7 @@ VM id: {instance.id if instance else 'Vm not created'}"""
         logger.info("vm is successfully created")
         return instance.id
 
-    @metrics.runner_delete_time_seconds.time()
+    @delete_vm_metric
     def delete_vm(self, runner: Runner):
         """
         Delete a vm synchronously  if there is a running loop or normally if it can't
