@@ -94,7 +94,12 @@ class OpenstackManager(CloudManager):
                 VmType(
                     {
                         "tags": [],
-                        "config": {"image": vm.image, "flavor": vm.flavor},
+                        "config": {
+                            "image": self.glance.images.get(vm.image["id"]).name,
+                            "flavor": self.nova_client.flavors.get(
+                                vm.flavor["id"]
+                            ).name,
+                        },
                         "quantity": {},
                     }
                 ),
