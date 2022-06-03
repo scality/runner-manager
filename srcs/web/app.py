@@ -31,7 +31,9 @@ def delete_orphan_runners():
         logger.info("list not tracked VM")
         gh_runners = [
             (elem["id"], elem["name"])
-            for elem in github_manager.get_runners()["runners"]
+            for elem in github_manager.get_runners(runner_m.factory.runner_prefix)[
+                "runners"
+            ]
         ]
         server_list = cloud_manager.get_all_vms(runner_m.factory.runner_prefix)
 
@@ -64,7 +66,7 @@ def delete_orphan_runners():
 def refresh():
     logger.info("Refresh runners")
     try:
-        runners = github_manager.get_runners()
+        runners = github_manager.get_runners(runner_m.factory.runner_prefix)
         runner_m.update_all_runners(runners["runners"])
     except Exception as e:
         logger.error(e)
@@ -101,10 +103,10 @@ async def reset_reset_runners(request: Request):
     """
     Delete Virutal machine and runner on githu and create new runner
     """
-    g_runners = github_manager.get_runners()
+    g_runners = github_manager.get_runners(runner_m.factory.runner_prefix)
     runner_m.update_all_runners(g_runners["runners"])
     runner_m.remove_all_runners()
-    g_runners = github_manager.get_runners()
+    g_runners = github_manager.get_runners(runner_m.factory.runner_prefix)
     runner_m.update_all_runners(g_runners["runners"])
     return Response(status_code=200)
 

@@ -14,7 +14,7 @@ logger = logging.getLogger("runner_manager")
 
 def maintain_number_of_runner(runner_m: Manager, github_manager: GithubManager):
     while True:
-        runners = github_manager.get_runners()
+        runners = github_manager.get_runners(runner_m.factory.runner_prefix)
         logger.info(f"nb runners: {len(runners['runners'])}")
         logger.info(
             f"offline: {len([e for e in runners['runners'] if e['status'] == 'offline'])}"
