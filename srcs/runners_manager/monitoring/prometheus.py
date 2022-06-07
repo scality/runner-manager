@@ -19,6 +19,7 @@ class Metrics(object):
         ]
         self.all_labels = self.default_labels + [
             "name",
+            "tags",
         ]
         self.runner_vm_orphan_delete = Gauge(
             "runner_manager_vm_orphan_delete",

@@ -110,6 +110,7 @@ class Runner(object):
         :param status:
         :return:
         """
+        self.vm_type.tags.sort()
         if self.status == status or (
             self.status in ["creating", "respawning"] and status == "offline"
         ):
@@ -127,6 +128,7 @@ class Runner(object):
 
         metrics.runner_status.labels(
             name=self.name,
+            tags=", ".join(self.vm_type.tags),
             cloud=self.cloud,
         ).state(self.status)
 
@@ -134,6 +136,7 @@ class Runner(object):
             metrics.runner_status.remove(
                 self.cloud,
                 self.name,
+                ", ".join(self.vm_type.tags),
             )
 
     def update_from_github(self, github_runner: dict):
