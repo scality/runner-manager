@@ -15,6 +15,7 @@
 Depending on the cloud manager you are using you will need to look at a special documentation.
 Here is a list of current backend managed:
 - Openstack [link](../srcs/runners_manager/vm_creation/openstack/README.md)
+- Google Cloud [link](../srcs/runners_manager/vm_creation/gcloud/README.md)
 
 
 ## Settings
