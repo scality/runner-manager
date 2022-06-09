@@ -10,6 +10,7 @@ from web import cloud_manager
 from web import github_manager
 from web import redis_database
 from web import runner_m
+from web.models import CreateVm
 from web.models import WebHook
 from web.WebhookManager import WebHookManager
 
@@ -108,6 +109,25 @@ async def reset_reset_runners(request: Request):
     runner_m.remove_all_runners()
     g_runners = github_manager.get_runners(runner_m.factory.runner_prefix)
     runner_m.update_all_runners(g_runners["runners"])
+    return Response(status_code=200)
+
+
+@app.post("/runners/create")
+async def request_runners(params: CreateVm, request: Request):
+    """
+    Create VM
+    """
+    elem = next(
+        filter(
+            lambda runner_manager: runner_manager.vm_type.tags == params.tags,
+            runner_m.runner_managers,
+        )
+    )
+
+    if elem is None:
+        return Response(status_code=404)
+    for i in range(0, params.quantity):
+        elem.create_runner()
     return Response(status_code=200)
 
 
