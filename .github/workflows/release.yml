@@ -39,7 +39,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: "registry.scality.com/openstack-actions-runner/openstack-actions-runner:${{ github.event.inputs.tag }}"
+          tags: "registry.scality.com/${{ github.repository }}:${{ github.event.inputs.tag }}"
 
   create-git-release:
     runs-on: ubuntu-latest
@@ -54,4 +54,3 @@ jobs:
           tag_name: ${{ github.event.inputs.tag }}
           generate_release_notes: true
           target_commitish: ${{ github.sha }}
-
