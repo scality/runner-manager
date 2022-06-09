@@ -7,7 +7,7 @@
 - Run everything :D
 
 
-A docker-compose file has been created to help you run the required components for the openstack-actions-runner.
+A docker-compose file has been created to help you run the required components for the actions-runner-manager.
 
 To install `docker-compose` run:
 ```shell
@@ -41,7 +41,7 @@ docker-compose up --build
 
 ## (Optional) Ngrok setup
 
-As the openstack-actions-runner depends on webhook to work properly.
+As the actions runner manager depends on webhook to work properly.
 
 Ngrok can help you setup a public url to be used with GitHub webhooks.
 
@@ -68,7 +68,7 @@ Setup a webhook at the organization level, should be on a link like the followin
 
 ## Setting up your testing repo
 
-Create a new repository in the organization you have configured the openstack actions runner.
+Create a new repository in the organization you have configured the actions runner manager.
 
 And push the following workflow in the repository:
 

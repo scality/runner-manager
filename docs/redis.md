@@ -1,9 +1,9 @@
 # Redis integration
 
 For local environment easy development, we can start `docker-compose -f ./docker-composee.yml up`
-It start a redis database and the runner manager with a config file.
+It start a redis database and the actions runner manager with a config file.
 
-## credentials 
+## credentials
 Defined in the settings file, and set the password with the script arg `--redis-password` or in the environment `REDIS_PASSWORD`
 ```yaml
 redis:

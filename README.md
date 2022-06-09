@@ -1,10 +1,10 @@
-# openstack-actions-runner
+# actions-runner-manager
 
-The openstack actions runner is designed to work with GitHub Actions CI.
+This actions runner manager is designed to work with GitHub Actions CI.
 
-The goal is to create VMs on OpenStack and attach them as self-hosted runners, in order to be able to execute CI jobs on GitHub Actions with your OpenStack infrastructure.
+The goal is to create VMs on a defined cloud provider and attach them as self-hosted runners, in order to be able to execute CI jobs on GitHub Actions with your cloud provider infrastructure.
 
-To find more about how to get your OpenStack Actions Runner up and running follow the following sections:
+To find more about how to get your cloud manager Actions Runner up and running follow the following sections:
 
 1. [Run it locally](docs/run-it-locally.md)
 1. [Config file setup](docs/config.md)
