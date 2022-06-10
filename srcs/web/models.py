@@ -49,3 +49,8 @@ class WebHook(BaseModel):
     workflow_job: Optional[WorkflowJob] = None
     workflow_run: Optional[WorkflowRun] = None
     repository: Repository
+
+
+class CreateVm(BaseModel):
+    tags: List[str]
+    quantity: int
