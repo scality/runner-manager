@@ -1,0 +1,60 @@
+<html lang="html5">
+<head>
+    <title>Runner manager front page</title>
+    <script src="static/jquery-3.6.0.min.js" ></script>
+    <style>
+        table {
+            width: 50%;
+        }
+        table, td {
+            border: 1px solid #333;
+        }
+        td {
+            padding: 5px;
+        }
+
+        thead, tfoot {
+            background-color: #333;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+<table>
+    <thead><tr><th colspan="4">Runners</th></tr></thead>
+    <tbody>
+    <tr>
+        <td>cloud</td>
+        <td>name</td>
+        <td>tags</td>
+        <td>status</td>
+    </tr>
+    {% for runner_m in runners %}
+    {% for runner in runner_m.runners %}
+    <tr>
+    <td>{{ runner_m.runners[runner].cloud }}</td>
+    <td>{{ runner_m.runners[runner].name }}</td>
+    <td>{{ ', '.join(runner_m.runners[runner].vm_type.tags) }}</td>
+    <td>{{ runner_m.runners[runner].status }}</td>
+    </tr>
+    {% else %}
+    No runners for {{ ', '.join(runner_m.vm_type.tags) }} <br/>
+    {% endfor %}
+    {% endfor %}
+    </tbody>
+</table>
+<div style="width: 50%; padding: 10px; text-align: center">
+    <button id="reset" value="Reset">Reset</button>
+    <button id="refresh" value="Reset">refresh</button>
+    <button id="stop" value="Reset">{{ button_manager_running }}</button>
+</div>
+</body>
+</html>
+<script>
+    $("#reset, #refresh, #stop").on("click", function(e) {
+        e.preventDefault();
+        $.post('/runners/' + e.target.id, function (data) {
+               window.location.reload()
+        });
+    });
+</script>

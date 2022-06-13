@@ -1,7 +1,10 @@
 import json
+import logging
 
 import redis
 from runners_manager.runner.Runner import Runner
+
+logger = logging.getLogger("runner_manager")
 
 
 class RedisManager(object):
@@ -9,12 +12,20 @@ class RedisManager(object):
 
     def __init__(self, redis: redis.Redis):
         self.redis = redis
+        if self.redis.get("settings:running") is None:
+            self.redis.set("settings:running", str(True))
+
+    def set_manager_running(self, status: bool):
+        self.redis.set("settings:running", str(status))
+
+    def get_manager_running(self):
+        return b"True" == self.redis.get("settings:running")
 
     def get_all_runners_managers(self) -> list[str]:
-        return [name.decode('ascii') for name in self.redis.keys('managers:*')]
+        return [name.decode("ascii") for name in self.redis.keys("managers:*")]
 
     def get_all_runners(self) -> list[Runner]:
-        return [self.get_runner(name) for name in self.redis.keys('runners:*')]
+        return [self.get_runner(name) for name in self.redis.keys("runners:*")]
 
     def delete_runners_manager(self, runner_manager):
         self.redis.delete(runner_manager)
