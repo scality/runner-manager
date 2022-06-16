@@ -2,13 +2,15 @@ import logging
 
 from fastapi import FastAPI
 from fastapi import Request
+from fastapi.responses import HTMLResponse
 from fastapi.responses import Response
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from fastapi_utils.tasks import repeat_every
 from runners_manager.monitoring.prometheus import metrics
 from runners_manager.monitoring.prometheus import prometheus_metrics
 from web import cloud_manager
 from web import github_manager
-from web import redis_database
 from web import runner_m
 from web.models import CreateVm
 from web.models import WebHook
@@ -16,6 +18,8 @@ from web.WebhookManager import WebHookManager
 
 logger = logging.getLogger("runner_manager")
 app = FastAPI()
+app.mount("/static", StaticFiles(directory="templates/static"), name="static")
+templates = Jinja2Templates(directory="templates/html")
 
 
 app.add_route("/metrics", prometheus_metrics)
@@ -79,18 +83,6 @@ def delete_images():
     cloud_manager.delete_images_from_shelved(f"runner-{github_manager.organization}")
 
 
-@app.get("/")
-async def root():
-    """
-    List redis database
-    """
-    keys = {}
-    for elem in redis_database.redis.keys():
-        keys[elem] = redis_database.redis.get(elem)
-
-    return {"message": "Hello World", "redis_database": keys}
-
-
 # TODO: RELENG-6041 There could be an issue with this call when multiple
 # runners are deployed
 @app.post("/runners/refresh")
@@ -131,6 +123,13 @@ async def request_runners(params: CreateVm, request: Request):
     return Response(status_code=200)
 
 
+@app.post("/runners/stop")
+async def stop_runner(request: Request):
+    logger.info(runner_m.redis.manager_running())
+    runner_m.redis.set_manager_running(not runner_m.redis.get_manager_running())
+    return Response(status_code=200)
+
+
 @app.post("/webhook")
 async def webhook_post(data: WebHook, request: Request):
     """
@@ -138,6 +137,26 @@ async def webhook_post(data: WebHook, request: Request):
     """
     WebHookManager(payload=data, event=request.headers["X-Github-Event"])()
     return Response(status_code=200)
+
+
+@app.get("/", response_class=HTMLResponse)
+async def main(request: Request):
+    if runner_m.redis.get_manager_running():
+        button_manager_running = "Stop spawning VMs"
+    else:
+        button_manager_running = "Start spawning VMs"
+
+    values = {
+        "request": request,
+        "runners": runner_m.runner_managers,
+        "button_manager_running": button_manager_running,
+    }
+    try:
+        r = templates.TemplateResponse("index.html", values)
+        return r
+    except Exception as e:
+        logger.info(e)
+    return None
 
 
 if __name__ == "__main__":

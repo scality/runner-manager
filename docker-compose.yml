@@ -13,8 +13,10 @@ services:
       - --port
       - '8080'
       - --reload
+      - --debug
     volumes:
       - "./srcs:/app/srcs"
+      - "./templates:/app/templates"
       - ./test_settings.yml:/app/test_settings.yml
       - ${HOME}/.config/gcloud/application_default_credentials.json:/app/application_default_credentials.json
     depends_on:

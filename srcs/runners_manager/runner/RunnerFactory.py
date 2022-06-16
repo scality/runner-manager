@@ -22,6 +22,7 @@ class RunnerFactory(object):
     runner_name_format: str
     runner_counter: int
 
+    redis: RedisManager
     cloud_manager: CloudManager
     github_manager: GithubManager
 
@@ -44,6 +45,9 @@ class RunnerFactory(object):
         self.redis = redis
 
     def async_create_vm(self, runner: Runner) -> None:
+        if not self.redis.get_manager_running():
+            logger.info("Not allowed to spawn VM")
+            return
         logger.info("Start creating VM")
 
         installer = self.github_manager.link_download_runner()
