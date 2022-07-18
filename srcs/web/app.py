@@ -21,7 +21,6 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="templates/static"), name="static")
 templates = Jinja2Templates(directory="templates/html")
 
-
 app.add_route("/metrics", prometheus_metrics)
 
 
@@ -125,7 +124,6 @@ async def request_runners(params: CreateVm, request: Request):
 
 @app.post("/runners/stop")
 async def stop_runner(request: Request):
-    logger.info(runner_m.redis.manager_running())
     runner_m.redis.set_manager_running(not runner_m.redis.get_manager_running())
     return Response(status_code=200)
 
@@ -141,15 +139,10 @@ async def webhook_post(data: WebHook, request: Request):
 
 @app.get("/", response_class=HTMLResponse)
 async def main(request: Request):
-    if runner_m.redis.get_manager_running():
-        button_manager_running = "Stop spawning VMs"
-    else:
-        button_manager_running = "Start spawning VMs"
-
     values = {
         "request": request,
         "runners": runner_m.runner_managers,
-        "button_manager_running": button_manager_running,
+        "is_manager_running": runner_m.redis.get_manager_running(),
     }
     try:
         r = templates.TemplateResponse("index.html", values)
