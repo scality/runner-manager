@@ -47,17 +47,29 @@ class Manager(object):
         self.redis = r
         self.synchronize_managed_runner_with_local_settings()
 
+    def get_runner_manager_not_on_demand(
+        self, condition=(lambda elem: True)
+    ) -> [RunnerManager]:
+        return [
+            runner_m
+            for runner_m in self.runner_managers
+            if runner_m.vm_type.on_demand is False and condition(runner_m)
+        ]
+
+    def get_runner_manager_on_demand(
+        self, condition=(lambda elem: True)
+    ) -> [RunnerManager]:
+        return [
+            runner_m
+            for runner_m in self.runner_managers
+            if runner_m.vm_type.on_demand is True and condition(runner_m)
+        ]
+
     def remove_all_runners(self):
         for manager in self.runner_managers:
             for runner in manager.get_runners().values():
                 if not runner.is_running:
                     manager.delete_runner(runner)
-
-        # Remove orphan runners
-        for runner in self.redis.get_all_runners():
-            if runner:
-                self.factory.delete_runner(runner)
-                self.redis.delete_runner(runner)
 
     def synchronize_managed_runner_with_local_settings(self):
         for key_runners_manager in self.redis.get_all_runners_managers():
@@ -102,7 +114,7 @@ class Manager(object):
 
     def manage_runners(self):
         # runner logic For each type of VM
-        for manager in self.runner_managers:
+        for manager in self.get_runner_manager_not_on_demand():
             # Always Delete and re create new Vm when they finished running
             offline_runners = manager.filter_runners(lambda r: r.has_run)
             for r in offline_runners:

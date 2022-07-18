@@ -1,19 +1,26 @@
+import logging
 import os
-import yaml
-
 from os.path import exists
-from marshmallow import Schema, fields
-from settings.exceptions import SettingsFileNotFound, IncorrectSettingsFile
+
+import yaml
+from marshmallow import fields
+from marshmallow import Schema
+from settings.exceptions import IncorrectSettingsFile
+from settings.exceptions import SettingsFileNotFound
+
+logger = logging.getLogger("runner_manager")
 
 
 class EnvSettings(object):
     def __init__(self):
-        self.setting_file = os.getenv('SETTING_FILE', default='./settings.yml')
-        self.github_token = os.getenv('GITHUB_TOKEN')
-        self.google_application_credentials = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
-        self.redhat_username = os.getenv('REDHAT_USERNAME')
-        self.redhat_password = os.getenv('REDHAT_PASSWORD')
-        self.redis_password = os.getenv('REDIS_PASSWORD')
+        self.setting_file = os.getenv("SETTING_FILE", default="./settings.yml")
+        self.github_token = os.getenv("GITHUB_TOKEN")
+        self.google_application_credentials = os.getenv(
+            "GOOGLE_APPLICATION_CREDENTIALS"
+        )
+        self.redhat_username = os.getenv("REDHAT_USERNAME")
+        self.redhat_password = os.getenv("REDHAT_PASSWORD")
+        self.redis_password = os.getenv("REDIS_PASSWORD")
 
 
 class ExtraRunnerTimer(Schema):
@@ -27,8 +34,9 @@ class TimeoutRunnerTimer(Schema):
 
 
 class RunnerQuantity(Schema):
-    min = fields.Int()
-    max = fields.Int()
+    on_demand = fields.Bool(default=False, missing=False)
+    min = fields.Int(required=True)
+    max = fields.Int(required=True)
 
 
 class RunnerPool(Schema):
@@ -72,7 +80,7 @@ def setup_settings(settings_file: str) -> dict:
     if not exists(settings_file):
         raise SettingsFileNotFound(settings_file)
 
-    with open(settings_file, 'r') as f:
+    with open(settings_file, "r") as f:
         try:
             # read the yaml data as pure string (no conversion)
             data = yaml.load(f, Loader=yaml.BaseLoader)
@@ -80,4 +88,17 @@ def setup_settings(settings_file: str) -> dict:
             raise IncorrectSettingsFile(settings_file) from err
 
     settings = Settings().load(data)
+    for vms in settings["runner_pool"]:
+        if vms["quantity"]["on_demand"] is False and vms["quantity"]["min"] == 0:
+            logger.warning(f"The Vm {', '.join(vms['tags'])} will never spawn.")
+        elif vms["quantity"]["on_demand"] is True and vms["quantity"]["max"] == 0:
+            logger.warning(
+                f"The VM {', '.join(vms['tags'])} have no spawning limit."
+            )  # TODO or the runner crash
+        elif vms["quantity"]["on_demand"] is True and vms["quantity"]["min"] > 0:
+            logger.warning(
+                f"The Vm {', '.join(vms['tags'])} have pre spawn "
+                f"and on demand spawn set at the same time."
+            )
+
     return settings
