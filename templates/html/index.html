@@ -20,6 +20,11 @@
     </style>
 </head>
 <body>
+{% if is_manager_running %}
+<h1>Vm are spawning</h1>
+{% else %}
+<h1>No Vm are spawning</h1>
+{% endif %}
 <table>
     <thead><tr><th colspan="4">Runners</th></tr></thead>
     <tbody>
@@ -35,7 +40,15 @@
     <td>{{ runner_m.runners[runner].cloud }}</td>
     <td>{{ runner_m.runners[runner].name }}</td>
     <td>{{ ', '.join(runner_m.runners[runner].vm_type.tags) }}</td>
-    <td>{{ runner_m.runners[runner].status }}</td>
+        {% if runner_m.runners[runner].status == 'online' %}
+        <td bgcolor="green">{{ runner_m.runners[runner].status }}</td>
+        {% elif runner_m.runners[runner].status == 'running' %}
+        <td bgcolor="orange">{{ runner_m.runners[runner].status }}</td>
+        {% elif runner_m.runners[runner].status == 'creating' %}
+        <td>{{ runner_m.runners[runner].status }}</td>
+        {% else %}
+        <td bgcolor="red">{{ runner_m.runners[runner].status }}</td>
+        {% endif %}
     </tr>
     {% else %}
     No runners for {{ ', '.join(runner_m.vm_type.tags) }} <br/>
@@ -46,7 +59,13 @@
 <div style="width: 50%; padding: 10px; text-align: center">
     <button id="reset" value="Reset">Reset</button>
     <button id="refresh" value="Reset">refresh</button>
-    <button id="stop" value="Reset">{{ button_manager_running }}</button>
+    <br/>
+    <br/>
+    {% if is_manager_running %}
+    <button id="stop" value="Reset">Stop spawning VMs</button>
+    {% else %}
+    <button id="stop" value="Reset">Start spawning VMs</button>
+    {% endif %}
 </div>
 </body>
 </html>
