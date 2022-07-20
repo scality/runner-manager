@@ -80,6 +80,11 @@ class RunnerManager(object):
         if 0 < self.vm_type.quantity["max"] <= len(self.runners):
             logger.info("Runner not created, already to much")
             return
+
+        if not self.redis.get_manager_running():
+            logger.warning("Spawning set to off. No runner started")
+            return
+
         self.runners = self.redis.get_runners(self.redis_key_name())
         runner = self.factory.create_runner(self.vm_type)
         runner.update_status("creating")

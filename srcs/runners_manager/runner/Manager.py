@@ -139,8 +139,7 @@ class Manager(object):
                 logger.info("Need new runner")
                 manager.create_runner()
 
-    @staticmethod
-    def need_new_runner(manager: RunnerManager) -> bool:
+    def need_new_runner(self, manager: RunnerManager) -> bool:
         """
         This function define if we need new runners or not.
         This logic is based on the statement: They should be always x runner waiting,
@@ -148,6 +147,10 @@ class Manager(object):
         :param manager: RunnerManager
         :return: True if can and need a new runner
         """
+
+        if not self.redis.get_manager_running():
+            logger.warning("Spawning set to off. No runner started")
+            return False
 
         current_online_or_creating = len(
             manager.filter_runners(lambda r: r.is_online or r.is_creating)
