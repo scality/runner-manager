@@ -1,13 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "openstack-actions-runner.fullname" . }}
+  name: {{ include "runner-manager.fullname" . }}
   labels:
-    {{- include "openstack-actions-runner.labels" . | nindent 4 }}
+    {{- include "runner-manager.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
-      {{- include "openstack-actions-runner.selectorLabels" . | nindent 6 }}
+      {{- include "runner-manager.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       annotations:
@@ -19,13 +19,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "openstack-actions-runner.selectorLabels" . | nindent 8 }}
+        {{- include "runner-manager.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "openstack-actions-runner.serviceAccountName" . }}
+      serviceAccountName: {{ include "runner-manager.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:

@@ -1,47 +1,54 @@
 # Run it locally
 
-## TLDR;
+In this guide you'll do the following:
+
 - Install docker-compose or podman-compose
 - Setup Github's and your cloud provider credentials
 - Create your `settings.yaml` file
 - Run everything :D
 
+Before starting this guide:
 
-A docker-compose file has been created to help you run the required components for the actions-runner-manager.
-
-To install `docker-compose` run:
-```shell
-pip install docker-compose
-```
+* Follow the [local setup](./local-setup.md) documentation.
+* Get familiar with the [config](../setup/config.md).
+* Made your [cloud](../setup/clouds/index.md) provider choice.
 
 ## Credentials
 
-Considering you have followed the instruction on the [config](config.md) section. Create a `.env` file, and set the following vars:
+Create a GitHub personal access.
+Instructions can be found on the [config](../setup/config.md#github) section.
+
+Create a `.env` file, and set the following vars:
+
 ```bash
-GITHUB_TOKEN=your.github.token
+GITHUB_TOKEN=<insert your github token>
 ```
 
 ## Settings
 
-Create a settings.yaml file like the following:
-```
+Create a `settings.yaml` file like the following:
+```bash
 cp config_example.yml test_settings.yml
 ```
 
-You can keep most of the settings there, but you should change the following:
+Most of the settings can be set as is, however, review the specs defined in
+the [configuration](../setup/config.md) instructions and change the yaml file
+according to your needs.
 
-[Config file setup](docs/config.md)
+
 ## Run
 
 Once the configuration has been set you can boot your docker-compose file like the following:
+
 ```bash
-docker-compose up --build
+poetry run docker-compose up --build
 ```
 
+## Webhook setup
 
-## (Optional) Ngrok setup
+### Ngrok setup
 
-As the actions runner manager depends on webhook to work properly.
+As the runner manager depends on webhook coming from github to work properly.
 
 Ngrok can help you setup a public url to be used with GitHub webhooks.
 
@@ -53,7 +60,7 @@ And on the side you can run ngrok to create a public url for you to work with we
 ngrok http 8080
 ```
 
-## Webhook setup
+### Setting up the webhook
 
 Setup a webhook at the organization level, should be on a link like the following
 `https://github.com/organizations/<your org>/settings/hooks`
@@ -68,7 +75,7 @@ Setup a webhook at the organization level, should be on a link like the followin
 
 ## Setting up your testing repo
 
-Create a new repository in the organization you have configured the actions runner manager.
+Create a new repository in the organization you have configured the runner manager.
 
 And push the following workflow in the repository:
 
