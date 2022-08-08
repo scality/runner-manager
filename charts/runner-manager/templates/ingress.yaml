@@ -2,9 +2,9 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ include "openstack-actions-runner.fullname" . }}
+  name: {{ include "runner-manager.fullname" . }}
   labels:
-    {{- include "openstack-actions-runner.labels" . | nindent 4 }}
+    {{- include "runner-manager.labels" . | nindent 4 }}
   annotations:
     {{- if .Values.deployment.ingress.basicAuthCreds }}
     # type of authentication
@@ -24,7 +24,7 @@ spec:
       paths:
         - path: {{ .Values.deployment.ingress.path | quote }}
           backend:
-            serviceName: {{ include "openstack-actions-runner.fullname" . }}
+            serviceName: {{ include "runner-manager.fullname" . }}
             servicePort: {{ $.Values.deployment.service.port }}
   {{- if .Values.deployment.ingress.tls }}
   tls:

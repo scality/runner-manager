@@ -2,9 +2,9 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "openstack-actions-runner.fullname" . }}
+  name: {{ include "runner-manager.fullname" . }}
   labels:
-    {{- include "openstack-actions-runner.labels" . | nindent 4 }}
+    {{- include "runner-manager.labels" . | nindent 4 }}
     {{- if .Values.serviceMonitor.labels }}
     {{- toYaml .Values.serviceMonitor.labels | nindent 4 }}
     {{- end }}
@@ -12,11 +12,11 @@ spec:
   endpoints:
   - interval: {{ .Values.serviceMonitor.interval }}
     scrapeTimeout: {{ .Values.serviceMonitor.timeout }}
-    port: {{ include "openstack-actions-runner.fullname" . }}
+    port: {{ include "runner-manager.fullname" . }}
     path: "/metrics"
   selector:
     matchLabels:
-      {{- include "openstack-actions-runner.labels" . | nindent 6 }}
+      {{- include "runner-manager.labels" . | nindent 6 }}
   namespaceSelector:
     matchNames:
     - {{ .Release.Namespace | quote }}

@@ -1,6 +1,4 @@
-
-
-# GcloudManager
+# Google Cloud
 
 The runner have the capability to create resources on Google Cloud. Follow the steps below to authenticate
 and configure this service
@@ -36,6 +34,7 @@ The following file: `~/.config/gcloud/application_default_credentials.json` shou
 on your computer, and you should be good to go to use the runner with your own user credentials.
 
 ### Daemon setup
+
 If you don't want to use your own user credentials to run this service as a proper daemon per example:
 
 You will need to create a proper service account with the according rights to run
@@ -48,10 +47,10 @@ Once the service account was created and you have downloaded the proper applicat
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service/account/file.json
 ```
 
-
 ## Config
 
 ### Service
+
 Considering the application credentials has been setup on the service system,
 the remaining service configuration you'll need are:
 ```yaml

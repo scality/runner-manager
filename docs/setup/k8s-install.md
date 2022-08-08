@@ -1,6 +1,21 @@
-# Chart install for Openstack Actions Runner
+# Chart install for Runner manager
 
-## Mandatory values
+A chart has been developed to install the runner-manager on k8s.
+
+## Install
+
+```bash
+helm install my-runner-manager charts/runner-manager
+```
+
+## Config
+
+The configuration is similar to what is defined on the `settings.yaml` file.
+
+Checkout the [values.yaml] to know about all the settings available.
+
+### Mandatory values
+
 ```yaml
 githubToken: ""
 githubOrganization: ""
@@ -47,3 +62,5 @@ timeoutRunnerTimer:
   minutes: 15
   hours: 0
 ```
+
+[values.yaml]: https://github.com/scality/runner-manager/blob/main/charts/runner-manager/values.yaml

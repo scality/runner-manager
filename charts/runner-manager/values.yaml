@@ -1,4 +1,4 @@
-# Default values for openstack-actions-runner.
+# Default values for runner-manager.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -8,7 +8,7 @@ image:
   pullPolicy: IfNotPresent
   tag: "0.1.0"
   manager:
-      repository: registry.scality.com/openstack-actions-runner/openstack-actions-runner
+      repository: registry.scality.com/runner-manager/runner-manager
       # Overrides the image tag whose default is the chart appVersion.
 
 imagePullSecrets: []

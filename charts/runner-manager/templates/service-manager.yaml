@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "runner-manager.fullname" . }}
+  labels:
+    {{- include "runner-manager.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.deployment.service.type }}
+  ports:
+    - name: {{ include "runner-manager.fullname" . }}
+      port: {{ .Values.deployment.service.port }}
+      targetPort: http
+      protocol: TCP
+  selector:
+    {{- include "runner-manager.selectorLabels" . | nindent 4 }}

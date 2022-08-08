@@ -1,0 +1,1 @@
+../../docs/setup/k8s-install.md

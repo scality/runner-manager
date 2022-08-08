@@ -84,7 +84,7 @@ jobs:
           HELM_VERSION: 2.17.0
       - name: Lint python
         run: poetry run flake8
-      - run: helm lint charts/openstack-actions-runner
+      - run: helm lint charts/runner-manager
       - run: poetry run pytest --cov=. --cov-report=xml
       - name: Upload test coverage
         uses: codecov/codecov-action@v2
