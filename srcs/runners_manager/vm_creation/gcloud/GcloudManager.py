@@ -13,7 +13,6 @@ from google.cloud.compute import Metadata
 from google.cloud.compute import NetworkInterface
 from google.cloud.compute import Operation
 from google.cloud.compute import ServiceAccount
-from google.cloud.compute import Tags
 from google.cloud.compute import ZoneOperationsClient
 from runners_manager.monitoring.prometheus import metrics
 from runners_manager.runner.Runner import Runner
@@ -104,7 +103,6 @@ class GcloudManager(CloudManager):
                     ],
                 )
             ],
-            tags=Tags(items=runner.vm_type.tags),
             metadata=Metadata(
                 items=[Items(key="startup-script", value=startup_script)]
             ),
