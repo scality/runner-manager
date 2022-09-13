@@ -45,7 +45,6 @@ nav:
   - Run it Locally: getting-started/run-it-locally.md
 
 - Setup:
-  - setup/index.md
   - Clouds:
     - setup/clouds/index.md
     - Gcloud: setup/clouds/gcloud.md
