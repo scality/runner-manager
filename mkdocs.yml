@@ -37,6 +37,24 @@ theme:
     text: Roboto
     code: Roboto Mono
 
+nav:
+- Home: index.md
+
+- Getting Started:
+  - Local Setup: getting-started/local-setup.md
+  - Run it Locally: getting-started/run-it-locally.md
+
+- Setup:
+  - Clouds:
+    - setup/clouds/index.md
+    - Gcloud: setup/clouds/gcloud.md
+    - Openstack: setup/clouds/openstack.md
+  - Config: setup/config.md
+  - K8s install: setup/k8s-install.md
+  - Redis: setup/redis.md
+
+- Release: release.md
+
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
