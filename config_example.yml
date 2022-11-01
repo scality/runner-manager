@@ -12,6 +12,8 @@ cloud_config:
   password: ""
   token: ""
   network_name: ""
+  id: ""
+  secret: ""
 
 # SSH key added on each runner
 allowed_ssh_keys: ""
