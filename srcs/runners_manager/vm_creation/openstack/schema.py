@@ -11,6 +11,8 @@ class OpenstackConfig(Schema):
     username = fields.Str(required=False)
     password = fields.Str(required=False)
     token = fields.Str(required=False)
+    id = fields.Str(required=False)
+    secret = fields.Str(required=False)
 
 
 class OpenstackConfigVmType(Schema):
