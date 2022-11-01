@@ -67,6 +67,18 @@ class OpenstackManager(CloudManager):
                     project_domain_id="default",
                 )
             )
+        elif settings.get("id") and settings.get("secret"):
+            logger.info("Openstack appcred with AppCred")
+            application_credential = keystoneauth1.identity.v3.ApplicationCredentialMethod(
+                application_credential_secret=settings["secret"],
+                application_credential_id=settings["id"]
+            )
+            session = keystoneauth1.session.Session(
+                auth=keystoneclient.auth.identity.v3.Auth(
+                    auth_url=settings["auth_url"],
+                    auth_methods=[application_credential]
+                )
+            )
         else:
             raise Exception(
                 "You should have infos for openstack / cloud nine connection"
