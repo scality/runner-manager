@@ -1,7 +1,6 @@
 import asyncio
 import logging
 import time
-import json
 
 import glanceclient.client as glance_client
 import keystoneauth1.session
@@ -9,7 +8,6 @@ import keystoneclient.auth.identity.v3
 import neutronclient.v2_0.client
 import novaclient.client
 import novaclient.v2.servers
-import openstack.network.v2
 from runners_manager.monitoring.prometheus import metrics
 from runners_manager.runner.Runner import Runner
 from runners_manager.runner.Runner import VmType
@@ -34,7 +32,6 @@ class OpenstackManager(CloudManager):
     neutron: neutronclient.v2_0.client.Client
     network_name: str
     settings: dict
-    openstack: openstack
 
     def __init__(
         self,
@@ -97,8 +94,6 @@ class OpenstackManager(CloudManager):
         self.glance = glance_client.Client(
             "2", session=session, region_name=settings["region_name"]
         )
-
-        self.openstack = openstack.connection.Connection(session=session)
 
     def get_all_vms(self, prefix: str) -> list[Runner]:
         """
