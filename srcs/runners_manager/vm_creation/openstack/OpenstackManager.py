@@ -31,6 +31,7 @@ class OpenstackManager(CloudManager):
     nova_client: novaclient.client.Client
     neutron: neutronclient.v2_0.client.Client
     network_name: str
+    rnic_network_name: str
     settings: dict
 
     def __init__(
@@ -85,6 +86,7 @@ class OpenstackManager(CloudManager):
             )
 
         self.network_name = settings["network_name"]
+        self.rnic_network_name = settings["rnic_network_name"]
         self.nova_client = novaclient.client.Client(
             version=2, session=session, region_name=settings["region_name"]
         )
@@ -158,6 +160,9 @@ class OpenstackManager(CloudManager):
             net = self.neutron.list_networks(name=self.network_name)["networks"][0][
                 "id"
             ]
+            rnic_net = self.neutron.list_networks(name=self.rnic_network_name)["networks"][0][
+                "id"
+            ]
             nic = {"net-id": net}
             image = self.nova_client.glance.find_image(runner.vm_type.config["image"])
             flavor = self.nova_client.flavors.find(name=runner.vm_type.config["flavor"])
@@ -179,7 +184,7 @@ class OpenstackManager(CloudManager):
                 time.sleep(2)
 
             rnic_config = {'port': {
-                   'network_id': 'bdce1fb1-c742-4dee-b718-3a0556236b69',
+                   'network_id': rnic_net,
                    'name': runner.name,
                    'admin_state_up': True,
                    'binding:vnic_type': 'direct',
