@@ -168,6 +168,7 @@ class OpenstackManager(CloudManager):
                 flavor=flavor,
                 security_groups=[sec_group_id],
                 nics=[nic],
+                availability_zone=runner.vm_type.config["availability_zone"],
                 userdata=self.script_init_runner(
                     runner, runner_token, github_organization, installer
                 ),
@@ -265,6 +266,7 @@ VM id: {instance.id if instance else 'Vm not created'}"""
                     pass
 
             self.nova_client.servers.delete(runner.vm_id)
+
         except novaclient.exceptions.NotFound as exp:
             # If the machine was already deleted, move along
             logger.info(exp)
