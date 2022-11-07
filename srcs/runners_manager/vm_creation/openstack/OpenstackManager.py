@@ -177,7 +177,6 @@ class OpenstackManager(CloudManager):
                 instance = self.nova_client.servers.get(instance.id)
                 time.sleep(2)
 
-            print(instance.id)
             rnic_config = {'port': {
                    'network_id': 'bdce1fb1-c742-4dee-b718-3a0556236b69',
                    'name': runner.name,
@@ -188,9 +187,6 @@ class OpenstackManager(CloudManager):
 
             rnic = self.neutron.create_port(body=rnic_config)
         
-            print(rnic)
-            rnic_id = rnic['port']['id']
-            print(rnic_id)
             rnic_attach = self.nova_client.servers.interface_attach(
                 server=instance.id,
                 port_id=rnic['port']['id'],
