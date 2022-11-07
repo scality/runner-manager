@@ -33,6 +33,7 @@ python_config: 'settings.settings_local'
 #    - config:
 #        flavor: 'm1.small'
 #        image: 'CentOS 7 (PVHVM)'
+#        availability_zone: 'az1'
 #      quantity:
 #        min: 2
 #        max: 4
