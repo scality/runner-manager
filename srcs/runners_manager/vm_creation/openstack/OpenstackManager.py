@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import time
+import json
 
 import glanceclient.client as glance_client
 import keystoneauth1.session
@@ -8,6 +9,7 @@ import keystoneclient.auth.identity.v3
 import neutronclient.v2_0.client
 import novaclient.client
 import novaclient.v2.servers
+import openstack.network.v2
 from runners_manager.monitoring.prometheus import metrics
 from runners_manager.runner.Runner import Runner
 from runners_manager.runner.Runner import VmType
@@ -32,6 +34,7 @@ class OpenstackManager(CloudManager):
     neutron: neutronclient.v2_0.client.Client
     network_name: str
     settings: dict
+    openstack: openstack
 
     def __init__(
         self,
@@ -94,6 +97,8 @@ class OpenstackManager(CloudManager):
         self.glance = glance_client.Client(
             "2", session=session, region_name=settings["region_name"]
         )
+
+        self.openstack = openstack.connection.Connection(session=session)
 
     def get_all_vms(self, prefix: str) -> list[Runner]:
         """
@@ -176,6 +181,27 @@ class OpenstackManager(CloudManager):
             while instance.status not in ["ACTIVE", "ERROR"]:
                 instance = self.nova_client.servers.get(instance.id)
                 time.sleep(2)
+
+            print(instance.id)
+            rnic_config = {'port': {
+                   'network_id': 'bdce1fb1-c742-4dee-b718-3a0556236b69',
+                   'name': runner.name,
+                   'admin_state_up': True,
+                   'binding:vnic_type': 'direct',
+                   'port_security_enabled': False
+            }}
+
+            rnic = self.neutron.create_port(body=rnic_config)
+        
+            print(rnic)
+            rnic_id = rnic['port']['id']
+            print(rnic_id)
+            rnic_attach = self.nova_client.servers.interface_attach(
+                server=instance.id,
+                port_id=rnic['port']['id'],
+                net_id="",
+                fixed_ip=""
+            )
 
             if instance.status == "ERROR":
                 logger.info("vm failed, creating a new one")
