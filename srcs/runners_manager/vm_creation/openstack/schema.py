@@ -18,3 +18,4 @@ class OpenstackConfig(Schema):
 class OpenstackConfigVmType(Schema):
     flavor = fields.Str(required=True)
     image = fields.Str(required=True)
+    availability_zone = fields.Str(required=False)
