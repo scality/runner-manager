@@ -271,6 +271,8 @@ VM id: {instance.id if instance else 'Vm not created'}"""
                     pass
 
             self.nova_client.servers.delete(runner.vm_id)
+            rnic = self.neutron.list_ports(name=runner.name)
+            self.neutron.delete_port(port=rnic['ports'][0]['id'])
 
         except novaclient.exceptions.NotFound as exp:
             # If the machine was already deleted, move along
