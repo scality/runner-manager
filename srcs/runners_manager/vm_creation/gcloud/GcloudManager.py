@@ -14,6 +14,7 @@ from google.cloud.compute import NetworkInterface
 from google.cloud.compute import Operation
 from google.cloud.compute import ServiceAccount
 from google.cloud.compute import ZoneOperationsClient
+from google.cloud.compute import ShieldedInstanceConfig
 from runners_manager.monitoring.prometheus import metrics
 from runners_manager.runner.Runner import Runner
 from runners_manager.runner.Runner import VmType
@@ -86,6 +87,11 @@ class GcloudManager(CloudManager):
                     ),
                 )
             ],
+            shieldedInstanceConfig=ShieldedInstanceConfig(
+                enableIntegrityMonitoring=False,
+                enableSecureBoot=False,
+                enableVtpm=True
+            ),
             network_interfaces=[
                 NetworkInterface(
                     network="global/networks/default",
