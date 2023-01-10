@@ -2,6 +2,7 @@ import logging
 
 from google.api_core.extended_operation import ExtendedOperation
 from google.cloud.compute import AccessConfig
+from google.cloud.compute import AdvancedMachineFeatures
 from google.cloud.compute import AttachedDisk
 from google.cloud.compute import AttachedDiskInitializeParams
 from google.cloud.compute import Image
@@ -105,6 +106,9 @@ class GcloudManager(CloudManager):
             ],
             metadata=Metadata(
                 items=[Items(key="startup-script", value=startup_script)]
+            ),
+            advanced_machine_features=AdvancedMachineFeatures(
+                enable_nested_virtualization=True
             ),
         )
         return instance
