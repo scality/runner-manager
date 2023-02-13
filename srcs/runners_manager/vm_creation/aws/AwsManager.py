@@ -32,40 +32,16 @@ class AwsManager(CloudManager):
     
     def delete_existing_runner(self, runner: Runner):
         """Delete an old runner instance from AWS if it exists."""
-        for instance in self.ec2.describe_instances()["Reservations"]:
-            for i in instance["Instances"]:
-                if i["InstanceId"] == runner.name:
-                    logger.info(f"Found an existing instance of {runner.name}")
-                    return self.delete_vm(i)
+
+        for reservation in self.ec2.describe_instances()['Reservations']:
+            for instance in reservation['Instances']:
+                for tag in instance.get('Tags', []):
+                    if tag.get('Key') == 'Name' and tag.get('Value') == {runner.name}:
+                        instance_id = instance.get('InstanceId')
+                        return self.ec2.terminate_instances(InstanceIds=[instance_id])
+                        
         logger.info(f"No existing instance for runner {runner.name} has been found")
         return None
-
-    def configure_instance(
-        self, runner, runner_token, github_organization, installer
-    ):
-        user_data = self.script_init_runner(
-            runner, runner_token, github_organization, installer
-        )
-
-        image_id = 'ami-0735c191cf914754d' # Config
-        instance_type = 't2.micro' # Config
-        key_pair_name = 'gaspard_key' # Config
-        security_group_ids = ['sg-0cf1e17cf459cfeff', 'sg-04a0f254a058a4c81']
-        subnet_id = 'subnet-00c935cd1250d606f'
-
-        instance = self.ec2.run_instances(
-            ImageId=image_id,
-            InstanceType=instance_type,
-            KeyName=key_pair_name,
-            SecurityGroupIds=security_group_ids,
-            SubnetId=subnet_id,
-            MaxCount=1,
-            MinCount=1,
-            UserData=user_data
-        )
-
-        return instance["Instances"][0]
-
 
     @create_vm_metric
     def create_vm(
@@ -79,15 +55,45 @@ class AwsManager(CloudManager):
         try:
             logger.info(f"Creating {runner.name} instance")
 
-            instance = self.configure_instance(
+            user_data = self.script_init_runner(
                 runner, runner_token, github_organization, installer
             )
-            instance_id = instance["InstanceId"]
-            self.ec2.create_tags(
-                Resources=[instance_id],
-                Tags=[{"Key": "Name", "Value": runner.name}]
+
+            instance = self.ec2.run_instances(
+                ImageId=runner.vm_type.config["image_id"],
+                InstanceType=runner.vm_type.config["instance_type"],
+                SecurityGroupIds=runner.vm_type.config["security_group_ids"],
+                SubnetId=runner.vm_type.config["subnet_id"],
+                MaxCount=1,
+                MinCount=1,
+                UserData=user_data,
+                Placement={
+                    'Region': runner.vm_type.config["region"]
+                },
+                BlockDeviceMappings=[
+                    {
+                        'DeviceName': '/dev/sda1',
+                        'Ebs': {
+                            'VolumeSize': runner.vm_type.config["disk_size_gb"],
+                            'DeleteOnTermination': True,
+                            'VolumeType': 'gp2'
+                        },
+                    },
+                ],
+                TagSpecifications=[
+                    {
+                        'ResourceType': 'instance',
+                        'Tags': [
+                            {
+                                'Key': 'Name',
+                                'Value': runner.name
+                            },
+                        ]
+                    },
+                ],
             )
-            return instance_id
+
+            return instance["InstanceId"]
 
         except Exception as exception:
             metrics.runner_creation_failed.labels(cloud=self.name).inc()
@@ -97,8 +103,18 @@ class AwsManager(CloudManager):
     @delete_vm_metric
     def delete_vm(self, runner):
         try:
-            self.ec2.terminate_instances(InstanceIds=[{runner.name}])
+            instances = self.ec2.describe_instances()
+
+            for reservation in instances['Reservations']:
+                for instance in reservation['Instances']:
+                    for tag in instance.get('Tags', []):
+                        if tag.get('Key') == 'Name' and tag.get('Value') == {runner.name}:
+                            instance_id = instance.get('InstanceId')
+                            self.ec2.terminate_instances(InstanceIds=[instance_id])
+                            print(f"Instance with ID {instance_id} terminated.")
+                            break
             logger.info(f"Instance of runner {runner.name} has been terminated")
+
         except Exception as exception:
             logger.info(f"Instance of runner {runner.name} {exception}")
             pass
