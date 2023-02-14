@@ -118,11 +118,11 @@ class AwsManager(CloudManager):
 
     def get_all_vms(self, prefix: str) -> list[Runner]:
         # Get all vms in ec2
-        instances = self.ec2.describe_instances()
         runners = []
-        for instance in instances:
-            for tag in instance.get('Tags', []):
-                if tag.get('Key') == 'Name' and tag.get('Value').startswith(prefix):
+
+        for reservation in self.ec2.describe_instances()['Reservations']:
+            for instance in reservation['Instances']:
+                for tag in instance.get('Tags', []):
                     runner = Runner(
                         tag.get('Value'),
                         instance.get('InstanceId'),
