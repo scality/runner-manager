@@ -26,6 +26,7 @@ the remaining service configuration you'll need are:
 ```yaml
 cloud_name: 'aws'
 cloud_config: {}
+```
 
 ### Runner
 Here's an example of a pool of runner on aws running with Ubuntu (image_id corresponding to it):
