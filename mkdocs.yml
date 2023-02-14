@@ -49,6 +49,7 @@ nav:
     - setup/clouds/index.md
     - Gcloud: setup/clouds/gcloud.md
     - Openstack: setup/clouds/openstack.md
+    - AWS: setup/clouds/aws.md
   - Config: setup/config.md
   - K8s install: setup/k8s-install.md
   - Redis: setup/redis.md
