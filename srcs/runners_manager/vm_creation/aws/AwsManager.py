@@ -1,8 +1,6 @@
 import logging
 import boto3
 
-import os
-
 from runners_manager.monitoring.prometheus import metrics
 from runners_manager.runner.Runner import Runner
 from runners_manager.runner.Runner import VmType
@@ -10,13 +8,11 @@ from runners_manager.vm_creation.CloudManager import CloudManager
 from runners_manager.vm_creation.CloudManager import create_vm_metric
 from runners_manager.vm_creation.CloudManager import delete_vm_metric
 
-from runners_manager.vm_creation.aws.schema import AwsConfig
 from runners_manager.vm_creation.aws.schema import AwsConfigVmType
 
 logger = logging.getLogger("runner_manager")
 
 class AwsManager(CloudManager):
-    CONFIG_SCHEMA = AwsConfig
     CONFIG_VM_TYPE_SCHEMA = AwsConfigVmType
 
     def __init__(
@@ -30,19 +26,17 @@ class AwsManager(CloudManager):
         super(AwsManager, self).__init__(
             name, settings, redhat_username, redhat_password, ssh_keys
         )
-        self.region = settings.get('config').get('region', os.environ.get('AWS_DEFAULT_REGION', 'us-west-2'))
         self.ec2 = boto3.client("ec2")
     
     def delete_existing_runner(self, runner: Runner):
         """Delete an old runner instance from AWS if it exists."""
 
-        for reservation in self.ec2.describe_instances()['Reservations']:
-            for instance in reservation['Instances']:
-                for tag in instance.get('Tags', []):
-                    if tag.get('Key') == 'Name' and tag.get('Value') == {runner.name}:
-                        instance_id = instance.get('InstanceId')
-                        return self.ec2.terminate_instances(InstanceIds=[instance_id])
-                        
+        response = self.ec2.describe_instances(InstanceIds=[runner.vm_id])
+        tags = response['Reservations'][0]['Instances'][0]['Tags']
+        for tag in tags:
+            if tag['Key'] == 'Name' and tag.get('Value') == {runner.name}:
+                return self.ec2.terminate_instances(InstanceIds=[runner.vm_id])
+
         logger.info(f"No existing instance for runner {runner.name} has been found")
         return None
 
@@ -70,9 +64,6 @@ class AwsManager(CloudManager):
                 MaxCount=1,
                 MinCount=1,
                 UserData=user_data,
-                Placement={
-                    'Region': self.region
-                },
                 BlockDeviceMappings=[
                     {
                         'DeviceName': '/dev/sda1',
@@ -111,16 +102,14 @@ class AwsManager(CloudManager):
     @delete_vm_metric
     def delete_vm(self, runner):
         try:
-            instances = self.ec2.describe_instances()
+            response = self.ec2.describe_instances(InstanceIds=[runner.vm_id])
+            tags = response['Reservations'][0]['Instances'][0]['Tags']
+            for tag in tags:
+                if tag['Key'] == 'Name' and tag.get('Value') == {runner.name}:
+                    self.ec2.terminate_instances(InstanceIds=[runner.vm_id])
+                    logger.info(f"Instance with ID {runner.vm_id} terminated.")
+                    break
 
-            for reservation in instances['Reservations']:
-                for instance in reservation['Instances']:
-                    for tag in instance.get('Tags', []):
-                        if tag.get('Key') == 'Name' and tag.get('Value') == {runner.name}:
-                            instance_id = instance.get('InstanceId')
-                            self.ec2.terminate_instances(InstanceIds=[instance_id])
-                            print(f"Instance with ID {instance_id} terminated.")
-                            break
             logger.info(f"Instance of runner {runner.name} has been terminated")
 
         except Exception as exception:

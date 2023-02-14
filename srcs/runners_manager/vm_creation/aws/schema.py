@@ -1,10 +1,5 @@
 from marshmallow import Schema, fields
 
-
-class AwsConfig(Schema):
-    region = fields.Str(required=False)
-
-
 class AwsConfigVmType(Schema):
     image_id = fields.Str(required=True)
     instance_type = fields.Str(required=True)
