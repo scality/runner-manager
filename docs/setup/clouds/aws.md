@@ -3,23 +3,29 @@
 The runner have the capability to create resources on AWS. Follow the steps below to authenticate
 and configure this service
 
+
 ## Credentials
 
-### Get credentials for Engineering-EC2User
+Set the following environment variables, with your respective AWS credentials:
 
-Create a .env file at the root of the project and put in it your AWS_ACCESS_KEY_ID, your AWS_SECRET_ACCESS_KEY and your AWS_SESSION_TOKEN.
-You will also have to fill in AWS_DEFAULT_REGION (us-west-2 for example) and GITHUB_TOKEN (your github token).
+* `AWS_ACCESS_KEY_ID`
+* `AWS_SECRET_ACCESS_KEY`
+* `AWS_SESSION_TOKEN` (Optional)
 
 ## Config
+
+### AWS Region
+
+Configure the region where EC2 instances will be created with the `AWS_DEFAULT_REGION` environment variable. Per example `us-west-2`.
 
 ### Service
 
 Considering the application credentials has been setup on the service system,
 the remaining service configuration you'll need are:
+
 ```yaml
 cloud_name: 'aws'
 cloud_config: {}
-```
 
 ### Runner
 Here's an example of a pool of runner on aws running with Ubuntu (image_id corresponding to it):
