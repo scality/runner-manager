@@ -7,18 +7,7 @@ and configure this service
 
 ### Get credentials for Engineering-EC2User
 
-Go on AWS Single Sign-on to get the credentials.
-Then click on the link called "Command Line or programmatic access".
-Get :
-- AWS Access Key Id
-- AWS Secret Access Key
-- AWS Session Token
-
-Create a .env file at the root of the project and put in it :
-AWS_ACCESS_KEY_ID="XXX"
-AWS_SECRET_ACCESS_KEY="XXX"
-AWS_SESSION_TOKEN="XXX"
-
+Create a .env file at the root of the project and put in it your AWS_ACCESS_KEY_ID, your AWS_SECRET_ACCESS_KEY and your AWS_SESSION_TOKEN.
 You will also have to fill in AWS_DEFAULT_REGION (us-west-2 for example) and GITHUB_TOKEN (your github token).
 
 ## Config
@@ -33,11 +22,11 @@ cloud_config: {}
 ```
 
 ### Runner
-Here's an example of a pool of runner on aws running with ubuntu:
+Here's an example of a pool of runner on aws running with Ubuntu (image_id corresponding to it):
 ```yaml
 runner_pool:
   - config:
-      image_id: 'ami-XXX'
+      image_id: 'ami-0735c191cf914754d'
       instance_type: 't2.micro'
       security_group_ids:
         - 'sg-XXX'
