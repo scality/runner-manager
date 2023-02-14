@@ -38,15 +38,6 @@ class AwsManager(CloudManager):
         logger.info(f"No existing instance for runner {runner.name} has been found")
         return None
 
-        #response = self.ec2.describe_instances(InstanceIds=[runner.vm_id])
-        #tags = response['Reservations'][0]['Instances'][0]['Tags']
-        #for tag in tags:
-        #    if tag['Key'] == 'Name' and tag.get('Value') == {runner.name}:
-        #        return self.ec2.terminate_instances(InstanceIds=[runner.vm_id])
-
-        #logger.info(f"No existing instance for runner {runner.name} has been found")
-        #return None
-
     @create_vm_metric
     def create_vm(
         self,
@@ -129,10 +120,10 @@ class AwsManager(CloudManager):
 
         for reservation in self.ec2.describe_instances()['Reservations']:
             for instance in reservation['Instances']:
-                for tag in instance.get('Tags', []):
-                    if tag.get('Key') == 'Name' and tag.get('Value').startswith(prefix):
+                for key, value in instance.get('Tags', []).items():
+                    if key == 'Name' and value.startswith(prefix):
                         runner = Runner(
-                            tag.get('Value'),
+                            value,
                             instance.get('InstanceId'),
                             VmType(
                                 {
