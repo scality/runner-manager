@@ -38,10 +38,9 @@ class CloudManager(abc.ABC):
         redhat_password: str,
         ssh_keys: str,
     ):
-        if self.CONFIG_SCHEMA is None:
-            raise Exception("CONFIG_SCHEMA should be set")
-
-        self.settings = self.CONFIG_SCHEMA().load(settings)
+        if self.CONFIG_SCHEMA:
+            self.settings = self.CONFIG_SCHEMA().load(settings)
+        
         self.name = name
         self.ssh_keys = ssh_keys
         self.redhat_username = redhat_username
