@@ -1,6 +1,8 @@
 import logging
 import boto3
 
+import os
+
 from runners_manager.monitoring.prometheus import metrics
 from runners_manager.runner.Runner import Runner
 from runners_manager.runner.Runner import VmType
@@ -28,6 +30,7 @@ class AwsManager(CloudManager):
         super(AwsManager, self).__init__(
             name, settings, redhat_username, redhat_password, ssh_keys
         )
+        self.region = settings.get('config').get('region', os.environ.get('AWS_DEFAULT_REGION', 'us-west-2'))
         self.ec2 = boto3.client("ec2")
     
     def delete_existing_runner(self, runner: Runner):
@@ -68,13 +71,13 @@ class AwsManager(CloudManager):
                 MinCount=1,
                 UserData=user_data,
                 Placement={
-                    'Region': runner.vm_type.config["region"]
+                    'Region': self.region
                 },
                 BlockDeviceMappings=[
                     {
                         'DeviceName': '/dev/sda1',
                         'Ebs': {
-                            'VolumeSize': runner.vm_type.config["disk_size_gb"],
+                            'VolumeSize': int(runner.vm_type.config["disk_size_gb"]),
                             'DeleteOnTermination': True,
                             'VolumeType': 'gp2'
                         },
@@ -88,12 +91,17 @@ class AwsManager(CloudManager):
                                 'Key': 'Name',
                                 'Value': runner.name
                             },
+                            {
+                                'Key': 'Runner-manager',
+                                'Value': 'true'
+                            }
                         ]
                     },
                 ],
             )
+            
+            return instance['Instances'][0]['InstanceId']
 
-            return instance["InstanceId"]
 
         except Exception as exception:
             metrics.runner_creation_failed.labels(cloud=self.name).inc()
@@ -118,3 +126,28 @@ class AwsManager(CloudManager):
         except Exception as exception:
             logger.info(f"Instance of runner {runner.name} {exception}")
             pass
+
+    def get_all_vms(self, prefix: str) -> list[Runner]:
+        # Get all vms in ec2
+        instances = self.ec2.describe_instances()
+        runners = []
+        for instance in instances:
+            for tag in instance.get('Tags', []):
+                if tag.get('Key') == 'Name' and tag.get('Value').startswith(prefix):
+                    runner = Runner(
+                        tag.get('Value'),
+                        instance.get('InstanceId'),
+                        VmType(
+                            {
+                                "tags": [],
+                                "config": {},
+                                "quantity": {},
+                            }
+                        ),
+                        self.name
+                    )
+                    runners.append(runner)
+            return runners
+
+    def delete_images_from_shelved(self, name):
+        logger.info(f"nothing to do for {name}")
