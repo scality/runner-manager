@@ -40,7 +40,6 @@ class CloudManager(abc.ABC):
     ):
         if self.CONFIG_SCHEMA:
             self.settings = self.CONFIG_SCHEMA().load(settings)
-        
         self.name = name
         self.ssh_keys = ssh_keys
         self.redhat_username = redhat_username

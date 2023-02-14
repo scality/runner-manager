@@ -12,6 +12,7 @@ from runners_manager.vm_creation.aws.schema import AwsConfigVmType
 
 logger = logging.getLogger("runner_manager")
 
+
 class AwsManager(CloudManager):
     CONFIG_VM_TYPE_SCHEMA = AwsConfigVmType
 
@@ -27,7 +28,7 @@ class AwsManager(CloudManager):
             name, settings, redhat_username, redhat_password, ssh_keys
         )
         self.ec2 = boto3.client("ec2")
-    
+
     def delete_existing_runner(self, runner: Runner):
         """Delete an old runner instance from AWS if it exists."""
 
@@ -88,9 +89,8 @@ class AwsManager(CloudManager):
                     },
                 ],
             )
-            
-            return instance['Instances'][0]['InstanceId']
 
+            return instance['Instances'][0]['InstanceId']
 
         except Exception as exception:
             metrics.runner_creation_failed.labels(cloud=self.name).inc()
