@@ -119,7 +119,7 @@ class AwsManager(CloudManager):
                         if tag.get('Key') == 'Name' and tag.get('Value') == {runner.name}:
                             instance_id = instance.get('InstanceId')
                             self.ec2.terminate_instances(InstanceIds=[instance_id])
-                            print(f"Instance with ID {instance_id} terminated.")
+                            logger.info(f"Instance with ID {instance_id} terminated.")
                             break
             logger.info(f"Instance of runner {runner.name} has been terminated")
 
