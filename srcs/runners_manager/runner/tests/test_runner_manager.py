@@ -56,7 +56,7 @@ class TestRunnerManager(unittest.TestCase):
 
         self.assertEqual(self.factory.create_runner.call_count, 0)
         self.assertEqual(r.runners.__len__(), 0)
-        self.assertEqual(Manager.need_new_runner(r), True)
+        self.assertEqual(Manager.need_new_runner(r, r), True)
 
     def test_update_runner(self):
         self.factory.create_runner.side_effect = [
@@ -128,24 +128,24 @@ class TestRunnerManager(unittest.TestCase):
         r.create_runner()
         r.create_runner()
 
-        self.assertEqual(Manager.need_new_runner(r), False)
+        self.assertEqual(Manager.need_new_runner(r, r), False)
 
         r.update_runner({"name": "0", "status": "online", "busy": True, "id": "0"})
-        self.assertEqual(Manager.need_new_runner(r), True)
+        self.assertEqual(Manager.need_new_runner(r, r), True)
 
         r.runners["0"].status_history = ["online", "running"]
         r.runners["0"].status = "offline"
-        self.assertEqual(Manager.need_new_runner(r), True)
+        self.assertEqual(Manager.need_new_runner(r, r), True)
 
         r.runners["0"].status_history = ["online", "running"]
         r.runners["0"].status = "offline"
-        self.assertEqual(Manager.need_new_runner(r), True)
+        self.assertEqual(Manager.need_new_runner(r, r), True)
 
         r.runners["0"].status_history = ["online"]
         r.runners["0"].status = "running"
         r.runners["1"].status_history = ["online"]
         r.runners["1"].status = "running"
-        self.assertEqual(Manager.need_new_runner(r), True)
+        self.assertEqual(Manager.need_new_runner(r, r), True)
 
     def test_need_new_runner_current_full(self):
         self.factory.create_runner.side_effect = [
@@ -159,11 +159,11 @@ class TestRunnerManager(unittest.TestCase):
         r.create_runner()
         r.create_runner()
         r.create_runner()
-        self.assertEqual(Manager.need_new_runner(r), False)
+        self.assertEqual(Manager.need_new_runner(r, r), False)
 
         r.runners["0"].status_history = ["online"]
         r.runners["0"].status = "running"
-        self.assertEqual(Manager.need_new_runner(r), False)
+        self.assertEqual(Manager.need_new_runner(r, r), False)
 
     def test_runners_syncronisation(self):
         self.factory.create_runner.side_effect = [
