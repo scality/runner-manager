@@ -100,14 +100,7 @@ class AwsManager(CloudManager):
     @delete_vm_metric
     def delete_vm(self, runner):
         try:
-            response = self.ec2.describe_instances(InstanceIds=[runner.vm_id])
-            tags = response['Reservations'][0]['Instances'][0]['Tags']
-            for tag in tags:
-                if tag['Key'] == 'Name' and tag.get('Value') == {runner.name}:
-                    self.ec2.terminate_instances(InstanceIds=[runner.vm_id])
-                    logger.info(f"Instance with ID {runner.vm_id} terminated.")
-                    break
-
+            self.ec2.terminate_instances(InstanceIds=[runner.vm_id])
             logger.info(f"Instance of runner {runner.name} has been terminated")
 
         except Exception as exception:
