@@ -31,14 +31,21 @@ class AwsManager(CloudManager):
     def delete_existing_runner(self, runner: Runner):
         """Delete an old runner instance from AWS if it exists."""
 
-        response = self.ec2.describe_instances(InstanceIds=[runner.vm_id])
-        tags = response['Reservations'][0]['Instances'][0]['Tags']
-        for tag in tags:
-            if tag['Key'] == 'Name' and tag.get('Value') == {runner.name}:
-                return self.ec2.terminate_instances(InstanceIds=[runner.vm_id])
-
+        for listed_runner in self.get_all_vms(runner.name):
+            if runner.name == listed_runner.name:
+                logger.info(f"Found an existing instance of {runner.name}")
+                return self.delete_vm(listed_runner)
         logger.info(f"No existing instance for runner {runner.name} has been found")
         return None
+
+        #response = self.ec2.describe_instances(InstanceIds=[runner.vm_id])
+        #tags = response['Reservations'][0]['Instances'][0]['Tags']
+        #for tag in tags:
+        #    if tag['Key'] == 'Name' and tag.get('Value') == {runner.name}:
+        #        return self.ec2.terminate_instances(InstanceIds=[runner.vm_id])
+
+        #logger.info(f"No existing instance for runner {runner.name} has been found")
+        #return None
 
     @create_vm_metric
     def create_vm(
@@ -123,19 +130,20 @@ class AwsManager(CloudManager):
         for reservation in self.ec2.describe_instances()['Reservations']:
             for instance in reservation['Instances']:
                 for tag in instance.get('Tags', []):
-                    runner = Runner(
-                        tag.get('Value'),
-                        instance.get('InstanceId'),
-                        VmType(
-                            {
-                                "tags": [],
-                                "config": {},
-                                "quantity": {},
-                            }
-                        ),
-                        self.name
-                    )
-                    runners.append(runner)
+                    if tag.get('Key') == 'Name' and tag.get('Value').startswith(prefix):
+                        runner = Runner(
+                            tag.get('Value'),
+                            instance.get('InstanceId'),
+                            VmType(
+                                {
+                                    "tags": [],
+                                    "config": {},
+                                    "quantity": {},
+                                }
+                            ),
+                            self.name
+                        )
+                        runners.append(runner)
             return runners
 
     def delete_images_from_shelved(self, name):
