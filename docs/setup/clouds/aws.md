@@ -1,4 +1,4 @@
-# Google Cloud
+# AWS
 
 The runner have the capability to create resources on AWS. Follow the steps below to authenticate
 and configure this service
