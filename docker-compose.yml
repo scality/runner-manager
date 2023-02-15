@@ -28,6 +28,9 @@ services:
       - PYTHONIOENCODING=UTF-8
       - SETTING_FILE=/app/test_settings.yml
       - GOOGLE_APPLICATION_CREDENTIALS=/app/application_default_credentials.json
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_DEFAULT_REGION
     ports:
       - "8080:8080"
   redis:
