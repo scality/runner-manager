@@ -22,6 +22,8 @@ class TestRunnerManager(unittest.TestCase):
     @patch("runners_manager.vm_creation.github_actions_api.GithubManager")
     @patch("runners_manager.vm_creation.openstack.OpenstackManager")
     def setUp(self, return_github_manager, return_cloud_manager) -> None:
+        self.return_cloud_manager = return_cloud_manager
+        self.return_github_manager = return_github_manager
         self.fake_redis = RedisManager(fakeredis.FakeStrictRedis())
         self.factory = MagicMock()
         self.factory.runner_prefix = ""
@@ -48,6 +50,19 @@ class TestRunnerManager(unittest.TestCase):
         )
 
     def test_init_runner_manager(self):
+        m = Manager(
+            {
+                "github_organization": "test",
+                "runner_pool": [],
+                "redis": {"host": "test", "port": 1234},
+                "extra_runner_timer": {"minutes": 10, "hours": 0},
+                "timeout_runner_timer": {"minutes": 0, "hours": 1},
+            },
+            self.return_cloud_manager,
+            self.return_github_manager,
+            self.fake_redis
+        )
+
         self.factory.create_runner.side_effect = [
             Runner("0", None, self.vm_type_normal, "cloud"),
             Runner("1", None, self.vm_type_normal, "cloud"),
@@ -56,7 +71,7 @@ class TestRunnerManager(unittest.TestCase):
 
         self.assertEqual(self.factory.create_runner.call_count, 0)
         self.assertEqual(r.runners.__len__(), 0)
-        self.assertEqual(Manager.need_new_runner(r, r), True)
+        self.assertEqual(m.need_new_runner(r), True)
 
     def test_update_runner(self):
         self.factory.create_runner.side_effect = [
@@ -119,6 +134,18 @@ class TestRunnerManager(unittest.TestCase):
         self.factory.respawn_runner.assert_not_called()
 
     def test_need_new_runner_current_updated(self):
+        m = Manager(
+            {
+                "github_organization": "test",
+                "runner_pool": [],
+                "redis": {"host": "test", "port": 1234},
+                "extra_runner_timer": {"minutes": 10, "hours": 0},
+                "timeout_runner_timer": {"minutes": 0, "hours": 1},
+            },
+            self.return_cloud_manager,
+            self.return_github_manager,
+            self.fake_redis
+        )
         self.factory.create_runner.side_effect = [
             Runner("0", None, self.vm_type_normal, "cloud"),
             Runner("1", None, self.vm_type_normal, "cloud"),
@@ -128,26 +155,38 @@ class TestRunnerManager(unittest.TestCase):
         r.create_runner()
         r.create_runner()
 
-        self.assertEqual(Manager.need_new_runner(r, r), False)
+        self.assertEqual(m.need_new_runner(r), False)
 
         r.update_runner({"name": "0", "status": "online", "busy": True, "id": "0"})
-        self.assertEqual(Manager.need_new_runner(r, r), True)
+        self.assertEqual(m.need_new_runner(r), True)
 
         r.runners["0"].status_history = ["online", "running"]
         r.runners["0"].status = "offline"
-        self.assertEqual(Manager.need_new_runner(r, r), True)
+        self.assertEqual(m.need_new_runner(r), True)
 
         r.runners["0"].status_history = ["online", "running"]
         r.runners["0"].status = "offline"
-        self.assertEqual(Manager.need_new_runner(r, r), True)
+        self.assertEqual(m.need_new_runner(r), True)
 
         r.runners["0"].status_history = ["online"]
         r.runners["0"].status = "running"
         r.runners["1"].status_history = ["online"]
         r.runners["1"].status = "running"
-        self.assertEqual(Manager.need_new_runner(r, r), True)
+        self.assertEqual(m.need_new_runner(r), True)
 
     def test_need_new_runner_current_full(self):
+        m = Manager(
+            {
+                "github_organization": "test",
+                "runner_pool": [],
+                "redis": {"host": "test", "port": 1234},
+                "extra_runner_timer": {"minutes": 10, "hours": 0},
+                "timeout_runner_timer": {"minutes": 0, "hours": 1},
+            },
+            self.return_cloud_manager,
+            self.return_github_manager,
+            self.fake_redis
+        )
         self.factory.create_runner.side_effect = [
             Runner("0", None, self.vm_type_full, "cloud"),
             Runner("1", None, self.vm_type_full, "cloud"),
@@ -159,11 +198,11 @@ class TestRunnerManager(unittest.TestCase):
         r.create_runner()
         r.create_runner()
         r.create_runner()
-        self.assertEqual(Manager.need_new_runner(r, r), False)
+        self.assertEqual(m.need_new_runner(r), False)
 
         r.runners["0"].status_history = ["online"]
         r.runners["0"].status = "running"
-        self.assertEqual(Manager.need_new_runner(r, r), False)
+        self.assertEqual(m.need_new_runner(r), False)
 
     def test_runners_syncronisation(self):
         self.factory.create_runner.side_effect = [
