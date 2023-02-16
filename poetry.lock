@@ -2107,21 +2107,21 @@ six = ">=1.4.0"
 
 [[package]]
 name = "python-neutronclient"
-version = "7.3.0"
+version = "8.2.1"
 description = "CLI and Client Library for OpenStack Networking"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.8"
 files = [
-    {file = "python-neutronclient-7.3.0.tar.gz", hash = "sha256:41b9a4bab8ebb2428f926cd1f7077df6c1d997f384e48aa0cbec049b8b54536c"},
-    {file = "python_neutronclient-7.3.0-py3-none-any.whl", hash = "sha256:5f02bfc5a2f9f738b2d70d82ec70d78de3b7695c33ee6c4ee8cae406b57f8464"},
+    {file = "python-neutronclient-8.2.1.tar.gz", hash = "sha256:0161ef1bb0a2191022436790b529da6bd930f054a0501f5a8fb77413ed333976"},
+    {file = "python_neutronclient-8.2.1-py3-none-any.whl", hash = "sha256:a435e40ef7b81e004909c43044f2b1cf8f9bd5063ba5b5ad75a4e5781fcf4b31"},
 ]
 
 [package.dependencies]
 cliff = ">=3.4.0"
 debtcollector = ">=1.2.0"
 iso8601 = ">=0.1.11"
-keystoneauth1 = ">=3.4.0"
+keystoneauth1 = ">=3.8.0"
 netaddr = ">=0.7.18"
 os-client-config = ">=1.28.0"
 osc-lib = ">=1.12.0"
@@ -2780,4 +2780,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "c59e6c0bb98e7ffd12d9112bc055a83e8c52115de6daf936cfb9fefc2a793cb7"
+content-hash = "2a5c643988b0d44b09da1cb32ac43e0920500ce3c5b7f829607e38471a6cbdc0"
