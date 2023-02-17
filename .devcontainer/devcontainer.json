@@ -14,9 +14,9 @@
     "customizations": {
         "vscode": {
             "extensions": [
-				"ms-python.python",
-				"ms-kubernetes-tools.vscode-kubernetes-tools"
-			]
+                "ms-python.python",
+                "ms-kubernetes-tools.vscode-kubernetes-tools"
+            ]
         }
     }
 }
