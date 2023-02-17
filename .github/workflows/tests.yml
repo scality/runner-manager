@@ -1,90 +1,60 @@
-name: basic tests
+---
+name: tests
 
 on: push
 
+env:
+  POETRY_VERSION: '1.3.2'
 jobs:
-  publish:
+
+  helm:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Set up Helm
+      uses: azure/setup-helm@v1
+      with:
+        version: v2.17.0
+    - name: Run Helm lint
+      run: helm lint charts/runner-manager
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-
-      - name: Set up Docker Buildk
-        uses: docker/setup-buildx-action@v1
-
-      - name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          # Key is named differently to avoid collision
-          key: ${{ runner.os }}-multi-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-multi-buildx
-
-      - name: Login to ghcr Registry
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Login to Scality Registry
-        uses: docker/login-action@v1
-        with:
-          registry: registry.scality.com
-          username: ${{ secrets.REGISTRY_LOGIN }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
-
-      - name: Build and push
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: "ghcr.io/${{ github.repository }}:${{ github.sha }}"
-          cache-from: type=local,src=/tmp/.buildx-cache
-          # Note the mode=max here
-          # More: https://github.com/moby/buildkit#--export-cache-options
-          # And: https://github.com/docker/buildx#--cache-tonametypetypekeyvalue
-          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
-
-      - name: Move cache
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+  flake8:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Install Poetry
+      run: |
+        pip install poetry==${POETRY_VERSION}
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        cache: 'poetry'
+    - name: Install dependencies
+      run: |
+        poetry install --no-interaction --no-ansi --no-root
+    - name: Run flake8
+      run: poetry run flake8
 
   tests:
     runs-on: ubuntu-latest
-    container:
-      image: "ghcr.io/${{ github.repository }}:${{ github.sha }}"
-      options: --user=0
-    needs:
-      - publish
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Poetry deps cache
-        uses: actions/cache@v2
-        with:
-          path: "~/.cache/pypoetry"
-          key: poetry-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
-      - name: Install all dependencies
-        run: |
-          pip install virtualenv
-          poetry install --no-interaction --no-ansi --no-root
-      - name: Install helm
-        run: |
-          curl -sSL https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar -xvz
-          install linux-amd64/helm /usr/local/bin
-          rm -rf linux-amd64
-        env:
-          HELM_VERSION: 2.17.0
-      - name: Lint python
-        run: poetry run flake8
-      - run: helm lint charts/runner-manager
-      - run: poetry run pytest --cov=. --cov-report=xml
-      - name: Upload test coverage
-        uses: codecov/codecov-action@v2
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Install Poetry
+      run: |
+        pip install poetry==${POETRY_VERSION}
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        cache: 'poetry'
+    - name: Install all dependencies
+      run: |
+        poetry install --no-interaction --no-ansi --no-root
+    - name: Run tests
+      run: poetry run pytest --cov=. --cov-report=xml
+    - name: Upload test coverage
+      uses: codecov/codecov-action@v2
