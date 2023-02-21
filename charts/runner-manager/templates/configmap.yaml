@@ -3,4 +3,5 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-config
 data:
-  GITHUB_ORGANIZATION:   {{ .Values.githubOrganization }}
+  GITHUB_ORGANIZATION: {{ .Values.githubOrganization }}
+  AWS_DEFAULT_REGION: {{ .Values.awsDefaultRegion }}

@@ -113,6 +113,12 @@ gcloudServiceAccount: ''
 
 allowedSshKeys: ''
 
+# AWS credentials and config
+awsAccessKey: ''
+awsSecretKey: ''
+awsSessionToken: ''
+awsDefaultRegion: 'us-west-2'
+
 # The python module, used for configuration
 # example:
 #  'settings.settings_local'
