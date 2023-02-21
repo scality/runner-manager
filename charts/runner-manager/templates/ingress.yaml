@@ -1,5 +1,5 @@
 {{- if .Values.deployment.ingress.enabled }}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "runner-manager.fullname" . }}
@@ -18,14 +18,18 @@ metadata:
     {{ $key }}: {{ $value | quote }}
     {{- end }}
 spec:
+  ingressClassName: {{ .Values.deployment.ingress.ingressClassName }}
   rules:
   - host: {{ .Values.deployment.ingress.fqdn }}
     http:
       paths:
         - path: {{ .Values.deployment.ingress.path | quote }}
+          pathType: Prefix
           backend:
-            serviceName: {{ include "runner-manager.fullname" . }}
-            servicePort: {{ $.Values.deployment.service.port }}
+            service:
+              name: {{ include "runner-manager.fullname" . }}
+              port:
+                number: {{ $.Values.deployment.service.port }}
   {{- if .Values.deployment.ingress.tls }}
   tls:
   - hosts:
