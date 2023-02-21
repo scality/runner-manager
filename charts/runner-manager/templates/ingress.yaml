@@ -1,5 +1,5 @@
 {{- if .Values.deployment.ingress.enabled }}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "runner-manager.fullname" . }}
@@ -18,6 +18,7 @@ metadata:
     {{ $key }}: {{ $value | quote }}
     {{- end }}
 spec:
+  ingressClassName: {{ .Values.deployment.ingress.ingressClassName }}
   rules:
   - host: {{ .Values.deployment.ingress.fqdn }}
     http:
