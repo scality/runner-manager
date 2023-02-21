@@ -8,8 +8,11 @@ on:
         required: true
       prerelease:
         description: "Is the release a GA?"
+        type: boolean
         required: false
         default: false
+
+run-name: Release ${{ inputs.tag }}
 
 jobs:
   release-manager:
@@ -54,3 +57,4 @@ jobs:
           tag_name: ${{ github.event.inputs.tag }}
           generate_release_notes: true
           target_commitish: ${{ github.sha }}
+          prerelease: ${{ inputs.prerelease }}
