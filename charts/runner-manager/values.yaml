@@ -8,7 +8,7 @@ image:
   pullPolicy: IfNotPresent
   tag: "0.1.0"
   manager:
-      repository: registry.scality.com/runner-manager/runner-manager
+      repository: ghcr.io/scality/runner-manager
       # Overrides the image tag whose default is the chart appVersion.
 
 imagePullSecrets: []
@@ -112,6 +112,12 @@ cloudConfig: {}
 gcloudServiceAccount: ''
 
 allowedSshKeys: ''
+
+# AWS credentials and config
+awsAccessKey: ''
+awsSecretKey: ''
+awsSessionToken: ''
+awsDefaultRegion: 'us-west-2'
 
 # The python module, used for configuration
 # example:
