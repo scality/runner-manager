@@ -583,24 +583,23 @@ stevedore = ">=3.0.0"
 
 [[package]]
 name = "fakeredis"
-version = "1.6.0"
+version = "2.7.1"
 description = "Fake implementation of redis API for testing purposes."
 category = "dev"
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.8.1,<4.0"
 files = [
-    {file = "fakeredis-1.6.0-py3-none-any.whl", hash = "sha256:3449b306f3a85102b28f8180c24722ef966fcb1e3c744758b6f635ec80321a5c"},
-    {file = "fakeredis-1.6.0.tar.gz", hash = "sha256:11ccfc9769d718d37e45b382e64a6ba02586b622afa0371a6bd85766d72255f3"},
+    {file = "fakeredis-2.7.1-py3-none-any.whl", hash = "sha256:e2f7a88dad23be1191ad6212008e170d75c2d63dde979c2694be8cbfd917428e"},
+    {file = "fakeredis-2.7.1.tar.gz", hash = "sha256:854d758794dab9953be16b9a0f7fbd4bbd6b6964db7a9684e163291c1342ece6"},
 ]
 
 [package.dependencies]
-redis = "<3.6.0"
-six = ">=1.12"
-sortedcontainers = "*"
+redis = "<4.5"
+sortedcontainers = ">=2.4.0,<3.0.0"
 
 [package.extras]
-aioredis = ["aioredis"]
-lua = ["lupa"]
+json = ["jsonpath-ng (>=1.5,<2.0)"]
+lua = ["lupa (>=1.14,<2.0)"]
 
 [[package]]
 name = "fastapi"
@@ -2779,4 +2778,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "2cb5df25e2fb4ab8f1f0e667f15bfd5792ba3e5dfc63b010fa86c4892fef587a"
+content-hash = "e47230c76e9118035b03ad81f54c836a04586828421a2bd49ffdee05dc7d2aff"
