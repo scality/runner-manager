@@ -23,9 +23,12 @@ spec:
     http:
       paths:
         - path: {{ .Values.deployment.ingress.path | quote }}
+          pathType: Prefix
           backend:
-            serviceName: {{ include "runner-manager.fullname" . }}
-            servicePort: {{ $.Values.deployment.service.port }}
+            service:
+              name: {{ include "runner-manager.fullname" . }}
+              port:
+                number: {{ $.Values.deployment.service.port }}
   {{- if .Values.deployment.ingress.tls }}
   tls:
   - hosts:
