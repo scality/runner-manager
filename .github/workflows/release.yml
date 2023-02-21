@@ -8,8 +8,11 @@ on:
         required: true
       prerelease:
         description: "Is the release a GA?"
+        type: boolean
         required: false
         default: false
+
+run-name: Release ${{ inputs.tag }}
 
 jobs:
   release-manager:
@@ -26,12 +29,13 @@ jobs:
         with:
           buildkitd-flags: --debug
 
-      - name: Login to Registry
+    # login to ghcr.io
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
-          registry: registry.scality.com
-          username: ${{ secrets.REGISTRY_LOGIN }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
         uses: docker/build-push-action@v2
@@ -39,7 +43,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: "registry.scality.com/openstack-actions-runner/openstack-actions-runner:${{ github.event.inputs.tag }}"
+          tags: ghcr.io/${{ github.repository }}:${{ inputs.tag }}
 
   create-git-release:
     runs-on: ubuntu-latest
@@ -54,3 +58,4 @@ jobs:
           tag_name: ${{ github.event.inputs.tag }}
           generate_release_notes: true
           target_commitish: ${{ github.sha }}
+          prerelease: ${{ inputs.prerelease }}
