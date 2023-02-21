@@ -1,7 +1,10 @@
 ---
-on: push
-
 name: build
+
+on:
+  pull_request:
+    branches:
+    - main
 
 jobs:
   build:
