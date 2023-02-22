@@ -31,7 +31,42 @@ The currently supported cloud providers are:
 ## Supporting a new cloud provider
 
 To develop a new cloud provider add a new folder in
-`srcs/runners_manager/vm_creation` containing a `CloudManager`
-object matching [CloudManager] interface.
+`srcs/runners_manager/vm_creation` containing a
+`CloudManager` object matching [CloudManager] interface.
+
+### Retrieving VM parameters
+
+To communicate with the application, the user will provide
+a lot of information in a `yml` configuration file, such as
+`image_id`, `instance_type`, `security_group_ids`, and so on.
+
+During development, a `config_example.yml` file will be created
+to test the setup of the new Cloud Provider and to provide
+information about the VM.
+
+Next, to send this information to the new Cloud Provider,
+the `AwsConfigVmType` class will be created in the `schema.py`
+file, and `xxx = fields.Str(required=True)` will require to
+be added for each variable.
+
+!!! info
+    If it's not a string, replace Str with the type
+    of the variable in question.
+
+
+To retrieve this information, we use
+`runner.vm_type.config["xxx"]` in the new Cloud Manager file.
+
+### How to launch the project for testing
+
+First, create a `.env` file and fill in the necessary
+environment variables.
+
+Then, create a `config_example.yml` file
+(examples are provided in the subsections depending on
+the Cloud Provider).
+
+Finally, launch the project with the command
+`docker-compose up --build`.
 
 [CloudManager]: https://github.com/scality/runner-manager/blob/main/srcs/runners_manager/vm_creation/CloudManager.py
