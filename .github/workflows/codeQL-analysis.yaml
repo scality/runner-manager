@@ -1,0 +1,27 @@
+name: Static analysis with CodeQL
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 8 * * 1' # Monday - 8am - UTC
+
+jobs:
+  analyze:
+    name: Static analysis with CodeQL
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
+        with:
+          languages: python
+          codeql-version: 'latest'
+      - name: Build and analyze
+        uses: github/codeql-action/analyze@v1
+        with:
+          languages: python
+          query: 'codeql-python/ql/src/Security/CWE-078/CommandInjection.ql'
