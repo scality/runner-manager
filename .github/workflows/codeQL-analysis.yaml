@@ -1,3 +1,4 @@
+---
 name: Static analysis with CodeQL
 
 on:
@@ -19,8 +20,6 @@ jobs:
         uses: github/codeql-action/init@v2
         with:
           languages: python
+          query: 'codeql-python/ql/src/Security/CWE-078/CommandInjection.ql'
       - name: Build and analyze
         uses: github/codeql-action/analyze@v2
-        with:
-          languages: python
-          query: 'codeql-python/ql/src/Security/CWE-078/CommandInjection.ql'
