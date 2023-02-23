@@ -1,0 +1,57 @@
+gcloudServiceAccount: "vault:secret/data/runner-manager#GCLOUD_SERVICEACCOUNT"
+githubToken: "vault:secret/data/runner-manager#GITHUB_TOKEN"
+redhatUsername: "vault:secret/data/runner-manager#REDHAT_USERNAME"
+redhatPassword: "vault:secret/data/runner-manager#REDHAT_PASSWORD"
+#redis:
+#  password: "vault:secret/data/runner-manager#rREDIS_PASSWORD"
+#allowedSshKeys: "vault:secret/data/runner-manager#allowed_ssh_keys"
+githubOrganization: scalanga-devl
+deployment:
+  ingress:
+    #enabled: true
+    #tls: true
+    #fqdn: "gcloud.runner-manager.scality.net"
+    #tlsSecret: 'gcloud-runner-manager-cert'
+    #annotations:
+    #  cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    #  kubernetes.io/ingress.class: nginx
+    # basicAuthCreds: "vault:secret/data/runner-manager#WEBHOOK_HTPASSWD"
+serviceAccount: eve-ci@scality-devl.iam.gserviceaccount.com
+cloudName: gcloud
+cloudConfig:
+  project_id: "scality-prod-ga-runners"
+  zone: us-east1-c
+timeoutRunnerTimer:
+  minutes: 20
+  hours: 0
+pythonConfigModule: 'srcs.settings.settings_local'
+serviceMonitor:
+  enabled: true
+  labels:
+    monitoring-instance: prometheus-central
+
+image:
+  tag: '0.4.0'
+
+resources:
+  requests:
+    cpu: "1"
+    memory: "1Gi"
+  limits:
+    cpu: "1"
+    memory: "1Gi"
+
+runnerPool:
+    - config:
+        machine_type: e2-small
+        project: ubuntu-os-cloud
+        family: ubuntu-2004-lts
+        disk_size_gb: 20
+      quantity:
+        min: 1
+        max: 5
+      tags:
+        - ubuntu
+        - focal
+        - small
+        - gcloud
