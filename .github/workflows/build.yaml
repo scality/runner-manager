@@ -54,12 +54,12 @@ jobs:
           image-ref: ghcr.io/${{ github.repository }}:${{ github.sha }}, redis:alpine
           format: json
 
-      - name: Save Trivy scan results
-        if: always()
-        run: echo "${{ steps.trivy_scan.outputs.vulnerabilities }}" > trivy_scan_results.txt
+      #- name: Save Trivy scan results
+      #  if: always()
+      #  run: echo "${{ steps.trivy_scan.outputs.vulnerabilities }}" > trivy_scan_results.txt
 
-      - name: Upload Trivy scan results
-        if: always()
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: trivy_scan_results.txt
+      #- name: Upload Trivy scan results
+      #  if: always()
+      #  uses: github/codeql-action/upload-sarif@v2
+      #  with:
+      #    sarif_file: trivy_scan_results.txt
