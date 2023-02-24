@@ -6,8 +6,7 @@ updates:
     schedule:
       interval: "daily"
     commit-message:
-      prefix: "pip prod"
-      prefix-development: "pip dev"
+      prefix: "pip"
       include: "scope"
     labels:
       - "pip"
@@ -18,8 +17,7 @@ updates:
     schedule:
       interval: "daily"
     commit-message:
-      prefix: "github-actions prod"
-      prefix-development: "github-actions dev"
+      prefix: "github-actions"
       include: "scope"
     labels:
       - "github-actions"
@@ -30,8 +28,7 @@ updates:
     schedule:
       interval: "daily"
     commit-message:
-      prefix: "docker prod"
-      prefix-development: "docker dev"
+      prefix: "docker"
       include: "scope"
     labels:
       - "docker"
