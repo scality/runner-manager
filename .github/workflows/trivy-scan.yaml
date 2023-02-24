@@ -1,0 +1,23 @@
+---
+name: Trivy Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 8 * * 1' # Monday - 8am - UTC
+
+jobs:
+  trivy-scan:
+    name: Trivy Vulnerability Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Aqua Security Trivy Scan
+        uses: aquasecurity/trivy-action@0.9.1
+        with:
+          image-ref: python:3.9.13-slim
+          format: table # more readable for humans
