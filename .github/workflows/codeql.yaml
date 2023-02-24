@@ -1,5 +1,5 @@
 ---
-name: Static analysis with CodeQL
+name: codeql
 
 on:
   push:
