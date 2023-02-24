@@ -22,5 +22,3 @@ jobs:
           languages: python
       - name: Build and analyze
         uses: github/codeql-action/analyze@v2
-        with:
-          query: 'codeql-python/ql/src/Security/CWE-078/CommandInjection.ql'
