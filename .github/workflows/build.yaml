@@ -2,9 +2,12 @@
 name: build
 
 on:
+  push:
+    branches: [main]
   pull_request:
-    branches:
-    - main
+    branches: [main]
+  schedule:
+    - cron: '0 8 * * 1' # Monday - 8am - UTC
 
 jobs:
   build:
@@ -35,3 +38,28 @@ jobs:
           tags: "ghcr.io/${{ github.repository }}:${{ github.sha }}"
           cache-from: type=gha,scope=${{ github.repository }}
           cache-to: type=gha,scope=${{ github.repository }},mode=max
+
+  trivy-scan:
+    needs: build
+    name: Trivy Vulnerability Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Aqua Security Trivy Scan
+        uses: aquasecurity/trivy-action@0.9.1
+        id: trivy_scan
+        with:
+          image-ref: ghcr.io/${{ github.repository }}:${{ github.sha }}, redis:alpine
+          format: table # more readable for humans
+
+      - name: Save Trivy scan results
+        if: always()
+        run: echo "${{ steps.trivy_scan.outputs.vulnerabilities }}" > trivy_scan_results.txt
+
+      - name: Upload Trivy scan results
+        if: always()
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: trivy_scan_results.txt
