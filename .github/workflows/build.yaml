@@ -52,7 +52,7 @@ jobs:
         id: trivy_scan
         with:
           image-ref: ghcr.io/${{ github.repository }}:${{ github.sha }}, redis:alpine
-          format: table # more readable for humans
+          format: json
 
       - name: Save Trivy scan results
         if: always()
