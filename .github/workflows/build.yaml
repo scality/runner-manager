@@ -51,7 +51,7 @@ jobs:
         uses: aquasecurity/trivy-action@0.9.1
         id: trivy_scan
         with:
-          image-ref: ghcr.io/${{ github.repository }}:${{ github.sha }} #, redis:alpine
+          image-ref: ghcr.io/${{ github.repository }}:${{ github.sha }},redis:alpine
           format: json
 
       #- name: Save Trivy scan results
