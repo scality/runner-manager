@@ -37,7 +37,6 @@ jobs:
           image-ref: ${{ inputs.image-ref }} #'ghcr.io/${{ github.repository }}:${{ github.sha }}'
           format: 'sarif'
           output: 'trivy-image-results.sarif'
-          #exit-code: '1'
           ignore-unfixed: true
           vuln-type: 'os,library'
 
