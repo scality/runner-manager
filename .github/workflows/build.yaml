@@ -69,6 +69,7 @@ jobs:
           image-ref: 'ghcr.io/${{ github.repository }}:${{ github.sha }}' #redis:alpine
           format: 'sarif'
           output: 'trivy-image-results.sarif'
+          exit-code: '1'
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
