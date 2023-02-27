@@ -5,7 +5,8 @@ on:
   workflow_call:
     inputs:
       image-ref:
-        required: true
+        default: "ghcr.io/${{ github.repository }}:${{ github.sha }}"
+        required: false
         type: string
 
 jobs:
