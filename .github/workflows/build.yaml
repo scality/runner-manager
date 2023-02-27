@@ -2,9 +2,12 @@
 name: build
 
 on:
+  push:
+    branches: [main]
   pull_request:
-    branches:
-    - main
+    branches: [main]
+  schedule:
+    - cron: '0 8 * * 1' # Monday - 8am - UTC
 
 jobs:
   build:
@@ -35,3 +38,10 @@ jobs:
           tags: "ghcr.io/${{ github.repository }}:${{ github.sha }}"
           cache-from: type=gha,scope=${{ github.repository }}
           cache-to: type=gha,scope=${{ github.repository }},mode=max
+
+  trivy:
+    needs: build
+    name: Trivy Vulnerability Scan for Code
+    uses: ./.github/workflows/trivy.yaml
+    with:
+      image-ref: 'ghcr.io/${{ github.repository }}:${{ github.sha }}'
