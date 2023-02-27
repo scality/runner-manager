@@ -72,15 +72,6 @@ jobs:
           ignore-unfixed: true
           vuln-type: 'os,library'
 
-      - name: Image Scan redis
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: 'redis:alpine'
-          format: 'sarif'
-          output: 'trivy-image-results-redis.sarif'
-          exit-code: '1'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
 
       - name: Upload Trivy Image Ghcr scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
