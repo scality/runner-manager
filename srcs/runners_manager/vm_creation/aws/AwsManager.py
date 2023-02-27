@@ -82,8 +82,8 @@ class AwsManager(CloudManager):
                                 'Value': runner.name
                             },
                             {
-                                'Key': 'Runner-manager',
-                                'Value': 'true'
+                                'Key': 'tool',
+                                'Value': 'runner.manager'
                             }
                         ]
                     },
