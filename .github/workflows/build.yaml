@@ -42,40 +42,6 @@ jobs:
   trivy:
     needs: build
     name: Trivy Vulnerability Scan for Code
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Aqua Security Trivy Scan
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          security-checks: 'vuln,secret,config'
-          ignore-unfixed: true
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: 'trivy-results.sarif'
-          category: 'code'
-
-      - name: Image Scan ghcr
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: 'ghcr.io/${{ github.repository }}:${{ github.sha }}'
-          format: 'sarif'
-          output: 'trivy-image-results-ghcr.sarif'
-          exit-code: '1'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-
-
-      - name: Upload Trivy Image Ghcr scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: 'trivy-image-results-ghcr.sarif'
-          category: 'image-ghcr'
-      
+    uses: ./.github/workflows/trivy.yml
+    with:
+      image-ref: 'ghcr.io/${{ github.repository }}:${{ github.sha }}'
