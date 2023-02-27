@@ -39,7 +39,7 @@ jobs:
           cache-from: type=gha,scope=${{ github.repository }}
           cache-to: type=gha,scope=${{ github.repository }},mode=max
 
-  trivy-scan-code:
+  trivy:
     needs: build
     name: Trivy Vulnerability Scan for Code
     runs-on: ubuntu-latest
