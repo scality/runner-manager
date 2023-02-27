@@ -39,9 +39,9 @@ jobs:
           cache-from: type=gha,scope=${{ github.repository }}
           cache-to: type=gha,scope=${{ github.repository }},mode=max
 
-  trivy-scan:
+  trivy-scan-code:
     needs: build
-    name: Trivy Vulnerability Scan
+    name: Trivy Vulnerability Scan for Code
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -50,7 +50,6 @@ jobs:
       - name: Aqua Security Trivy Scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ghcr.io/${{ github.repository }}:${{ github.sha }} #redis:alpine
           scan-type: 'fs'
           security-checks: 'vuln,secret,config'
           ignore-unfixed: true
@@ -63,3 +62,20 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
           category: 'code'
+
+      - name: Image Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'ghcr.io/${{ github.repository }}:${{ github.sha }}' #redis:alpine
+          format: 'sarif'
+          output: 'trivy-image-results.sarif'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+
+      - name: Upload Trivy Image scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-image-results.sarif'
+          category: 'image'
