@@ -10,7 +10,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 fastapi = "0.68.1"
 uvicorn = "^0.17.6"
 python-novaclient = "17.4.0"
