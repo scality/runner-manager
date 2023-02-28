@@ -24,7 +24,7 @@ RUN poetry config virtualenvs.create false && \
 
 COPY . /app/
 
-RUN useradd -r -u 1000 -g root runner-manager \
+RUN useradd -r -u 1000 runner-manager \
     && chown -R runner-manager /app
 USER runner-manager
 
