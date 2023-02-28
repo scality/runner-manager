@@ -13,10 +13,6 @@ RUN apt-get update && \
     curl \
     git
 
-RUN useradd -r -u 1000 -g root appuserRunnerManager \
-    && chown -R appuserRunnerManager /app
-USER appuserRunnerManager
-
 RUN pip install "poetry==$POETRY_VERSION"
 
 WORKDIR /app
@@ -27,5 +23,9 @@ RUN poetry config virtualenvs.create false && \
     poetry install --no-interaction --no-ansi --no-dev --no-root
 
 COPY . /app/
+
+RUN useradd -r -u 1000 -g root appuserRunnerManager \
+    && chown -R appuserRunnerManager /app
+USER appuserRunnerManager
 
 CMD ["uvicorn", "srcs.web.app:app", "--host", "0.0.0.0", "--port", "80"]
