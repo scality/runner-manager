@@ -13,9 +13,9 @@ RUN apt-get update && \
     curl \
     git
 
-RUN useradd -r -u 1000 -g root appuser \
-    && chown -R appuser /app
-USER appuser
+RUN useradd -r -u 1000 -g root appuserRunnerManager \
+    && chown -R appuserRunnerManager /app
+USER appuserRunnerManager
 
 RUN pip install "poetry==$POETRY_VERSION"
 
