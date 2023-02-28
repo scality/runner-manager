@@ -13,12 +13,6 @@ RUN poetry config virtualenvs.create false
 
 WORKDIR /workspaces/runner-manager
 
-# Create a non-root user
-
-RUN useradd -r -u 1000 -g root appuserRunnerManager \
-    && chown -R appuserRunnerManager /workspaces/runner-manager
-USER appuserRunnerManager
-
 # Install the project dependencies
 
 COPY poetry.lock pyproject.toml /workspaces/runner-manager/
