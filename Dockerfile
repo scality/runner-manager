@@ -24,8 +24,8 @@ RUN poetry config virtualenvs.create false && \
 
 COPY . /app/
 
-RUN useradd -r -u 1000 -g root appuserRunnerManager \
-    && chown -R appuserRunnerManager /app
-USER appuserRunnerManager
+RUN useradd -r -u 1000 -g root runner-manager \
+    && chown -R runner-manager /app
+USER runner-manager
 
 CMD ["uvicorn", "srcs.web.app:app", "--host", "0.0.0.0", "--port", "80"]
