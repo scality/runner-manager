@@ -2150,14 +2150,14 @@ simplejson = ">=3.5.1"
 
 [[package]]
 name = "python-novaclient"
-version = "17.4.0"
+version = "18.3.0"
 description = "Client library for OpenStack Compute API"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.8"
 files = [
-    {file = "python-novaclient-17.4.0.tar.gz", hash = "sha256:bca1a3899c0ecf0f63a9b3e97c5d56557186bece1e2a585b26d7c5727d461822"},
-    {file = "python_novaclient-17.4.0-py3-none-any.whl", hash = "sha256:47c33f896d72ce7229d82c9aa77db2dda89543688494a2d0b9d7c9815878af7b"},
+    {file = "python-novaclient-18.3.0.tar.gz", hash = "sha256:50f7587c7a2b2528f73505817f9437ac5c1d04d576e9be264d2deeffdb745a76"},
+    {file = "python_novaclient-18.3.0-py3-none-any.whl", hash = "sha256:e5ed24feb6f8bd46ae60d8c6a258295bc0ba0f0f080308c995e96c882ca2e5e3"},
 ]
 
 [package.dependencies]
@@ -2797,4 +2797,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "cb4b8b5464ea65da233c1349a67e917ab09eb4e0b3cd45c72b9e358890e15598"
+content-hash = "7df112aa01380ebe37144fc1b2d24cfa0b5f2957e0566c847015b676d0641344"
