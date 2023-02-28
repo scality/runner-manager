@@ -5,6 +5,12 @@ FROM mcr.microsoft.com/devcontainers/python:3.10-bullseye
 ENV POETRY_VERSION=1.3.2
 RUN pipx install poetry==${POETRY_VERSION}
 
+# Create a non-root user
+
+RUN useradd -r -u 1000 -g root appuserRunnerManager \
+    && chown -R appuserRunnerManager /app
+USER appuserRunnerManager
+
 # Configure poetry to not use a virtual environment
 
 RUN poetry config virtualenvs.create false
