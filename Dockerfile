@@ -28,4 +28,6 @@ RUN useradd -r -u 1000 runner-manager \
     && chown -R runner-manager /app
 USER runner-manager
 
+HEALTHCHECK --interval=30s CMD curl --fail http://localhost:80/ || exit 1
+
 CMD ["uvicorn", "srcs.web.app:app", "--host", "0.0.0.0", "--port", "80"]
