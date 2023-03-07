@@ -21,7 +21,7 @@ jobs:
   trivy:
     needs: build
     name: Trivy Vulnerability Scan for Code
-    uses: scality/workflows/.github/workflows/trivy.yaml@main
+    uses: scality/workflows/.github/workflows/trivy.yaml@v1
     with:
       name: runner-manager
       namespace: scality
