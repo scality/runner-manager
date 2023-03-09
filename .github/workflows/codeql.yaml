@@ -50,13 +50,12 @@ jobs:
           # Github env var with only the repo name
           echo "REPO=${GITHUB_REPOSITORY##*/}" >> $GITHUB_ENV
 
-      - name: Upload SBOM as release asset
-        uses: actions/upload-release-asset@v1
-        if: github.ref_type == 'tag'
+      - name: Upload ${{ steps.sbom.outputs.fileName }} in the GitHub Release
+        uses: softprops/action-gh-release@v1
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}
-          asset_path: ${{ steps.sbom.outputs.fileName }}
-          asset_name: report-${{ env.REPO }}-${{ github.ref_name }}.spdx.json
-          asset_content_type: application/spdx+json
+          name: Release ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          target_commitish: ${{ github.sha }}
+          files: ${{ steps.sbom.outputs.fileName }}
