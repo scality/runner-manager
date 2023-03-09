@@ -46,8 +46,6 @@ jobs:
           path: ${{steps.sbom.outputs.fileName }}
           name: "SBOM"
 
-      # upload_url: https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.get_release.outputs.id }}/assets{?name,label}
-
       - name: Upload SBOM as release asset
         uses: actions/upload-release-asset@v1
         env:
