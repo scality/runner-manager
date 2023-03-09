@@ -31,18 +31,17 @@ jobs:
   sbom-generator:
     name: SBOM generator
     runs-on: ubuntu-latest
+    if: github.ref_type == 'tags' || github.event == 'release'
     steps:
       - uses: actions/checkout@v3
 
       - name: SBOM-generator-action
-        if: github.ref_type == 'tags' || github.event == 'release'
         uses: advanced-security/sbom-generator-action@v0.0.1
         id: sbom
         env: 
           GITHUB_TOKEN: ${{ github.token }}
 
       - uses: actions/upload-artifact@v3.1.0
-        if: github.ref_type == 'tags' || github.event == 'release'
         with: 
           path: ${{steps.sbom.outputs.fileName }}
           name: "SBOM"
@@ -51,7 +50,6 @@ jobs:
 
       - name: Upload SBOM as release asset
         uses: actions/upload-release-asset@v1
-        if: github.ref_type == 'tags' || github.event == 'release'
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
