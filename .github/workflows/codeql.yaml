@@ -56,7 +56,8 @@ jobs:
             return data[0];
 
       - name: Debug latest release
-        run: echo '${{ JSON.stringify(steps.latest_release.outputs.release) }}'
+        run: |
+          echo -n ${{ steps.latest_release.outputs.release }} | jq '.upload_url'
 
       - name: Upload SBOM as release asset
         uses: actions/upload-release-asset@v1
