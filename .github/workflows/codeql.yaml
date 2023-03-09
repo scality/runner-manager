@@ -45,37 +45,44 @@ jobs:
           path: ${{steps.sbom.outputs.fileName }}
           name: "SBOM"
 
-      - name: Get Release
-        id: get_release
-        if: github.ref_type == 'tags' || github.event == 'release'
-        uses: actions/github-script@v4
-        with:
-          github-token: ${{ github.token }}
-          script: |
-            const { data } = await github.repos.getReleaseByTag({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag: github.ref
-            });
-            console.log(data.id);
+      #- name: Get Release
+      #  id: get_release
+      #  if: github.ref_type == 'tags' || github.event == 'release'
+      #  uses: actions/github-script@v4
+      #  with:
+      #    github-token: ${{ github.token }}
+      #    script: |
+      #      const { data } = await github.repos.getReleaseByTag({
+      #        owner: context.repo.owner,
+      #        repo: context.repo.repo,
+      #        tag: github.ref
+      #      });
+      #      console.log(data.id);
+
+      #- name: Extract branch name
+      #  id: extract_branch
+      #  if: github.ref_type == 'tags' || github.event == 'release'
+      #  shell: bash
+      #  run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
 
       #- name: Upload SBOM as release asset
       #  uses: actions/upload-release-asset@v1
+      #  if: github.ref_type == 'tags' || github.event == 'release'
       #  env:
       #    GITHUB_TOKEN: ${{ github.token }}
       #  with:
-      #    upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #    upload_url: 
       #    asset_path: ${{ steps.sbom.outputs.fileName }}
       #    asset_name: sbom.zip
       #    asset_content_type: application/zip
-
-      - name: Upload SBOM as release asset
-        uses: actions/upload-release-asset@v1
-        if: github.ref_type == 'tags' || github.event == 'release'
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          upload_url: https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.get_release.outputs.id }}/assets{?name,label}
-          asset_path: ${{ steps.sbom.outputs.fileName }}
-          asset_name: sbom.zip
-          asset_content_type: application/zip
+      
+      - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@2.5.0
+      if: github.ref_type == 'tags' || github.event == 'release'
+      with:
+        repo_token: ${{ github.token }}
+        file: ${{ steps.sbom.outputs.fileName }}
+        asset_name: sbom.zip
+        tag: ${{ github.ref }}
+        overwrite: true
+        body: "SBOM Release"
