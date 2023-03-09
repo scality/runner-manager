@@ -6,8 +6,12 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  push:
+    tags:
+      - '*'
   schedule:
     - cron: '0 8 * * 1' # Monday - 8am - UTC
+  workflow_dispatch:
 
 jobs:
   analyze:
@@ -16,9 +20,50 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
         with:
           languages: python
+
       - name: Build and analyze
         uses: github/codeql-action/analyze@v2
+    
+  build:
+    name: SBOM generator
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: SBOM-generator-action
+        uses: advanced-security/sbom-generator-action@v0.0.1
+        id: sbom
+        env: 
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - uses: actions/upload-artifact@v3.1.0
+        with: 
+          path: ${{steps.sbom.outputs.fileName }}
+          name: "SBOM"
+
+      - name: Get latest release
+        id: latest_release
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const { data } = await github.repos.listReleases({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 1
+            });
+            return data[0];
+
+      - name: Upload SBOM as release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.latest_release.outputs.upload_url }}
+          asset_path: ${{ steps.sbom.outputs.fileName }}
+          asset_name: sbom.zip
+          asset_content_type: application/zip
