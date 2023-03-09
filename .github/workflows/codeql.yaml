@@ -27,14 +27,6 @@ jobs:
 
       - name: Build and analyze
         uses: github/codeql-action/analyze@v2
-  
-  dependency-review:
-     runs-on: ubuntu-latest
-     steps:
-       - name: 'Checkout Repository'
-         uses: actions/checkout@v3
-       - name: 'Dependency Review'
-         uses: actions/dependency-review-action@v3
 
   sbom-generator:
     name: SBOM generator
@@ -69,3 +61,12 @@ jobs:
           tag_name: ${{ github.ref_name }}
           target_commitish: ${{ github.sha }}
           files: ${{ env.REPO }}-${{ github.ref_name }}.spdx.json
+
+  dependency-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout Repository'
+        uses: actions/checkout@v3
+
+      - name: 'Dependency Review'
+        uses: actions/dependency-review-action@v3
