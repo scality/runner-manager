@@ -77,12 +77,12 @@ jobs:
       #    asset_content_type: application/zip
       
       - name: Upload binaries to release
-      uses: svenstaro/upload-release-action@2.5.0
-      if: github.ref_type == 'tags' || github.event == 'release'
-      with:
-        repo_token: ${{ github.token }}
-        file: ${{ steps.sbom.outputs.fileName }}
-        asset_name: sbom.zip
-        tag: ${{ github.ref }}
-        overwrite: true
-        body: "SBOM Release"
+        uses: svenstaro/upload-release-action@2.5.0
+        if: github.ref_type == 'tags' || github.event == 'release'
+        with:
+          repo_token: ${{ github.token }}
+          file: ${{ steps.sbom.outputs.fileName }}
+          asset_name: sbom.zip
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "SBOM Release"
