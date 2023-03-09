@@ -5,7 +5,7 @@ on:
   push:
     branches: [main]
     tags:
-    - 'v*'
+    - '*'
   pull_request:
     branches: [main]
   schedule:
@@ -28,7 +28,7 @@ jobs:
       - name: Build and analyze
         uses: github/codeql-action/analyze@v2
     
-  build:
+  sbom-generator:
     name: SBOM generator
     runs-on: ubuntu-latest
     steps:
