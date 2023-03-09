@@ -53,17 +53,19 @@ jobs:
           path: ${{ steps.sbom.outputs.fileName }}
           name: "sbom"
 
-      - name: Set repository name
+      - name: Rename sbom file
         run: |
           # Github env var with only the repo name
           echo "REPO=${GITHUB_REPOSITORY##*/}" >> $GITHUB_ENV
+          mv ${{ steps.sbom.outputs.fileName }} $REPO-${{ github.ref_name }}.spdx.json
 
       - name: Upload ${{ steps.sbom.outputs.fileName }} in the GitHub Release
         uses: softprops/action-gh-release@v1
+        if: github.ref_type == 'tag'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           name: Release ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
           target_commitish: ${{ github.sha }}
-          files: ${{ steps.sbom.outputs.fileName }}
+          files: ${{ env.REPO }}-${{ github.ref_name }}.spdx.json
