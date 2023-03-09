@@ -55,6 +55,9 @@ jobs:
             });
             return data[0];
 
+      - name: Debug latest release
+        run: echo ${{ steps.latest_release.outputs }}
+
       - name: Upload SBOM as release asset
         uses: actions/upload-release-asset@v1
         env:
