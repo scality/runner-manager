@@ -52,7 +52,12 @@ jobs:
         with:
           github-token: ${{ github.token }}
           script: |
-            console.log(`${github.ref_name}`);
+            const { data } = await github.repos.getReleaseByTag({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag: github.ref
+            });
+            console.log(data.id);
 
       #- name: Upload SBOM as release asset
       #  uses: actions/upload-release-asset@v1
@@ -63,3 +68,14 @@ jobs:
       #    asset_path: ${{ steps.sbom.outputs.fileName }}
       #    asset_name: sbom.zip
       #    asset_content_type: application/zip
+
+      - name: Upload SBOM as release asset
+        uses: actions/upload-release-asset@v1
+        if: github.ref_type == 'tags' || github.event == 'release'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.get_release.outputs.id }}/assets{?name,label}
+          asset_path: ${{ steps.sbom.outputs.fileName }}
+          asset_name: sbom.zip
+          asset_content_type: application/zip
