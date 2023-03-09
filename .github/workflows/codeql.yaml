@@ -47,9 +47,8 @@ jobs:
 
       - name: Set repository name
         run: |
-          # Remove the org from the github.repository var
-          REPO="${GITHUB_REPOSITORY#*/}"
-          echo $REPO >> $GITHUB_ENV
+          # Github env var with only the repo name
+          echo "REPO=${GITHUB_REPOSITORY##*/}" >> $GITHUB_ENV
 
       - name: Upload SBOM as release asset
         uses: actions/upload-release-asset@v1
