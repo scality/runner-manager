@@ -45,22 +45,22 @@ jobs:
           path: ${{steps.sbom.outputs.fileName }}
           name: "SBOM"
 
-      - name: Get release
-        id: get_release
-        uses: bruceadams/get-release@v1.3.2
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+      #- name: Get release
+      #  id: get_release
+      #  uses: bruceadams/get-release@v1.3.2
+      #  env:
+      #    GITHUB_TOKEN: ${{ github.token }}
 
       - name: Debug get_release output
-        run: echo "${{ steps.get_release.outputs }}"
+        run: echo "${{ github.ref_name }}"
 
-      - name: Upload SBOM as release asset
-        uses: actions/upload-release-asset@v1
-        if: github.ref_type == 'tags' || github.event == 'release'
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: ${{ steps.sbom.outputs.fileName }}
-          asset_name: sbom.zip
-          asset_content_type: application/zip
+      #- name: Upload SBOM as release asset
+      #  uses: actions/upload-release-asset@v1
+      #  if: github.ref_type == 'tags' || github.event == 'release'
+      #  env:
+      #    GITHUB_TOKEN: ${{ github.token }}
+      #  with:
+      #    upload_url: ${{ steps.get_release.outputs.upload_url }}
+      #    asset_path: ${{ steps.sbom.outputs.fileName }}
+      #    asset_name: sbom.zip
+      #    asset_content_type: application/zip
