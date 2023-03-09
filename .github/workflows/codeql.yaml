@@ -27,31 +27,31 @@ jobs:
 
       - name: Build and analyze
         uses: github/codeql-action/analyze@v2
-    
+
   sbom-generator:
     name: SBOM generator
     runs-on: ubuntu-latest
-    if: github.ref_type == 'tags' || github.event == 'release'
     steps:
       - uses: actions/checkout@v3
 
       - name: SBOM-generator-action
         uses: advanced-security/sbom-generator-action@v0.0.1
         id: sbom
-        env: 
+        env:
           GITHUB_TOKEN: ${{ github.token }}
 
       - uses: actions/upload-artifact@v3.1.0
-        with: 
-          path: ${{steps.sbom.outputs.fileName }}
-          name: "SBOM"
+        with:
+          path: ${{ steps.sbom.outputs.fileName }}
+          name: "sbom"
 
       - name: Upload SBOM as release asset
         uses: actions/upload-release-asset@v1
+        if: github.ref_type == 'tag'
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          upload_url: https://github.com/scality/runner-manager/releases/tag/${{ github.ref_name }}
+          upload_url: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}
           asset_path: ${{ steps.sbom.outputs.fileName }}
-          asset_name: sbom.zip
-          asset_content_type: application/zip
+          asset_name: sbom.spdx.json
+          asset_content_type: application/spdx+json
