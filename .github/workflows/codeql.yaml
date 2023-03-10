@@ -63,6 +63,7 @@ jobs:
         uses: github/codeql-action/analyze@v2
 
   sbom-generator:
+    needs: trivy-sbom
     name: SBOM generator
     runs-on: ubuntu-latest
     steps:
@@ -96,6 +97,7 @@ jobs:
           files: ${{ env.REPO }}-${{ github.ref_name }}.spdx.json
 
   dependency-review:
+    needs: trivy-sbom
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout Repository'
