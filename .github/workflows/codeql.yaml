@@ -83,9 +83,6 @@ jobs:
           path: ${{ steps.sbom.outputs.fileName }}
           name: "sbom"
 
-      - name: Set repo
-        run: |
-          echo "REPO=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
       - name: Rename sbom file
         run: |
           mv ${{ steps.sbom.outputs.fileName }} $GITHUB_WORKSPACE/merge.spdx.json
