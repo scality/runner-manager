@@ -4,21 +4,106 @@ name: codeql
 on:
   push:
     branches: [main]
+    tags:
+    - '*'
   pull_request:
     branches: [main]
   schedule:
     - cron: '0 8 * * 1' # Monday - 8am - UTC
+  workflow_dispatch:
 
 jobs:
+  build:
+    permissions:
+      contents: read
+      packages: write
+    uses: scality/workflows/.github/workflows/docker-build.yaml@v1
+    with:
+      name: runner-manager
+      namespace: scality
+
+  trivy:
+    needs: build
+    name: Trivy Vulnerability Scan for Code
+    uses: scality/workflows/.github/workflows/trivy.yaml@v1
+    with:
+      name: runner-manager
+      namespace: scality
+
+  trivy-sbom:
+    needs: build
+    env:
+      TRIVY_USERNAME: "${{ github.repository_owner }}"
+      TRIVY_PASSWORD: "${{ secrets.GITHUB_TOKEN }}"
+    name: Trivy generate SBOM
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run Trivy in GitHub SBOM mode and submit results to Dependency Snapshots
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'image'
+          format: 'github'
+          output: 'dependency-results.sbom.json'
+          image-ref: 'ghcr.io/${{ github.repository }}:${{ github.sha }}'
+          github-pat: ${{ github.token }}
+
   analyze:
     name: Static analysis with CodeQL
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
         with:
           languages: python
+
       - name: Build and analyze
         uses: github/codeql-action/analyze@v2
+
+  sbom-generator:
+    needs: trivy-sbom
+    name: SBOM generator
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: SBOM-generator-action
+        uses: advanced-security/sbom-generator-action@v0.0.1
+        id: sbom
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - uses: actions/upload-artifact@v3.1.0
+        with:
+          path: ${{ steps.sbom.outputs.fileName }}
+          name: "sbom"
+
+      - name: Rename sbom file
+        run: |
+          mv ${{ steps.sbom.outputs.fileName }} "/home/runner/work/runner-manager/runner-manager/merge.spdx.json"
+
+      - name: Upload ${{ steps.sbom.outputs.fileName }} in the GitHub Release
+        uses: softprops/action-gh-release@v1
+        if: github.ref_type == 'tag'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          name: Release ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          target_commitish: ${{ github.sha }}
+          files: ${{ env.REPO }}-${{ github.ref_name }}.spdx.json
+
+  dependency-review:
+    needs: trivy-sbom
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout Repository'
+        uses: actions/checkout@v3
+
+      - name: 'Dependency Review'
+        uses: actions/dependency-review-action@v3
