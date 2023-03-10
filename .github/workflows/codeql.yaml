@@ -44,7 +44,7 @@ jobs:
           scan-type: 'image'
           format: 'github'
           output: 'dependency-results.sbom.json'
-          image-ref: '.'
+          image-ref: 'ghcr.io/${{ github.repository }}/runner-manager:${{ github.sha }}'
           github-pat: ${{ github.token }}
 
   analyze:
