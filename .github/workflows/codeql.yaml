@@ -32,6 +32,9 @@ jobs:
 
   trivy-sbom:
     needs: build
+    env:
+      TRIVY_USERNAME: "${{ github.repository_owner }}"
+      TRIVY_PASSWORD: "${{ secrets.GITHUB_TOKEN }}"
     name: Trivy generate SBOM
     runs-on: ubuntu-latest
     steps:
