@@ -85,7 +85,7 @@ jobs:
 
       - name: Rename sbom file
         run: |
-          mv ${{ steps.sbom.outputs.fileName }} $GITHUB_WORKSPACE/merge.spdx.json
+          mv ${{ steps.sbom.outputs.fileName }} ${GITHUB_WORKSPACE}/merge.spdx.json
 
       - name: Upload ${{ steps.sbom.outputs.fileName }} in the GitHub Release
         uses: softprops/action-gh-release@v1
