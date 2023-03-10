@@ -88,7 +88,7 @@ jobs:
           echo "REPO=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
       - name: Rename sbom file
         run: |
-          mv "${{ steps.sbom.outputs.fileName }}" "${{ env.REPO }}-${{ github.ref_name }}.spdx.json"
+          mv ${{ steps.sbom.outputs.fileName }} $GITHUB_WORKSPACE/merge.spdx.json
 
       - name: Upload ${{ steps.sbom.outputs.fileName }} in the GitHub Release
         uses: softprops/action-gh-release@v1
