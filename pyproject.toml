@@ -32,7 +32,7 @@ boto3 = "^1.26.70"
 protobuf = "^4.21.12"
 
 [tool.poetry.dev-dependencies]
-virtualenv = "^20.19.0"
+virtualenv = "^20.21.0"
 mock = "4.0.3"
 flake8 = "3.9.2"
 fakeredis = "2.7.1"
