@@ -8,7 +8,6 @@ on:
 
 jobs:
   dependency-review:
-    needs: trivy-sbom
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout Repository'
