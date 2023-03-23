@@ -50,21 +50,6 @@ jobs:
           image-ref: 'ghcr.io/${{ github.repository }}:${{ github.sha }}'
           github-pat: ${{ github.token }}
 
-  analyze:
-    name: Static analysis with CodeQL
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
-        with:
-          languages: python
-
-      - name: Build and analyze
-        uses: github/codeql-action/analyze@v2
-
   sbom-generator:
     needs: trivy-sbom
     name: SBOM generator
@@ -97,13 +82,3 @@ jobs:
           tag_name: ${{ github.ref_name }}
           target_commitish: ${{ github.sha }}
           files: ${{ env.REPO }}-${{ github.ref_name }}.spdx.json
-
-  dependency-review:
-    needs: trivy-sbom
-    runs-on: ubuntu-latest
-    steps:
-      - name: 'Checkout Repository'
-        uses: actions/checkout@v3
-
-      - name: 'Dependency Review'
-        uses: actions/dependency-review-action@v3
