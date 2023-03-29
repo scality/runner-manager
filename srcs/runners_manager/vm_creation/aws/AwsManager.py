@@ -55,6 +55,12 @@ class AwsManager(CloudManager):
                 runner, runner_token, github_organization, installer
             )
 
+            for key, value in runner.vm_type.aws-tags.items():
+                tag.append({
+                    'Key': key,
+                    'Value': value
+                })
+
             instance = self.ec2.run_instances(
                 ImageId=runner.vm_type.config["image_id"],
                 InstanceType=runner.vm_type.config["instance_type"],
@@ -76,16 +82,7 @@ class AwsManager(CloudManager):
                 TagSpecifications=[
                     {
                         'ResourceType': 'instance',
-                        'Tags': [
-                            {
-                                'Key': 'Name',
-                                'Value': runner.name
-                            },
-                            {
-                                'Key': 'tool',
-                                'Value': 'runner.manager'
-                            }
-                        ]
+                        'Tags': tag
                     },
                 ],
             )
