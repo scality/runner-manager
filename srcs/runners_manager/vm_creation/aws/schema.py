@@ -1,7 +1,9 @@
 from marshmallow import Schema, fields
 
+
 class AwsCloudConfig(Schema):
     tags = fields.Dict(keys=fields.Str(), values=fields.Str())
+
 
 class AwsConfigVmType(Schema):
     image_id = fields.Str(required=True)
