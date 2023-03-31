@@ -30,7 +30,7 @@ class AwsManager(CloudManager):
             name, settings, redhat_username, redhat_password, ssh_keys
         )
         self.tags = settings.get("tags")
-        self.ec2 = boto3.client("ec2", region_name='us-west-2')
+        self.ec2 = boto3.client("ec2")
 
     def delete_existing_runner(self, runner: Runner):
         """Delete an old runner instance from AWS if it exists."""
