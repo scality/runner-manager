@@ -29,7 +29,7 @@ class AwsManager(CloudManager):
         super(AwsManager, self).__init__(
             name, settings, redhat_username, redhat_password, ssh_keys
         )
-        self.aws_tags = settings.get("aws_tags")
+        self.tags = settings.get("tags")
         self.ec2 = boto3.client("ec2", region_name='us-west-2')
 
     def delete_existing_runner(self, runner: Runner):
@@ -65,7 +65,7 @@ class AwsManager(CloudManager):
                 }
             ]
 
-            for key, value in self.aws_tags.items():
+            for key, value in self.tags.items():
                 tag.append({
                     'Key': key,
                     'Value': value
