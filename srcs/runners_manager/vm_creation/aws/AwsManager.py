@@ -8,12 +8,14 @@ from runners_manager.vm_creation.CloudManager import CloudManager
 from runners_manager.vm_creation.CloudManager import create_vm_metric
 from runners_manager.vm_creation.CloudManager import delete_vm_metric
 
+from runners_manager.vm_creation.aws.schema import AwsCloudConfig
 from runners_manager.vm_creation.aws.schema import AwsConfigVmType
 
 logger = logging.getLogger("runner_manager")
 
 
 class AwsManager(CloudManager):
+    CONFIG_SCHEMA = AwsCloudConfig
     CONFIG_VM_TYPE_SCHEMA = AwsConfigVmType
 
     def __init__(
@@ -27,6 +29,7 @@ class AwsManager(CloudManager):
         super(AwsManager, self).__init__(
             name, settings, redhat_username, redhat_password, ssh_keys
         )
+        self.tags = settings.get("tags")
         self.ec2 = boto3.client("ec2")
 
     def delete_existing_runner(self, runner: Runner):
@@ -55,6 +58,19 @@ class AwsManager(CloudManager):
                 runner, runner_token, github_organization, installer
             )
 
+            tag = [
+                {
+                    'Key': 'Name',
+                    'Value': runner.name
+                }
+            ]
+
+            for key, value in self.tags.items():
+                tag.append({
+                    'Key': key,
+                    'Value': value
+                })
+
             instance = self.ec2.run_instances(
                 ImageId=runner.vm_type.config["image_id"],
                 InstanceType=runner.vm_type.config["instance_type"],
@@ -76,16 +92,7 @@ class AwsManager(CloudManager):
                 TagSpecifications=[
                     {
                         'ResourceType': 'instance',
-                        'Tags': [
-                            {
-                                'Key': 'Name',
-                                'Value': runner.name
-                            },
-                            {
-                                'Key': 'tool',
-                                'Value': 'runner.manager'
-                            }
-                        ]
+                        'Tags': tag
                     },
                 ],
             )
