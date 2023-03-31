@@ -27,9 +27,6 @@ the remaining service configuration you'll need are:
 cloud_name: 'aws'
 cloud_config:
   tags:
-    lifecycle_autostop: no
-    lifecycle_autostart: no
-    map-migrated: 'mig42992'
     owner: 'ci'
     tool: 'runner-manager'
 ```
