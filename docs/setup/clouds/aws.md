@@ -25,7 +25,10 @@ the remaining service configuration you'll need are:
 
 ```yaml
 cloud_name: 'aws'
-cloud_config: {}
+cloud_config:
+  tags:
+    owner: 'ci'
+    tool: 'runner-manager'
 ```
 
 ### Runner
