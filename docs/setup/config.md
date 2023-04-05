@@ -66,7 +66,7 @@ manager will manage.
 
 This is how you can define the specifications of each
 instances and how they are selected
-(thanks to the assigned tags)
+(thanks to the assigned tags).
 
 Each runner pool will typically have:
 
