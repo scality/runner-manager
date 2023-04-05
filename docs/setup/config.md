@@ -17,7 +17,7 @@ use the runner manager. Chose between:
 
 * Setting it up on an existing one that you have the appropriate credentials.
 * Request admin access to your appropriate entity.
-* [create a new one] (there's a free option).
+* [Create a new one] (there's a free option).
 
 > It is perfectly possible to attach the runner to a repository instead
 of a whole GitHub Organization, making it easier to test and work with.
@@ -30,9 +30,9 @@ However this feature was never implemented, contributions are welcome ;)
 * Name your token
 * Apply the following scopes:
 
-    * `repos`
-    * `workflow`
-    * `admin:org`
+  * `repos`
+  * `workflow`
+  * `admin:org`
 
 The token shall be set as the `GITHUB_TOKEN` environment
 variable in the container runtime of the runner manager.
@@ -101,5 +101,5 @@ runner_pool:
 ```
 
 [config_example.yml]: https://github.com/scality/runner-manager/blob/main/config_example.yml
-[create a new one]: https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch
+[Create a new one]: https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch
 [selected cloud provider]: ./clouds/index.md
