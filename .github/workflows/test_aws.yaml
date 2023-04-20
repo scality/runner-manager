@@ -1,0 +1,23 @@
+---
+name: test-self-hosted
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  greet:
+    strategy:
+      matrix:
+        person:
+        - foo
+        - bar
+    runs-on:
+    - aws
+    - ubuntu
+    - jammy
+    - small
+    - test
+    steps:
+    - name: sleep
+      run: sleep 120
+    - name: Send greeting
+      run: echo "Hello ${{ matrix.person }}!"
