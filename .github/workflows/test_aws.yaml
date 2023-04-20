@@ -14,8 +14,7 @@ jobs:
     - aws
     - ubuntu
     - jammy
-    - small
-    - test
+    - large
     steps:
     - name: sleep
       run: sleep 120
