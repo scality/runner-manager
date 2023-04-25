@@ -2,16 +2,14 @@
 github_organization: ""
 
 # Cloud connection infos
-cloud_name: 'openstack'
+cloud_name: 'aws'
 cloud_config:
-  auth_url: ""
-  region_name: ""
-  project_name: ""
-
-  username: ""
-  password: ""
-  token: ""
-  network_name: ""
+  aws_tags:
+    lifecycle_autostop: no
+    lifecycle_autostart: no
+    map-migrated: 'mig42992'
+    owner: 'ci'
+    tool: 'runner-manager'
 
 # SSH key added on each runner
 allowed_ssh_keys: ""
@@ -37,7 +35,23 @@ python_config: 'settings.settings_local'
 #      tags:
 #        - centos7
 #        - small
-runner_pool: []
+runner_pool:
+  - config:
+      image_id: 'ami-0735c191cf914754d'
+      instance_type: 't2.micro'
+      security_group_ids:
+        - 'sg-04a0f254a058a4c81'
+        - 'sg-0cf1e17cf459cfeff'
+      subnet_id: 'subnet-0a10841e744637b49'
+      disk_size_gb: 30
+    quantity:
+      min: 2
+      max: 4
+    tags:
+      - aws
+      - ubuntu
+      - jammy
+      - small
 
 # If the number of runners is greater than `min`
 # after x min / hours it will delete them to return to min number
