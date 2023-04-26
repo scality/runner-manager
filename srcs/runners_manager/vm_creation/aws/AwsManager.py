@@ -62,14 +62,28 @@ class AwsManager(CloudManager):
                 {
                     'Key': 'Name',
                     'Value': runner.name
+                },
+                {
+                    'Key': 'lifecycle_autostop',
+                    'Value': 'no'
+                },
+                {
+                    'Key': 'lifecycle_autostart',
+                    'Value': 'no'
+                },
+                {
+                    'Key': 'map-migrated',
+                    'Value': 'mig42992'
+                },
+                {
+                    'Key': 'owner',
+                    'Value': 'ci'
+                },
+                {
+                    'Key': 'tool',
+                    'Value': 'runner-manager'
                 }
             ]
-
-            for key, value in self.tags.items():
-                tag.append({
-                    'Key': key,
-                    'Value': value
-                })
 
             instance = self.ec2.run_instances(
                 ImageId=runner.vm_type.config["image_id"],
