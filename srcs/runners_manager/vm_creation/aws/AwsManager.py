@@ -82,8 +82,24 @@ class AwsManager(CloudManager):
                                 'Value': runner.name
                             },
                             {
+                                'Key': 'lifecycle_autostop',
+                                'Value': 'no'
+                            },
+                            {
+                                'Key': 'lifecycle_autostart',
+                                'Value': 'no'
+                            },
+                            {
+                                'Key': 'map-migrated',
+                                'Value': 'mig42992'
+                            },
+                            {
+                                'Key': 'owner',
+                                'Value': 'ci'
+                            },
+                            {
                                 'Key': 'tool',
-                                'Value': 'runner.manager'
+                                'Value': 'runner-manager'
                             }
                         ]
                     },
