@@ -23,4 +23,4 @@ jobs:
     - name: Send greeting
       run: echo "Hello ${{ matrix.person }}!"
     - name: Python
-      run: apt search python3-venv
+      run: python --version
