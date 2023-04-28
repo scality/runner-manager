@@ -22,3 +22,5 @@ jobs:
       run: sleep 120
     - name: Send greeting
       run: echo "Hello ${{ matrix.person }}!"
+    - name: Python
+      run: apt search python3-venv
