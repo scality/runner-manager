@@ -1,0 +1,56 @@
+# Your github organization where you want to attach your self-hosted runners
+github_organization: ""
+
+# Cloud connection infos
+cloud_name: 'openstack'
+cloud_config:
+  auth_url: ""
+  region_name: ""
+  project_name: ""
+
+  username: ""
+  password: ""
+  token: ""
+  network_name: ""
+
+# SSH key added on each runner
+allowed_ssh_keys: ""
+
+# The python module, used for configuration
+# example:
+#  'settings.settings_local'
+python_config: 'settings.settings_local'
+
+# Represent the infos about each group of runners
+# Define by:
+#  - There config depending on the cloud backend
+#  - The quantity allowed to spawn at the same time
+#  - The tags use by github actions
+# Example:
+#  runner_pool:
+#    - config:
+#        flavor: 'm1.small'
+#        image: 'CentOS 7 (PVHVM)'
+#      quantity:
+#        min: 2
+#        max: 4
+#      tags:
+#        - centos7
+#        - small
+runner_pool: []
+
+# If the number of runners is greater than `min`
+# after x min / hours it will delete them to return to min number
+extra_runner_timer:
+  minutes: 10
+  hours: 0
+
+# The runner will be killed if it isn't available after this timer
+timeout_runner_timer:
+  minutes: 15
+  hours: 0
+
+# Define the credentials to connect your redis database
+redis:
+  host: redis
+  port: 6379
