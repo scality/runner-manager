@@ -65,11 +65,12 @@ class AwsManager(CloudManager):
                 }
             ]
 
-            for key, value in self.tags.items():
-                tag.append({
-                    'Key': key,
-                    'Value': value
-                })
+            if self.tags:
+                for key, value in self.tags.items():
+                    tag.append({
+                        'Key': key,
+                        'Value': value
+                    })
 
             instance = self.ec2.run_instances(
                 ImageId=runner.vm_type.config["image_id"],
