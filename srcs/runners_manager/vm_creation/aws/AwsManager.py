@@ -31,6 +31,7 @@ class AwsManager(CloudManager):
         )
         self.tags = settings.get("tags")
         self.ec2 = boto3.client("ec2")
+        logger.debug('AWS init, configured with tags: {}'.format(self.tags))
 
     def delete_existing_runner(self, runner: Runner):
         """Delete an old runner instance from AWS if it exists."""
