@@ -6,7 +6,14 @@ services:
       context: .
       dockerfile: ./Dockerfile
     command:
-      - /bin/bash
+      - uvicorn
+      - srcs.web.app:app
+      - --host
+      - '0.0.0.0'
+      - --port
+      - '8080'
+      - --reload
+      - --debug
     volumes:
       - "./srcs:/app/srcs"
       - "./templates:/app/templates"

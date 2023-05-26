@@ -24,8 +24,4 @@ RUN poetry config virtualenvs.create false && \
 
 COPY . /app/
 
-RUN groupadd -r myuser && useradd -r -g myuser myuser
-RUN chown -R myuser:myuser /app
-USER myuser
-
 CMD ["/bin/bash"]
