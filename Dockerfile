@@ -28,4 +28,4 @@ RUN groupadd -r myuser && useradd -r -g myuser myuser
 RUN chown -R myuser:myuser /app
 USER myuser
 
-CMD ["uvicorn", "srcs.web.app:app", "--host", "localhost", "--port", "8080"]
+CMD ["uvicorn", "srcs.web.app:app", "--host", "127.0.0.1", "--port", "8080"]
