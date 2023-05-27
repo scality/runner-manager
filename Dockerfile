@@ -24,9 +24,4 @@ RUN poetry config virtualenvs.create false && \
 
 COPY . /app/
 
-RUN groupadd -r myuser && useradd -r -g myuser myuser
-RUN chown -R myuser:myuser /app \
-    && chmod -R 755 /app
-USER myuser
-
-CMD ["uvicorn", "srcs.web.app:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["/bin/bash"]
