@@ -11,7 +11,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.9.16"
-fastapi = "0.68.1"
+fastapi = "0.96.0"
 uvicorn = "^0.17.6"
 python-novaclient = "18.3.0"
 python-neutronclient = "9.0.0"
