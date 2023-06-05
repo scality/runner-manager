@@ -11,6 +11,7 @@ from google.cloud.compute import Instance
 from google.cloud.compute import InstancesClient
 from google.cloud.compute import Items
 from google.cloud.compute import Metadata
+from google.cloud.compute import Scheduling
 from google.cloud.compute import NetworkInterface
 from google.cloud.compute import Operation
 from google.cloud.compute import ServiceAccount
@@ -73,6 +74,7 @@ class GcloudManager(CloudManager):
         )
         disk_size_gb = runner.vm_type.config["disk_size_gb"]
         disk_type = f"projects/{self.project_id}/zones/{self.zone}/diskTypes/pd-ssd"
+
         instance: Instance = Instance(
             name=runner.name,
             machine_type=machine_type,
@@ -106,6 +108,9 @@ class GcloudManager(CloudManager):
             ],
             metadata=Metadata(
                 items=[Items(key="startup-script", value=startup_script)]
+            ),
+            scheduling=Scheduling(
+                preemptible=True
             ),
             advanced_machine_features=AdvancedMachineFeatures(
                 enable_nested_virtualization=True
