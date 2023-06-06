@@ -69,6 +69,7 @@ runner_pool:
     project: ubuntu-os-cloud
     family: ubuntu-2004-lts
     disk_size_gb: 20
+    spot: True
   quantity:
     min: 2
     max: 4
@@ -82,6 +83,10 @@ runner_pool:
     * Be aware that you need two parameter, the project and the family
 * List of [machine types] can be found on Google Cloud documentation
 * disk size can be whatever you chose to be usefull (be frugal but generous ;) )
+* The spot key in the runner pool configuration is used to enable or disable the
+usage of preemptible instances (spot instances) in Google Cloud. By default, if
+the spot key is not provided, its value is False, indicating that regular
+instances will be used.
 
 [images]: https://console.cloud.google.com/compute/images?tab=images&project=scality-devl
 [machine types]: https://cloud.google.com/compute/docs/general-purpose-machines?hl=en#e2-standard
