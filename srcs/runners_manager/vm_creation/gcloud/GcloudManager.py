@@ -11,9 +11,9 @@ from google.cloud.compute import Instance
 from google.cloud.compute import InstancesClient
 from google.cloud.compute import Items
 from google.cloud.compute import Metadata
-from google.cloud.compute import Scheduling
 from google.cloud.compute import NetworkInterface
 from google.cloud.compute import Operation
+from google.cloud.compute import Scheduling
 from google.cloud.compute import ServiceAccount
 from google.cloud.compute import ZoneOperationsClient
 from runners_manager.monitoring.prometheus import metrics
@@ -110,7 +110,7 @@ class GcloudManager(CloudManager):
                 items=[Items(key="startup-script", value=startup_script)]
             ),
             scheduling=Scheduling(
-                preemptible=True
+                preemptible=bool(runner.vm_type.config["spot"])
             ),
             advanced_machine_features=AdvancedMachineFeatures(
                 enable_nested_virtualization=True
