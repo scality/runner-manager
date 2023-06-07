@@ -75,9 +75,9 @@ class GcloudManager(CloudManager):
         disk_size_gb = runner.vm_type.config["disk_size_gb"]
         disk_type = f"projects/{self.project_id}/zones/{self.zone}/diskTypes/pd-ssd"
 
-        spot = False
-        if "spot" in runner.vm_type.config:
-            spot = bool(runner.vm_type.config["spot"])
+        preemptible = False
+        if "preemptible" in runner.vm_type.config:
+            preemptible = bool(runner.vm_type.config["preemptible"])
 
         instance: Instance = Instance(
             name=runner.name,
@@ -114,7 +114,7 @@ class GcloudManager(CloudManager):
                 items=[Items(key="startup-script", value=startup_script)]
             ),
             scheduling=Scheduling(
-                preemptible=spot
+                preemptible=preemptible
             ),
             advanced_machine_features=AdvancedMachineFeatures(
                 enable_nested_virtualization=True
