@@ -119,9 +119,9 @@ class GcloudManager(CloudManager):
                 items=[Items(key="startup-script", value=startup_script)]
             ),
             scheduling=Scheduling(
-                preemptible=preemptible, # True
-                provisioning_model=provisioning_model, # "SPOT"
-                automatic_restart=automatic_restart # False
+                preemptible=preemptible,
+                provisioning_model=provisioning_model,
+                automatic_restart=automatic_restart
             ),
             advanced_machine_features=AdvancedMachineFeatures(
                 enable_nested_virtualization=True
