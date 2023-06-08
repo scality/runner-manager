@@ -80,7 +80,7 @@ class GcloudManager(CloudManager):
         preemptible = False
         if "preemptible" in runner.vm_type.config:
             preemptible = bool(runner.vm_type.config["preemptible"])
-            if preemptible == True:
+            if preemptible:
                 provisioning_model = "SPOT"
                 automatic_restart = False
 
