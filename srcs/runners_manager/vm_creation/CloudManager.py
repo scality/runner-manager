@@ -70,6 +70,10 @@ class CloudManager(abc.ABC):
     def delete_images_from_shelved(self, name):
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def add_tags_to_instance(self, instance_name: str, status: str, repository: str, workflow: str, job: str):
+        raise NotImplementedError
+
     def script_init_runner(
         self, runner: Runner, token: int, github_organization: str, installer: str
     ):

@@ -14,6 +14,7 @@ from google.cloud.compute import Metadata
 from google.cloud.compute import NetworkInterface
 from google.cloud.compute import Operation
 from google.cloud.compute import ServiceAccount
+from google.cloud.compute import Tags
 from google.cloud.compute import ZoneOperationsClient
 from runners_manager.monitoring.prometheus import metrics
 from runners_manager.runner.Runner import Runner
@@ -58,6 +59,34 @@ class GcloudManager(CloudManager):
         logger.info(f"No existing instance for runner {runner.name} has been found")
         return None
 
+    def add_tags_to_instance(self, instance_name: str, tags_webhook: list):
+        logger.info(f"Currently adding tags to {instance_name} instance")
+        try:
+            instance = self.instances.get(project=self.project_id, zone=self.zone, instance=instance_name)
+            tags = instance.tags or Tags()
+            tags.items = tags_webhook
+            instance.tags = tags
+
+            ext_operation: ExtendedOperation = self.instances.update(
+                instance=instance_name,
+                project=self.project_id,
+                zone=self.zone,
+                instance_resource=instance,
+            )
+
+            operation: Operation = self.operations.get(
+                project=self.project_id, zone=self.zone, operation=ext_operation.name
+            )
+            logger.info(f"Tags added to {instance_name} instance")
+
+            return operation.target_id
+        except Exception as e:
+            logger.error(e)
+            raise e
+
+        #image = "X" # Dans GCloudManager directement, c'est genre "project" + "family"
+        #flavor = "X" # Directement dans GCloudManager, en faisant une comparaison (ou sinon juste tous les tags les foutre en tags GCP)
+
     def configure_instance(
         self, runner, runner_token, github_organization, installer
     ) -> Instance:
@@ -87,6 +116,7 @@ class GcloudManager(CloudManager):
                     ),
                 )
             ],
+            tags=Tags(items=[runner.vm_type.config["family"] + "-" + runner.vm_type.config["project"]]),
             network_interfaces=[
                 NetworkInterface(
                     network="global/networks/default",
