@@ -116,7 +116,7 @@ class GcloudManager(CloudManager):
                     ),
                 )
             ],
-            tags=Tags(items=[runner.vm_type.config["family"] + "-" + runner.vm_type.config["project"]]),
+            labels={"scality": "test"},
             network_interfaces=[
                 NetworkInterface(
                     network="global/networks/default",
