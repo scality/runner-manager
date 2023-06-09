@@ -58,7 +58,7 @@ class GcloudManager(CloudManager):
         logger.info(f"No existing instance for runner {runner.name} has been found")
         return None
 
-    def add_labels_to_instance(self, instance_name: str, labels_webhook: dict):
+    def add_identifier_to_instance(self, instance_name: str, labels_webhook: dict):
         logger.info(f"Currently adding labels to {instance_name} instance")
         try:
             instance = self.instances.get(
@@ -106,12 +106,9 @@ class GcloudManager(CloudManager):
         disk_size_gb = runner.vm_type.config["disk_size_gb"]
         disk_type = f"projects/{self.project_id}/zones/{self.zone}/diskTypes/pd-ssd"
         labels = {}
-        for tag in runner.vm_type.tags:
-            if "small" in tag or "medium" in tag or "large" in tag:
-                labels["flavor"] = tag
-                break
-        labels["image"] = runner.vm_type.config["machine_type"]
-        labels["status"] = "offline"
+        labels["machine_type"] = runner.vm_type.config["machine_type"]
+        labels["image"] = runner.vm_type.config["project"] + "-" +runner.vm_type.config["family"]
+        labels["status"] = runner.status
         instance: Instance = Instance(
             name=runner.name,
             machine_type=machine_type,

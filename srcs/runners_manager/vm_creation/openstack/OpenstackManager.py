@@ -247,3 +247,6 @@ VM id: {instance.id if instance else 'Vm not created'}"""
         for i in images:
             if name in i.name:
                 self.glance.images.delete(i.id)
+
+    def add_identifier_to_instance(self, instance_name: str, labels_webhook: dict):
+        pass

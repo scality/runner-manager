@@ -42,6 +42,9 @@ class AwsManager(CloudManager):
                 return self.delete_vm(listed_runner)
         logger.info(f"No existing instance for runner {runner.name} has been found")
         return None
+    
+    def add_identifier_to_instance(self, instance_name: str, labels_webhook: dict):
+        pass
 
     @create_vm_metric
     def create_vm(
