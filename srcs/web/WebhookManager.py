@@ -92,7 +92,8 @@ class WebHookManager(object):
             }
         )
 
-        runner_m.factory.cloud_manager.add_labels_to_instance(payload.workflow_job.runner_name,
+        runner_m.factory.cloud_manager.add_labels_to_instance(
+            payload.workflow_job.runner_name,
             dict(
                 status=status["status"],
                 repository=payload.repository.name,
@@ -100,7 +101,7 @@ class WebHookManager(object):
                 job=payload.workflow_job.name
             )
         )
-  
+
         runner_m.update_runner_status(status)
 
     def ping(self, payload: WebHook):

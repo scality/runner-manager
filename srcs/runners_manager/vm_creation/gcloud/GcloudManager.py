@@ -61,8 +61,12 @@ class GcloudManager(CloudManager):
     def add_labels_to_instance(self, instance_name: str, labels_webhook: dict):
         logger.info(f"Currently adding labels to {instance_name} instance")
         try:
-            instance = self.instances.get(project=self.project_id, zone=self.zone, instance=instance_name)
-            
+            instance = self.instances.get(
+                project=self.project_id,
+                zone=self.zone,
+                instance=instance_name
+            )
+
             labels = instance.labels or {}
             for key, value in labels_webhook.items():
                 labels[key] = value
