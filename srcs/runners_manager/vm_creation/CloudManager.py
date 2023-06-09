@@ -71,7 +71,7 @@ class CloudManager(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def add_tags_to_instance(self, instance_name: str, tags_webhook: list):
+    def add_labels_to_instance(self, instance_name: str, labels_webhook: dict):
         raise NotImplementedError
 
     def script_init_runner(

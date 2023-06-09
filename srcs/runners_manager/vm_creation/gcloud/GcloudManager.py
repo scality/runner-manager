@@ -59,13 +59,16 @@ class GcloudManager(CloudManager):
         logger.info(f"No existing instance for runner {runner.name} has been found")
         return None
 
-    def add_tags_to_instance(self, instance_name: str, tags_webhook: list):
-        logger.info(f"Currently adding tags to {instance_name} instance")
+    def add_labels_to_instance(self, instance_name: str, labels_webhook: dict):
+        logger.info(f"Currently adding labels to {instance_name} instance")
         try:
             instance = self.instances.get(project=self.project_id, zone=self.zone, instance=instance_name)
-            tags = instance.tags or Tags()
-            tags.items = tags_webhook
-            instance.tags = tags
+            
+            labels = instance.labels or {}
+            for key, value in labels_webhook.items():
+                labels[key] = value
+
+            instance.labels = labels
 
             ext_operation: ExtendedOperation = self.instances.update(
                 instance=instance_name,
@@ -77,15 +80,12 @@ class GcloudManager(CloudManager):
             operation: Operation = self.operations.get(
                 project=self.project_id, zone=self.zone, operation=ext_operation.name
             )
-            logger.info(f"Tags added to {instance_name} instance")
+            logger.info(f"Labels added to {instance_name} instance")
 
             return operation.target_id
         except Exception as e:
             logger.error(e)
             raise e
-
-        #image = "X" # Dans GCloudManager directement, c'est genre "project" + "family"
-        #flavor = "X" # Directement dans GCloudManager, en faisant une comparaison (ou sinon juste tous les tags les foutre en tags GCP)
 
     def configure_instance(
         self, runner, runner_token, github_organization, installer
@@ -102,6 +102,13 @@ class GcloudManager(CloudManager):
         )
         disk_size_gb = runner.vm_type.config["disk_size_gb"]
         disk_type = f"projects/{self.project_id}/zones/{self.zone}/diskTypes/pd-ssd"
+        labels = {}
+        for tag in runner.vm_type.tags:
+            if "small" in tag or "medium" in tag or "large" in tag:
+                labels["flavor"] = tag
+                break
+        labels["image"] = runner.vm_type.config["machine_type"]
+        labels["status"] = "offline"
         instance: Instance = Instance(
             name=runner.name,
             machine_type=machine_type,
@@ -116,7 +123,7 @@ class GcloudManager(CloudManager):
                     ),
                 )
             ],
-            labels={"scality": "test"},
+            labels=labels,
             network_interfaces=[
                 NetworkInterface(
                     network="global/networks/default",

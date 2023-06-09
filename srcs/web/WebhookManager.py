@@ -48,7 +48,7 @@ class WebHookManager(object):
             payload.action == "queued"
             and "self-hosted" in payload.workflow_job.labels
             and payload.workflow_job.runner_id is None
-        ): 
+        ):
             payload.workflow_job.labels.remove("self-hosted")
             try:
                 r_m = next(
@@ -92,9 +92,15 @@ class WebHookManager(object):
             }
         )
 
-        runner_m.factory.cloud_manager.add_tags_to_instance(payload.workflow_job.runner_name,
-            list([status["status"], payload.repository.name, payload.workflow_job.workflow_name, payload.workflow_job.name])) 
-              
+        runner_m.factory.cloud_manager.add_labels_to_instance(payload.workflow_job.runner_name,
+            dict(
+                status=status["status"],
+                repository=payload.repository.name,
+                workflow=payload.workflow_job.workflow_name,
+                job=payload.workflow_job.name
+            )
+        )
+  
         runner_m.update_runner_status(status)
 
     def ping(self, payload: WebHook):
