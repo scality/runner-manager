@@ -107,7 +107,7 @@ class GcloudManager(CloudManager):
         disk_type = f"projects/{self.project_id}/zones/{self.zone}/diskTypes/pd-ssd"
         labels = {}
         labels["machine_type"] = runner.vm_type.config["machine_type"]
-        labels["image"] = runner.vm_type.config["project"] + "-" +runner.vm_type.config["family"]
+        labels["image"] = runner.vm_type.config["project"] + "-" + runner.vm_type.config["family"]
         labels["status"] = runner.status
         instance: Instance = Instance(
             name=runner.name,
