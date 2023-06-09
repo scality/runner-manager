@@ -77,12 +77,14 @@ class GcloudManager(CloudManager):
 
         automatic_restart = True
         provisioning_model = "STANDARD"
+        instance_termination_action = "STOP"
         preemptible = False
         if "preemptible" in runner.vm_type.config:
             preemptible = bool(runner.vm_type.config["preemptible"])
             if preemptible:
                 provisioning_model = "SPOT"
                 automatic_restart = False
+                instance_termination_action = "DELETE"
 
         instance: Instance = Instance(
             name=runner.name,
@@ -121,7 +123,8 @@ class GcloudManager(CloudManager):
             scheduling=Scheduling(
                 preemptible=preemptible,
                 provisioning_model=provisioning_model,
-                automatic_restart=automatic_restart
+                automatic_restart=automatic_restart,
+                instance_termination_action=instance_termination_action,
             ),
             advanced_machine_features=AdvancedMachineFeatures(
                 enable_nested_virtualization=True
