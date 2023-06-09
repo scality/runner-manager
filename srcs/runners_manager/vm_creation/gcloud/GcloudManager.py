@@ -14,7 +14,6 @@ from google.cloud.compute import Metadata
 from google.cloud.compute import NetworkInterface
 from google.cloud.compute import Operation
 from google.cloud.compute import ServiceAccount
-from google.cloud.compute import Tags
 from google.cloud.compute import ZoneOperationsClient
 from runners_manager.monitoring.prometheus import metrics
 from runners_manager.runner.Runner import Runner
