@@ -77,7 +77,7 @@ class GcloudManager(CloudManager):
 
         automatic_restart = True
         provisioning_model = "STANDARD"
-        instance_termination_action = "STOP"
+        instance_termination_action = "DEFAULT"
         preemptible = False
         if "spot" in runner.vm_type.config:
             preemptible = bool(runner.vm_type.config["spot"])
