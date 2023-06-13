@@ -13,6 +13,7 @@ from google.cloud.compute import Items
 from google.cloud.compute import Metadata
 from google.cloud.compute import NetworkInterface
 from google.cloud.compute import Operation
+from google.cloud.compute import Scheduling
 from google.cloud.compute import ServiceAccount
 from google.cloud.compute import ZoneOperationsClient
 from runners_manager.monitoring.prometheus import metrics
@@ -73,6 +74,16 @@ class GcloudManager(CloudManager):
         )
         disk_size_gb = runner.vm_type.config["disk_size_gb"]
         disk_type = f"projects/{self.project_id}/zones/{self.zone}/diskTypes/pd-ssd"
+
+        automatic_restart = True
+        provisioning_model = "STANDARD"
+        instance_termination_action = "DEFAULT"
+        preemptible = bool(runner.vm_type.config.get("spot", False))
+        if preemptible:
+            provisioning_model = "SPOT"
+            automatic_restart = False
+            instance_termination_action = "DELETE"
+
         instance: Instance = Instance(
             name=runner.name,
             machine_type=machine_type,
@@ -106,6 +117,12 @@ class GcloudManager(CloudManager):
             ],
             metadata=Metadata(
                 items=[Items(key="startup-script", value=startup_script)]
+            ),
+            scheduling=Scheduling(
+                preemptible=preemptible,
+                provisioning_model=provisioning_model,
+                automatic_restart=automatic_restart,
+                instance_termination_action=instance_termination_action,
             ),
             advanced_machine_features=AdvancedMachineFeatures(
                 enable_nested_virtualization=True
