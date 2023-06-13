@@ -83,7 +83,7 @@ runner_pool:
     * Be aware that you need two parameter, the project and the family
 * List of [machine types] can be found on Google Cloud documentation
 * disk size can be whatever you chose to be usefull (be frugal but generous ;) )
-* The spot key in the runner pool configuration is used to enable or disable the
+* The `spot` key in the runner pool configuration is used to enable or disable the
 usage of spot instances (spot instances) in Google Cloud. By default, if
 the spot key is not provided, its value is `false`, indicating that regular
 instances will be used.
