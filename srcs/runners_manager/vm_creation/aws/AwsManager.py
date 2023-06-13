@@ -43,6 +43,9 @@ class AwsManager(CloudManager):
         logger.info(f"No existing instance for runner {runner.name} has been found")
         return None
 
+    def update_vm_metadata(self, instance_name: str, metadata: dict):
+        pass
+
     @create_vm_metric
     def create_vm(
         self,

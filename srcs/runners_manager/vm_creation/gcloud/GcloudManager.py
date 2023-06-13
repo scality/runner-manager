@@ -59,6 +59,38 @@ class GcloudManager(CloudManager):
         logger.info(f"No existing instance for runner {runner.name} has been found")
         return None
 
+    def update_vm_metadata(self, instance_name: str, metadata: dict):
+        logger.info(f"Currently adding labels to {instance_name} instance")
+        try:
+            instance = self.instances.get(
+                project=self.project_id,
+                zone=self.zone,
+                instance=instance_name
+            )
+
+            labels = instance.labels or {}
+            for key, value in metadata.items():
+                labels[key] = value
+
+            instance.labels = labels
+
+            ext_operation: ExtendedOperation = self.instances.update(
+                instance=instance_name,
+                project=self.project_id,
+                zone=self.zone,
+                instance_resource=instance,
+            )
+
+            operation: Operation = self.operations.get(
+                project=self.project_id, zone=self.zone, operation=ext_operation.name
+            )
+            logger.info(f"Labels added to {instance_name} instance")
+
+            return operation.target_id
+        except Exception as e:
+            logger.error(e)
+            raise e
+
     def configure_instance(
         self, runner, runner_token, github_organization, installer
     ) -> Instance:
@@ -74,6 +106,11 @@ class GcloudManager(CloudManager):
         )
         disk_size_gb = runner.vm_type.config["disk_size_gb"]
         disk_type = f"projects/{self.project_id}/zones/{self.zone}/diskTypes/pd-ssd"
+
+        labels = {}
+        labels["machine_type"] = runner.vm_type.config["machine_type"]
+        labels["image"] = runner.vm_type.config["project"] + "-" + runner.vm_type.config["family"]
+        labels["status"] = runner.status
 
         automatic_restart = True
         provisioning_model = "STANDARD"
@@ -98,6 +135,7 @@ class GcloudManager(CloudManager):
                     ),
                 )
             ],
+            labels=labels,
             network_interfaces=[
                 NetworkInterface(
                     network="global/networks/default",
