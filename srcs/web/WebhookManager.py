@@ -92,7 +92,7 @@ class WebHookManager(object):
             }
         )
 
-        runner_m.factory.cloud_manager.add_identifier_to_instance(
+        runner_m.factory.cloud_manager.update_vm_metadata(
             payload.workflow_job.runner_name,
             dict(
                 status=status["status"],

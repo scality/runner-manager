@@ -71,7 +71,7 @@ class CloudManager(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def add_identifier_to_instance(self, instance_name: str, labels_webhook: dict):
+    def update_vm_metadata(self, instance_name: str, metadata: dict):
         raise NotImplementedError
 
     def script_init_runner(

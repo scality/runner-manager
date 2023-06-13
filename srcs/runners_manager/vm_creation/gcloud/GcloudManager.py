@@ -58,7 +58,7 @@ class GcloudManager(CloudManager):
         logger.info(f"No existing instance for runner {runner.name} has been found")
         return None
 
-    def add_identifier_to_instance(self, instance_name: str, labels_webhook: dict):
+    def update_vm_metadata(self, instance_name: str, metadata: dict):
         logger.info(f"Currently adding labels to {instance_name} instance")
         try:
             instance = self.instances.get(
@@ -68,7 +68,7 @@ class GcloudManager(CloudManager):
             )
 
             labels = instance.labels or {}
-            for key, value in labels_webhook.items():
+            for key, value in metadata.items():
                 labels[key] = value
 
             instance.labels = labels
