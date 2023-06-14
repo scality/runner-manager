@@ -6,7 +6,6 @@ jobs:
   greet:
     runs-on:
     - self-hosted
-    - ubuntu
     - jammy
     - large
     - aws
