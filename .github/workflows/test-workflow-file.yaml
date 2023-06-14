@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
 jobs:
   greet:
+    if: false
     timeout-minutes: 600
     strategy:
       fail-fast: false
