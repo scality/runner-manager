@@ -4,11 +4,29 @@ on:
   workflow_dispatch:
 jobs:
   greet:
+    timeout-minutes: 600
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - centos7
+          - redhat8
+          - rocky8
+        type:
+          - name: common
+            odrplan: common
+          - name: file-features
+            odrplan: file-features
+          - name: storage
+            odrplan: storage
+          - name: file-protocols-nfs
+            odrplan: file-protocols-nfs
+    name: ${{ matrix.type.name }}-${{ matrix.os }}-vm-odr
     runs-on:
-    - self-hosted
-    - jammy
-    - large
-    - aws
+      - self-hosted
+      - jammy
+      - large
+      - aws
     steps:
     - name: sleep1
       run: sleep 300
