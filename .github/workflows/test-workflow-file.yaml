@@ -1,0 +1,15 @@
+name: test-self-hosted
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  greet:
+    runs-on:
+    - self-hosted
+    - ubuntu
+    - jammy
+    - large
+    - aws
+    steps:
+    - name: sleep1
+      run: sleep 300
