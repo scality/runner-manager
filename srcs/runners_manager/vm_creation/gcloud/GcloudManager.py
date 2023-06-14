@@ -98,6 +98,7 @@ class GcloudManager(CloudManager):
             project=runner.vm_type.config["project"],
             family=runner.vm_type.config["family"],
         )
+        self.zone = runner.vm_type.config.get("zone", self.zone)
         machine_type = (
             f"zones/{self.zone}/machineTypes/{runner.vm_type.config['machine_type']}"
         )

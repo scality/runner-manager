@@ -70,6 +70,7 @@ runner_pool:
     family: ubuntu-2004-lts
     disk_size_gb: 20
     spot: true
+    zone: 'us-east1-c'
   quantity:
     min: 2
     max: 4
@@ -87,6 +88,9 @@ runner_pool:
 usage of spot instances (spot instances) in Google Cloud. By default, if
 the spot key is not provided, its value is `false`, indicating that regular
 instances will be used.
+* The `zone` key in the runnerPool configuration allows the spawn of the runners
+in that particular gcloud region. There is a global default zone, which can be
+overriden by the zone specified at the pool level.
 
 [images]: https://console.cloud.google.com/compute/images?tab=images&project=scality-devl
 [machine types]: https://cloud.google.com/compute/docs/general-purpose-machines?hl=en#e2-standard

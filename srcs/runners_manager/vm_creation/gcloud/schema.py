@@ -12,3 +12,4 @@ class GcloudConfigVmType(Schema):
     family = fields.Str(required=True)
     disk_size_gb = fields.Str(required=True)
     spot = fields.Boolean(load_default=False)
+    zone = fields.Boolean(load_default=False)
