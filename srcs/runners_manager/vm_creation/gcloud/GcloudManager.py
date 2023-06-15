@@ -61,6 +61,7 @@ class GcloudManager(CloudManager):
 
     def update_vm_metadata(self, instance_name: str, metadata: dict):
         logger.info(f"Currently adding labels to {instance_name} instance")
+        logger.info(f"Labels : {metadata}")
         try:
             instance = self.instances.get(
                 project=self.project_id,
@@ -70,6 +71,10 @@ class GcloudManager(CloudManager):
 
             labels = instance.labels or {}
             for key, value in metadata.items():
+                if len(value) > 63:
+                    value = value[:63]
+                value = value.lower()
+                value = ''.join(c if c.islower() or c.isdigit() or c in ['_', '-'] else '_' for c in value)
                 labels[key] = value
 
             instance.labels = labels
