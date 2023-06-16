@@ -71,8 +71,7 @@ class GcloudManager(CloudManager):
 
             labels = instance.labels or {}
             for key, value in metadata.items():
-                if len(value) > 63:
-                    value = value[:63]
+                value = value[:63]
                 value = value.lower()
                 value = ''.join(c if c.islower() or c.isdigit() or c in ['_', '-'] else '-' for c in value)
                 labels[key] = value
