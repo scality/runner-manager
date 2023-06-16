@@ -94,6 +94,7 @@ class WebHookManager(object):
 
         if (
             payload.action != "queued"
+            and payload.workflow_job.conclusion != "skipped"
             and "gcloud" in payload.workflow_job.runner_name
         ):
             runner_m.factory.cloud_manager.update_vm_metadata(
