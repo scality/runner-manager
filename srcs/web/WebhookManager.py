@@ -95,17 +95,17 @@ class WebHookManager(object):
         if (
             payload.action != "queued"
             and payload.workflow_job.conclusion != "skipped"
-            and "gcloud" in payload.workflow_job.runner_name
         ):
-            runner_m.factory.cloud_manager.update_vm_metadata(
-                payload.workflow_job.runner_name,
-                dict(
-                    status=status["status"],
-                    repository=payload.repository.name,
-                    workflow=payload.workflow_job.workflow_name,
-                    job=payload.workflow_job.name
+            if payload.workflow_job.runner_group_name != "GitHub Actions":
+                runner_m.factory.cloud_manager.update_vm_metadata(
+                    payload.workflow_job.runner_name,
+                    dict(
+                        status=status["status"],
+                        repository=payload.repository.name,
+                        workflow=payload.workflow_job.workflow_name,
+                        job=payload.workflow_job.name
+                    )
                 )
-            )
 
         runner_m.update_runner_status(status)
 
