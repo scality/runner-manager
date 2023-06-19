@@ -46,6 +46,15 @@ class RedisManager(object):
         data = json.loads(self.redis.get(name))
         return Runner.fromJson(data)
 
+    def check_runners(self, manager_name: str) -> bool:
+        """
+        Check if a runner exist or not for a specific manager_name
+        """
+        runner_names = self.redis.get(manager_name)
+        if not runner_names:
+            return False
+        return True
+
     def get_runners(self, manager_name: str) -> dict[str, Runner]:
         """
         Get all runners name from the manager name and build each of them with there json

@@ -96,7 +96,7 @@ class WebHookManager(object):
             payload.action != "queued"
             and payload.workflow_job.conclusion != "skipped"
         ):
-            if payload.workflow_job.runner_group_name != "GitHub Actions":
+            if runner_m.redis.check_runners(payload.workflow_job.runner_name):
                 runner_m.factory.cloud_manager.update_vm_metadata(
                     payload.workflow_job.runner_name,
                     dict(
