@@ -1,4 +1,5 @@
 import logging
+from srcs.runners_manager.runner import RedisManager
 
 from web.models import WebHook
 
@@ -15,10 +16,12 @@ class WebHookManager(object):
 
     event: str
     payload: WebHook
+    redis: RedisManager
 
-    def __init__(self, payload: WebHook, event: str):
+    def __init__(self, redis: RedisManager, payload: WebHook, event: str):
         self.event = event
         self.payload = payload
+        self.redis = redis
 
     def __call__(self, *args, **kwargs):
         """
@@ -95,8 +98,8 @@ class WebHookManager(object):
         if (
             payload.action != "queued"
             and payload.workflow_job.conclusion != "skipped"
-        ):
-            if runner_m.redis.check_runners(payload.workflow_job.runner_name):
+        ): # Maybe we can delete this `if`
+            if self.redis.check_runners(payload.workflow_job.runner_name):
                 runner_m.factory.cloud_manager.update_vm_metadata(
                     payload.workflow_job.runner_name,
                     dict(
