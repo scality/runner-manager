@@ -74,7 +74,7 @@ class GcloudManager(CloudManager):
             for key, value in metadata.items():
                 value = value[:63]
                 value = value.lower()
-                value = re.sub(r'\W', '-', value)
+                value = re.sub(r'[^a-z0-9_-]', '-', value)
                 labels[key] = value
 
             instance.labels = labels
