@@ -1,7 +1,8 @@
+import importlib
 import logging
+import redis
 
-from fastapi import FastAPI
-from fastapi import Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
@@ -33,10 +34,10 @@ def get_args() -> EnvSettings:
 
 @lru_cache()
 def get_redis() -> RedisManager:
-    args = get_args()
-    settings = setup_settings(args.setting_file)
+    args: EnvSettings = get_args()
+    settings: dict = setup_settings(args.setting_file)
 
-    r = RedisManager.Redis(
+    r = redis.Redis(
         host=settings["redis"]["host"],
         port=settings["redis"]["port"],
         password=args.redis_password,
@@ -148,11 +149,14 @@ async def stop_runner(request: Request):
 
 
 @app.post("/webhook")
-async def webhook_post(data: WebHook, request: Request):
+async def webhook_post(
+    data: WebHook,
+    request: Request,
+    r: RedisManager = Depends(get_redis),
+):
     """
     Webhook point for Github
     """
-    r = get_redis()
     WebHookManager(r, payload=data, event=request.headers["X-Github-Event"])()
     return Response(status_code=200)
 
