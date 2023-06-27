@@ -1,6 +1,6 @@
 import importlib
 import logging
-import redis
+from redis import Redis
 
 from fastapi import Depends, FastAPI, Request
 from fastapi.responses import HTMLResponse
@@ -11,7 +11,7 @@ from fastapi_utils.tasks import repeat_every
 from functools import lru_cache
 from runners_manager.monitoring.prometheus import metrics
 from runners_manager.monitoring.prometheus import prometheus_metrics
-from srcs.runners_manager.runner import RedisManager
+from runners_manager.runner.RedisManager import RedisManager
 from srcs.settings.yaml_config import EnvSettings, setup_settings
 from web import cloud_manager
 from web import github_manager
@@ -37,11 +37,12 @@ def get_redis() -> RedisManager:
     args: EnvSettings = get_args()
     settings: dict = setup_settings(args.setting_file)
 
-    r = redis.Redis(
+    r = Redis(
         host=settings["redis"]["host"],
         port=settings["redis"]["port"],
         password=args.redis_password,
     )
+
     return RedisManager(r)
 
 @app.on_event("startup")

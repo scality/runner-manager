@@ -95,14 +95,11 @@ class WebHookManager(object):
             }
         )
 
-        logger.info("AAAA")
-        logger.info(payload.workflow_job.runner_name)
-        logger.info(self.redis.check_runners(payload.workflow_job.runner_name))
-
+        logger.debug("Redis is initialize")
         if (
             payload.action != "queued"
             and payload.workflow_job.conclusion != "skipped"
-        ): # Maybe we can delete this `if`
+        ):
             if self.redis.check_runners(payload.workflow_job.runner_name):
                 runner_m.factory.cloud_manager.update_vm_metadata(
                     payload.workflow_job.runner_name,

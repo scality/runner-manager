@@ -50,10 +50,11 @@ class RedisManager(object):
         """
         Check if a runner exist or not for a specific manager_name
         """
-        runner_names = self.redis.get(manager_name)
-        if not runner_names:
-            return False
-        return True
+        runners: Runner = self.get_all_runners()
+        for runner in runners:
+            if manager_name == runner.name:
+                return True
+        return False
 
     def get_runners(self, manager_name: str) -> dict[str, Runner]:
         """
