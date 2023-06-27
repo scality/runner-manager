@@ -91,17 +91,6 @@ class WebHookManager(object):
                 "labels": payload.workflow_job.labels,
             }
         )
-
-        runner_m.factory.cloud_manager.update_vm_metadata(
-            payload.workflow_job.runner_name,
-            dict(
-                status=status["status"],
-                repository=payload.repository.name,
-                workflow=payload.workflow_job.workflow_name,
-                job=payload.workflow_job.name
-            )
-        )
-
         runner_m.update_runner_status(status)
 
     def ping(self, payload: WebHook):
