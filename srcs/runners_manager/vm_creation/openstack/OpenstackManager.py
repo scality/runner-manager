@@ -247,6 +247,3 @@ VM id: {instance.id if instance else 'Vm not created'}"""
         for i in images:
             if name in i.name:
                 self.glance.images.delete(i.id)
-
-    def update_vm_metadata(self, instance_name: str, metadata: dict):
-        pass
