@@ -1,4 +1,3 @@
-import importlib
 import logging
 from redis import Redis
 
@@ -32,18 +31,18 @@ app.add_route("/metrics", prometheus_metrics)
 def get_args() -> EnvSettings:
     return EnvSettings()
 
+
 @lru_cache()
 def get_redis() -> RedisManager:
     args: EnvSettings = get_args()
     settings: dict = setup_settings(args.setting_file)
-
     r = Redis(
         host=settings["redis"]["host"],
         port=settings["redis"]["port"],
         password=args.redis_password,
     )
-
     return RedisManager(r)
+
 
 @app.on_event("startup")
 @repeat_every(seconds=60 * 60 * 2)
