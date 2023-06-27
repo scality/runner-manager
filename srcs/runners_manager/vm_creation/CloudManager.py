@@ -70,10 +70,6 @@ class CloudManager(abc.ABC):
     def delete_images_from_shelved(self, name):
         raise NotImplementedError
 
-    @abc.abstractmethod
-    def update_vm_metadata(self, instance_name: str, metadata: dict):
-        raise NotImplementedError
-
     def script_init_runner(
         self, runner: Runner, token: int, github_organization: str, installer: str
     ):

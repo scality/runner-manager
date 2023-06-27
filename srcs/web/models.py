@@ -30,7 +30,6 @@ class WorkflowJob(BaseModel):
     conclusion: Optional[str] = None
     head_sha: str
     run_attempt: int
-    workflow_name: str
     labels: List[str]
 
     # Information about the runner can be null if the Job is queued

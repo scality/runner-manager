@@ -112,11 +112,6 @@ class GcloudManager(CloudManager):
         disk_size_gb = runner.vm_type.config["disk_size_gb"]
         disk_type = f"projects/{self.project_id}/zones/{self.zone}/diskTypes/pd-ssd"
 
-        labels = {}
-        labels["machine_type"] = runner.vm_type.config["machine_type"]
-        labels["image"] = runner.vm_type.config["project"] + "-" + runner.vm_type.config["family"]
-        labels["status"] = runner.status
-
         automatic_restart = True
         provisioning_model = "STANDARD"
         instance_termination_action = "DEFAULT"
@@ -140,7 +135,6 @@ class GcloudManager(CloudManager):
                     ),
                 )
             ],
-            labels=labels,
             network_interfaces=[
                 NetworkInterface(
                     network="global/networks/default",
