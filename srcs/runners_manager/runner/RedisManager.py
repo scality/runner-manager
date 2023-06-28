@@ -46,13 +46,13 @@ class RedisManager(object):
         data = json.loads(self.redis.get(name))
         return Runner.fromJson(data)
 
-    def check_runners(self, manager_name: str) -> bool:
+    def check_runners(self, name: str) -> bool:
         """
-        Check if a runner exist or not for a specific manager_name
+        For a given runner name, check if it is managed by the service.
         """
         runners: Runner = self.get_all_runners()
         for runner in runners:
-            if manager_name == runner.name:
+            if name == runner.name:
                 return True
         return False
 
