@@ -33,9 +33,14 @@ def get_args() -> EnvSettings:
 
 
 @lru_cache()
+def load_settings() -> dict:
+    return setup_settings(get_args().setting_file)
+
+
+@lru_cache()
 def get_redis() -> RedisManager:
     args: EnvSettings = get_args()
-    settings: dict = setup_settings(args.setting_file)
+    settings: dict = load_settings()
     r = Redis(
         host=settings["redis"]["host"],
         port=settings["redis"]["port"],

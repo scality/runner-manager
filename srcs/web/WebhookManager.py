@@ -95,11 +95,12 @@ class WebHookManager(object):
             }
         )
 
-        logger.debug("Redis is initialized")
+        logger.info("Redis is initialized")
         if (
             payload.action != "queued"
             and payload.workflow_job.conclusion != "skipped"
         ):
+            logger.info(self.redis.is_managed(payload.workflow_job.runner_name))
             if self.redis.is_managed(payload.workflow_job.runner_name):
                 runner_m.factory.cloud_manager.update_vm_metadata(
                     payload.workflow_job.runner_name,
