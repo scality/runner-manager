@@ -95,7 +95,7 @@ class WebHookManager(object):
             }
         )
 
-        logger.debug("Redis is initialize")
+        logger.debug("Redis is initialized")
         if (
             payload.action != "queued"
             and payload.workflow_job.conclusion != "skipped"
