@@ -46,7 +46,7 @@ class RedisManager(object):
         data = json.loads(self.redis.get(name))
         return Runner.fromJson(data)
 
-    def check_runners(self, name: str) -> bool:
+    def is_managed(self, name: str) -> bool:
         """
         For a given runner name, check if it is managed by the service.
         """

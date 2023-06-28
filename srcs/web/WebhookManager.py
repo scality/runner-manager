@@ -100,7 +100,7 @@ class WebHookManager(object):
             payload.action != "queued"
             and payload.workflow_job.conclusion != "skipped"
         ):
-            if self.redis.check_runners(payload.workflow_job.runner_name):
+            if self.redis.is_managed(payload.workflow_job.runner_name):
                 runner_m.factory.cloud_manager.update_vm_metadata(
                     payload.workflow_job.runner_name,
                     dict(

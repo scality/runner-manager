@@ -152,12 +152,12 @@ async def stop_runner(request: Request):
 async def webhook_post(
     data: WebHook,
     request: Request,
-    r: RedisManager = Depends(get_redis),
+    redis: RedisManager = Depends(get_redis),
 ):
     """
     Webhook point for Github
     """
-    WebHookManager(r, payload=data, event=request.headers["X-Github-Event"])()
+    WebHookManager(redis, payload=data, event=request.headers["X-Github-Event"])()
     return Response(status_code=200)
 
 
