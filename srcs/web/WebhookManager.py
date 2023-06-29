@@ -1,4 +1,5 @@
 import logging
+from srcs.runners_manager.runner import RedisManager
 
 from web.models import WebHook
 
@@ -15,10 +16,12 @@ class WebHookManager(object):
 
     event: str
     payload: WebHook
+    redis: RedisManager
 
-    def __init__(self, payload: WebHook, event: str):
+    def __init__(self, redis: RedisManager, payload: WebHook, event: str):
         self.event = event
         self.payload = payload
+        self.redis = redis
 
     def __call__(self, *args, **kwargs):
         """
@@ -91,6 +94,24 @@ class WebHookManager(object):
                 "labels": payload.workflow_job.labels,
             }
         )
+
+        logger.info("Redis is initialized")
+        if (
+            payload.action != "queued"
+            and payload.workflow_job.conclusion != "skipped"
+        ):
+            logger.info(self.redis.is_managed(payload.workflow_job.runner_name))
+            if self.redis.is_managed(payload.workflow_job.runner_name):
+                runner_m.factory.cloud_manager.update_vm_metadata(
+                    payload.workflow_job.runner_name,
+                    dict(
+                        status=status["status"],
+                        repository=payload.repository.name,
+                        workflow=payload.workflow_job.workflow_name,
+                        job=payload.workflow_job.name
+                    )
+                )
+
         runner_m.update_runner_status(status)
 
     def ping(self, payload: WebHook):

@@ -46,6 +46,16 @@ class RedisManager(object):
         data = json.loads(self.redis.get(name))
         return Runner.fromJson(data)
 
+    def is_managed(self, name: str) -> bool:
+        """
+        For a given runner name, check if it is managed by the service.
+        """
+        runners: Runner = self.get_all_runners()
+        for runner in runners:
+            if name == runner.name:
+                return True
+        return False
+
     def get_runners(self, manager_name: str) -> dict[str, Runner]:
         """
         Get all runners name from the manager name and build each of them with there json

@@ -1,14 +1,17 @@
 import logging
+from redis import Redis
 
-from fastapi import FastAPI
-from fastapi import Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi_utils.tasks import repeat_every
+from functools import lru_cache
 from runners_manager.monitoring.prometheus import metrics
 from runners_manager.monitoring.prometheus import prometheus_metrics
+from runners_manager.runner.RedisManager import RedisManager
+from srcs.settings.yaml_config import EnvSettings, setup_settings
 from web import cloud_manager
 from web import github_manager
 from web import runner_m
@@ -22,6 +25,28 @@ app.mount("/static", StaticFiles(directory="templates/static"), name="static")
 templates = Jinja2Templates(directory="templates/html")
 
 app.add_route("/metrics", prometheus_metrics)
+
+
+@lru_cache()
+def get_args() -> EnvSettings:
+    return EnvSettings()
+
+
+@lru_cache()
+def load_settings() -> dict:
+    return setup_settings(get_args().setting_file)
+
+
+@lru_cache()
+def get_redis() -> RedisManager:
+    args: EnvSettings = get_args()
+    settings: dict = load_settings()
+    r = Redis(
+        host=settings["redis"]["host"],
+        port=settings["redis"]["port"],
+        password=args.redis_password,
+    )
+    return RedisManager(r)
 
 
 @app.on_event("startup")
@@ -129,11 +154,15 @@ async def stop_runner(request: Request):
 
 
 @app.post("/webhook")
-async def webhook_post(data: WebHook, request: Request):
+async def webhook_post(
+    data: WebHook,
+    request: Request,
+    redis: RedisManager = Depends(get_redis),
+):
     """
     Webhook point for Github
     """
-    WebHookManager(payload=data, event=request.headers["X-Github-Event"])()
+    WebHookManager(redis, payload=data, event=request.headers["X-Github-Event"])()
     return Response(status_code=200)
 
 
