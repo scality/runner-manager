@@ -77,8 +77,12 @@ class RunnerManager(object):
         It won't create a Runner if we are already at the maximum we want.
         In the case the max is set at 0 we don't have a maximum.
         """
+        offline_runners = len(self.filter_runners(lambda runner: runner.has_run))
+        online_runners = len(self.filter_runners(lambda runner: runner.is_online))
+        creating_runners = len(self.filter_runners(lambda runner: runner.is_creating))
         if 0 < self.vm_type.quantity["max"] <= len(self.runners):
             logger.info("Runner not created, already to much")
+            logger.info(f"{online_runners} runners online, {creating_runners} creating, {offline_runners} offline")
             return
 
         if not self.redis.get_manager_running():
