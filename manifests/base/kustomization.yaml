@@ -14,6 +14,9 @@ secretGenerator:
   - name: runner-manager-auth
     envs:
       - runner-manager-auth.env
+  - name: redis
+    envs:
+      - redis.env
 
 images:
   - name: runner-manager

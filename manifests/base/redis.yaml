@@ -1,18 +1,4 @@
 ---
-# Source: redis/templates/secret.yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: redis
-  labels:
-    app: redis
-    chart: redis-11.3.4
-    release: "redis"
-    heritage: "Helm"
-type: Opaque
-data:
-  redis-password: "bzlyM1NwbWZtYQ=="
----
 # Source: redis/templates/configmap-scripts.yaml
 apiVersion: v1
 kind: ConfigMap

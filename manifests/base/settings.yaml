@@ -18,4 +18,3 @@ timeout_runner_timer:
 redis:
   host: redis-master
   port: 6379
-
