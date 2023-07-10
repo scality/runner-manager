@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: runner-manager
+  labels:
+    app.kubernetes.io/name: runner-manager
+    app.kubernetes.io/instance: runner-manager
+spec:
+  selector:
+    app.kubernetes.io/name: runner-manager
+    app.kubernetes.io/instance: runner-manager
+  template:
+    metadata:
+      app.kubernetes.io/name: runner-manager
+      app.kubernetes.io/instance: runner-manager
+    spec:
+      serviceAccountName: default
+      containers:
+        - args:
+            - 'srcs.web.app:app'
+            - '--host'
+            - '--port'
+            - '80'
+          command:
+            - uvicorn
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: redis-password
+                  name: redis
+            - name: SETTING_FILE
+              value: /app/config/settings.yml
+          envFrom:
+            - configMapRef:
+                name: runner-manager-config
+            - secretRef:
+                name: runner-manager-auth
+          image: 'ghcr.io/scality/runner-manager:0.1.0'
+          imagePullPolicy: IfNotPresent
+          name: runner-manager
+          ports:
+            - containerPort: 80
+              name: http
+          resources:
+            limits:
+              cpu: 250m
+              memory: 1Gi
+            requests:
+              cpu: 250m
+              memory: 1Gi
+          securityContext: {}
+          volumeMounts:
+            - mountPath: /app/config
+              name: config
+      volumes:
+        - configMap:
+            name: runner-manager-settings
+          name: config

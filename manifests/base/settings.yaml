@@ -1,0 +1,21 @@
+# GitHub
+github_organization: my_organisation
+allowed_ssh_keys: ""
+
+# Cloud connection name
+cloud_name: gcloud
+# Cloud config, it will change depending on your cloud
+cloud_config: {}
+python_config: ""
+runner_pool: []
+
+extra_runner_timer:
+  hours: 0
+  minutes: 10
+timeout_runner_timer:
+  hours: 0
+  minutes: 15
+redis:
+  host: redis-master
+  port: 6379
+
