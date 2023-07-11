@@ -11,19 +11,19 @@ configMapGenerator:
     - runner-manager-config.env
 
 secretGenerator:
-  - name: runner-manager-auth
+  - name: runner-manager-secrets
     envs:
-      - runner-manager-auth.env
-  - name: redis
-    envs:
-      - redis.env
+      - runner-manager-secrets.env
+
+commonLabels:
+  app.kubernetes.io/name: runner-manager
+  app.kubernetes.io/instance: runner-manager
 
 images:
   - name: runner-manager
     newName: ghcr.io/scality/runner-manager
-    newTag: '0.1.0'
+    newTag: '0.6.3'
 
 resources:
   - service.yaml
   - deployment.yaml
-  - redis.yaml

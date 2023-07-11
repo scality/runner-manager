@@ -2,17 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: runner-manager
-  labels:
-    app.kubernetes.io/name: runner-manager
-    app.kubernetes.io/instance: runner-manager
+  labels: {}
 spec:
-  selector:
-    app.kubernetes.io/name: runner-manager
-    app.kubernetes.io/instance: runner-manager
+  selector: {}
   template:
-    metadata:
-      app.kubernetes.io/name: runner-manager
-      app.kubernetes.io/instance: runner-manager
+    metadata: {}
     spec:
       serviceAccountName: default
       containers:
@@ -36,7 +30,7 @@ spec:
                 name: runner-manager-config
             - secretRef:
                 name: runner-manager-auth
-          image: 'ghcr.io/scality/runner-manager:0.1.0'
+          image: 'ghcr.io/scality/runner-manager:0.6.3'
           imagePullPolicy: IfNotPresent
           name: runner-manager
           ports:

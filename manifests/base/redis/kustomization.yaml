@@ -1,0 +1,18 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+secretGenerator:
+  - name: redis-secrets
+    envs:
+      - redis-secrets.env
+
+commonLabels:
+  app.kubernetes.io/instance: redis
+  app.kubernetes.io/name: redis
+images:
+  - name: redis
+    newName: redis
+    newTag: 6.0.20
+resources:
+  - redis.yaml
