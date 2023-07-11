@@ -85,11 +85,6 @@ elif [ "${LINUX_OS_VERSION}" = "8" || "${LINUX_OS_VERSION}" = "9" ]
 then
 sudo dnf install -y podman-docker podman
 DOCKER_SERVICE_START="no"
-elif [ "${LINUX_OS_VERSION}" = "9" ]
-then
-sudo dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-sudo dnf install -y docker-ce docker-ce-cli containerd.io
-DOCKER_SERVICE_START="yes"
 else
 echo "RHEL version not managed by the runner-manager"
 exit 1
