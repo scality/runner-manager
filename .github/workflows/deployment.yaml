@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: engineerd/setup-kind@v0.5.0
+      - uses: helm/kind-action@v1
       - name: deploy
         run: kubectl apply -k manifests/
       - name: Check if deployment is ok
