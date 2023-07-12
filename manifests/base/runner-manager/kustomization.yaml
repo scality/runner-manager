@@ -18,6 +18,7 @@ secretGenerator:
 commonLabels:
   app.kubernetes.io/name: runner-manager
   app.kubernetes.io/instance: runner-manager
+  app.kubernetes.io/version: "0.6.3"
 
 images:
   - name: runner-manager

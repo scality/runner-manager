@@ -13,6 +13,7 @@ spec:
         - args:
             - 'srcs.web.app:app'
             - '--host'
+            - 0.0.0.0
             - '--port'
             - '80'
           command:
@@ -21,15 +22,15 @@ spec:
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  key: redis-password
-                  name: redis
+                  key: REDIS_PASSWORD
+                  name: redis-secrets
             - name: SETTING_FILE
-              value: /app/config/settings.yml
+              value: /app/config/settings.yaml
           envFrom:
             - configMapRef:
                 name: runner-manager-config
             - secretRef:
-                name: runner-manager-auth
+                name: runner-manager-secrets
           image: 'ghcr.io/scality/runner-manager:0.6.3'
           imagePullPolicy: IfNotPresent
           name: runner-manager
@@ -48,6 +49,6 @@ spec:
             - mountPath: /app/config
               name: config
       volumes:
-        - configMap:
+        - name: config
+          configMap:
             name: runner-manager-settings
-          name: config

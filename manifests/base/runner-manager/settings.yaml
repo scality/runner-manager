@@ -6,7 +6,7 @@ allowed_ssh_keys: ""
 cloud_name: gcloud
 # Cloud config, it will change depending on your cloud
 cloud_config: {}
-python_config: ""
+python_config: srcs.settings.settings_local
 runner_pool: []
 
 extra_runner_timer:
