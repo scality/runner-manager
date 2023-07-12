@@ -15,7 +15,7 @@ spec:
         fsGroup: 1001
       containers:
       - name: redis
-        image: "redis:6.0.20"
+        image: "bitnami/redis:7.0.12-debian-11-r1"
         ports:
         - containerPort: 6379
         env:
