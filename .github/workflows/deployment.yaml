@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: helm/kind-action@v1
-      - name: deploy
+      - name: deploy kustomize
         run: kubectl apply -k manifests/
       - name: Check if deployment is ok
         run: echo "check deployment"
