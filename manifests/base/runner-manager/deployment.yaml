@@ -2,11 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: runner-manager
-  labels: {}
 spec:
-  selector: {}
   template:
-    metadata: {}
     spec:
       serviceAccountName: default
       containers:

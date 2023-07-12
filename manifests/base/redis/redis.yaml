@@ -6,10 +6,7 @@ metadata:
 spec:
   serviceName: redis
   replicas: 1
-  selector:
-    matchLabels: {}
   template:
-    metadata: {}
     spec:
       securityContext:
         fsGroup: 1001
@@ -42,7 +39,6 @@ kind: Service
 metadata:
   name: redis
 spec:
-  selector: {}
   ports:
     - protocol: TCP
       port: 6379
