@@ -11,6 +11,8 @@ spec:
   template:
     metadata: {}
     spec:
+      securityContext:
+        fsGroup: 1001
       containers:
       - name: redis
         image: "redis:6.0.20"
@@ -24,7 +26,7 @@ spec:
                 name: redis-secrets
         volumeMounts:
         - name: redis-data
-          mountPath: /data
+          mountPath: /bitnami/redis/data
   volumeClaimTemplates:
   - metadata:
       name: redis-data
@@ -45,4 +47,3 @@ spec:
     - protocol: TCP
       port: 6379
       targetPort: 6379
-

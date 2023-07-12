@@ -14,7 +14,7 @@ commonLabels:
   app.kubernetes.io/part-of: runner-manager
 images:
   - name: redis
-    newName: redis
-    newTag: 6.0.20
+    newName: bitnami/redis
+    newTag: 7.0.12-debian-11-r1
 resources:
   - redis.yaml
