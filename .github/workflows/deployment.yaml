@@ -12,4 +12,6 @@ jobs:
       - name: deploy kustomize
         run: kubectl apply -k manifests/
       - name: Check if deployment is ok
-        run: echo "check deployment"
+        run: |
+          kubectl rollout status statefulset redis --timeout=90s
+          kubectl rollout status deployment runner-manager --timeout=90s
