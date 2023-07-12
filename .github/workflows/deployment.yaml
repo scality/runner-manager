@@ -9,3 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: engineerd/setup-kind@v0.5.0
+      - name: deploy
+        run: kubectl apply -k manifests/
+      - name: Check if deployment is ok
+        run: echo "check deployment"
