@@ -1,0 +1,11 @@
+---
+name: deployment
+
+on: pull_request
+
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: engineerd/setup-kind@v0.5.0
