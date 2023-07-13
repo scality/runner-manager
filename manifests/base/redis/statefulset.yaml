@@ -1,0 +1,35 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+spec:
+  serviceName: redis
+  replicas: 1
+  template:
+    spec:
+      securityContext:
+        fsGroup: 1001
+      containers:
+      - name: redis
+        image: "bitnami/redis:7.0.12-debian-11-r1"
+        ports:
+        - containerPort: 6379
+        env:
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: REDIS_PASSWORD
+                name: redis-secrets
+        volumeMounts:
+        - name: redis-data
+          mountPath: /bitnami/redis/data
+  volumeClaimTemplates:
+  - metadata:
+      name: redis-data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 8Gi

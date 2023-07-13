@@ -1,0 +1,30 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+configMapGenerator:
+- name: runner-manager-settings
+  files:
+    - settings.yaml
+- name: runner-manager-config
+  envs:
+    - runner-manager-config.env
+
+secretGenerator:
+  - name: runner-manager-secrets
+    envs:
+      - runner-manager-secrets.env
+
+commonLabels:
+  app.kubernetes.io/name: runner-manager
+  app.kubernetes.io/instance: runner-manager
+  app.kubernetes.io/version: "0.6.3"
+
+images:
+  - name: runner-manager
+    newName: ghcr.io/scality/runner-manager
+    newTag: '0.6.3'
+
+resources:
+  - service.yaml
+  - deployment.yaml
