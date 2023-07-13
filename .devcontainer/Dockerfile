@@ -1,20 +1,14 @@
 FROM mcr.microsoft.com/devcontainers/python:3.10-bullseye
 
+# Install kustomize
+ARG KUSTOMIZE_VERSION=5.1.0
+
+RUN curl -sSL -o /tmp/kustomize.tar.gz \
+    "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v${KUSTOMIZE_VERSION}/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz" && \
+    tar -xf /tmp/kustomize.tar.gz && \
+    mv kustomize /usr/local/bin/
+
 # Install poetry
 
-ENV POETRY_VERSION=1.3.2
+ARG POETRY_VERSION=1.3.2
 RUN pipx install poetry==${POETRY_VERSION}
-
-# Configure poetry to not use a virtual environment
-
-RUN poetry config virtualenvs.create false
-
-# Workdir
-
-WORKDIR /workspaces/runner-manager
-
-# Install the project dependencies
-
-COPY poetry.lock pyproject.toml /workspaces/runner-manager/
-
-RUN poetry install --no-interaction --no-ansi --no-root
