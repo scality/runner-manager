@@ -17,4 +17,5 @@ images:
     newName: bitnami/redis
     newTag: 7.0.12-debian-11-r1
 resources:
-  - redis.yaml
+  - statefulset.yaml
+  - service.yaml
