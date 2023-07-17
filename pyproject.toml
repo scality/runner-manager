@@ -23,3 +23,8 @@ docker-compose = "^1.29.2"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pyright]
+reportMissingImports = false
+include = ["runner_manager"]
+typeCheckingMode = "basic"
