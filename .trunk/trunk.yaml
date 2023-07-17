@@ -8,6 +8,11 @@ plugins:
       uri: https://github.com/trunk-io/plugins
 lint:
   enabled:
+    - black@23.7.0
+    - isort@5.12.0
+    - osv-scanner@1.3.5
+    - ruff@0.0.278
+    - taplo@0.7.0
     - actionlint@1.6.25
     - checkov@2.3.327
     - git-diff-check
@@ -18,6 +23,7 @@ lint:
     - yamllint@1.32.0
 runtimes:
   enabled:
+    - node@18.12.1
     - python@3.10.8
 actions:
   enabled:
