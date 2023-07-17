@@ -2,9 +2,25 @@
   "name": "Python 3",
   "image": "mcr.microsoft.com/devcontainers/python:1-3.11-bullseye",
   "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker": {},
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/devcontainers/features/sshd:1": {},
     "ghcr.io/devcontainers-contrib/features/poetry:2": {},
     "ghcr.io/trunk-io/devcontainer-feature/trunk:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["bungcip.better-toml", "GitHub.copilot"]
+    }
+  },
+  "portsAttributes": {
+    "6379": {
+      "label": "redis",
+      "onAutoForward": "silent"
+    },
+    "8001": {
+      "label": "redis-insight",
+      "onAutoForward": "openPreview"
+    }
   }
 }
