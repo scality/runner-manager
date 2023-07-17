@@ -8,7 +8,13 @@ services:
       - 6379:6379
       - 8001:8001
     volumes:
-      - "redis_data:/data"
+      - redis_data:/data
+  runner-manager:
+    build: .
+    ports:
+      - 8000:8000
+    environment:
+      REDIS_OM_URL: redis://redis:6379
 
 volumes:
   redis_data:
