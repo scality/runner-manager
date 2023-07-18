@@ -15,6 +15,15 @@ services:
       - 8000:8000
     environment:
       REDIS_OM_URL: redis://redis:6379
+    x-develop:
+      watch:
+        - action: sync
+          path: ./runner_manager
+          target: /app/runner_manager
+        - action: rebuild
+          path: .
+          target: /app
+
 
 volumes:
   redis_data:

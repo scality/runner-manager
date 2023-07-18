@@ -16,6 +16,11 @@
       "extensions": ["bungcip.better-toml", "GitHub.copilot"]
     }
   },
+  "postCreateCommand": "poetry install --no-interaction --no-ansi --no-root",
+  "postStartCommand": {
+    "compose": "docker compose up --build",
+    "watch": "docker compose alpha watch"
+  },
   "portsAttributes": {
     "6379": {
       "label": "redis",
