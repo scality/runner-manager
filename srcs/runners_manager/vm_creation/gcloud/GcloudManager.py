@@ -1,6 +1,7 @@
 import logging
 import re
 
+from distutils.util import strtobool
 from google.api_core.extended_operation import ExtendedOperation
 from google.cloud.compute import AccessConfig
 from google.cloud.compute import AdvancedMachineFeatures
@@ -120,7 +121,7 @@ class GcloudManager(CloudManager):
         automatic_restart = True
         provisioning_model = "STANDARD"
         instance_termination_action = "DEFAULT"
-        preemptible = str(runner.vm_type.config.get("spot", "")).lower() == "true"
+        preemptible = strtobool(runner.vm_type.config.get("spot", False))
         if preemptible:
             provisioning_model = "SPOT"
             automatic_restart = False
