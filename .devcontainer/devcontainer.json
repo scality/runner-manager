@@ -13,7 +13,11 @@
   },
   "customizations": {
     "vscode": {
-      "extensions": ["bungcip.better-toml", "GitHub.copilot"]
+      "extensions": [
+        "bungcip.better-toml",
+        "GitHub.copilot",
+        "bierner.markdown-mermaid"
+      ]
     }
   },
   "postCreateCommand": "poetry install --no-interaction --no-ansi --no-root",
