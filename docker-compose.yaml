@@ -1,0 +1,30 @@
+---
+version: "2"
+
+services:
+  redis:
+    image: redis/redis-stack
+    ports:
+      - 6379:6379
+      - 8001:8001
+    volumes:
+      - redis_data:/data
+  runner-manager:
+    build: .
+    ports:
+      - 8000:8000
+    environment:
+      REDIS_OM_URL: redis://redis:6379
+    x-develop:
+      watch:
+        - action: sync
+          path: ./runner_manager
+          target: /app/runner_manager
+        - action: rebuild
+          path: .
+          target: /app
+
+
+volumes:
+  redis_data:
+    driver: local
