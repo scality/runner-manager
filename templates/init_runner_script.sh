@@ -81,7 +81,7 @@ EOF'
 
 sudo subscription-manager repos --enable=rhel-7-server-extras-rpms --enable=rhel-7-server-optional-rpms
 sudo yum install -y docker
-elif [ "${LINUX_OS_VERSION}" = "8" || "${LINUX_OS_VERSION}" = "9" ]
+elif [[ "${LINUX_OS_VERSION}" = "8" || "${LINUX_OS_VERSION}" = "9" ]]
 then
 sudo dnf install -y podman-docker podman
 DOCKER_SERVICE_START="no"
