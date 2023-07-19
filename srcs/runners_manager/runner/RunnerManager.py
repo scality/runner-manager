@@ -82,7 +82,9 @@ class RunnerManager(object):
         creating_runners = len(self.filter_runners(lambda runner: runner.is_creating))
         if 0 < self.vm_type.quantity["max"] <= len(self.runners):
             logger.info("Runner not created, already to much")
-            logger.info(f"{online_runners} runners online, {creating_runners} creating, {offline_runners} offline")
+            logger.info(f"{online_runners} runners online, "
+                f"{creating_runners} creating, "
+                f"{offline_runners} offline")
             return
 
         if not self.redis.get_manager_running():
