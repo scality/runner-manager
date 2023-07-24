@@ -26,7 +26,8 @@
         "bierner.markdown-mermaid"
       ],
       "settings": {
-        "python.analysis.typeCheckingMode": "basic"
+        "python.analysis.typeCheckingMode": "basic",
+        "python.defaultInterpreterPath": ".venv/bin/python"
       }
     }
   },
