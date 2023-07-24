@@ -173,6 +173,47 @@ that allows to store and retrieve Python Pydantic objects in Redis.
 This will enable fastapi objects to be stored in Redis and retrieved
 without having to write boilerplate code.
 
+## Testing
+
+### Mocking
+
+To mock GitHub's API we will use the openapi specification of the API
+to generate a mock server that will be used in the unit tests.
+
+The mock server will be generated using [prism](https://github.com/stoplightio/prism)
+and will be run in a docker container.
+
+Here's an example of a curl command that will create a new repository to a prism mock server:
+
+```shell
+curl -L \
+  -X POST \
+  -H "Content-Type: application/json" \
+  "http://localhost:4010/orgs/scality/repos" \
+  -d '{
+    "name":"hello-world",
+    "description":"This your first repo!",
+    "homepage":"https://github.com",
+    "private":false,
+    "has_issues":true,
+    "has_projects":true,
+    "has_wiki":true
+}'
+```
+
+### Unit tests
+
+Unit tests will be written using [pytest](https://docs.pytest.org/en/stable/).
+
+### Functional tests
+
+Here's a description of the setup for the functional tests:
+
+- Will be interacting with the real GitHub API.
+- It will execute a [GitHub Actions] a real workflow and triggered by a workflow dispatch
+- Webhooks notification will be sent thanks to the integration of webhook redirection in `gh` cli.
+- Will have `docker` configured as a backend to host the runners.
+
 [GitHub Actions]: https://docs.github.com/en/actions
 [self-hosted runners]: https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners
 [Actions Runner Controller (ARK)]: https://github.com/actions/actions-runner-controller/
