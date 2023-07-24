@@ -3,6 +3,7 @@ from typing import List
 
 from runner_manager.models.runner import Runner
 
+
 class BackendBase(ABC):
     """Base class for runners backend.
 

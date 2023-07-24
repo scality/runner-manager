@@ -1,9 +1,9 @@
 import pytest
+from hypothesis import given
+from hypothesis import strategies as st
+from redis_om import Migrator, NotFoundError
+
 from runner_manager.models.runner import Runner
-from redis_om import NotFoundError
-from typing import List
-from hypothesis import given, strategies as st
-from redis_om import Migrator
 
 
 @given(st.builds(Runner))
@@ -29,5 +29,7 @@ def test_find_runner(runner: Runner):
     assert runner in runners
 
     assert runner == Runner.find(Runner.name == runner.name).first()
-    assert runner == Runner.find(Runner.runner_group_id == runner.runner_group_id).first()
+    assert (
+        runner == Runner.find(Runner.runner_group_id == runner.runner_group_id).first()
+    )
     Runner.delete(runner.pk)

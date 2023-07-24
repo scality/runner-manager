@@ -1,20 +1,22 @@
-from redis_om import Field
-
+from datetime import datetime
 from enum import Enum
 from typing import Optional
-from datetime import datetime
+
+from redis_om import Field
+
 from runner_manager.models.base import BaseModel
 
 
 class RunnerStatus(str, Enum):
-    online = 'online'
-    idle = 'idle'
-    offline = 'offline'
+    online = "online"
+    idle = "idle"
+    offline = "offline"
 
 
 class Runner(BaseModel):
     name: str = Field(index=True)
     runner_group_id: int = Field(ge=0, index=True)
+    instance_id: int = Field(ge=0, index=True)
     status: str = "offline"
     busy: bool
     created_at: Optional[datetime]

@@ -1,4 +1,3 @@
-
 """Jobs to run on startup."""
 
 from redis_om import Migrator

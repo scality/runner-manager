@@ -1,13 +1,9 @@
 import logging
-from functools import lru_cache
-from typing import List
 
-from fastapi import Depends, FastAPI
-from redis_om import Migrator, get_redis_connection
-from rq import Queue
+from fastapi import FastAPI, Response
 
-from runner_manager.jobs.startup import startup
 from runner_manager.dependencies import get_queue
+from runner_manager.jobs.startup import startup
 
 log = logging.getLogger(__name__)
 
@@ -20,3 +16,8 @@ def startup_event():
     job = queue.enqueue(startup)
     status = job.get_status()
     log.info(f"Startup job is {status}")
+
+
+@app.get("/_health")
+def health():
+    return Response(status_code=200)
