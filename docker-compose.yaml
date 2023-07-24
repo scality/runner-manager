@@ -15,15 +15,35 @@ services:
       - 8000:8000
     environment:
       REDIS_OM_URL: redis://redis:6379
+    command: uvicorn runner_manager.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - .:/app
     x-develop:
       watch:
-        - action: sync
-          path: ./runner_manager
-          target: /app/runner_manager
         - action: rebuild
-          path: .
-          target: /app
-
+          path: poetry.lock
+  worker:
+    build: .
+    command: rq worker -c runner_manager.rq.settings
+    volumes:
+      - .:/app
+    environment:
+      REDIS_OM_URL: redis://redis:6379
+    x-develop:
+      watch:
+        - action: rebuild
+          path: runner_manager
+          target: /app/runner_manager
+  github-mock:
+    profiles:
+      - develop
+    build: tests/images/github-mock
+    ports:
+      - 4010:4010
+    x-develop:
+      watch:
+        - action: rebuild
+          path: tests/images/github-mock
 
 volumes:
   redis_data:
