@@ -10,9 +10,10 @@ jobs:
   unit:
     runs-on: ubuntu-latest
     services:
-      redis: redis/redis-stack
-    env:
-      REDIS_OM_URL: redis://redis:6379
+      redis:
+        image: redis/redis-stack
+        ports:
+          - 6379:6379
     steps:
       - uses: actions/checkout@v3
       - run: pipx install poetry
