@@ -32,7 +32,15 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pyright]
+include = ["./*"]
+exclude = [
+  "./**/__pycache__",
+  "./.venv",
+  "__pypackages__",
+  "./node_modules",
+  "./dist",
+]
+stubPath = "./typings"
 reportMissingImports = false
 reportMissingModuleSource = false
-include = ["runner_manager"]
 typeCheckingMode = "basic"

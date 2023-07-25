@@ -26,7 +26,7 @@ services:
           path: docker-compose.yaml
   worker:
     build: .
-    command: rq worker -c runner_manager.rq.settings
+    command: rq worker -c runner_manager.jobs.settings
     volumes:
       - .:/app
     environment:

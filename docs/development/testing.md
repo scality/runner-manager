@@ -92,6 +92,7 @@ The test environment will be configured with:
 - A real redis server.
 - A real rq worker to process the jobs.
 - The runner manager running as a server but it must still produce a coverage report:
+
 ```python
 # Here's a code example of how one might do it.
 # This code remains to be tested.
