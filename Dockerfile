@@ -9,15 +9,13 @@ ENV POETRY_VERSION=${POETRY_VERSION} \
     POETRY_NO_INTERACTION=1 \
     POETRY_NO_ANSI=1
 
+RUN pip install --no-cache-dir poetry==$POETRY_VERSION
+
 # Create a runner-manager group and user
 RUN groupadd -r runner-manager && \
-    useradd --no-log-init -r -g runner-manager runner-manager
-
-# Add permissions to /home/runner-manager
-RUN mkdir -p /home/runner-manager && \
+    useradd --no-log-init -r -g runner-manager runner-manager && \
+    mkdir -p /home/runner-manager && \
     chown -R runner-manager:runner-manager /home/runner-manager
-
-RUN pip install poetry==$POETRY_VERSION
 
 # copy project requirement files here to ensure they will be cached.
 WORKDIR /app
