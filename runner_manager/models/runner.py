@@ -25,7 +25,7 @@ class RunnerStatus(str, Enum):
 class Runner(BaseModel):
     name: str = Field(index=True)
     runner_group_id: int = Field(ge=0, index=True)
-    instance_id: int = Field(ge=0, index=True)
+    instance_id: Optional[int] = Field(ge=0, index=True)
     status: str = "offline"
     busy: bool
     created_at: Optional[datetime]

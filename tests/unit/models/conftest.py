@@ -1,7 +1,7 @@
 from pytest import fixture
 from redis_om import Migrator, get_redis_connection
 
-from runner_manager.main import get_settings
+from runner_manager.dependencies import get_settings
 from runner_manager.models.runner import Runner
 from runner_manager.models.settings import Settings
 
