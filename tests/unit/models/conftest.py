@@ -14,7 +14,7 @@ def settings() -> Settings:
 
 @fixture(scope="session", autouse=True)
 def redis(settings):
-    """Configure a random and fresh redis database path."""
+    """Flush redis before tests."""
 
     redis_connection = get_redis_connection(
         url=settings.redis_om_url, decode_responses=True
