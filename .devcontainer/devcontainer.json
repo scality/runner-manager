@@ -21,9 +21,9 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "bungcip.better-toml",
         "GitHub.copilot",
-        "bierner.markdown-mermaid"
+        "bierner.markdown-mermaid",
+        "tamasfe.even-better-toml"
       ],
       "settings": {
         "python.analysis.typeCheckingMode": "basic",

@@ -17,11 +17,13 @@ services:
       REDIS_OM_URL: redis://redis:6379
     command: uvicorn runner_manager.main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
-      - .:/app
+      - ./runner_manager:/app/runner_manager
     x-develop:
       watch:
         - action: rebuild
           path: poetry.lock
+        - action: rebuild
+          path: docker-compose.yaml
   worker:
     build: .
     command: rq worker -c runner_manager.rq.settings
@@ -29,11 +31,6 @@ services:
       - .:/app
     environment:
       REDIS_OM_URL: redis://redis:6379
-    x-develop:
-      watch:
-        - action: rebuild
-          path: runner_manager
-          target: /app/runner_manager
   github-mock:
     profiles:
       - develop

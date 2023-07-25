@@ -6,6 +6,15 @@ from redis_om import Field
 
 from runner_manager.models.base import BaseModel
 
+# Ideally the runner model would have been inherited
+# from githubkit.rest.models.Runner, like the following:
+# class Runner(BaseModel, githubkit.rest.models.Runner):
+# However, to make use of redis' search capability, we
+# have to use Field(index=True), and there was some
+# issue with the search when doing so.
+# Until we figure out the issue, we will have to
+# manually define the fields here.
+
 
 class RunnerStatus(str, Enum):
     online = "online"
