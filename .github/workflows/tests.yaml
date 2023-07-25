@@ -1,0 +1,16 @@
+---
+name: tests
+
+on: pull_request
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+          cache: poetry
+      - run: poetry install
+      - run: poetry run pytest tests/unit
