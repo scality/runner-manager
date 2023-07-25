@@ -12,5 +12,6 @@ jobs:
         with:
           python-version: 3.11
           cache: poetry
+      - run: pip install poetry
       - run: poetry install
       - run: poetry run pytest tests/unit
