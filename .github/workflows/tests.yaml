@@ -8,6 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     services:
       redis: redis/redis-stack
+    env:
+      REDIS_OM_URL: redis://redis:6379/
     steps:
       - uses: actions/checkout@v3
       - run: pipx install poetry
