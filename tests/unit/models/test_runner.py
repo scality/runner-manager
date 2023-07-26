@@ -32,4 +32,7 @@ def test_find_runner(runner: Runner):
     assert (
         runner == Runner.find(Runner.runner_group_id == runner.runner_group_id).first()
     )
+    assert runner == Runner.find(Runner.status == runner.status).first()
     Runner.delete(runner.pk)
+    with pytest.raises(NotFoundError):
+        Runner.find(Runner.name == runner.name).first()
