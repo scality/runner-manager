@@ -4,9 +4,9 @@ Tests will be written using [pytest](https://docs.pytest.org/en/stable/).
 
 The following type of tests wil be written:
 
-- Unit tests
-- API tests
-- Functional tests
+- Unit tests.
+- API tests.
+- Functional tests.
 
 Python dependencies for testing will be configured in the `dev` poetry group:
 
@@ -83,8 +83,8 @@ The test environment will be configured with:
 The functional tests of the runner-manager will be done with no mocking, it will:
 
 - Interact with the real GitHub API.
-- Execute a [GitHub Actions] a real workflow and triggered by a workflow dispatch
-- Receive webhooks notification from github, thanks to the integration of webhook redirection in `gh` cli.
+- Execute a real workflow using [GitHub Actions] triggered by a workflow dispatch.
+- Receive webhooks notification from GitHub, thanks to the integration of webhook redirection in `gh` cli.
 - Have `docker` configured as a backend to host the runners.
 
 The test environment will be configured with:

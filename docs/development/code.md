@@ -16,9 +16,9 @@ The main dependencies are described below along with the reason why they were ch
 [Fastapi](https://fastapi.tiangolo.com/) will be used as a web framework to
 expose the API of the runner manager.
 
-### GitHubkit
+### GitHubKit
 
-[GitHubkit](https://github.com/yanyongyu/githubkit) is a GitHub API client for
+[GitHubKit](https://github.com/yanyongyu/githubkit) is a GitHub API client for
 Python that works exactly like the official GitHub API client for JavaScript, Octokit.
 
 Its code is generated from the OpenAPI specification of the GitHub API.

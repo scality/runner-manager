@@ -6,9 +6,9 @@ A high level description of the runner manager workflows.
 
 Webhook events are sent by GitHub on selected events, such as:
 
-- Push to a repository
-- Pull requests is merged
-- A workflow is triggered
+- Push to a repository.
+- Pull requests is merged.
+- A workflow is triggered.
 
 In the case of the runner manager, we are interested in `workflow_job` events
 that are triggered when a job is queued, running or completed.

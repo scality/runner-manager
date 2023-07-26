@@ -21,9 +21,9 @@ The global configuration will contain the following information:
 - The backends configuration. (Required)
 - The webhook secret. (Required)
 - The runner groups. (Required)
-- The health check interval. (Default: 10 minute)
-- The runner's time to start. (Default: 10 minute)
-- The runner's time to live. (Default: 12 hour)
+- The health check interval. (Default: 10 minutes)
+- The runner's time to start. (Default: 10 minutes)
+- The runner's time to live. (Default: 12 hours)
 
 ## Runner groups
 

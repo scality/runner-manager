@@ -35,10 +35,10 @@ More information about the [runner groups] configuration can be found in the
 The runner manager supports multiple backends, which are responsible
 for hosting the runners. The following backends will be supported:
 
-- GCP
-- AWS
-- Docker (For local functional testing)
-- Emulator (For local unit testing)
+- GCP.
+- AWS.
+- Docker (For local functional testing).
+- Emulator (For local unit testing).
 
 ## Database
 
