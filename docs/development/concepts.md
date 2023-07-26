@@ -38,7 +38,7 @@ for hosting the runners. The following backends will be supported:
 - GCP.
 - AWS.
 - Docker (For local functional testing).
-- Emulator (For local unit testing).
+- FakeBackend (For local unit testing).
 
 ## Database
 
