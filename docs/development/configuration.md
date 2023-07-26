@@ -46,7 +46,7 @@ The following information will be configured for each runner group:
   ```
 - The name of the workflow that will be used to run the jobs. (Optional)
 - The maximum number of runners that can run simultaneously. (Default: 20)
-- The minimum number of runners that must be available. (To be reviewed) (Default: 0)
+- The minimum number of runners that must be available. (Default: 0)
 - The runner labels that will be attached to the runners of the group. (Required)
 - The runner backend that will be used to host the runners of the group. (Required)
 - The runner's instance specifications (CPU, RAM, disk, etc). (Required)
