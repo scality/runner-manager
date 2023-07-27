@@ -3,22 +3,38 @@
   "image": "mcr.microsoft.com/devcontainers/base:1-jammy",
   "features": {
     "ghcr.io/devcontainers/features/python": {
-      "version": "3.11"
+      "version": "3.11",
+      "installTools": false
     },
     "ghcr.io/devcontainers/features/docker-in-docker": {},
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/devcontainers/features/sshd:1": {},
     "ghcr.io/devcontainers-contrib/features/poetry:2": {},
-    "ghcr.io/trunk-io/devcontainer-feature/trunk:1": {}
+    "ghcr.io/trunk-io/devcontainer-feature/trunk:1": {},
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "configureZshAsDefaultShell": true,
+      "username": "vscode",
+      "uid": 1000,
+      "gid": 1000
+    }
   },
   "customizations": {
     "vscode": {
-      "extensions": ["bungcip.better-toml", "GitHub.copilot"]
+      "extensions": [
+        "GitHub.copilot",
+        "bierner.markdown-mermaid",
+        "tamasfe.even-better-toml"
+      ],
+      "settings": {
+        "python.analysis.typeCheckingMode": "basic",
+        "python.defaultInterpreterPath": ".venv/bin/python"
+      }
     }
   },
+  "remoteUser": "vscode",
   "postCreateCommand": "poetry install --no-interaction --no-ansi --no-root",
-  "postStartCommand": {
-    "compose": "docker compose up --build",
+  "postAttachCommand": {
+    "compose": "docker compose --profile develop up --build",
     "watch": "docker compose alpha watch"
   },
   "portsAttributes": {
@@ -29,6 +45,14 @@
     "8001": {
       "label": "redis-insight",
       "onAutoForward": "openPreview"
+    },
+    "8000": {
+      "label": "runner-manager",
+      "onAutoForward": "silent"
+    },
+    "4010": {
+      "label": "github-mock",
+      "onAutoForward": "silent"
     }
   }
 }
