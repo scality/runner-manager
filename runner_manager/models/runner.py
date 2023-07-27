@@ -32,6 +32,3 @@ class Runner(BaseModel):
     busy: bool
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
-
-    class Meta:
-        model_key_prefix = __build_class__.__name__.lower()

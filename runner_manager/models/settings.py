@@ -21,6 +21,7 @@ class ConfigFile(BaseSettings):
 
 
 class Settings(BaseSettings):
+    name: str = "runner-manager"
     redis_om_url: Optional[RedisDsn] = None
 
     class Config:

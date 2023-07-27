@@ -2,16 +2,15 @@ from abc import ABC
 
 from redis_om import JsonModel
 
-# from redis import Redis
-from runner_manager.dependencies import get_redis
+from runner_manager.dependencies import get_redis, get_settings
 
-# redis_connection = Redis.from_url(str(settings.redis_om_url))
 redis = get_redis()
+settings = get_settings()
 
 
 class BaseModel(JsonModel, ABC):
     class Meta:
         database = redis
-        global_key_prefix = "runner-manager"
+        global_key_prefix = settings.name
         abstract = True
-        model_key_prefix = "base-model"
+        model_key_prefix = __build_class__.__name__.lower()
