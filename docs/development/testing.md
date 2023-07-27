@@ -68,7 +68,7 @@ The test environment will be configured with:
 
 ## API tests
 
-Will make use of the [fastapi test client](https://fastapi.tiangolo.com/advanced/testing/)
+Will make use of the [fastapi test client](https://fastapi.tiangolo.com/advanced/testing-websockets/)
 to test the runner-manager behavior from the API point of view.
 
 The test environment will be configured with:
