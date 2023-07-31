@@ -21,11 +21,19 @@ jobs:
       - uses: actions/checkout@v2
       - uses: helm/kind-action@v1
       - name: Edit the runner-manager image
-        working-directory: manifests/base/runner-manager
+        working-directory: tests
         run: |
-          kustomize edit set image runner-manager=ghcr.io/scality/runner-manager:${{ github.sha }}
+          cat <<EOF > kustomization.yaml
+          apiVersion: kustomize.config.k8s.io/v1beta1
+          kind: Kustomization
+          images:
+            - name: ghcr.io/scality/runner-manager
+              newTag: ${{ github.sha }}
+          resources:
+            - ../manifests
+          EOF
       - name: Deploy runner-manager
-        run: kustomize build manifests/ | kubectl apply -f -
+        run: kustomize build tests/ | kubectl apply -f -
       - name: Check if deployment is ready
         run: |
           kubectl rollout status statefulset redis --timeout=90s
