@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: runner-manager
+spec:
+  template:
+    spec:
+      serviceAccountName: default
+      containers:
+        - args:
+            - runner_manager.main:app
+            - --host
+            - 0.0.0.0
+            - --port
+            - 80
+          command:
+            - uvicorn
+          env:
+            - name: REDIS_OM_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: REDIS_OM_URL
+                  name: redis-config
+          image: runner-manager
+          imagePullPolicy: IfNotPresent
+          name: runner-manager
+          ports:
+            - containerPort: 80
+              name: http
+          resources:
+            limits:
+              cpu: 250m
+              memory: 1Gi
+            requests:
+              cpu: 250m
+              memory: 1Gi
+          securityContext: {}
+
+

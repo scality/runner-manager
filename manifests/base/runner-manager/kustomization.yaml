@@ -1,0 +1,10 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+images:
+  - name: runner-manager
+    newName: ghcr.io/scality/runner-manager
+    newTag: 0.6.3
+resources:
+  - main
+  - worker
