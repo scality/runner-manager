@@ -25,7 +25,7 @@ lint:
     - osv-scanner
     - trivy
     - terrascan
-    - checkov # Executed with GHAS
+    - checkov
 runtimes:
   enabled:
     - node@18.12.1
