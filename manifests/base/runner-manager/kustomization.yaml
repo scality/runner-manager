@@ -4,7 +4,6 @@ kind: Kustomization
 images:
   - name: runner-manager
     newName: ghcr.io/scality/runner-manager
-    newTag: 0.6.3
 resources:
   - main
   - worker

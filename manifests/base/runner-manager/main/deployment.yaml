@@ -25,7 +25,7 @@ spec:
           imagePullPolicy: IfNotPresent
           name: runner-manager
           ports:
-            - containerPort: 80
+            - containerPort: 8000
               name: http
           resources:
             limits:

@@ -5,7 +5,6 @@ kind: Kustomization
 commonLabels:
   app.kubernetes.io/name: runner-manager-worker
   app.kubernetes.io/instance: runner-manager-worker
-  app.kubernetes.io/version: 0.6.3
 
 resources:
   - deployment.yaml

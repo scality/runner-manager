@@ -1,6 +1,9 @@
 ---
 name: test-deployment
 
+permissions:
+  contents: read
+
 on: pull_request
 jobs:
   docker-build:
@@ -20,7 +23,7 @@ jobs:
       - name: Edit the runner-manager image
         working-directory: manifests/base/runner-manager
         run: |
-          kustomize edit set image runner-manager=ghcr.io/scality/runner-manager:${{ github.sha }}
+          kustomize edit set image ghcr.io/scality/runner-manager=ghcr.io/scality/runner-manager:${{ github.sha }}
       - name: Deploy runner-manager
         run: kustomize build manifests/ | kubectl apply -f -
       - name: Check if deployment is ready
