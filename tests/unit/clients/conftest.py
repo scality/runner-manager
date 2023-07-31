@@ -6,7 +6,7 @@ from runner_manager.clients.github import GitHub, RunnerGroup
 
 
 @pytest.fixture()
-def github(settings):
+def github(settings) -> GitHub:
     """
     Return a GitHub client configured with:
 
@@ -27,10 +27,10 @@ def github(settings):
 
 
 @pytest.fixture()
-def runner_group():
+def runner_group() -> RunnerGroup:
     return RunnerGroup(id=2, name="octo-runner-group")
 
 
 @pytest.fixture()
-def org():
+def org() -> str:
     return "octo-org"
