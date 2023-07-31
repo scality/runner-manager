@@ -13,7 +13,6 @@ lint:
     - ruff@0.0.280
     - taplo@0.8.1
     - actionlint@1.6.25
-    - checkov@2.3.340
     - git-diff-check
     - markdownlint@0.35.0
     - prettier@3.0.0
@@ -26,6 +25,7 @@ lint:
     - osv-scanner
     - trivy
     - terrascan
+    - checkov # Executed with GHAS
 runtimes:
   enabled:
     - node@18.12.1
