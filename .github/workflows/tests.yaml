@@ -25,4 +25,4 @@ jobs:
       - run: poetry run pytest tests/unit
       - name: Dump logs
         run: docker compose --profile tests logs
-        if: failure()
+        if: always()
