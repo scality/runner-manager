@@ -33,5 +33,3 @@ spec:
               cpu: 250m
               memory: 1Gi
           securityContext: {}
-
-

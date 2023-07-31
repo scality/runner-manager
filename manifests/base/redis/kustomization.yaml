@@ -6,7 +6,7 @@ configMapGenerator:
   - name: redis-config
     envs:
       - redis-config.env
-      
+
 commonLabels:
   app.kubernetes.io/instance: redis
   app.kubernetes.io/name: redis

@@ -1,0 +1,32 @@
+---
+name: test-deployment
+
+on: pull_request
+jobs:
+  docker-build:
+    permissions:
+      contents: read
+      packages: write
+    uses: scality/workflows/.github/workflows/docker-build.yaml@v1
+    with:
+      name: runner-manager
+      namespace: scality
+  test-deployment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: helm/kind-action@v1
+      - name: Edit the runner-manager image
+        working-directory: manifests/base/runner-manager
+        run: |
+          kustomize edit set image runner-manager=runner-manager:${{ github.sha }}
+      - name: Deploy runner-manager
+        run: kustomize build manifests/ | kubectl apply -f -
+      - name: Check if deployment is ready
+        run: |
+          kubectl rollout status statefulset redis --timeout=90s
+          kubectl rollout status deployment runner-manager --timeout=90s
+          kubeclt rollout status deployment runner-manager-worker --timeout=90s
+      - name: wait for runner-manager to be ready
+        run: |
+          kubectl wait --for=condition=ready pod -l app=runner-manager --timeout=90s

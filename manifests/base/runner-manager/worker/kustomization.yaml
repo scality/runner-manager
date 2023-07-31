@@ -9,4 +9,3 @@ commonLabels:
 
 resources:
   - deployment.yaml
-
