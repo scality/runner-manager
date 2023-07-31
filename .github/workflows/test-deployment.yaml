@@ -27,7 +27,7 @@ jobs:
         run: |
           kubectl rollout status statefulset redis --timeout=90s
           kubectl rollout status deployment runner-manager --timeout=90s
-          kubeclt rollout status deployment runner-manager-worker --timeout=90s
+          kubectl rollout status deployment runner-manager-worker --timeout=90s
       - name: wait for runner-manager to be ready
         run: |
           kubectl wait --for=condition=ready pod -l app=runner-manager --timeout=90s
