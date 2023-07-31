@@ -29,6 +29,7 @@ jobs:
         with:
           output_format: sarif
           output_file_path: results.sarif
+          quiet: true
           soft_fail: true
 
       - name: Upload SARIF file
