@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 import yaml
-from pydantic import BaseSettings, RedisDsn
+from pydantic import AnyHttpUrl, BaseSettings, RedisDsn
 
 
 def yaml_config_settings_source(settings: BaseSettings) -> Dict[str, Any]:
@@ -10,19 +10,20 @@ def yaml_config_settings_source(settings: BaseSettings) -> Dict[str, Any]:
     A simple settings source that loads variables from a yaml file
 
     """
-    config_file: Path = settings.__config__.config.config_file
+    config_file: Optional[Path] = settings.__config__.config.config_file
     if config_file:
         return yaml.full_load(config_file.read_text())
     return {}
 
 
 class ConfigFile(BaseSettings):
-    config_file: Optional[Path]
+    config_file: Optional[Path] = None
 
 
 class Settings(BaseSettings):
     name: str = "runner-manager"
     redis_om_url: Optional[RedisDsn] = None
+    github_base_url: Optional[AnyHttpUrl] = None
 
     class Config:
         config: ConfigFile = ConfigFile()

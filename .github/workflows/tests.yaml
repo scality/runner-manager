@@ -9,13 +9,10 @@ permissions:
 jobs:
   unit:
     runs-on: ubuntu-latest
-    services:
-      redis:
-        image: redis/redis-stack
-        ports:
-          - 6379:6379
     steps:
       - uses: actions/checkout@v3
+      - name: Boot compose services
+        run: docker compose --profile tests up --build --detach
       - run: pipx install poetry
       - uses: actions/setup-python@v4
         with:
@@ -23,3 +20,6 @@ jobs:
           cache: poetry
       - run: poetry install
       - run: poetry run pytest tests/unit
+      - name: Dump logs
+        run: docker compose --profile tests logs
+        if: failure()
