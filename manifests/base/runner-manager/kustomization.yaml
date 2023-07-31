@@ -4,6 +4,10 @@ kind: Kustomization
 images:
   - name: runner-manager
     newName: ghcr.io/scality/runner-manager
+configMapGenerator:
+  - name: redis-config
+    envs:
+      - redis-config.env
 resources:
   - main
   - worker
