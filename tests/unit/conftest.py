@@ -1,8 +1,8 @@
 from pytest import fixture
 
 from runner_manager.dependencies import get_settings
-from runner_manager.models.settings import Settings
 from runner_manager.models.runner import Runner
+from runner_manager.models.settings import Settings
 
 
 @fixture(scope="session", autouse=True)

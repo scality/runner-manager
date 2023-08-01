@@ -70,9 +70,10 @@ class BaseBackend(BaseModel):
         try:
             runners: List[Runner] = Runner.find(Runner.backend == self.name).all()
         except NotFoundError as exception:
-            raise NotFoundError(f"No runners found for {self.name} backend.") from exception
+            raise NotFoundError(
+                f"No runners found for {self.name} backend."
+            ) from exception
         return runners
-
 
     @classmethod
     def get_backend(

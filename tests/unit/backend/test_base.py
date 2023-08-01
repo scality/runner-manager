@@ -1,4 +1,3 @@
-
 import pytest
 
 from runner_manager.backend.base import BaseBackend
