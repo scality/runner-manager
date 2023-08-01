@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import FastAPI, Response, Request
+from fastapi import FastAPI, Request, Response
 from githubkit.webhooks import parse
 from githubkit.webhooks.types import WebhookEvent
 
@@ -24,10 +24,13 @@ def startup_event():
 def health():
     return Response(status_code=200)
 
+
 @app.post("/webhook", status_code=202)
 async def webhook(request: Request):
     try:
-        event: WebhookEvent = parse(request.headers["X-GitHub-Event"], await request.body())
+        event: WebhookEvent = parse(
+            request.headers["X-GitHub-Event"], await request.body()
+        )
         return "Accepted"
     except Exception as e:
         return {"error": str(e)}
