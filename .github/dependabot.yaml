@@ -15,15 +15,19 @@ updates:
     directory: "/"
     schedule:
       interval: daily
+    commit-message:
+      prefix: "chore(deps): docker"
+      include: "scope"
     labels:
-      - "chore(deps): docker"
+      - "docker"
+      - "dependencies"
   - package-ecosystem: pip
     directory: "/"
     schedule:
       interval: daily
     commit-message:
-      prefix: "chore(deps): poetry"
+      prefix: "chore(deps): pip"
       include: "scope"
     labels:
-      - "poetry"
+      - "pip"
       - "dependencies"
