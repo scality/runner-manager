@@ -1,5 +1,7 @@
 import pytest
 
+from redis_om import Migrator
+
 from runner_manager.backend.base import BaseBackend
 
 
@@ -16,6 +18,7 @@ def test_backend_delete_runner(backend, runner):
 
 def test_backend_list_runners(backend, runner):
     runner = backend.create(runner)
+    Migrator().run()
     assert runner in backend.list()
 
 
