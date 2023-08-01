@@ -25,5 +25,5 @@ jobs:
       - name: Check if deployment is ready
         run: |
           kubectl rollout status statefulset redis --timeout=90s
-          kubectl rollout status deployment runner-manager --timeout=90s
-          kubectl rollout status deployment runner-manager-worker --timeout=90s
+          kubectl rollout status deployment runner-manager --timeout=120s
+          kubectl rollout status deployment runner-manager-worker --timeout=120s
