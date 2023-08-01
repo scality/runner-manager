@@ -8,10 +8,11 @@ permissions:
 
 jobs:
   test:
+    name: ${{ matrix.test }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        test_type: [unit, api]
+        test: [unit, api]
 
     services:
       redis:
@@ -28,9 +29,4 @@ jobs:
           cache: poetry
       - run: poetry install
       - name: Run tests
-        run: |
-          if [ "${{ matrix.test_type }}" = "unit" ]; then
-            poetry run pytest tests/unit
-          elif [ "${{ matrix.test_type }}" = "api" ]; then
-            poetry run pytest tests/api
-          fi
+        run: poetry run pytest tests/${{ matrix.test }}
