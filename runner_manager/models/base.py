@@ -8,7 +8,7 @@ redis = get_redis()
 settings = get_settings()
 
 
-class RedisModel(ABC):
+class BaseModel(JsonModel, ABC):
     class Meta:
         database = redis
         global_key_prefix = settings.name
@@ -16,9 +16,5 @@ class RedisModel(ABC):
         model_key_prefix = __build_class__.__name__.lower()
 
 
-class BaseModel(JsonModel, RedisModel):
-    pass
-
-
-class EmbeddedBaseModel(EmbeddedJsonModel, RedisModel):
+class EmbeddedBaseModel(EmbeddedJsonModel):
     pass

@@ -1,20 +1,11 @@
 from abc import ABC
-from enum import Enum
-from typing import List
+from typing import List, Optional
 
-from runner_manager.models.base import BaseModel
+from runner_manager.models.backend import Backends
 from runner_manager.models.runner import Runner
-from runner_manager.models.runnergroup import RunnerGroup
 
 
-class Backends(str, Enum):
-    base = "base"
-    docker = "docker"
-    gcloud = "gcloud"
-    aws = "aws"
-
-
-class BaseBackend(ABC, BaseModel):
+class BaseBackend(ABC):
     """Base class for runners backend.
 
     Runners backend are responsible for managing runners instances.
@@ -22,16 +13,15 @@ class BaseBackend(ABC, BaseModel):
     They take a RunnerGroup as input.
     """
 
-    runner_group: RunnerGroup
+    def __init__(self, name: Backends, config: Optional[dict]):
+        """Initialize a runner backend.
 
-    @property
-    def name(self) -> Backends:
-        """Name of the backend.
-
-        Returns:
-            str: Name of the backend.
+        Args:
+            name (str): Runner backend name.
+            config (dict): Runner backend config.
         """
-        return self.runner_group.backend
+        self.name = name
+        self.config = config
 
     def create(self, runner: Runner) -> Runner:
         """Create a runner instance.
@@ -78,7 +68,7 @@ class BaseBackend(ABC, BaseModel):
         raise NotImplementedError
 
     @classmethod
-    def get_backend(cls, runner_group: RunnerGroup) -> "BaseBackend":
+    def get_backend(cls, name: Backends, config: Optional[dict]) -> "BaseBackend":
         """Get a runner backend.
 
         Args:
@@ -88,7 +78,7 @@ class BaseBackend(ABC, BaseModel):
             BaseBackend: Runner backend.
         """
 
-        if runner_group.backend == Backends.base:
-            return BaseBackend()
+        if name == Backends.base:
+            return BaseBackend(name, config)
         else:
             raise NotImplementedError

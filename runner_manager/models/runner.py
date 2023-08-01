@@ -1,10 +1,11 @@
 from datetime import datetime
 from enum import Enum
-from typing import Literal, Optional
+from typing import List, Literal, Optional
 
+from pydantic import BaseModel as PydanticBaseModel
 from redis_om import Field
 
-from runner_manager.models.base import BaseModel, EmbeddedBaseModel
+from runner_manager.models.base import BaseModel
 
 # Ideally the runner model would have been inherited
 # from githubkit.rest.models.Runner, like the following:
@@ -22,32 +23,29 @@ class RunnerStatus(str, Enum):
     offline = "offline"
 
 
-class RunnerLabel(EmbeddedBaseModel):
+class RunnerLabel(PydanticBaseModel):
     """Self hosted runner label
 
-    A label for a self hosted runner
+    A label for a self hosted runner.
     """
 
-    id: Optional[int] = Field(
-        description="Unique identifier of the label.", default=None
-    )
-    name: str = Field(
-        index=True, full_text_search=True, description="Name of the label.", default=...
-    )
-    type: Optional[Literal["read-only", "custom"]] = Field(
-        description="The type of label. Read-only labels are applied automatically when the runner is configured.",
-        default="custom",
-    )
+    id: Optional[int] = None
+    name: str = Field(description="Name of the label.", default=...)
+    type: Optional[Literal["read-only", "custom"]] = "custom"
 
 
 class Runner(BaseModel):
-    name: str = Field(index=True)
-    runner_group_id: int = Field(ge=0, index=True)
-    backend_instance: Optional[int] = Field(ge=0, index=True)
+    name: str = Field(index=True, description="Runner name")
+    runner_group_id: Optional[int] = Field(
+        index=True, default=None, description="Runner group id"
+    )
+    backend_instance: Optional[int] = Field(
+        index=True, description="Backend instance id"
+    )
     status: RunnerStatus = Field(
         default=RunnerStatus.offline, index=True, full_text_search=True
     )
     busy: bool
-    labels: Optional[RunnerLabel] = Field(index=True, default=[])
+    labels: Optional[List[RunnerLabel]] = []
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
