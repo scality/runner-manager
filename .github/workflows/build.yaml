@@ -1,0 +1,17 @@
+name: Docker build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  docker-build:
+    permissions:
+      contents: read
+      packages: write
+    uses: scality/workflows/.github/workflows/docker-build.yaml@v1
+    with:
+      name: runner-manager
+      namespace: scality
