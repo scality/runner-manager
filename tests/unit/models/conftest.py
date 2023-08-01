@@ -1,15 +1,7 @@
 from pytest import fixture
 from redis_om import Migrator, get_redis_connection
 
-from runner_manager.dependencies import get_settings
 from runner_manager.models.runner import Runner
-from runner_manager.models.settings import Settings
-
-
-@fixture(scope="session", autouse=True)
-def settings() -> Settings:
-    settings = get_settings()
-    return settings
 
 
 @fixture(scope="session", autouse=True)

@@ -21,11 +21,11 @@ lint:
     - pyright@1.1.318
     - hadolint@2.12.0
   disabled:
+    - checkov
     - bandit
     - osv-scanner
     - trivy
     - terrascan
-    - checkov # Executed with GHAS
 runtimes:
   enabled:
     - node@18.12.1
