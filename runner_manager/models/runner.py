@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import List, Literal, Optional
+from typing import List, Literal, Optional, Union
 
 from pydantic import BaseModel as PydanticBaseModel
 from redis_om import Field
@@ -39,9 +39,10 @@ class Runner(BaseModel):
     runner_group_id: Optional[int] = Field(
         index=True, default=None, description="Runner group id"
     )
-    backend_instance: Optional[int] = Field(
-        index=True, description="Backend instance id"
+    backend_instance: Optional[str] = Field(
+        index=True, description="Backend instance id", default=None
     )
+    backend: Optional[str] = Field(index=True, description="Backend type")
     status: RunnerStatus = Field(
         default=RunnerStatus.offline, index=True, full_text_search=True
     )

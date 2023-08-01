@@ -1,11 +1,13 @@
-from abc import ABC
 from typing import List, Optional
 
-from runner_manager.models.backend import Backends
+from pydantic import BaseModel
+from redis_om import NotFoundError
+
+from runner_manager.models.backend import BackendConfig, Backends
 from runner_manager.models.runner import Runner
 
 
-class BaseBackend(ABC):
+class BaseBackend(BaseModel):
     """Base class for runners backend.
 
     Runners backend are responsible for managing runners instances.
@@ -13,15 +15,8 @@ class BaseBackend(ABC):
     They take a RunnerGroup as input.
     """
 
-    def __init__(self, name: Backends, config: Optional[dict]):
-        """Initialize a runner backend.
-
-        Args:
-            name (str): Runner backend name.
-            config (dict): Runner backend config.
-        """
-        self.name = name
-        self.config = config
+    name: Backends = Backends.base
+    config: Optional[BackendConfig]
 
     def create(self, runner: Runner) -> Runner:
         """Create a runner instance.
@@ -29,6 +24,9 @@ class BaseBackend(ABC):
         Args:
             runner (Runner): Runner instance to be created.
         """
+        runner.backend = self.name
+        if runner.backend_instance is None:
+            runner.backend_instance = runner.pk
         return runner.save()
 
     def delete(self, runner: Runner) -> int:
@@ -56,7 +54,11 @@ class BaseBackend(ABC):
         Returns:
             Runner: Runner instance.
         """
-        runner: Runner = Runner.find(Runner.backend_instance == instance).first()
+        try:
+            runner: Runner = Runner.find(Runner.backend_instance == instance).first()
+        except NotFoundError as exception:
+            raise NotFoundError(f"Instance {instance} not found.") from exception
+
         return runner
 
     def list(self) -> List[Runner]:
@@ -65,10 +67,17 @@ class BaseBackend(ABC):
         Returns:
             list: List of runner instances.
         """
-        raise NotImplementedError
+        try:
+            runners: List[Runner] = Runner.find(Runner.backend == self.name).all()
+        except NotFoundError as exception:
+            raise NotFoundError(f"No runners found for {self.name} backend.") from exception
+        return runners
+
 
     @classmethod
-    def get_backend(cls, name: Backends, config: Optional[dict]) -> "BaseBackend":
+    def get_backend(
+        cls, name: Backends, config: Optional[BackendConfig]
+    ) -> "BaseBackend":
         """Get a runner backend.
 
         Args:
@@ -79,6 +88,6 @@ class BaseBackend(ABC):
         """
 
         if name == Backends.base:
-            return BaseBackend(name, config)
+            return BaseBackend(config=config)
         else:
             raise NotImplementedError

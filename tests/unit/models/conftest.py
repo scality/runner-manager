@@ -19,15 +19,6 @@ def redis(settings):
 
 
 @fixture()
-def runner() -> Runner:
-    runner = Runner(
-        name="test", runner_group_id=1, status="online", busy=False, labels=[]
-    )
-    Runner.delete(runner.pk)
-    return runner
-
-
-@fixture()
 def runner_group() -> RunnerGroup:
     runner_group = RunnerGroup(
         id=1,
