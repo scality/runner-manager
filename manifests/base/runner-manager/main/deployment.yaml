@@ -34,4 +34,16 @@ spec:
             requests:
               cpu: 250m
               memory: 1Gi
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /_health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            tcpSocket:
+              port: 8000
           securityContext: {}
