@@ -1,12 +1,13 @@
 from abc import ABC
-from typing import List, Enum
-from runner_manager.models.runner import Runner
+from enum import Enum
+from typing import List
+
 from runner_manager.models.base import BaseModel
-from redis_om import Field
+from runner_manager.models.runner import Runner
+from runner_manager.models.runnergroup import RunnerGroup
 
 
 class Backends(str, Enum):
-
     base = "base"
     docker = "docker"
     gcloud = "gcloud"
@@ -17,11 +18,20 @@ class BaseBackend(ABC, BaseModel):
     """Base class for runners backend.
 
     Runners backend are responsible for managing runners instances.
+
+    They take a RunnerGroup as input.
     """
 
-    name: Backends = Field(index=True, full_text_search=True, default=Backends.base)
+    runner_group: RunnerGroup
 
+    @property
+    def name(self) -> Backends:
+        """Name of the backend.
 
+        Returns:
+            str: Name of the backend.
+        """
+        return self.runner_group.backend
 
     def create(self, runner: Runner) -> Runner:
         """Create a runner instance.
@@ -31,7 +41,7 @@ class BaseBackend(ABC, BaseModel):
         """
         return runner.save()
 
-    def delete(self, runner: Runner) -> Runner:
+    def delete(self, runner: Runner) -> int:
         """Delete a runner instance.
 
         Args:
@@ -56,7 +66,8 @@ class BaseBackend(ABC, BaseModel):
         Returns:
             Runner: Runner instance.
         """
-        return Runner.find(Runner.backend_instance == instance).first()
+        runner: Runner = Runner.find(Runner.backend_instance == instance).first()
+        return runner
 
     def list(self) -> List[Runner]:
         """List all runner instances.
@@ -67,7 +78,7 @@ class BaseBackend(ABC, BaseModel):
         raise NotImplementedError
 
     @classmethod
-    def get_backend(cls, backend: Backends):
+    def get_backend(cls, runner_group: RunnerGroup) -> "BaseBackend":
         """Get a runner backend.
 
         Args:
@@ -77,7 +88,7 @@ class BaseBackend(ABC, BaseModel):
             BaseBackend: Runner backend.
         """
 
-        if backend == Backends.base:
+        if runner_group.backend == Backends.base:
             return BaseBackend()
         else:
             raise NotImplementedError

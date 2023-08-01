@@ -1,9 +1,10 @@
+from typing import List, Optional
 
-from runner_manager.models.base import BaseModel
-from runner_manager.backend.base import BaseBackend
 from redis_om import Field
-from typing import Optional, List
 
+from runner_manager.backend.base import Backends, BaseBackend
+from runner_manager.models.base import BaseModel
+from runner_manager.models.runner import Runner
 
 
 class RunnerGroup(BaseModel):
@@ -23,15 +24,13 @@ class RunnerGroup(BaseModel):
     min: Optional[int] = Field(index=True, ge=0, default=0)
     labels: Optional[List[str]] = Field(index=True, full_text_search=True, default=[])
 
-    # backend will be a parameter set as a string for user but will be a BaseBackend object
-    # the runnergroup will return the according backend object (docker, gcloud, aws, etc)
-    backend: Optional[str] or Optional[Backend] = Field(index=True, full_text_search=True, default="docker")
-    backend_config: Optional[dict] = Field(index=True, full_text_search=True, default={})
-
+    backend: Backends = Field(index=True, full_text_search=True, default="docker")
+    backend_config: Optional[dict] = Field(
+        index=True, full_text_search=True, default={}
+    )
 
     def __init__(self, **data):
         super().__init__(**data)
-        self.backend = BaseBackend.get_backend(self.backend)
 
     def __str__(self):
         return f"{self.name} ({self.backend})"
@@ -45,3 +44,28 @@ class RunnerGroup(BaseModel):
     def __eq__(self, other):
         return self.id == other.id
 
+    def get_backend(self) -> BaseBackend:
+        """Get the backend class.
+
+        Returns:
+            BaseBackend: Backend class.
+        """
+        return BaseBackend.get_backend(runner_group=self)
+
+    def get_runners(self) -> List[Runner]:
+        """Get the runners.
+
+        Returns:
+            List[Runner]: List of runners.
+        """
+        return Runner.find(Runner.runner_group_id == self.id).all()
+
+    def create_runner(self, runner: Runner) -> Runner:
+        """Create a runner instance.
+
+        Returns:
+            Runner: Runner instance.
+        """
+        runner.runner_group_id = self.id
+        runner.labels = self.labels
+        return self.get_backend().create(runner)
