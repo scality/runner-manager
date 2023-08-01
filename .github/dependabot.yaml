@@ -1,0 +1,29 @@
+---
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: daily
+    commit-message:
+      prefix: "chore(deps): github-actions"
+      include: "scope"
+    labels:
+      - "github-actions"
+      - "dependencies"
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: daily
+    labels:
+      - "chore(deps): docker"
+  - package-ecosystem: pip
+    directory: "/"
+    schedule:
+      interval: daily
+    commit-message:
+      prefix: "chore(deps): poetry"
+      include: "scope"
+    labels:
+      - "poetry"
+      - "dependencies"
