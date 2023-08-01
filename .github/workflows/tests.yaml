@@ -7,11 +7,17 @@ permissions:
   contents: read
 
 jobs:
-  unit:
+  test:
+    name: ${{ matrix.test }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test: [unit, api]
+
     env:
       REDIS_OM_URL: redis://localhost:6379
       GITHUB_BASE_URL: http://localhost:4010
+
     steps:
       - uses: actions/checkout@v3
       - name: Boot compose services
@@ -22,7 +28,8 @@ jobs:
           python-version: 3.11
           cache: poetry
       - run: poetry install
-      - run: poetry run pytest tests/unit
+      - name: Run tests
+        run: poetry run pytest tests/${{ matrix.test }}
       - name: Dump logs
         run: docker compose --profile tests logs
         if: always()
