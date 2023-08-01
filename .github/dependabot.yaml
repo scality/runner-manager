@@ -21,7 +21,7 @@ updates:
     labels:
       - "docker"
       - "dependencies"
-  - package-ecosystem: poetry
+  - package-ecosystem: pip
     directory: "/"
     schedule:
       interval: daily
