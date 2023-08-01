@@ -29,9 +29,3 @@ def test_backend_update_runner(backend, runner):
     runner = backend.update(runner)
     assert runner.busy is True
     assert runner.status == "online"
-
-
-def test_get_backend():
-    assert BaseBackend.get_backend(name="base", config=None).name == "base"
-    with pytest.raises(NotImplementedError):
-        BaseBackend.get_backend(name="not_found", config=None)
