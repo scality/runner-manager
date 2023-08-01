@@ -7,13 +7,18 @@ permissions:
   contents: read
 
 jobs:
-  unit:
+  test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test_type: ['unit', 'api']
+
     services:
       redis:
         image: redis/redis-stack
         ports:
           - 6379:6379
+
     steps:
       - uses: actions/checkout@v3
       - run: pipx install poetry
@@ -22,4 +27,10 @@ jobs:
           python-version: 3.11
           cache: poetry
       - run: poetry install
-      - run: poetry run pytest tests/unit
+      - name: Run tests
+        run: |
+          if [ "${{ matrix.test_type }}" = "unit" ]; then
+            poetry run pytest tests/unit
+          elif [ "${{ matrix.test_type }}" = "api" ]; then
+            poetry run pytest tests/api
+          fi
