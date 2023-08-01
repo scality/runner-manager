@@ -20,12 +20,18 @@ lint:
     - yamllint@1.32.0
     - pyright@1.1.318
     - hadolint@2.12.0
+    - checkov@2.3.75
   disabled:
     - bandit
     - osv-scanner
     - trivy
     - terrascan
-    - checkov # Executed with GHAS
+  triggers:
+    - linters: [checkov]
+      paths:
+        - .github/workflows
+      targets:
+        - .github/workflows
 runtimes:
   enabled:
     - node@18.12.1
