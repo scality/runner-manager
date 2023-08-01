@@ -1,8 +1,4 @@
-import pytest
-
 from redis_om import Migrator
-
-from runner_manager.backend.base import BaseBackend
 
 
 def test_backend_create_runner(backend, runner):
