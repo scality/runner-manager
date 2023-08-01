@@ -39,6 +39,6 @@ jobs:
           kubectl rollout status statefulset redis --timeout=90s
           kubectl rollout status deployment runner-manager --timeout=120s
           kubectl rollout status deployment runner-manager-worker --timeout=120s
-      - name: get all
+      - name: get all resources
         if: failure()
         run: kubectl get all
