@@ -3,6 +3,7 @@ from fastapi.testclient import TestClient
 
 from runner_manager.main import app
 
+
 @pytest.fixture(scope="function")
 def fastapp():
     fastapp = app

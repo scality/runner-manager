@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        test_type: ['unit', 'api']
+        test_type: [unit, api]
 
     services:
       redis:
