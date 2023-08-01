@@ -1,7 +1,8 @@
 import logging
 
 from fastapi import FastAPI, Response, Request
-from githubkit.webhooks import parse, WebhookEvent
+from githubkit.webhooks import parse
+from githubkit.webhooks.types import WebhookEvent
 
 from runner_manager.dependencies import get_queue
 from runner_manager.jobs.startup import startup
