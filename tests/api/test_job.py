@@ -10,4 +10,3 @@ def test_webhook_job_endpoint(client):
     response = client.post("/webhook", json=webhook, headers=headers)
 
     assert response.status_code == 202
-    
