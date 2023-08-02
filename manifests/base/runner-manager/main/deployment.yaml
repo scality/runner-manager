@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: runner-manager
+spec:
+  template:
+    spec:
+      serviceAccountName: default
+      containers:
+        - args:
+            - 'runner_manager.main:app'
+            - '--host'
+            - 0.0.0.0
+            - '--port'
+            - '8000'
+          command:
+            - uvicorn
+          env:
+            - name: REDIS_OM_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: REDIS_OM_URL
+                  name: redis-config
+          image: runner-manager
+          imagePullPolicy: IfNotPresent
+          name: runner-manager
+          ports:
+            - containerPort: 8000
+              name: http
+          resources:
+            limits:
+              cpu: 250m
+              memory: 1Gi
+            requests:
+              cpu: 250m
+              memory: 1Gi
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /_health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /_health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          securityContext: {}
