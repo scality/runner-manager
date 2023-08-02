@@ -14,6 +14,8 @@ The global configuration will contain the following information:
 - A name for the runner manager. (default: runner-manager)
   It will be used as a metadata or prefix which will allow the runner to identify
   the owner of each resources, avoiding conflicts with other runner managers or users.
+- The default GitHub organization in which the runner and groups will be created.
+  (Required)
 - The GitHub Authentication parameters. (Required)
   - For GitHub Application: The GitHub Application ID, Installation ID and Private Key. (Required)
   - For GitHub Personal Access Token: The GitHub Personal Access Token. (Required)
@@ -32,7 +34,7 @@ settings file.
 The following information will be configured for each runner group:
 
 - Name of the group. (Required)
-- Name of the GitHub Organization in which the runner and group will be created. (Required)
+- Name of the GitHub Organization in which the runner and group will be created. (optional)
 - Name of the GitHub Repository in which the runner and group will be created. (Optional)
 - Repository access:
   - A list of selected repositories. (Default: All repositories)
@@ -44,7 +46,6 @@ The following information will be configured for each runner group:
   octo-org/octo-repo/.github/workflows/deploy.yml@d6dc6c96df4f32fa27b039f2084f576ed2c5c2a5,
   monalisa/octo-test/.github/workflows/test.yml@main
   ```
-- The name of the workflow that will be used to run the jobs. (Optional)
 - The maximum number of runners that can run simultaneously. (Default: 20)
 - The minimum number of runners that must be available. (Default: 0)
 - The runner labels that will be attached to the runners of the group. (Required)

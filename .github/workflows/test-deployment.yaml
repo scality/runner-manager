@@ -1,0 +1,46 @@
+---
+name: test-deployment
+
+
+on: pull_request
+
+permissions:
+  contents: read
+
+jobs:
+  docker-build:
+    permissions:
+      contents: read
+      packages: write
+    uses: scality/workflows/.github/workflows/docker-build.yaml@v1
+    with:
+      name: runner-manager
+      namespace: scality
+  test-deployment:
+    needs: docker-build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: helm/kind-action@v1
+      - name: Edit the runner-manager image
+        working-directory: tests
+        run: |
+          cat <<EOF > kustomization.yaml
+          apiVersion: kustomize.config.k8s.io/v1beta1
+          kind: Kustomization
+          images:
+            - name: ghcr.io/scality/runner-manager
+              newTag: ${{ github.sha }}
+          resources:
+            - ../manifests
+          EOF
+      - name: Deploy runner-manager
+        run: kustomize build tests/ | kubectl apply -f -
+      - name: Check if deployment is ready
+        run: |
+          kubectl rollout status statefulset redis --timeout=90s
+          kubectl rollout status deployment runner-manager --timeout=120s
+          kubectl rollout status deployment runner-manager-worker --timeout=120s
+      - name: get all resources
+        if: failure()
+        run: kubectl get all
