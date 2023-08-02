@@ -1,5 +1,5 @@
 from runner_manager.models.settings import Settings
-from runner_manager.settings import yaml_config_settings_source
+from runner_manager.models.settings import yaml_config_settings_source
 from pytest import fixture
 import tempfile
 import os
