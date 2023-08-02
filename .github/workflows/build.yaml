@@ -5,7 +5,10 @@ on:
     branches:
       - main
   pull_request:
-
+    branches:
+      - main
+permissions:
+  contents: read
 jobs:
   docker-build:
     permissions:
@@ -15,3 +18,4 @@ jobs:
     with:
       name: runner-manager
       namespace: scality
+      tag: ${{ github.ref_name == 'main' && 'latest' || github.sha }}
