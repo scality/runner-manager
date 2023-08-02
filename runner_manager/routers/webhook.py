@@ -4,4 +4,4 @@ router = APIRouter(prefix="/webhook")
 
 @router.get("/")
 def get():
-    return Response(200)
+    return Response(content="Success", status_code=200)
