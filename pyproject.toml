@@ -19,7 +19,7 @@ pyyaml = "^6.0.1"
 redis = "^4.6.0"
 
 [tool.poetry.group.docs.dependencies]
-mkdocs-material = "^9.1.19"
+mkdocs-material = "^9.1.21"
 
 
 [tool.poetry.group.dev.dependencies]
