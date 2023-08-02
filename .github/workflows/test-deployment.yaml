@@ -1,7 +1,6 @@
 ---
 name: test-deployment
 
-
 on: pull_request
 
 permissions:
