@@ -6,7 +6,6 @@ updates:
     schedule:
       interval: daily
     commit-message:
-      prefix: "chore(deps): github-actions"
       include: "scope"
     labels:
       - "github-actions"
@@ -16,7 +15,6 @@ updates:
     schedule:
       interval: daily
     commit-message:
-      prefix: "chore(deps): docker"
       include: "scope"
     labels:
       - "docker"
@@ -26,7 +24,6 @@ updates:
     schedule:
       interval: daily
     commit-message:
-      prefix: "chore(deps): pip"
       include: "scope"
     labels:
       - "pip"
