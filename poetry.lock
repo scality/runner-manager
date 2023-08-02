@@ -1185,13 +1185,13 @@ ocsp = ["cryptography (>=36.0.1)", "pyopenssl (==20.0.1)", "requests (>=2.26.0)"
 
 [[package]]
 name = "redis-om"
-version = "0.1.3"
+version = "0.2.1"
 description = "Object mappings, and more, for Redis."
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "redis_om-0.1.3-py3-none-any.whl", hash = "sha256:87c684b125cee3431cd9237c7c0b18ab099921677970f4543a08d94197b08764"},
-    {file = "redis_om-0.1.3.tar.gz", hash = "sha256:7d3cbf1a9a1c325cc3fd01b79382da3adc2c0e1d86f257a10dc51d2b880d4b95"},
+    {file = "redis_om-0.2.1-py3-none-any.whl", hash = "sha256:31313a3027a014608b3a4d44ecd1d3000c7d0fe3a25060db19b42225e636cd53"},
+    {file = "redis_om-0.2.1.tar.gz", hash = "sha256:150c9cb5238d6003f35e9b6394aab30a0df35b00e955eb7dc508f4345e0a0ccc"},
 ]
 
 [package.dependencies]
@@ -1806,4 +1806,4 @@ watchdog = ["watchdog"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "ef336ddbb9c77651ec8643cdf5dacdf437465de963f519629678b3bebe4bffca"
+content-hash = "7972d9fabda71db3f98aed9c94c3c25e6474756ccda8b37f1badeb4ce1bda1c4"
