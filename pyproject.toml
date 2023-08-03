@@ -33,5 +33,3 @@ pyright = "^1.1.320"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-
