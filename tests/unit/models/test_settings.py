@@ -6,7 +6,7 @@ from runner_manager.models.settings import Settings
 from runner_manager.models.settings import yaml_config_settings_source
 from runner_manager.models.settings import ConfigFile
 
-
+@fixture
 def test_settings_default_values():
     settings = Settings()
     assert settings.name == "runner-manager"
