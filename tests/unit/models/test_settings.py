@@ -1,10 +1,15 @@
 import os
 import tempfile
-from pytest import fixture
 from pathlib import Path
-from runner_manager.models.settings import Settings
-from runner_manager.models.settings import yaml_config_settings_source
-from runner_manager.models.settings import ConfigFile
+
+from pytest import fixture
+
+from runner_manager.models.settings import (
+    ConfigFile,
+    Settings,
+    yaml_config_settings_source,
+)
+
 
 @fixture
 def test_settings_default_values():
@@ -12,6 +17,7 @@ def test_settings_default_values():
     assert settings.name == "runner-manager"
     assert settings.redis_om_url == os.getenv("REDIS_OM_URL")
     assert settings.github_base_url == os.getenv("GITHUB_BASE_URL")
+
 
 @fixture
 def temp_yaml_file():
@@ -24,6 +30,7 @@ def temp_yaml_file():
     yaml_file.write(yaml_data)
     return yaml_file.name
 
+
 def test_yaml_config(temp_yaml_file):
     config_file = ConfigFile(config_file=Path(temp_yaml_file))
     settings = Settings()
@@ -32,6 +39,7 @@ def test_yaml_config(temp_yaml_file):
     assert config_data["name"] == "test-runner-manager"
     assert config_data["redis_om_url"] == "redis://localhost:6379/0"
     assert config_data["github_base_url"] == "https://github.com"
+
 
 def test_env_file():
     os.environ["REDIS_OM_URL"] = "redis://localhost:6379/0"
