@@ -5,7 +5,9 @@ from redis_om import NotFoundError
 
 from runner_manager.models.backend import BackendConfig, Backends
 from runner_manager.models.runner import Runner
+from runner_manager.dependencies import get_settings
 
+settings = get_settings()
 
 class BaseBackend(BaseModel):
     """Base class for runners backend.
@@ -17,6 +19,7 @@ class BaseBackend(BaseModel):
 
     name: Literal[Backends.base] = Field(default=Backends.base)
     config: Optional[BackendConfig]
+    runner_manager: str = Field(default=settings.name)
 
     # Inherited classes will have a client property configured
     # to interact with the backend.
