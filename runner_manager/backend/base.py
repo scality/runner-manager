@@ -55,15 +55,9 @@ class BaseBackend(BaseModel):
             Runner: Runner instance.
         """
         try:
-<<<<<<< HEAD
             runner: Runner = Runner.find(Runner.backend_instance == instance_id).first()
         except NotFoundError as exception:
             raise NotFoundError(f"Instance {instance_id} not found.") from exception
-=======
-            runner: Runner = Runner.find(Runner.backend_instance == instance).first()
-        except NotFoundError as exception:
-            raise NotFoundError(f"Instance {instance} not found.") from exception
->>>>>>> feature/setup-stubs-and-pyright-config
 
         return runner
 

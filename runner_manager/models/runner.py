@@ -39,6 +39,7 @@ class Runner(BaseModel):
     runner_group_id: Optional[int] = Field(
         index=True, default=None, description="Runner group id"
     )
+    # TODO: rename to instance_id (or something else)
     backend_instance: Optional[str] = Field(
         index=True, description="Backend instance id", default=None
     )
