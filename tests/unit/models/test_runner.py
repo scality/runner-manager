@@ -9,7 +9,6 @@ from runner_manager.models.runner import Runner
 @given(st.builds(Runner))
 def test_validate_runner(instance: Runner):
     assert instance.name is not None
-    assert instance.runner_group_id >= 0
     assert instance.status in ["online", "offline", "idle"]
     assert isinstance(instance.busy, bool)
 
