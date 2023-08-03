@@ -1,13 +1,25 @@
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Dict, List, Literal, Optional
 
 from pydantic import BaseModel
+from redis_om import Field
+
+
+class Backends(str, Enum):
+    """Enum for backend types."""
+
+    base = "base"
+    docker = "docker"
+    gcloud = "gcloud"
+    aws = "aws"
 
 
 class BackendConfig(BaseModel):
     """Base class for backend configuration."""
 
-    pass
+    name: Literal[Backends.base] = Field(
+        index=True, full_text_search=True, default=Backends.base
+    )
 
 
 class InstanceConfig(BaseModel):
@@ -28,23 +40,6 @@ class DockerInstanceConfig(InstanceConfig):
     remove: bool = False
     labels: Optional[Dict[str, str]] = {}
     environment: Optional[Dict[str, str]] = {}
-
-from pydantic import BaseModel
-
-
-class BackendConfig(BaseModel):
-    """Base class for backend configuration."""
-
-    pass
-
-
-class Backends(str, Enum):
-    """Enum for backend types."""
-
-    base = "base"
-    docker = "docker"
-    gcloud = "gcloud"
-    aws = "aws"
 
 
 class DockerConfig(BackendConfig):

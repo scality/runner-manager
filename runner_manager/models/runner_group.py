@@ -1,9 +1,12 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 
+from pydantic import Field as PydanticField
 from redis_om import Field, RedisModel
+from typing_extensions import Annotated
 
 from runner_manager.backend.base import BaseBackend
-from runner_manager.models.backend import BackendConfig, Backends, InstanceConfig
+from runner_manager.backend.docker import DockerBackend
+from runner_manager.models.backend import InstanceConfig
 from runner_manager.models.base import BaseModel
 from runner_manager.models.runner import Runner, RunnerLabel
 
@@ -25,23 +28,15 @@ class RunnerGroup(BaseModel):
     min: Optional[int] = Field(index=True, ge=0, default=0)
     labels: List[str]
 
-    backend: Backends = Field(index=True, full_text_search=True, default="docker")
-    # TODO: Setup Union type for backend_config
-    backend_config: Optional[BackendConfig] = None
+    backend: Annotated[
+        Union[BaseBackend, DockerBackend], PydanticField(..., discriminator="name")
+    ]
     instance_config: Optional[InstanceConfig] = None
 
     @property
     def runner_labels(self) -> List[RunnerLabel]:
         """Return self.labels as a list of RunnerLabel."""
         return [RunnerLabel(name=label) for label in self.labels]
-
-    def get_backend(self) -> BaseBackend:
-        """Get the backend class.
-
-        Returns:
-            BaseBackend: Backend class.
-        """
-        return BaseBackend.get_backend(name=self.backend, config=self.backend_config)
 
     def get_runners(self) -> List[Runner] | List[RedisModel]:
         """Get the runners.
@@ -59,4 +54,4 @@ class RunnerGroup(BaseModel):
         """
         runner.runner_group_id = self.id
         runner.labels = self.runner_labels
-        return self.get_backend().create(runner)
+        return self.backend.create(runner)

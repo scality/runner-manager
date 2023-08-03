@@ -1,6 +1,6 @@
-from typing import List, Optional
+from typing import List, Literal, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from redis_om import NotFoundError
 
 from runner_manager.models.backend import BackendConfig, Backends
@@ -15,8 +15,16 @@ class BaseBackend(BaseModel):
     They take a RunnerGroup as input.
     """
 
-    name: Backends = Backends.base
+    name: Literal[Backends.base] = Field(default=Backends.base)
     config: Optional[BackendConfig]
+
+    # Inherited classes will have a client property configured
+    # to interact with the backend.
+
+    @property
+    def client(self):
+        """Client to interact with the backend."""
+        raise NotImplementedError
 
     def create(self, runner: Runner) -> Runner:
         """Create a runner instance.
@@ -76,9 +84,7 @@ class BaseBackend(BaseModel):
         return runners
 
     @classmethod
-    def get_backend(
-        cls, name: Backends, config: Optional[BackendConfig]
-    ) -> "BaseBackend":
+    def get_backend(cls, backend_config: BackendConfig) -> "BaseBackend":
         """Get a runner backend.
 
         Args:
@@ -88,7 +94,7 @@ class BaseBackend(BaseModel):
             BaseBackend: Runner backend.
         """
 
-        if name == Backends.base:
-            return BaseBackend(config=config)
+        if backend_config.name == Backends.base:
+            return BaseBackend(config=backend_config)
         else:
             raise NotImplementedError

@@ -4,8 +4,8 @@ from redis_om import EmbeddedJsonModel, JsonModel
 
 from runner_manager.dependencies import get_redis, get_settings
 
-redis = get_redis()
 settings = get_settings()
+redis = get_redis()
 
 
 class BaseModel(JsonModel, ABC):

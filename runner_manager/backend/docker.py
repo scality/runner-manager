@@ -1,43 +1,43 @@
-from typing import Dict, List
+from typing import Dict, List, Literal
 
 from docker import DockerClient
 from docker.models.containers import Container
 from pydantic import Field
 from redis_om import NotFoundError
 
-from runner_manager.models.backend import DockerConfig, DockerInstanceConfig
+from runner_manager.backend.base import BaseBackend
+from runner_manager.models.backend import Backends, DockerConfig, DockerInstanceConfig
 from runner_manager.models.runner import Runner
-
-from .base import Backends, BaseBackend
 
 
 class DockerBackend(BaseBackend):
-    config: DockerConfig
+    name: Literal[Backends.docker] = Field(default=Backends.docker)
 
-    name: Backends = Field(Backends.docker, const=True)
+    config: DockerConfig
+    instance_config: DockerInstanceConfig
 
     @property
     def client(self) -> DockerClient:
         """Returns a docker client."""
         return DockerClient(base_url=self.config.base_url)
 
-    def create(self, runner: Runner, instance_config: DockerInstanceConfig):
+    def create(self, runner: Runner):
         # TODO: Review model configuration and base method inputs
 
         # TODO: Retrieve value for runner-manager from settings.name
         labels: Dict[str, str] = {
             "runner-manager": "runner-manager",
         }
-        if instance_config.labels:
-            labels.update(instance_config.labels.items())
+        if self.instance_config.labels:
+            labels.update(self.instance_config.labels.items())
 
         container: Container = self.client.containers.run(
-            instance_config.image,
+            self.instance_config.image,
             labels=labels,
-            remove=instance_config.remove,
-            detach=instance_config.detach,
-            environment=instance_config.environment,
-            command=instance_config.command,
+            remove=self.instance_config.remove,
+            detach=self.instance_config.detach,
+            environment=self.instance_config.environment,
+            command=self.instance_config.command,
             name=runner.name,
         )
 
