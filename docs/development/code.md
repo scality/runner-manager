@@ -1,7 +1,6 @@
 # Code
 
-The Runner Manager is written in Python, typing will be used and enforced
-by [pyright](https://github.com/microsoft/pyright).
+The Runner Manager is written in Python.
 
 All libraries must be compatible with [Pydantic](https://docs.pydantic.dev/).
 This requirement will allow to have a nice developer experience
@@ -40,10 +39,15 @@ It will be used to process the jobs that will be created by the runner manager.
 
 ## Typing
 
-`pyright` configuration is located in the
+Static typing is enforced by [`pyright`](https://microsft.github.io/pyright/).
+
+It's configuration is located in the
 [`pyrightconfig.json`](../../pyrightconfig.json) file.
 
 It is run automatically when `trunk check` is run.
+
+To know more about `pyright` and how to use it, check out
+[pyright's documentation](https://microsoft.github.io/pyright/).
 
 ### Stub files
 
