@@ -82,19 +82,3 @@ class BaseBackend(BaseModel):
                 f"No runners found for {self.name} backend."
             ) from exception
         return runners
-
-    @classmethod
-    def get_backend(cls, backend_config: BackendConfig) -> "BaseBackend":
-        """Get a runner backend.
-
-        Args:
-            backend (str): Runner backend name.
-
-        Returns:
-            BaseBackend: Runner backend.
-        """
-
-        if backend_config.name == Backends.base:
-            return BaseBackend(config=backend_config)
-        else:
-            raise NotImplementedError
