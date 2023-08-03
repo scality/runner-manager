@@ -29,6 +29,14 @@ class DockerInstanceConfig(InstanceConfig):
     labels: Optional[Dict[str, str]] = {}
     environment: Optional[Dict[str, str]] = {}
 
+from pydantic import BaseModel
+
+
+class BackendConfig(BaseModel):
+    """Base class for backend configuration."""
+
+    pass
+
 
 class Backends(str, Enum):
     """Enum for backend types."""

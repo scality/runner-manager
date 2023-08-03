@@ -37,3 +37,32 @@ without having to write boilerplate code.
 processing them in the background with workers.
 
 It will be used to process the jobs that will be created by the runner manager.
+
+## Typing
+
+`pyright` configuration is located in the
+[`pyrightconfig.json`](../../pyrightconfig.json) file.
+
+It is run automatically when `trunk check` is run.
+
+### Stub files
+
+Stub files are located in the [`typings`](../../typings) directory.
+
+`pyright` will raise errors if it cannot find the stub files for the libraries
+that are used.
+
+To generate the stub files, run the following command:
+
+```bash
+poetry run pyright --createstub <library>
+```
+
+!!! note "Generated stub requires cleanup"
+
+    Additional modifications might be required to the stub files as
+    there are some limitations to the stub files generation.
+
+    For more information checkout [pyright's documentation]
+
+    [pyright's documentation]: https://microsoft.github.io/pyright/#/type-stubs?id=cleaning-up-generated-type-stubs
