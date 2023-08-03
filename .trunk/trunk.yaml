@@ -7,17 +7,27 @@ plugins:
       ref: v1.0.0
       uri: https://github.com/trunk-io/plugins
 lint:
+  definitions:
+    - name: pyright
+      commands:
+        - name: lint
+          run: pyright --project ${workspace} --outputjson ${target}
+      environment:
+        - name: PATH
+          value: ${workspace}/.venv/bin:${env.PATH}
   enabled:
-    - black@23.7.0
-    - isort@5.12.0
-    - ruff@0.0.280
+    # Linters installed and managed by poetry.
+    - black
+    - isort
+    - ruff
+    - yamllint
+    - pyright
+    # Managed and installed by trunk.
     - taplo@0.8.1
     - actionlint@1.6.25
     - git-diff-check
     - markdownlint@0.35.0
     - prettier@3.0.0
-    - yamllint@1.32.0
-    - pyright@1.1.318
     - hadolint@2.12.0
   disabled:
     - trufflehog
@@ -27,9 +37,20 @@ lint:
     - trivy
     - terrascan
 runtimes:
+  definitions:
+    - type: python
+      system_version: required
+      linter_environment:
+        - name: PYTHONPATH
+          value: ${workspace}/.venv/bin/python
+        - name: VIRTUAL_ENV
+          value: ${workspace}/.venv
+        - name: PATH
+          value: ${env.VIRTUAL_ENV}/bin:${env.PATH}
+
   enabled:
     - node@18.12.1
-    - python@3.10.8
+    - python@3.11.4
 actions:
   disabled:
     - trunk-check-pre-push
