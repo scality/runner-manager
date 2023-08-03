@@ -1,0 +1,23 @@
+name: Docker build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  docker-build:
+    permissions:
+      contents: read
+      packages: write
+    uses: scality/workflows/.github/workflows/docker-build.yaml@v1
+    with:
+      name: runner-manager
+      namespace: scality
+      tag: ${{ github.ref_name == 'main' && 'latest' || github.sha }}
