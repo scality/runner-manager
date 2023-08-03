@@ -40,24 +40,24 @@ def docker_runner(runner: Runner, docker_group: RunnerGroup) -> Runner:
 
 def test_create_delete(docker_runner, docker_group):
     runner = docker_group.backend.create(docker_runner)
-    assert runner.backend_instance is not None
+    assert runner.instance_id is not None
     assert runner.backend == "docker"
     assert (
-        Runner.find(Runner.backend_instance == runner.backend_instance).first()
+        Runner.find(Runner.instance_id == runner.instance_id).first()
         == runner
     )
     docker_group.backend.delete(runner)
     with raises(NotFoundError):
-        Runner.find(Runner.backend_instance == runner.backend_instance).first()
+        Runner.find(Runner.instance_id == runner.instance_id).first()
 
 
 def test_update(docker_runner, docker_group):
     runner = docker_group.backend.create(docker_runner)
     docker_group.backend.update(runner)
-    runner = Runner.find(Runner.backend_instance == runner.backend_instance).first()
+    runner = Runner.find(Runner.instance_id == runner.instance_id).first()
     docker_group.backend.delete(runner)
     with raises(NotFound):
-        docker_group.backend.get(runner.backend_instance)
+        docker_group.backend.get(runner.instance_id)
 
 
 def test_list(docker_runner, docker_group):
@@ -65,4 +65,4 @@ def test_list(docker_runner, docker_group):
     assert runner in docker_group.backend.list()
     docker_group.backend.delete(runner)
     with raises(NotFound):
-        docker_group.backend.get(runner.backend_instance)
+        docker_group.backend.get(runner.instance_id)

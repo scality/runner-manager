@@ -39,8 +39,8 @@ class DockerBackend(BaseBackend):
             name=runner.name,
         )
 
-        # set container id as backend_instance
-        runner.backend_instance = container.id
+        # set container id as instance_id
+        runner.instance_id = container.id
 
         return super().create(runner)
 
@@ -50,14 +50,14 @@ class DockerBackend(BaseBackend):
         We cannot update a container, so we just gonna ensure the runner
         is running and is up to date.
         """
-        container: Container = self.client.containers.get(runner.backend_instance)
+        container: Container = self.client.containers.get(runner.instance_id)
         if container.status != "running":
             raise Exception(f"Container {container.id} is not running.")
         return super().update(runner)
 
     def delete(self, runner: Runner):
-        if runner.backend_instance:
-            container = self.client.containers.get(runner.backend_instance)
+        if runner.instance_id:
+            container = self.client.containers.get(runner.instance_id)
         else:
             container = self.client.containers.get(runner.name)
         container.stop()
@@ -66,7 +66,7 @@ class DockerBackend(BaseBackend):
 
     def get(self, instance_id: str) -> Runner:
         container = self.client.containers.get(instance_id)
-        return Runner.find(Runner.backend_instance == container.id).first()
+        return Runner.find(Runner.instance_id == container.id).first()
 
     def list(self) -> List[Runner]:
         containers: List[Container] = self.client.containers.list(
@@ -76,12 +76,12 @@ class DockerBackend(BaseBackend):
         for container in containers:
             try:
                 runners.append(
-                    Runner.find(Runner.backend_instance == container.id).first()
+                    Runner.find(Runner.instance_id == container.id).first()
                 )
             except NotFoundError:
                 runner: Runner = Runner(
                     name=container.name,
-                    backend_instance=container.id,
+                    instance_id=container.id,
                     status=container.labels["status"],
                     busy=container.labels["busy"],
                 )

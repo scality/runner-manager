@@ -36,8 +36,8 @@ class BaseBackend(BaseModel):
             runner (Runner): Runner instance to be created.
         """
         runner.backend = self.name
-        if runner.backend_instance is None:
-            runner.backend_instance = runner.pk
+        if runner.instance_id is None:
+            runner.instance_id = runner.pk
         return runner.save()
 
     def delete(self, runner: Runner) -> int:
@@ -66,7 +66,7 @@ class BaseBackend(BaseModel):
             Runner: Runner instance.
         """
         try:
-            runner: Runner = Runner.find(Runner.backend_instance == instance_id).first()
+            runner: Runner = Runner.find(Runner.instance_id == instance_id).first()
         except NotFoundError as exception:
             raise NotFoundError(f"Instance {instance_id} not found.") from exception
 
