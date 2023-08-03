@@ -50,7 +50,7 @@ runtimes:
 
   enabled:
     - node@18.12.1
-    - python@3.11.4
+    - python@>=3.11.4
 actions:
   disabled:
     - trunk-check-pre-push
