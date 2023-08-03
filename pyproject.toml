@@ -26,6 +26,11 @@ mkdocs-material = "^9.1.21"
 connexion = "^2.14.2"
 pytest = "^7.4.0"
 hypothesis = "^6.82.0"
+pyright = "^1.1.320"
+black = "^23.7.0"
+isort = "^5.12.0"
+ruff = "^0.0.282"
+yamllint = "^1.32.0"
 
 [build-system]
 requires = ["poetry-core"]
