@@ -38,7 +38,7 @@ theme:
     code: Roboto Mono
 
 nav:
-- Home: index.md
+  - Home: index.md
 
 markdown_extensions:
   - pymdownx.highlight:
