@@ -3,11 +3,12 @@ from typing import List, Literal, Optional
 from pydantic import BaseModel, Field
 from redis_om import NotFoundError
 
+from runner_manager.dependencies import get_settings
 from runner_manager.models.backend import BackendConfig, Backends
 from runner_manager.models.runner import Runner
-from runner_manager.dependencies import get_settings
 
 settings = get_settings()
+
 
 class BaseBackend(BaseModel):
     """Base class for runners backend.

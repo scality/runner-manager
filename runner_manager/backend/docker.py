@@ -22,7 +22,6 @@ class DockerBackend(BaseBackend):
         return DockerClient(base_url=self.config.base_url)
 
     def create(self, runner: Runner):
-
         labels: Dict[str, str] = {
             "runner-manager": self.runner_manager,
         }
@@ -75,9 +74,7 @@ class DockerBackend(BaseBackend):
         runners: List[Runner] = []
         for container in containers:
             try:
-                runners.append(
-                    Runner.find(Runner.instance_id == container.id).first()
-                )
+                runners.append(Runner.find(Runner.instance_id == container.id).first())
             except NotFoundError:
                 runner: Runner = Runner(
                     name=container.name,

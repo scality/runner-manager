@@ -42,10 +42,7 @@ def test_create_delete(docker_runner, docker_group):
     runner = docker_group.backend.create(docker_runner)
     assert runner.instance_id is not None
     assert runner.backend == "docker"
-    assert (
-        Runner.find(Runner.instance_id == runner.instance_id).first()
-        == runner
-    )
+    assert Runner.find(Runner.instance_id == runner.instance_id).first() == runner
     docker_group.backend.delete(runner)
     with raises(NotFoundError):
         Runner.find(Runner.instance_id == runner.instance_id).first()
