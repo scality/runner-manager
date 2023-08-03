@@ -3,10 +3,7 @@ from pytest import fixture, raises
 from redis_om import NotFoundError
 
 from runner_manager.backend.docker import DockerBackend
-from runner_manager.models.backend import (
-    DockerConfig,
-    DockerInstanceConfig,
-)
+from runner_manager.models.backend import DockerConfig, DockerInstanceConfig
 from runner_manager.models.runner import Runner
 from runner_manager.models.runner_group import RunnerGroup
 

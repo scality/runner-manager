@@ -7,7 +7,6 @@ and implement a new class inheriting from `BaseBackend`.
 
 Here's an example of a new backend:
 
-
 ```python
 from runner_manager.backends.base import BaseBackend
 from runner_manager.models.backend import BackendConfig, Backends
@@ -35,7 +34,6 @@ The following methods need to be implemented:
 - `update`: Update a backend instance.
 - `list`: List all backend instances.
 - `get`: Get a backend instance from a given instance_id
-
 
 ## Testing a new backend
 
