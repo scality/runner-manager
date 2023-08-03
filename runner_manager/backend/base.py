@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from pydantic import BaseModel
-from redis_om import NotFoundError
+from redis_om.model import NotFoundError
 
 from runner_manager.models.backend import BackendConfig, Backends
 from runner_manager.models.runner import Runner
@@ -45,19 +45,19 @@ class BaseBackend(BaseModel):
         """
         return runner.save()
 
-    def get(self, instance: int) -> Runner:
+    def get(self, instance_id: str) -> Runner:
         """Get a runner instance.
 
         Args:
-            instance_id (int): Runner instance id.
+            instance_id (str): Runner instance id.
 
         Returns:
             Runner: Runner instance.
         """
         try:
-            runner: Runner = Runner.find(Runner.backend_instance == instance).first()
+            runner: Runner = Runner.find(Runner.backend_instance == instance_id).first()
         except NotFoundError as exception:
-            raise NotFoundError(f"Instance {instance} not found.") from exception
+            raise NotFoundError(f"Instance {instance_id} not found.") from exception
 
         return runner
 

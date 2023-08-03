@@ -3,7 +3,7 @@ from typing import List, Optional
 from redis_om import Field, RedisModel
 
 from runner_manager.backend.base import BaseBackend
-from runner_manager.models.backend import Backends
+from runner_manager.models.backend import BackendConfig, Backends, InstanceConfig
 from runner_manager.models.base import BaseModel
 from runner_manager.models.runner import Runner, RunnerLabel
 
@@ -26,7 +26,9 @@ class RunnerGroup(BaseModel):
     labels: List[str]
 
     backend: Backends = Field(index=True, full_text_search=True, default="docker")
-    backend_config: Optional[dict] = {}
+    # TODO: Setup Union type for backend_config
+    backend_config: Optional[BackendConfig] = None
+    instance_config: Optional[InstanceConfig] = None
 
     @property
     def runner_labels(self) -> List[RunnerLabel]:

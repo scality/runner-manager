@@ -1,5 +1,6 @@
 from functools import lru_cache
 
+
 from redis import Redis
 from redis_om import get_redis_connection
 from rq import Queue
