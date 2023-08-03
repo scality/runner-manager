@@ -12,6 +12,7 @@ app = FastAPI()
 
 app.include_router(webhook.router)
 
+
 @app.on_event("startup")
 def startup_event():
     queue = get_queue()
