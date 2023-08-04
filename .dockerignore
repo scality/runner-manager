@@ -6,3 +6,6 @@ tests
 .trunk
 .venv
 .hypothesis
+site
+.coverage
+coverage.xml
