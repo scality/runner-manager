@@ -1,6 +1,6 @@
 import os
 import tempfile
-
+import pytest
 import yaml
 from pytest import fixture
 
@@ -25,6 +25,13 @@ def temp_yaml_file():
     yaml_file.write(yaml_data)
     return yaml_file.name
 
+def test_invalid_redis_url():
+    with pytest.raises(ValueError):
+        Settings(redis_om_url="invalid_redis_url")
+
+def test_invalid_github_url():
+    with pytest.raises(ValueError):
+        Settings(github_base_url="invalid_github_url")
 
 def test_yaml_config(temp_yaml_file):
     os.environ["CONFIG_FILE"] = temp_yaml_file
