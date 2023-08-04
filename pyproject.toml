@@ -18,13 +18,17 @@ rq = "^1.15.1"
 pyyaml = "^6.0.1"
 redis = "^4.6.0"
 
+[tool.poetry.group.docs]
+optional = true
+
 [tool.poetry.group.docs.dependencies]
 mkdocs-material = "^9.1.21"
-
+mkdocs = "^1.4.2"
 
 [tool.poetry.group.dev.dependencies]
 connexion = "^2.14.2"
 pytest = "^7.4.0"
+pytest-cov = "^4.0.0"
 hypothesis = "^6.82.0"
 pyright = "^1.1.320"
 black = "^23.7.0"
@@ -35,3 +39,6 @@ yamllint = "^1.32.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+addopts = "--cov=runner_manager --cov-report=xml"
