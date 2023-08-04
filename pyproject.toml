@@ -29,17 +29,12 @@ mkdocs = "^1.4.2"
 connexion = "^2.14.2"
 pytest = "^7.4.0"
 hypothesis = "^6.82.0"
+pyright = "^1.1.320"
+black = "^23.7.0"
+isort = "^5.12.0"
+ruff = "^0.0.282"
+yamllint = "^1.32.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.pyright]
-include = ["runner_manager"]
-exclude = ["**/__pycache__", "__pypackages__", "**/node_modules", "./dist"]
-venv = ".venv"
-venvPath = "."
-stubPath = "./typings"
-reportMissingImports = false
-reportMissingModuleSource = false
-typeCheckingMode = "basic"

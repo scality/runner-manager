@@ -27,7 +27,8 @@
         "GitHub.copilot",
         "bierner.markdown-mermaid",
         "tamasfe.even-better-toml",
-        "github.vscode-github-actions"
+        "github.vscode-github-actions",
+        "ms-kubernetes-tools.vscode-kubernetes-tools"
       ],
       "settings": {
         "python.analysis.typeCheckingMode": "basic",
