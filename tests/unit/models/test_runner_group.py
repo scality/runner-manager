@@ -1,6 +1,7 @@
 import pytest
 from redis_om import Migrator, NotFoundError
 
+from runner_manager.backend.base import BaseBackend
 from runner_manager.models.runner import Runner
 from runner_manager.models.runner_group import RunnerGroup
 
@@ -25,6 +26,15 @@ def test_find_runner_group(runner_group: RunnerGroup):
     RunnerGroup.delete(runner_group.pk)
     with pytest.raises(NotFoundError):
         RunnerGroup.find(RunnerGroup.name == runner_group.name).first()
+
+
+def test_runner_group_backend(runner_group: RunnerGroup):
+    runner_group.save()
+    assert runner_group.backend.name == "base"
+    assert isinstance(runner_group.backend, BaseBackend)
+    assert isinstance(RunnerGroup.get(runner_group.pk).backend, BaseBackend)
+
+    RunnerGroup.delete(runner_group.pk)
 
 
 def test_create_runner_from_group(runner_group: RunnerGroup):
