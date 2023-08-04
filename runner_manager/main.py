@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 from fastapi import Depends, FastAPI, HTTPException, Response, Security, status
 from fastapi.security import APIKeyHeader, APIKeyQuery
@@ -17,34 +16,23 @@ api_key_header = APIKeyHeader(name="x-api-key", auto_error=False)
 def get_api_key(
     api_key_query: str = Security(api_key_query),
     api_key_header: str = Security(api_key_header),
-) -> Optional[str]:
-    """Retrieve and validate an API key from the query parameters or HTTP header.
-
-    Args:
-        api_key_query: The API key passed as a query parameter.
-        api_key_header: The API key passed in the HTTP header.
-
-    Returns:
-        The validated API key.
-
-    Raises:
-        HTTPException: If the API key is invalid or missing.
-    """
+) -> str:
     settings = get_settings()
-    if settings.API_KEY:
-        if (
-            api_key_query == settings.API_KEY.get_secret_value()
-            or api_key_header == settings.API_KEY.get_secret_value()
-        ):
-            return api_key_query or api_key_header
-    return None
-
-
-async def api_key_required(api_key: Optional[str] = Depends(get_api_key)):
-    if api_key is None:
+    if not settings.api_key:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="API Key not configured in settings",
+        )
+    api_key = api_key_query or api_key_header
+    if not api_key:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="API Key required for this endpoint",
+        )
+    if api_key != settings.api_key.get_secret_value():
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid API Key",
         )
     return api_key
 
@@ -69,6 +57,6 @@ def public():
 
 
 @app.get("/private")
-def private(api_key: str = Depends(api_key_required)):
+def private(api_key: str = Depends(get_api_key)):
     """A private endpoint that requires a valid API key to be provided."""
     return f"Private Endpoint. API Key: {api_key}"
