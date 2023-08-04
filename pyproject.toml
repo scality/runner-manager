@@ -39,4 +39,3 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 addopts = "--cov=runner_manager --cov-report=xml"
-testpaths = ["tests/unit", "tests/api"]
