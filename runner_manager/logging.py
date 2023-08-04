@@ -1,10 +1,10 @@
 import logging
 
-from runner_manager.models.settings import Settings
+from runner_manager.dependencies import get_settings
 
-settings = Settings()
+settings = get_settings()
 
-log_level = getattr(logging, settings.log_level.upper(), logging.INFO)
+log_level = getattr(logging, settings.log_level, logging.INFO)
 log = logging.getLogger(settings.name)
 log.setLevel(log_level)
 
