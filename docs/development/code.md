@@ -70,7 +70,6 @@ poetry run pyright --createstub <library>
 
     [pyright's documentation]: https://microsoft.github.io/pyright/#/type-stubs?id=cleaning-up-generated-type-stubs
 
-
 [`typings`]: https://github.com/scality/runner-manager/tree/main/typings
 [`pyrightconfig.json`]: https://github.com/scality/runner-manager/blob/main/pyrightconfig.json
 [pyright]: https://microsoft.github.io/pyright/
