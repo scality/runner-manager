@@ -34,7 +34,7 @@ def test_invalid_github_url():
         Settings(github_base_url="invalid_github_url")
 
 def test_yaml_config(temp_yaml_file):
-    os.environ["CONFIG"] = temp_yaml_file
+    os.environ["CONFIG_FILE"] = temp_yaml_file
     # settings should automatically look for the config file
     # environment variable and load the file if it exists
     settings = Settings()
