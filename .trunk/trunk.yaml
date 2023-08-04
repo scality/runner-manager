@@ -8,21 +8,18 @@ plugins:
       uri: https://github.com/trunk-io/plugins
 lint:
   definitions:
+    # Configure pyright to identify the project root to read the configuration
+    # and use the project's virtual environment
     - name: pyright
       commands:
         - name: lint
           run: pyright --project ${workspace} --outputjson ${target}
-      environment:
-        - name: PATH
-          value: ${workspace}/.venv/bin:${env.PATH}
   enabled:
-    # Linters installed and managed by poetry.
-    - black
-    - isort
-    - ruff
-    - yamllint
-    - pyright
-    # Managed and installed by trunk.
+    - black@22.3.0
+    - isort@5.9.3
+    - ruff@0.0.250
+    - yamllint@1.26.3
+    - pyright@1.1.304
     - taplo@0.8.1
     - actionlint@1.6.25
     - git-diff-check
@@ -37,13 +34,6 @@ lint:
     - trivy
     - terrascan
 runtimes:
-  definitions:
-    - type: python
-      system_version: required
-      linter_environment:
-        - name: PATH
-          value: ${workspace}/.venv/bin:${env.PATH}
-
   enabled:
     - node@18.12.1
     - python@>=3.11.4
