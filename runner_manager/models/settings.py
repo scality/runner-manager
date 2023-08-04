@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 import yaml
-from pydantic import AnyHttpUrl, BaseSettings, RedisDsn, Field
+from pydantic import AnyHttpUrl, BaseSettings, Field, RedisDsn
 
 
 def yaml_config_settings_source(settings: BaseSettings) -> Dict[str, Any]:
@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     name: str = "runner-manager"
     redis_om_url: Optional[RedisDsn] = None
     github_base_url: Optional[AnyHttpUrl] = None
-    log_level: str = Field(default="INFO", pattern=r'^[A-Z]+$')
+    log_level: str = Field(default="INFO", pattern=r"^[A-Z]+$")
 
     class Config:
         config: ConfigFile = ConfigFile()
