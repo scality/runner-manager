@@ -1,8 +1,9 @@
 {
   "name": "Python 3",
   "image": "mcr.microsoft.com/devcontainers/base:1-jammy",
-  "remoteEnv": {
-    "GITHUB_BASE_URL": "http://localhost:4010"
+  "containerEnv": {
+    "GITHUB_BASE_URL": "http://localhost:4010",
+    "PYTHON_PATH": "${containerWorkspaceFolder}/.venv"
   },
   "features": {
     "ghcr.io/devcontainers/features/python": {
@@ -14,6 +15,11 @@
     "ghcr.io/devcontainers/features/sshd:1": {},
     "ghcr.io/devcontainers-contrib/features/poetry:2": {},
     "ghcr.io/trunk-io/devcontainer-feature/trunk:1": {},
+    "ghcr.io/devcontainers/features/kubectl-helm-minikube": {
+      "minikube": "none",
+      "helm": "none",
+      "kubectl": "latest"
+    },
     "ghcr.io/devcontainers/features/common-utils:2": {
       "configureZshAsDefaultShell": true,
       "username": "vscode",
@@ -28,14 +34,25 @@
         "bierner.markdown-mermaid",
         "tamasfe.even-better-toml",
         "github.vscode-github-actions",
-        "ms-kubernetes-tools.vscode-kubernetes-tools"
+        "ms-kubernetes-tools.vscode-kubernetes-tools",
+        "ms-python.python",
+        "ms-python.vscode-pylance"
       ],
       "settings": {
-        "python.analysis.typeCheckingMode": "basic",
-        "python.defaultInterpreterPath": ".venv/bin/python",
-        "python.testing.pytestArgs": ["tests"],
-        "python.testing.unittestEnabled": false,
-        "python.testing.pytestEnabled": true
+        "python": {
+          "defaultInterpreterPath": ".venv/bin/python",
+          "testing": {
+            "pytestArgs": ["tests"],
+            "unittestEnabled": false,
+            "pytestEnabled": true
+          },
+          "analysis": {
+            "typeCheckingMode": "basic"
+          },
+          "editor": {
+            "defaultFormatter": "ms-python.python"
+          }
+        }
       }
     }
   },
