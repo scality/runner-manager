@@ -7,3 +7,6 @@ tests
 .venv
 .hypothesis
 site
+.coverage
+coverage.xml
+
