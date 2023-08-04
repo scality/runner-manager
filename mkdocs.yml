@@ -39,6 +39,14 @@ theme:
 
 nav:
   - Home: index.md
+  - Development:
+      - development/index.md
+      - Code: development/code.md
+      - Concepts: development/concepts.md
+      - Configuration: development/configuration.md
+      - Environment: development/environment.md
+      - Testing: development/testing.md
+      - Workflows: development/workflows.md
 
 markdown_extensions:
   - pymdownx.highlight:
