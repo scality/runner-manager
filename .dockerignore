@@ -6,3 +6,4 @@ tests
 .trunk
 .venv
 .hypothesis
+site
