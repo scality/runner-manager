@@ -10,7 +10,7 @@ from runner_manager.models.settings import Settings
 def test_settings_default_values():
     settings = Settings()
     assert settings.name == "runner-manager"
-    assert settings.redis_om_url == os.getenv("REDIS_OM_URL")
+    assert settings.redis_om_url == os.getenv("REDIS_OM_URL", "redis://localhost:6379/0")
     assert settings.github_base_url == os.getenv("GITHUB_BASE_URL")
 
 
