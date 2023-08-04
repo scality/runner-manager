@@ -39,19 +39,18 @@ It will be used to process the jobs that will be created by the runner manager.
 
 ## Typing
 
-Static typing is enforced by [`pyright`](https://microsft.github.io/pyright/).
+Static typing is enforced by [pyright].
 
-It's configuration is located in the
-[`pyrightconfig.json`](../../pyrightconfig.json) file.
+It's configuration is located in the [`pyrightconfig.json`] file.
 
 It is run automatically when `trunk check` is run.
 
-To know more about `pyright` and how to use it, check out
-[pyright's documentation](https://microsoft.github.io/pyright/).
+To know more about `pyright` and how to use it,
+check out [pyright]'s documentation.
 
 ### Stub files
 
-Stub files are located in the [`typings`](../../typings) directory.
+Stub files are located in the [`typings`] directory.
 
 `pyright` will raise errors if it cannot find the stub files for the libraries
 that are used.
@@ -70,3 +69,7 @@ poetry run pyright --createstub <library>
     For more information checkout [pyright's documentation]
 
     [pyright's documentation]: https://microsoft.github.io/pyright/#/type-stubs?id=cleaning-up-generated-type-stubs
+
+[`typings`]: https://github.com/scality/runner-manager/tree/main/typings
+[`pyrightconfig.json`]: https://github.com/scality/runner-manager/blob/main/pyrightconfig.json
+[pyright]: https://microsoft.github.io/pyright/
