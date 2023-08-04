@@ -42,9 +42,7 @@
         "python": {
           "defaultInterpreterPath": ".venv/bin/python",
           "testing": {
-            "pytestArgs": [
-              "tests"
-            ],
+            "pytestArgs": ["tests"],
             "unittestEnabled": false,
             "pytestEnabled": true
           },
