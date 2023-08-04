@@ -29,9 +29,12 @@ jobs:
           cache: poetry
       - run: poetry install
       - name: Run tests
-        run: poetry run pytest tests/${{ matrix.test }} --cov=. --cov-report=xml
+        run: poetry run pytest
       - name: Upload coverage
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
+        with:
+          flags: ${{ matrix.test }}
+          name: ${{ matrix.test }}
       - name: Dump logs
         run: docker compose --profile tests logs
         if: always()
