@@ -21,7 +21,7 @@ class ConfigFile(BaseSettings):
 
 
 class Settings(BaseSettings):
-    name: str = "runner-manager"
+    name: Optional[str] = "runner-manager"
     redis_om_url: Optional[RedisDsn] = None
     github_base_url: Optional[AnyHttpUrl] = None
 
