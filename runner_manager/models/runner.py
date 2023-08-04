@@ -40,7 +40,10 @@ class Runner(BaseModel):
         index=True, default=None, description="Runner group id"
     )
     instance_id: Optional[str] = Field(
-        index=True, description="Backend instance id", default=None
+        index=True,
+        full_text_search=True,
+        description="Backend instance id",
+        default=None,
     )
     backend: Optional[str] = Field(index=True, description="Backend type")
     status: RunnerStatus = Field(

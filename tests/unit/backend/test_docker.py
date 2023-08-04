@@ -2,7 +2,7 @@ from typing import List
 
 from docker.errors import NotFound
 from pytest import fixture, raises
-from redis_om import NotFoundError
+from redis_om import Migrator, NotFoundError
 
 from runner_manager.backend.docker import DockerBackend
 from runner_manager.models.backend import Backends, DockerConfig, DockerInstanceConfig
@@ -51,6 +51,15 @@ def test_update(docker_runner, docker_group):
     runner = docker_group.backend.create(docker_runner)
     docker_group.backend.update(runner)
     runner = Runner.find(Runner.instance_id == runner.instance_id).first()
+    docker_group.backend.delete(runner)
+    with raises(NotFound):
+        docker_group.backend.get(runner.instance_id)
+
+
+def test_get(docker_runner, docker_group):
+    runner = docker_group.backend.create(docker_runner)
+    Migrator().run()
+    assert runner == docker_group.backend.get(runner.instance_id)
     docker_group.backend.delete(runner)
     with raises(NotFound):
         docker_group.backend.get(runner.instance_id)
