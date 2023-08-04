@@ -1,14 +1,10 @@
 import os
 import tempfile
-from pathlib import Path
 
+import yaml
 from pytest import fixture
 
-from runner_manager.models.settings import (
-    ConfigFile,
-    Settings,
-    yaml_config_settings_source,
-)
+from runner_manager.models.settings import Settings
 
 
 def test_settings_default_values():
@@ -31,15 +27,15 @@ def temp_yaml_file():
 
 
 def test_yaml_config(temp_yaml_file):
-    os.environ['CONFIG_FILE'] = temp_yaml_file
+    os.environ["CONFIG_FILE"] = temp_yaml_file
     # settings should automatically look for the config file
     # environment variable and load the file if it exists
     settings = Settings()
-    yaml_file = yaml.load(temp_yaml_file)
-    assert settings["name"] ==  yaml_file["name"]
-    assert settings["redis_om_url"] ==  yaml_file["redis_om_url"]
-    assert settings["github_base_url"] == yaml_file["github_base_url"]
-    
+    with open(temp_yaml_file) as f:
+        yaml_data = yaml.safe_load(f)
+    assert settings.name == yaml_data["name"]
+    assert settings.redis_om_url == yaml_data["redis_om_url"]
+    assert settings.github_base_url == yaml_data["github_base_url"]
 
 
 def test_env_file():
