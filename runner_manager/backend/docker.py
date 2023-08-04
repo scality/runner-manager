@@ -1,6 +1,7 @@
 from typing import Dict, List, Literal
 
 from docker import DockerClient
+from docker.errors import APIError, NotFound
 from docker.models.containers import Container
 from pydantic import Field
 from redis_om import NotFoundError
@@ -55,12 +56,21 @@ class DockerBackend(BaseBackend):
         return super().update(runner)
 
     def delete(self, runner: Runner):
-        if runner.instance_id:
-            container = self.client.containers.get(runner.instance_id)
-        else:
-            container = self.client.containers.get(runner.name)
-        container.stop()
-        container.remove()
+        try:
+            if runner.instance_id:
+                container = self.client.containers.get(runner.instance_id)
+            else:
+                container = self.client.containers.get(runner.name)
+            container.stop()
+            container.remove(force=True)
+        except NotFound:
+            pass
+        except APIError as e:
+            if e.status_code == 409:
+                # container is already stopped
+                pass
+            else:
+                raise e
         return super().delete(runner)
 
     def get(self, instance_id: str) -> Runner:
@@ -69,7 +79,7 @@ class DockerBackend(BaseBackend):
 
     def list(self) -> List[Runner]:
         containers: List[Container] = self.client.containers.list(
-            filters={"label": "runner-manager=runner-manager"}
+            filters={"label": f"runner-manager={self.runner_manager}"}
         )
         runners: List[Runner] = []
         for container in containers:
@@ -79,8 +89,7 @@ class DockerBackend(BaseBackend):
                 runner: Runner = Runner(
                     name=container.name,
                     instance_id=container.id,
-                    status=container.labels["status"],
-                    busy=container.labels["busy"],
+                    busy=False,
                 )
                 runner.save()
                 runners.append(runner)

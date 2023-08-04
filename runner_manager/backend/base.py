@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 from redis_om import NotFoundError
 
 from runner_manager.dependencies import get_settings
-from runner_manager.models.backend import BackendConfig, Backends
+from runner_manager.models.backend import BackendConfig, Backends, InstanceConfig
 from runner_manager.models.runner import Runner
 
 settings = get_settings()
@@ -21,6 +21,7 @@ class BaseBackend(BaseModel):
     name: Literal[Backends.base] = Field(default=Backends.base)
     config: Optional[BackendConfig]
     runner_manager: str = Field(default=settings.name)
+    instance_config: Optional[InstanceConfig] = Field(default=None)
 
     # Inherited classes will have a client property configured
     # to interact with the backend.
