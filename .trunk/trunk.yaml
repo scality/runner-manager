@@ -41,12 +41,8 @@ runtimes:
     - type: python
       system_version: required
       linter_environment:
-        - name: PYTHONPATH
-          value: ${workspace}/.venv/bin/python
-        - name: VIRTUAL_ENV
-          value: ${workspace}/.venv
         - name: PATH
-          value: ${env.VIRTUAL_ENV}/bin:${env.PATH}
+          value: ${workspace}/.venv/bin:${env.PATH}
 
   enabled:
     - node@18.12.1
