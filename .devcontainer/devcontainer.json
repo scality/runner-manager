@@ -39,7 +39,7 @@
     }
   },
   "remoteUser": "vscode",
-  "postCreateCommand": "poetry install --no-interaction --no-ansi --no-root",
+  "postCreateCommand": "poetry install --no-interaction --no-ansi --no-root --group=docs --group=dev",
   "postAttachCommand": {
     "compose": "docker compose --profile develop up --build",
     "watch": "docker compose alpha watch"
