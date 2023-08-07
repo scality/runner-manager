@@ -18,22 +18,15 @@ def get_api_key(
 ) -> str:
     settings = get_settings()
     if not settings.api_key:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="API Key not configured in settings",
-        )
-    api_key = api_key_query or api_key_header
-    if not api_key:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="API Key required for this endpoint",
-        )
-    if api_key != settings.api_key.get_secret_value():
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid API Key",
-        )
-    return api_key
+        return settings.api_key
+    if api_key_query in [settings.api_key]:
+        return api_key_query
+    if api_key_header in [settings.api_key]:
+        return api_key_header
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Invalid API Key",
+    )
 
 
 @app.on_event("startup")
