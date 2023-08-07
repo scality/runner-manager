@@ -1,4 +1,6 @@
 from pytest import fixture
+from redis_om import Migrator, get_redis_connection
+from rq import Queue
 
 from runner_manager.dependencies import get_settings
 from runner_manager.models.runner import Runner
@@ -12,6 +14,24 @@ def settings() -> Settings:
     return settings
 
 
+@fixture(scope="session", autouse=True)
+def redis(settings):
+    """Flush redis before tests."""
+
+    redis_connection = get_redis_connection(
+        url=settings.redis_om_url, decode_responses=True
+    )
+    redis_connection.flushall()
+
+    Migrator().run()
+    yield redis_connection
+
+
+@fixture(scope="session")
+def queue(redis) -> Queue:
+    return Queue(connection=redis)
+
+
 @fixture()
 def runner() -> Runner:
     runner = Runner(
@@ -21,7 +41,7 @@ def runner() -> Runner:
     return runner
 
 
-@fixture()
+@fixture(scope="function", autouse=True)
 def runner_group() -> RunnerGroup:
     runner_group = RunnerGroup(
         id=1,
@@ -32,4 +52,8 @@ def runner_group() -> RunnerGroup:
             "label",
         ],
     )
+    # Ensure that the runner group has no runners.
+    for runner in runner_group.get_runners():
+        print(f"deleted runner {runner.name}")
+        Runner.delete(runner.pk)
     return runner_group
