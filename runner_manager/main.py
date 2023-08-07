@@ -1,7 +1,7 @@
 import logging
+
 from fastapi import Depends, FastAPI, HTTPException, Response, Security, status
-from fastapi.security import APIKeyHeader, APIKeyQuery
-from fastapi import FastAPI, Response
+from fastapi.security.api_key import APIKey, APIKeyHeader, APIKeyQuery
 
 from runner_manager.dependencies import get_queue, get_settings
 from runner_manager.jobs.startup import startup
@@ -12,6 +12,7 @@ log = logging.getLogger(__name__)
 app = FastAPI()
 api_key_query = APIKeyQuery(name="api-key", auto_error=False)
 api_key_header = APIKeyHeader(name="x-api-key", auto_error=False)
+
 
 def get_api_key(
     api_key_query: str = Security(api_key_query),
@@ -28,6 +29,7 @@ def get_api_key(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid API Key",
     )
+
 
 app.include_router(webhook.router)
 
@@ -52,6 +54,6 @@ def public():
 
 
 @app.get("/private")
-def private(api_key: str = Depends(get_api_key)):
+def private(api_key: APIKey = Depends(get_api_key)):
     """A private endpoint that requires a valid API key to be provided."""
     return f"Private Endpoint. API Key: {api_key}"
