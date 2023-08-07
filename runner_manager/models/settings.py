@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 from enum import Enum
 import yaml
-from pydantic import AnyHttpUrl, BaseSettings, Field, RedisDsn
+from pydantic import AnyHttpUrl, BaseSettings, RedisDsn
 
 
 def yaml_config_settings_source(settings: BaseSettings) -> Dict[str, Any]:
