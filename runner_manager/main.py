@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import FastAPI, HTTPException, Response, Security, status
+from fastapi import FastAPI, HTTPException, Response, Security, status, Depends
 from fastapi.security import APIKeyHeader, APIKeyQuery
 
 from runner_manager.dependencies import get_queue, get_settings
@@ -17,8 +17,8 @@ api_key_header = APIKeyHeader(name="x-api-key", auto_error=False)
 def get_api_key(
     api_key_query: str = Security(api_key_query),
     api_key_header: str = Security(api_key_header),
+    settings: Settings = Depends(get_settings),
 ) -> str:
-    settings = get_settings()
     if not settings.api_key:
         return ""
     if api_key_query in [settings.api_key]:
