@@ -1,7 +1,5 @@
 import os
 
-from runner_manager.models.settings import Settings
-
 
 def test_public_endpoint(client):
     response = client.get("/public")

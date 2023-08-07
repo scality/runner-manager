@@ -1,7 +1,7 @@
 import logging
 
-from fastapi import Depends, FastAPI, HTTPException, Response, Security, status
-from fastapi.security.api_key import APIKey, APIKeyHeader, APIKeyQuery
+from fastapi import FastAPI, HTTPException, Response, Security, status
+from fastapi.security import APIKeyHeader, APIKeyQuery
 
 from runner_manager.dependencies import get_queue, get_settings
 from runner_manager.jobs.startup import startup
@@ -20,7 +20,7 @@ def get_api_key(
 ) -> str:
     settings = get_settings()
     if not settings.api_key:
-        return settings.api_key
+        return ""
     if api_key_query in [settings.api_key]:
         return api_key_query
     if api_key_header in [settings.api_key]:
@@ -54,6 +54,6 @@ def public():
 
 
 @app.get("/private")
-def private(api_key: APIKey = Depends(get_api_key)):
+def private(api_key: str = Security(get_api_key)):
     """A private endpoint that requires a valid API key to be provided."""
     return f"Private Endpoint. API Key: {api_key}"
