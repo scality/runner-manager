@@ -2,6 +2,7 @@ from pytest import fixture
 
 from runner_manager.dependencies import get_settings
 from runner_manager.models.runner import Runner
+from runner_manager.models.runner_group import RunnerGroup
 from runner_manager.models.settings import Settings
 
 
@@ -18,3 +19,17 @@ def runner() -> Runner:
     )
     Runner.delete(runner.pk)
     return runner
+
+
+@fixture()
+def runner_group() -> RunnerGroup:
+    runner_group = RunnerGroup(
+        id=1,
+        name="test",
+        organization="test",
+        backend={"name": "base"},
+        labels=[
+            "label",
+        ],
+    )
+    return runner_group

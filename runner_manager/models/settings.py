@@ -5,19 +5,20 @@ import yaml
 from pydantic import AnyHttpUrl, BaseSettings, RedisDsn
 
 
+class ConfigFile(BaseSettings):
+    config_file: Optional[Path] = None
+
+
 def yaml_config_settings_source(settings: BaseSettings) -> Dict[str, Any]:
     """
     A simple settings source that loads variables from a yaml file
 
     """
-    config_file: Optional[Path] = settings.__config__.config.config_file
-    if config_file:
-        return yaml.full_load(config_file.read_text())
+
+    config = ConfigFile()
+    if config.config_file is not None:
+        return yaml.full_load(config.config_file.read_text())
     return {}
-
-
-class ConfigFile(BaseSettings):
-    config_file: Optional[Path] = None
 
 
 class LogLevel(str, Enum):
@@ -26,13 +27,13 @@ class LogLevel(str, Enum):
 
 
 class Settings(BaseSettings):
-    name: str = "runner-manager"
+    name: Optional[str] = "runner-manager"
     redis_om_url: Optional[RedisDsn] = None
     github_base_url: Optional[AnyHttpUrl] = None
     log_level: LogLevel = LogLevel.INFO
 
     class Config:
-        config: ConfigFile = ConfigFile()
+        smart_union = True
         env_file = ".env"
         env_file_encoding = "utf-8"
 

@@ -4,7 +4,7 @@ from redis_om import Migrator
 def test_backend_create_runner(backend, runner):
     runner = backend.create(runner)
     assert runner.backend == backend.name
-    assert runner.backend_instance == runner.pk
+    assert runner.instance_id == runner.pk
 
 
 def test_backend_delete_runner(backend, runner):
