@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Any, Dict, Optional
-
+from enum import Enum
 import yaml
 from pydantic import AnyHttpUrl, BaseSettings, Field, RedisDsn
 
@@ -20,11 +20,16 @@ class ConfigFile(BaseSettings):
     config_file: Optional[Path] = None
 
 
+class LogLevel(str, Enum):
+    INFO = 'INFO'
+    WARNING = 'WARNING'
+
+
 class Settings(BaseSettings):
     name: str = "runner-manager"
     redis_om_url: Optional[RedisDsn] = None
     github_base_url: Optional[AnyHttpUrl] = None
-    log_level: str = Field(default="INFO", pattern=r"^[A-Z]+$")
+    log_level: LogLevel = LogLevel.INFO
 
     class Config:
         config: ConfigFile = ConfigFile()
