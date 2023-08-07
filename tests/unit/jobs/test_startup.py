@@ -1,7 +1,8 @@
-
-from runner_manager.jobs.startup import startup
 from rq import Queue
 from rq.job import Job, JobStatus
+
+from runner_manager.jobs.startup import startup
+
 
 def test_startup(queue: Queue):
     job: Job = queue.enqueue(startup)

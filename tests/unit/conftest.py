@@ -14,7 +14,6 @@ def settings() -> Settings:
     return settings
 
 
-
 @fixture(scope="session", autouse=True)
 def redis(settings):
     """Flush redis before tests."""
