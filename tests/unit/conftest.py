@@ -41,7 +41,7 @@ def runner() -> Runner:
     return runner
 
 
-@fixture()
+@fixture(scope="function", autouse=True)
 def runner_group() -> RunnerGroup:
     runner_group = RunnerGroup(
         id=1,
@@ -52,4 +52,8 @@ def runner_group() -> RunnerGroup:
             "label",
         ],
     )
+    # Ensure that the runner group has no runners.
+    for runner in runner_group.get_runners():
+        print(f"deleted runner {runner.name}")
+        Runner.delete(runner.pk)
     return runner_group
