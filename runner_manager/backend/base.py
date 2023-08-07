@@ -1,10 +1,13 @@
-from typing import List, Optional
+from typing import List, Literal, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from redis_om import NotFoundError
 
-from runner_manager.models.backend import BackendConfig, Backends
+from runner_manager.dependencies import get_settings
+from runner_manager.models.backend import BackendConfig, Backends, InstanceConfig
 from runner_manager.models.runner import Runner
+
+settings = get_settings()
 
 
 class BaseBackend(BaseModel):
@@ -15,8 +18,18 @@ class BaseBackend(BaseModel):
     They take a RunnerGroup as input.
     """
 
-    name: Backends = Backends.base
+    name: Literal[Backends.base] = Field(default=Backends.base)
     config: Optional[BackendConfig]
+    runner_manager: str = Field(default=settings.name)
+    instance_config: Optional[InstanceConfig] = Field(default=None)
+
+    # Inherited classes will have a client property configured
+    # to interact with the backend.
+
+    @property
+    def client(self):
+        """Client to interact with the backend."""
+        raise NotImplementedError
 
     def create(self, runner: Runner) -> Runner:
         """Create a runner instance.
@@ -25,8 +38,8 @@ class BaseBackend(BaseModel):
             runner (Runner): Runner instance to be created.
         """
         runner.backend = self.name
-        if runner.backend_instance is None:
-            runner.backend_instance = runner.pk
+        if runner.instance_id is None:
+            runner.instance_id = runner.pk
         return runner.save()
 
     def delete(self, runner: Runner) -> int:
@@ -45,19 +58,19 @@ class BaseBackend(BaseModel):
         """
         return runner.save()
 
-    def get(self, instance: int) -> Runner:
+    def get(self, instance_id: str) -> Runner:
         """Get a runner instance.
 
         Args:
-            instance_id (int): Runner instance id.
+            instance_id (str): Runner instance id.
 
         Returns:
             Runner: Runner instance.
         """
         try:
-            runner: Runner = Runner.find(Runner.backend_instance == instance).first()
+            runner: Runner = Runner.find(Runner.instance_id == instance_id).first()
         except NotFoundError as exception:
-            raise NotFoundError(f"Instance {instance} not found.") from exception
+            raise NotFoundError(f"Instance {instance_id} not found.") from exception
 
         return runner
 
@@ -74,21 +87,3 @@ class BaseBackend(BaseModel):
                 f"No runners found for {self.name} backend."
             ) from exception
         return runners
-
-    @classmethod
-    def get_backend(
-        cls, name: Backends, config: Optional[BackendConfig]
-    ) -> "BaseBackend":
-        """Get a runner backend.
-
-        Args:
-            backend (str): Runner backend name.
-
-        Returns:
-            BaseBackend: Runner backend.
-        """
-
-        if name == Backends.base:
-            return BaseBackend(config=config)
-        else:
-            raise NotImplementedError

@@ -1,21 +1,31 @@
 ---
 name: tests
 
-on: pull_request
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
 
 permissions:
   contents: read
 
 jobs:
   test:
-    name: ${{ matrix.test }}
+    name: ${{ matrix.test.name }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        test: [unit, api]
+        test:
+          - name: unit
+            path: tests/unit
+          - name: api
+            path: tests/api
 
     env:
-      REDIS_OM_URL: redis://localhost:6379
+      REDIS_OM_URL: redis://localhost:6379/0
       GITHUB_BASE_URL: http://localhost:4010
 
     steps:
@@ -29,7 +39,12 @@ jobs:
           cache: poetry
       - run: poetry install
       - name: Run tests
-        run: poetry run pytest tests/${{ matrix.test }}
+        run: poetry run pytest ${{ matrix.test.path }}
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          flags: ${{ matrix.test.name }}
+          name: ${{ matrix.test.name }}
       - name: Dump logs
         run: docker compose --profile tests logs
         if: always()
