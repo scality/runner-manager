@@ -1,6 +1,7 @@
+from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, Optional
-from enum import Enum
+
 import yaml
 from pydantic import AnyHttpUrl, BaseSettings, RedisDsn
 
@@ -22,8 +23,8 @@ def yaml_config_settings_source(settings: BaseSettings) -> Dict[str, Any]:
 
 
 class LogLevel(str, Enum):
-    INFO = 'INFO'
-    WARNING = 'WARNING'
+    INFO = "INFO"
+    WARNING = "WARNING"
 
 
 class Settings(BaseSettings):
