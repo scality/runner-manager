@@ -45,7 +45,7 @@ class OrgsOrgActionsRunnerGroupsGetResponse200(GitHubRestModel):
 
 # Missing methods from githubkit.webhooks.models
 class WorkflowStepQueued(GitHubWebhookModel):
-    """Workflow Step (In Progress)"""
+    """Workflow Step (Queued)"""
 
     name: str = Field(default=...)
     status: Literal["queued"] = Field(default=...)
