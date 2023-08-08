@@ -28,6 +28,7 @@ class LogLevel(str, Enum):
     DEBUG = "DEBUG"
     ERROR = "ERROR"
 
+
 class Settings(BaseSettings):
     name: Optional[str] = "runner-manager"
     redis_om_url: Optional[RedisDsn] = None
