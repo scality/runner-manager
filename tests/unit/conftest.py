@@ -1,4 +1,5 @@
 from pytest import fixture
+from pytest_redis import factories
 from redis_om import Migrator, get_redis_connection
 from rq import Queue
 
@@ -15,16 +16,12 @@ def settings() -> Settings:
 
 
 @fixture(scope="session", autouse=True)
-def redis(settings):
-    """Flush redis before tests."""
-
-    redis_connection = get_redis_connection(
-        url=settings.redis_om_url, decode_responses=True
-    )
-    redis_connection.flushall()
-
+def redis():
+    redis_my_proc = factories.redis_proc()
+    redis_connection = factories.redisdb(redis_my_proc)
     Migrator().run()
     yield redis_connection
+    # Clean up if needed
 
 
 @fixture(scope="session")
