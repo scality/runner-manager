@@ -1,7 +1,8 @@
-import os
 from functools import lru_cache
-from runner_manager.models.settings import Settings
+
 from runner_manager.dependencies import get_settings
+from runner_manager.models.settings import Settings
+
 
 def test_public_endpoint(client):
     response = client.get("/public")
@@ -18,6 +19,7 @@ def test_private_endpoint_without_api_key(client):
 @lru_cache
 def settings_api_key():
     return Settings(api_key="secret")
+
 
 def test_private_endpoint_with_valid_api_key(fastapp, client):
     settings_api_key.cache_clear()
