@@ -25,7 +25,8 @@ def yaml_config_settings_source(settings: BaseSettings) -> Dict[str, Any]:
 class LogLevel(str, Enum):
     INFO = "INFO"
     WARNING = "WARNING"
-
+    DEBUG = "DEBUG"
+    ERROR = "ERROR"
 
 class Settings(BaseSettings):
     name: Optional[str] = "runner-manager"
