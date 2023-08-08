@@ -9,6 +9,7 @@ packages = [{ include = "runner_manager" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
+fastapi = "^0.101.0"
 uvicorn = { extras = ["standard"], version = "^0.23.2" }
 pydantic = ">=1.10.2,<2.0"
 redis-om = "^0.2.1"
@@ -17,7 +18,6 @@ rq = "^1.15.1"
 pyyaml = "^6.0.1"
 redis = "^4.6.0"
 docker = "^6.1.3"
-fastapi = "^0.101.0"
 
 [tool.poetry.group.docs]
 optional = true
@@ -30,11 +30,11 @@ mkdocs = "^1.4.2"
 connexion = "^2.14.2"
 pytest = "^7.4.0"
 pytest-cov = "^4.0.0"
-hypothesis = "^6.82.0"
+hypothesis = "^6.82.3"
 pyright = "^1.1.320"
 black = "^23.7.0"
 isort = "^5.12.0"
-ruff = "^0.0.282"
+ruff = "^0.0.283"
 yamllint = "^1.32.0"
 types-redis = "^4.6.0.3"
 
