@@ -3,6 +3,7 @@ import logging
 from fastapi import FastAPI, HTTPException, Response, Security, status, Depends
 from fastapi.security import APIKeyHeader, APIKeyQuery
 
+from runner_manager.models.settings import Settings
 from runner_manager.dependencies import get_queue, get_settings
 from runner_manager.jobs.startup import startup
 from runner_manager.routers import webhook
