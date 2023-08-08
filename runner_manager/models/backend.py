@@ -46,3 +46,22 @@ class DockerConfig(BackendConfig):
     """Configuration for Docker backend."""
 
     base_url: str = "unix:///var/run/docker.sock"
+
+
+class GCPInstanceConfig(InstanceConfig):
+    """Configuration for GCP backend instance."""
+    project_id: str
+    zone: str
+    machine_type: str
+    image_family: str
+    network: str
+    subnet: str
+
+
+class GCPConfig(BackendConfig):
+    """Configuration for GCP backend."""
+
+    project_id: str
+    credentials_path: str
+    region: str
+    service_account_email: str
