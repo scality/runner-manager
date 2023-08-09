@@ -18,7 +18,7 @@ def settings() -> Settings:
 @fixture(scope="session", autouse=True)
 def redis():
     redis_my_proc = factories.redis_proc()
-    redis_connection = factories.redisdb(redis_my_proc)
+    redis_connection = factories.redisdb('redis_my_proc')
     Migrator().run()
     yield redis_connection
     # Clean up if needed
