@@ -1,6 +1,5 @@
 from uuid import uuid4
 
-from pydantic import RedisDsn
 from pytest import fixture
 from redis import Redis
 from redis_om import Migrator, get_redis_connection
@@ -20,19 +19,17 @@ def settings(monkeypatch):
         name=uuid4().hex,
     )
     get_settings.cache_clear()
+    monkeypatch.setattr("runner_manager.dependencies.get_settings", lambda: settings)
     monkeypatch.setattr(
-        "runner_manager.dependencies.get_settings", lambda: settings
+        "runner_manager.models.base.BaseModel.Meta.global_key_prefix", settings.name
     )
     monkeypatch.setattr(
-        "runner_manager.models.base.BaseModel.Meta.global_key_prefix",
-        settings.name
+        "runner_manager.models.runner.Runner.Meta.global_key_prefix", settings.name
     )
-    monkeypatch.setattr(
-        "runner_manager.models.runner.Runner.Meta.global_key_prefix",
-        settings.name)
     monkeypatch.setattr(
         "runner_manager.models.runner_group.RunnerGroup.Meta.global_key_prefix",
-        settings.name)
+        settings.name,
+    )
     return settings
 
 
