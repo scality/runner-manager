@@ -35,6 +35,7 @@ services:
     profiles:
       - main
       - develop
+      - tests
     build: .
     command: rq worker -c runner_manager.jobs.settings
     volumes:
