@@ -1,9 +1,7 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Header, HTTPException
-from fastapi.security import Security
+from fastapi import APIRouter, Depends, Header, HTTPException, Security
 from githubkit.webhooks import verify
-from githubkit.webhooks.types import WebhookEvent
 from rq import Queue
 
 from runner_manager.dependencies import get_queue, get_settings
@@ -34,7 +32,7 @@ def validate_webhook(
 
 @router.post("/")
 def post(
-    webhook: WebhookEvent,
+    webhook: AcceptedWebhookEvents,
     valid: bool = Security(validate_webhook),
     queue: Queue = Depends(get_queue),
 ) -> WebhookResponse:

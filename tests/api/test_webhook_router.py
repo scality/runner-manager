@@ -1,7 +1,6 @@
 from functools import lru_cache
 from typing import Optional
 
-from githubkit.utils import UNSET
 from githubkit.webhooks import sign
 from githubkit.webhooks.models import (
     InstallationLite,
@@ -10,9 +9,10 @@ from githubkit.webhooks.models import (
     Repository,
     User,
     WorkflowJobCompleted,
-    WorkflowStepInProgress,
+    WorkflowJobCompletedPropWorkflowJob,
+    WorkflowStepCompleted,
 )
-from hypothesis import assume, given
+from hypothesis import given
 from hypothesis import strategies as st
 from pytest import fixture
 
@@ -40,10 +40,12 @@ RepositoryStrategy = st.builds(
     owner=UserStrategy,
 )
 
+StepStrategy = st.builds(WorkflowStepCompleted)
 
-WorkflowStepsStrategy = st.lists(
-    st.builds(WorkflowStepInProgress), min_size=1, max_size=1
+JobPropStrategy = st.builds(
+    WorkflowJobCompletedPropWorkflowJob, steps=st.lists(StepStrategy, max_size=1)
 )
+
 
 WorkflowJobStrategy = st.builds(
     WorkflowJobCompleted,
@@ -52,6 +54,7 @@ WorkflowJobStrategy = st.builds(
     sender=UserStrategy,
     organization=st.builds(Organization),
     installation=st.builds(InstallationLite),
+    workflow_job=JobPropStrategy,
 )
 
 
@@ -76,12 +79,7 @@ def test_workflow_job_event(workflow_job, client):
 
 
 @given(workflow_job=WorkflowJobStrategy)
-def test_workflow_job_hypothesis(workflow_job):
-    assume(workflow_job.action == "completed")
-    assume(workflow_job.repository != UNSET)
-    assume(workflow_job.organization != UNSET)
-    assume(workflow_job.sender != UNSET)
-    assume(workflow_job.installation != UNSET)
+def test_workflow_job_hypothesis(workflow_job: WorkflowJobCompleted):
     assert workflow_job.action == "completed"
 
 
