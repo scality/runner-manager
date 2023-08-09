@@ -22,6 +22,14 @@ def redis():
     Migrator().run()
     yield redis_connection
     # Clean up if needed
+    
+from rq import SimpleWorker, Queue
+
+@fixture(scope="session", autouse=True)
+def worker(queue):
+    worker = SimpleWorker([queue], connection=queue.connection)
+    worker.work(burst=True)
+    return worker
 
 
 @fixture(scope="session")
