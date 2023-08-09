@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Sequence
 
 import yaml
 from pydantic import AnyHttpUrl, BaseSettings, RedisDsn, SecretStr
@@ -26,6 +26,10 @@ class Settings(BaseSettings):
     redis_om_url: Optional[RedisDsn] = None
     github_base_url: Optional[AnyHttpUrl] = None
     api_key: Optional[SecretStr] = None
+    allowed_hosts: Optional[Sequence[str]] = [
+        "localhost",
+        "testserver",
+    ]
 
     class Config:
         smart_union = True
