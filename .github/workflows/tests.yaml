@@ -27,7 +27,6 @@ jobs:
     env:
       REDIS_OM_URL: redis://localhost:6379/0
       GITHUB_BASE_URL: http://localhost:4010
-      API_KEY: ${{ secrets.API_KEY }}
     steps:
       - uses: actions/checkout@v3
       - name: Boot compose services
