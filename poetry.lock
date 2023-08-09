@@ -861,13 +861,13 @@ i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "jsonschema"
-version = "4.18.6"
+version = "4.19.0"
 description = "An implementation of JSON Schema validation for Python"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "jsonschema-4.18.6-py3-none-any.whl", hash = "sha256:dc274409c36175aad949c68e5ead0853aaffbe8e88c830ae66bb3c7a1728ad2d"},
-    {file = "jsonschema-4.18.6.tar.gz", hash = "sha256:ce71d2f8c7983ef75a756e568317bf54bc531dc3ad7e66a128eae0d51623d8a3"},
+    {file = "jsonschema-4.19.0-py3-none-any.whl", hash = "sha256:043dc26a3845ff09d20e4420d6012a9c91c9aa8999fa184e7efcfeccb41e32cb"},
+    {file = "jsonschema-4.19.0.tar.gz", hash = "sha256:6e1e7569ac13be8139b2dd2c21a55d350066ee3f80df06c608b398cdc6f30e8f"},
 ]
 
 [package.dependencies]
@@ -1195,13 +1195,13 @@ email = ["email-validator (>=1.0.3)"]
 
 [[package]]
 name = "pygments"
-version = "2.15.1"
+version = "2.16.1"
 description = "Pygments is a syntax highlighting package written in Python."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "Pygments-2.15.1-py3-none-any.whl", hash = "sha256:db2db3deb4b4179f399a09054b023b6a586b76499d36965813c71aa8ed7b5fd1"},
-    {file = "Pygments-2.15.1.tar.gz", hash = "sha256:8ace4d3c1dd481894b2005f560ead0f9f19ee64fe983366be1a21e171d12775c"},
+    {file = "Pygments-2.16.1-py3-none-any.whl", hash = "sha256:13fc09fa63bc8d8671a6d247e1eb303c4b343eaee81d861f3404db2935653692"},
+    {file = "Pygments-2.16.1.tar.gz", hash = "sha256:1daff0494820c69bc8941e407aa20f577374ee88364ee10a98fdbe0aece96e29"},
 ]
 
 [package.extras]
@@ -1444,13 +1444,13 @@ typing-extensions = ">=4.4.0,<5.0.0"
 
 [[package]]
 name = "referencing"
-version = "0.30.1"
+version = "0.30.2"
 description = "JSON Referencing + Python"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "referencing-0.30.1-py3-none-any.whl", hash = "sha256:185d4a29f001c6e8ae4dad3861e61282a81cb01b9f0ef70a15450c45c6513a0d"},
-    {file = "referencing-0.30.1.tar.gz", hash = "sha256:9370c77ceefd39510d70948bbe7375ce2d0125b9c11fd380671d4de959a8e3ce"},
+    {file = "referencing-0.30.2-py3-none-any.whl", hash = "sha256:449b6669b6121a9e96a7f9e410b245d471e8d48964c67113ce9afe50c8dd7bdf"},
+    {file = "referencing-0.30.2.tar.gz", hash = "sha256:794ad8003c65938edcdbc027f1933215e0d0ccc0291e3ce20a4d87432b59efc0"},
 ]
 
 [package.dependencies]
