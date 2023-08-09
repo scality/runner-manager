@@ -1,46 +1,20 @@
 import logging
 
-from fastapi import Depends, FastAPI, HTTPException, Security, status
-from fastapi.security import APIKeyHeader, APIKeyQuery
-from runner_manager.auth import TrustedHostHealthRoutes
+from fastapi import FastAPI, Security
 
+from runner_manager.auth import TrustedHostHealthRoutes, get_api_key
 from runner_manager.dependencies import get_queue, get_settings
 from runner_manager.jobs.startup import startup
-from runner_manager.models.settings import Settings
-from runner_manager.routers import webhook, _health
+from runner_manager.routers import _health, webhook
 
 log = logging.getLogger(__name__)
-
 app = FastAPI()
-api_key_query = APIKeyQuery(name="api-key", auto_error=False)
-api_key_header = APIKeyHeader(name="x-api-key", auto_error=False)
 settings = get_settings()
-
-
-def get_api_key(
-    api_key_query: str = Security(api_key_query),
-    api_key_header: str = Security(api_key_header),
-    settings: Settings = Depends(get_settings),
-) -> str:
-    """Get the API key from either the query parameter or the header"""
-    if not settings.api_key:
-        return ""
-    if api_key_query in [settings.api_key.get_secret_value()]:
-        return api_key_query
-    if api_key_header in [settings.api_key.get_secret_value()]:
-        return api_key_header
-    raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Invalid API Key",
-    )
 
 
 app.include_router(webhook.router)
 app.include_router(_health.router)
-app.add_middleware(
-    TrustedHostHealthRoutes,
-    allowed_hosts=settings.allowed_hosts
-)
+app.add_middleware(TrustedHostHealthRoutes, allowed_hosts=settings.allowed_hosts)
 
 
 @app.on_event("startup")
@@ -49,8 +23,6 @@ def startup_event():
     job = queue.enqueue(startup)
     status = job.get_status()
     log.info(f"Startup job is {status}")
-
-
 
 
 @app.get("/public")
