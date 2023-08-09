@@ -1,7 +1,7 @@
 from pytest import fixture
 from pytest_redis import factories
 from redis_om import Migrator, get_redis_connection
-from rq import Queue
+from rq import Queue, SimpleWorker
 
 from runner_manager.dependencies import get_settings
 from runner_manager.models.runner import Runner
@@ -18,16 +18,11 @@ def settings() -> Settings:
 @fixture(scope="session", autouse=True)
 def redis():
     redis_my_proc = factories.redis_proc()
-    redis_connection = factories.redisdb('redis_my_proc')
+    redis_connection = factories.redisdb("redis_my_proc")
     Migrator().run()
     yield redis_connection
     # Clean up if needed
 
-def settings(redis):
-    settings = get_settings()
-    settings.redis_om_url = redis.url # is there any kind of url here? 
-    
-from rq import SimpleWorker, Queue
 
 @fixture(scope="session", autouse=True)
 def worker(queue):
