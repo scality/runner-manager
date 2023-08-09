@@ -35,7 +35,7 @@ def validate_webhook(
 @router.post("/")
 def post(
     webhook: WebhookEvent,
-    valid: bool = Depends(validate_webhook),
+    valid: bool = Security(validate_webhook),
     queue: Queue = Depends(get_queue),
 ) -> WebhookResponse:
 
