@@ -6,6 +6,7 @@ from typing_extensions import Annotated
 
 from runner_manager.backend.base import BaseBackend
 from runner_manager.backend.docker import DockerBackend
+from runner_manager.backend.gcloud import GCPBackend
 from runner_manager.models.backend import InstanceConfig
 from runner_manager.models.base import BaseModel
 from runner_manager.models.runner import Runner, RunnerLabel
@@ -29,7 +30,8 @@ class RunnerGroup(BaseModel):
     labels: List[str]
 
     backend: Annotated[
-        Union[BaseBackend, DockerBackend], PydanticField(..., discriminator="name")
+        Union[BaseBackend, DockerBackend, GCPBackend],
+        PydanticField(..., discriminator="name"),
     ]
     instance_config: Optional[InstanceConfig] = None
 
