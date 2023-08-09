@@ -29,4 +29,3 @@ To bootstrap a local environment, run the following command:
 ```bash
 docker compose --profile develop up --build
 ```
-
