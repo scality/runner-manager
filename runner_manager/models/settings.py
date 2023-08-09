@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 import yaml
-from pydantic import AnyHttpUrl, BaseSettings, RedisDsn
+from pydantic import AnyHttpUrl, BaseSettings, RedisDsn, SecretStr
 
 
 class ConfigFile(BaseSettings):
@@ -33,6 +33,7 @@ class Settings(BaseSettings):
     name: Optional[str] = "runner-manager"
     redis_om_url: Optional[RedisDsn] = None
     github_base_url: Optional[AnyHttpUrl] = None
+    github_webhook_secret: Optional[SecretStr] = None
     log_level: LogLevel = LogLevel.INFO
 
     class Config:
