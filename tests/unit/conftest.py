@@ -22,6 +22,10 @@ def redis():
     Migrator().run()
     yield redis_connection
     # Clean up if needed
+
+def settings(redis):
+    settings = get_settings()
+    settings.redis_om_url = redis.url # is there any kind of url here? 
     
 from rq import SimpleWorker, Queue
 
