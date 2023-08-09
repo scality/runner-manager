@@ -25,6 +25,7 @@ def test_private_endpoint_with_valid_api_key(fastapp, client):
     settings_api_key.cache_clear()
     fastapp.dependency_overrides = {}
     fastapp.dependency_overrides[get_settings] = settings_api_key
-    headers = {"x-api-header": "secret"}
+    headers = {"x-api-key": "secret"}
     response = client.get("/private", headers=headers)
+    print(response.text)
     assert response.status_code == 200

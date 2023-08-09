@@ -22,9 +22,9 @@ def get_api_key(
 ) -> str:
     if not settings.api_key:
         return ""
-    if api_key_query in [settings.api_key]:
+    if api_key_query in [settings.api_key.get_secret_value()]:
         return api_key_query
-    if api_key_header in [settings.api_key]:
+    if api_key_header in [settings.api_key.get_secret_value()]:
         return api_key_header
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
