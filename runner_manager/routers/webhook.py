@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header, HTTPException
+from fastapi.security import Security
 from githubkit.webhooks import verify
 from githubkit.webhooks.types import WebhookEvent
 from rq import Queue
