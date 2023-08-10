@@ -4,7 +4,6 @@ from typing import List, Literal
 from google.api_core.exceptions import NotFound
 from google.api_core.extended_operation import ExtendedOperation
 from google.cloud.compute import (
-    Image,
     ImagesClient,
     Instance,
     InstancesClient,
@@ -38,54 +37,6 @@ class GCPBackend(BaseBackend):
         """Returns a GCP Zone Operation client."""
         return ZoneOperationsClient()
 
-    def configure_instance(self, runner: Runner):
-        labels = {
-            "runner-manager": self.runner_manager,
-        }
-        source_disk_image: Image = self.image_client.get_from_family(
-            project=self.instance_config.image["project"],
-            family=self.instance_config.image["family"],
-        )
-        machine_type = (
-            f"zones/{self.config.zone}/machineTypes/{self.instance_config.machine_type}"
-        )
-        network = f"projects/{self.config.project_id}/global/networks/{self.instance_config.network}"
-        instance: Instance = Instance(
-            name=runner.name,
-            machine_type=machine_type,
-            labels=labels,
-            disks=[
-                {
-                    "boot": True,
-                    "auto_delete": True,
-                    "initialize_params": {
-                        "source_image": source_disk_image.self_link,
-                    },
-                }
-            ],
-            network_interfaces=[
-                {
-                    "network": network,
-                    "access_configs": [
-                        {
-                            "name": "External NAT",
-                            "type_": "ONE_TO_ONE_NAT",
-                        }
-                    ],
-                }
-            ],
-            service_accounts=[
-                {
-                    "email": self.config.service_account_email,
-                    "scopes": [
-                        "https://www.googleapis.com/auth/devstorage.read_write",
-                        "https://www.googleapis.com/auth/logging.write",
-                    ],
-                }
-            ],
-        )
-        return instance
-
     def wait_for_operation(
         self,
         project: str,
@@ -105,7 +56,7 @@ class GCPBackend(BaseBackend):
 
     def create(self, runner: Runner):
         try:
-            instance: Instance = self.configure_instance(runner)
+            instance: Instance = self.instance_config.instance
             ext_operation: ExtendedOperation = self.compute_client.insert(
                 project=self.config.project_id,
                 zone=self.config.zone,

@@ -11,24 +11,26 @@ from runner_manager.models.runner_group import RunnerGroup
 
 @fixture()
 def gcp_group() -> RunnerGroup:
+    config = GCPConfig(
+        project_id=os.getenv("CLOUDSDK_CORE_PROJECT"),
+        zone=os.getenv("CLOUDSDK_COMPUTE_ZONE"),
+        service_account_email="default",
+    )
     runner_group: RunnerGroup = RunnerGroup(
         id=2,
         name="test",
         organization="test",
         backend=GCPBackend(
             name=Backends.gcloud,
-            config=GCPConfig(
-                project_id=os.getenv("GCP_PROJECT_ID"),
-                zone=os.getenv("GCP_ZONE"),
-                service_account_email="default",
-            ),
+            config=config,
             instance_config=GCPInstanceConfig(
+                image_family="ubuntu-2004-lts",
+                image_project="ubuntu-os-cloud",
                 machine_type="e2-small",
-                image={
-                    "project": "ubuntu-os-cloud",
-                    "family": "ubuntu-2004-lts",
-                },
+                gcp_config=config,
+                instance_name="test",
                 network="default",
+                labels={"test": "test"},
             ),
         ),
         labels=[
