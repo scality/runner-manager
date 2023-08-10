@@ -7,6 +7,10 @@ from runner_manager.dependencies import get_settings
 from runner_manager.models.settings import Settings
 
 
+api_key_query = APIKeyQuery(name="api-key", auto_error=False)
+api_key_header = APIKeyHeader(name="x-api-key", auto_error=False)
+
+
 class TrustedHostHealthRoutes(TrustedHostMiddleware):
     """A healthcheck endpoint that answers to GET requests on /_health"""
 
@@ -17,10 +21,6 @@ class TrustedHostHealthRoutes(TrustedHostMiddleware):
             await super().__call__(scope, receive, send)
         else:
             await self.app(scope, receive, send)
-
-
-api_key_query = APIKeyQuery(name="api-key", auto_error=False)
-api_key_header = APIKeyHeader(name="x-api-key", auto_error=False)
 settings = get_settings()
 
 
