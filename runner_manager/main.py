@@ -1,11 +1,11 @@
 import logging
 
-from fastapi import FastAPI, Security
+from fastapi import FastAPI
 
-from runner_manager.auth import TrustedHostHealthRoutes, get_api_key
+from runner_manager.auth import TrustedHostHealthRoutes
 from runner_manager.dependencies import get_queue, get_settings
 from runner_manager.jobs.startup import startup
-from runner_manager.routers import _health, webhook
+from runner_manager.routers import _health, private, public, webhook
 
 log = logging.getLogger(__name__)
 app = FastAPI()
@@ -14,6 +14,8 @@ settings = get_settings()
 
 app.include_router(webhook.router)
 app.include_router(_health.router)
+app.include_router(private.router)
+app.include_router(public.router)
 app.add_middleware(TrustedHostHealthRoutes, allowed_hosts=settings.allowed_hosts)
 
 
@@ -23,15 +25,3 @@ def startup_event():
     job = queue.enqueue(startup)
     status = job.get_status()
     log.info(f"Startup job is {status}")
-
-
-@app.get("/public")
-def public():
-    """A public endpoint that does not require any authentication."""
-    return "Public Endpoint"
-
-
-@app.get("/private")
-def private(api_key: str = Security(get_api_key)):
-    """A private endpoint that requires a valid API key to be provided."""
-    return f"Private Endpoint. API Key: {api_key}"
