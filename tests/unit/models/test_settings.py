@@ -3,6 +3,10 @@ import tempfile
 
 import pytest
 import yaml
+from githubkit import AppInstallationAuthStrategy, TokenAuthStrategy
+from hypothesis import assume, given
+from hypothesis import strategies as st
+from pydantic import ConfigError
 from pytest import fixture
 
 from runner_manager.dependencies import get_settings
@@ -19,11 +23,11 @@ def yaml_data():
 
 
 @fixture(scope="function")
-def config_file(yaml_data):
+def config_file(yaml_data, monkeypatch):
     # create a yaml file with some data
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as f:
         yaml.dump(yaml_data, f)
-        os.environ["CONFIG_FILE"] = f.name
+        monkeypatch.setenv("CONFIG_FILE", f.name)
         config = ConfigFile()
         return config.config_file
 
@@ -70,3 +74,47 @@ def test_get_settings(config_file):
     get_settings()
     with pytest.raises(FileNotFoundError):
         Settings()
+
+
+@given(
+    st.builds(
+        Settings,
+        github_app_id=st.integers(),
+        github_installation_id=st.integers(),
+        github_private_key=st.text(),
+        github_token=st.text(),
+    )
+)
+def test_app_install(stsettings):
+    assume(stsettings.github_app_id)
+    assume(stsettings.github_installation_id)
+    assume(stsettings.github_private_key)
+    assert stsettings.app_install is True
+    assert isinstance(stsettings.github_auth_strategy(), AppInstallationAuthStrategy)
+
+
+@given(
+    st.builds(
+        Settings,
+        github_app_id=st.just(0),
+        github_installation_id=st.just(0),
+        github_private_key=st.just(""),
+    )
+)
+def test_token_auth_strategy(stsettings):
+    assume(stsettings.github_token)
+    assert isinstance(stsettings.github_auth_strategy(), TokenAuthStrategy)
+
+
+@given(
+    st.builds(
+        Settings,
+        github_token=st.none(),
+        github_app_id=st.just(0),
+        github_installation_id=st.just(0),
+        github_private_key=st.just(""),
+    )
+)
+def test_config_error(stsettings):
+    with pytest.raises(ConfigError):
+        stsettings.github_auth_strategy()
