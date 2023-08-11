@@ -36,7 +36,7 @@ def github_app(fastapp):
     return fastapp
 
 
-def test_github_dependency(client, github_app, monkeypatch):
+def test_github_dependency(client, github_app):
     github_app.include_router(router)
     runners: List[Runner] = client.get("/runners").json()
     assert len(runners) >= 1
