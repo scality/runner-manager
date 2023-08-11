@@ -1,9 +1,11 @@
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, Optional, Sequence
+from typing import Any, Dict, List, Optional, Sequence
 
 import yaml
 from pydantic import AnyHttpUrl, BaseSettings, RedisDsn, SecretStr
+
+from runner_manager.models.runner_group import BaseRunnerGroup
 
 
 class ConfigFile(BaseSettings):
@@ -30,7 +32,7 @@ class LogLevel(str, Enum):
 
 
 class Settings(BaseSettings):
-    name: Optional[str] = "runner-manager"
+    name: str = "runner-manager"
     redis_om_url: Optional[RedisDsn] = None
     github_base_url: Optional[AnyHttpUrl] = None
     api_key: Optional[SecretStr] = None
@@ -40,6 +42,7 @@ class Settings(BaseSettings):
     ]
     github_webhook_secret: Optional[SecretStr] = None
     log_level: LogLevel = LogLevel.INFO
+    runner_groups: List[BaseRunnerGroup] = []
 
     class Config:
         smart_union = True

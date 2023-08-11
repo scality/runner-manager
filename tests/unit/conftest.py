@@ -1,40 +1,36 @@
 from uuid import uuid4
 
+from hypothesis import HealthCheck
+from hypothesis import settings as hypothesis_settings
 from pytest import fixture
 from redis import Redis
 from redis_om import Migrator, get_redis_connection
 from rq import Queue
 
-from runner_manager.dependencies import get_settings
-from runner_manager.models.runner import Runner
-from runner_manager.models.runner_group import RunnerGroup
-from runner_manager.models.settings import Settings
+from runner_manager import Runner, RunnerGroup, Settings
+
+hypothesis_settings.register_profile(
+    "unit",
+    suppress_health_check=[HealthCheck.function_scoped_fixture],
+    max_examples=50,
+)
+hypothesis_settings.load_profile("unit")
 
 
 @fixture(scope="function", autouse=True)
-def settings(monkeypatch):
+def settings():
     """Monkeypatch settings to use the test config."""
 
     settings = Settings(
         name=uuid4().hex,
     )
-    get_settings.cache_clear()
-    monkeypatch.setattr("runner_manager.dependencies.get_settings", lambda: settings)
-    monkeypatch.setattr(
-        "runner_manager.models.base.BaseModel.Meta.global_key_prefix", settings.name
-    )
-    monkeypatch.setattr(
-        "runner_manager.models.runner.Runner.Meta.global_key_prefix", settings.name
-    )
-    monkeypatch.setattr(
-        "runner_manager.models.runner_group.RunnerGroup.Meta.global_key_prefix",
-        settings.name,
-    )
+    Runner.Meta.global_key_prefix = settings.name
+    RunnerGroup.Meta.global_key_prefix = settings.name
     return settings
 
 
 @fixture(scope="function", autouse=True)
-def redis(settings, monkeypatch):
+def redis(settings):
     """Monkeypatch redis connections to use the test config."""
     # Ensure that the redis connection is closed before the test starts.
     redis: Redis = get_redis_connection(
@@ -45,6 +41,8 @@ def redis(settings, monkeypatch):
         redis.delete(key)
     Migrator().run()
 
+    Runner.Meta.database = redis
+    RunnerGroup.Meta.database = redis
     return redis
 
 
@@ -62,7 +60,12 @@ def queue(redis) -> Queue:
 @fixture()
 def runner(settings) -> Runner:
     runner: Runner = Runner(
-        name="test", runner_group_id=1, status="online", busy=False, labels=[]
+        name="test",
+        runner_group_id=1,
+        status="online",
+        busy=False,
+        labels=[],
+        manager=settings.name,
     )
     assert runner.Meta.global_key_prefix == settings.name
     Runner.delete(runner.pk)
@@ -74,6 +77,7 @@ def runner_group(settings) -> RunnerGroup:
     runner_group = RunnerGroup(
         id=1,
         name="test",
+        manager=settings.name,
         organization="test",
         backend={"name": "base"},
         labels=[
