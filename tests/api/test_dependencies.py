@@ -1,16 +1,11 @@
-from functools import lru_cache
 from typing import List
 
 from fastapi import APIRouter, Depends
-from fastapi.testclient import TestClient
 from githubkit import Response
 from githubkit.rest import OrgsOrgActionsRunnersGetResponse200, Runner
-from pytest import fixture
 
 from runner_manager.clients.github import GitHub
-from runner_manager.dependencies import get_github, get_settings
-from runner_manager.main import app
-from runner_manager.models.settings import Settings
+from runner_manager.dependencies import get_github
 
 router = APIRouter()
 
