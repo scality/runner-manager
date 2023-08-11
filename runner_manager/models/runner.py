@@ -36,6 +36,7 @@ class RunnerLabel(PydanticBaseModel):
 
 class Runner(BaseModel):
     name: str = Field(index=True, description="Runner name")
+    id: Optional[int] = Field(index=True, default=None, description="Runner id")
     runner_group_id: Optional[int] = Field(
         index=True, default=None, description="Runner group id"
     )
@@ -50,6 +51,7 @@ class Runner(BaseModel):
         default=RunnerStatus.offline, index=True, full_text_search=True
     )
     busy: bool
+    manager: Optional[str] = Field(index=True, description="Runner manager", default=None)
     labels: Optional[List[RunnerLabel]] = []
     created_at: Optional[datetime]
     updated_at: Optional[datetime]

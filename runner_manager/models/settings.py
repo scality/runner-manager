@@ -1,11 +1,19 @@
 from enum import Enum
 from pathlib import Path
+<<<<<<< Updated upstream
 from typing import Any, Dict, List, Optional, Sequence
+=======
+from typing import Any, Dict, Optional, List
+>>>>>>> Stashed changes
 
 import yaml
 from pydantic import AnyHttpUrl, BaseSettings, RedisDsn, SecretStr
 
+<<<<<<< Updated upstream
 from runner_manager.models.runner_group import RunnerGroup
+=======
+from runner_manager.models.runner_group import BaseRunnerGroup
+>>>>>>> Stashed changes
 
 
 class ConfigFile(BaseSettings):
@@ -42,7 +50,8 @@ class Settings(BaseSettings):
     ]
     github_webhook_secret: Optional[SecretStr] = None
     log_level: LogLevel = LogLevel.INFO
-    runner_groups: Optional[List[RunnerGroup]] = None
+    runner_groups: List[BaseRunnerGroup] = []
+
 
     class Config:
         smart_union = True
