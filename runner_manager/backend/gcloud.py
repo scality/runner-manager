@@ -95,7 +95,10 @@ class GCPBackend(BaseBackend):
             network_interfaces = self.get_network_interfaces()
             self.instance_config.image = image.self_link
             self.instance_config.disks = disks
-            self.instance_config.machine_type = f"zones/{self.config.zone}/machineTypes/{self.instance_config.machine_type}"
+            self.instance_config.machine_type = (
+                f"zones/{self.config.zone}/machineTypes/"
+                f"{self.instance_config.machine_type}"
+            )
             self.instance_config.network_interfaces = network_interfaces
             self.instance_config.labels = {"runner-manager": self.runner_manager}
             instance: Instance = self.instance_config.configure_instance(runner)
