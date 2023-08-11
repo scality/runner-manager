@@ -120,6 +120,7 @@ def test_config_error(stsettings):
     with pytest.raises(ConfigError):
         stsettings.github_auth_strategy()
 
+
 def test_settings_runner_group(runner_group: RunnerGroup):
     settings = Settings(runner_groups=[runner_group])
     assert settings.runner_groups == [runner_group]
