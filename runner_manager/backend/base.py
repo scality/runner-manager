@@ -17,7 +17,7 @@ class BaseBackend(BaseModel):
 
     name: Literal[Backends.base] = Field(default=Backends.base)
     config: Optional[BackendConfig]
-    runner_manager: Optional[str] = None
+    manager: Optional[str] = None
     instance_config: Optional[InstanceConfig] = Field(default=None)
 
     # Inherited classes will have a client property configured

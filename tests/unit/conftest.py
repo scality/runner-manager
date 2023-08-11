@@ -60,7 +60,12 @@ def queue(redis) -> Queue:
 @fixture()
 def runner(settings) -> Runner:
     runner: Runner = Runner(
-        name="test", runner_group_id=1, status="online", busy=False, labels=[]
+        name="test",
+        runner_group_id=1,
+        status="online",
+        busy=False,
+        labels=[],
+        manager=settings.name,
     )
     assert runner.Meta.global_key_prefix == settings.name
     Runner.delete(runner.pk)
@@ -72,6 +77,7 @@ def runner_group(settings) -> RunnerGroup:
     runner_group = RunnerGroup(
         id=1,
         name="test",
+        manager=settings.name,
         organization="test",
         backend={"name": "base"},
         labels=[

@@ -20,11 +20,11 @@ def yaml_data():
 
 
 @fixture(scope="function")
-def config_file(yaml_data):
+def config_file(yaml_data, monkeypatch):
     # create a yaml file with some data
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as f:
         yaml.dump(yaml_data, f)
-        os.environ["CONFIG_FILE"] = f.name
+        monkeypatch.setenv("CONFIG_FILE", f.name)
         config = ConfigFile()
         return config.config_file
 

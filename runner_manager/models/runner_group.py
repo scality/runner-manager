@@ -12,7 +12,6 @@ from runner_manager.models.runner import Runner, RunnerLabel
 
 
 class BaseRunnerGroup(PydanticBaseModel):
-    id: Optional[int] = None
     name: str
     organization: Optional[str] = None
     repository: Optional[str] = None
@@ -24,8 +23,8 @@ class BaseRunnerGroup(PydanticBaseModel):
     workflow_restrictions_read_only: Optional[bool] = None
     selected_repository_ids: Optional[List[int]] = None
     runners: Optional[List[int]] = None
-    max: Optional[int] = None
-    min: Optional[int] = None
+    max: Optional[int] = Field(ge=1, default=20)
+    min: Optional[int] = Field(ge=0, default=0)
     labels: List[str]
 
     backend: Annotated[
@@ -38,10 +37,16 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
 
     id: Optional[int] = Field(index=True, default=None)
     name: str = Field(index=True, full_text_search=True)
+    manager: Optional[str] = Field(index=True, full_text_search=True)
     organization: Optional[str] = Field(index=True, full_text_search=True)
     repository: Optional[str] = Field(index=True, full_text_search=True)
     max: Optional[int] = Field(index=True, ge=1, default=20)
     min: Optional[int] = Field(index=True, ge=0, default=0)
+
+    def __post_init_post_parse__(self):
+        """Post init."""
+        if self.backend.manager is None:
+            self.backend.manager = self.manager
 
     @property
     def runner_labels(self) -> List[RunnerLabel]:
