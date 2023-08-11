@@ -32,8 +32,6 @@ def startup_event(
 ):
     job = queue.enqueue(startup)
     status = job.get_status()
-    Runner.Meta.global_key_prefix = settings.name
     Runner.Meta.database = redis
-    RunnerGroup.Meta.global_key_prefix = settings.name
     RunnerGroup.Meta.database = redis
     log.info(f"Startup job is {status}")

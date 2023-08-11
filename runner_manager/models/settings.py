@@ -32,7 +32,7 @@ class LogLevel(str, Enum):
 
 
 class Settings(BaseSettings):
-    name: str | None = "runner-manager"
+    name: str = "runner-manager"
     redis_om_url: Optional[RedisDsn] = None
     github_base_url: Optional[AnyHttpUrl] = None
     api_key: Optional[SecretStr] = None

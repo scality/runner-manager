@@ -2,12 +2,13 @@ from typing import List, Optional, Union
 
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Field as PydanticField
-from redis_om import Field, JsonModel, RedisModel
+from redis_om import Field, RedisModel
 from typing_extensions import Annotated
 
 from runner_manager.backend.base import BaseBackend
 from runner_manager.backend.docker import DockerBackend
 from runner_manager.models.backend import InstanceConfig
+from runner_manager.models.base import BaseModel
 from runner_manager.models.runner import Runner, RunnerLabel
 
 
@@ -33,11 +34,10 @@ class BaseRunnerGroup(PydanticBaseModel):
     instance_config: Optional[InstanceConfig] = None
 
 
-class RunnerGroup(BaseRunnerGroup, JsonModel):
+class RunnerGroup(BaseModel, BaseRunnerGroup):
 
     id: Optional[int] = Field(index=True, default=None)
     name: str = Field(index=True, full_text_search=True)
-    manager: Optional[str] = Field(index=True, full_text_search=True)
     organization: Optional[str] = Field(index=True, full_text_search=True)
     repository: Optional[str] = Field(index=True, full_text_search=True)
     max: Optional[int] = Field(index=True, ge=1, default=20)
@@ -45,6 +45,7 @@ class RunnerGroup(BaseRunnerGroup, JsonModel):
 
     def __post_init_post_parse__(self):
         """Post init."""
+        super().__post_init_post_parse__()
         if self.backend.manager is None:
             self.backend.manager = self.manager
 
