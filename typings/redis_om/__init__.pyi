@@ -6,6 +6,6 @@ from .sync_redis import redis
 from .checks import has_redis_json, has_redisearch
 from .connections import get_redis_connection
 from .model.migrations.migrator import MigrationError, Migrator
-from .model.model import EmbeddedJsonModel, Field, FindQuery, HashModel, JsonModel, KNNExpression, NotFoundError, QueryNotSupportedError, QuerySyntaxError, RedisModel, RedisModelError, VectorFieldOptions
+from .model.model import EmbeddedJsonModel, Field, FindQuery, HashModel, JsonModel, KNNExpression, NotFoundError, QueryNotSupportedError, QuerySyntaxError, RedisModel, RedisModelError, VectorFieldOptions, BaseMeta
 
-__all__ = ["redis", "has_redis_json", "has_redisearch", "get_redis_connection", "EmbeddedJsonModel", "Field", "FindQuery", "HashModel", "JsonModel", "KNNExpression", "NotFoundError", "QueryNotSupportedError", "QuerySyntaxError", "RedisModel", "RedisModelError", "VectorFieldOptions", "MigrationError", "Migrator"]
+__all__ = ["redis", "has_redis_json", "has_redisearch", "get_redis_connection", "EmbeddedJsonModel", "Field", "FindQuery", "HashModel", "JsonModel", "KNNExpression", "NotFoundError", "QueryNotSupportedError", "QuerySyntaxError", "RedisModel", "RedisModelError", "VectorFieldOptions", "MigrationError", "Migrator", "BaseMeta"]

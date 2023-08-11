@@ -10,6 +10,7 @@ from pydantic import ConfigError
 from pytest import fixture
 
 from runner_manager.dependencies import get_settings
+from runner_manager.models.runner_group import RunnerGroup
 from runner_manager.models.settings import ConfigFile, Settings
 
 
@@ -118,3 +119,7 @@ def test_token_auth_strategy(stsettings):
 def test_config_error(stsettings):
     with pytest.raises(ConfigError):
         stsettings.github_auth_strategy()
+
+def test_settings_runner_group(runner_group: RunnerGroup):
+    settings = Settings(runner_groups=[runner_group])
+    assert settings.runner_groups == [runner_group]

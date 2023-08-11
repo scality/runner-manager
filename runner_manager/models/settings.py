@@ -1,10 +1,12 @@
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, Optional, Sequence
+from typing import Any, Dict, List, Optional, Sequence
 
 import yaml
 from githubkit import AppInstallationAuthStrategy, TokenAuthStrategy
 from pydantic import AnyHttpUrl, BaseSettings, ConfigError, RedisDsn, SecretStr
+
+from runner_manager.models.runner_group import BaseRunnerGroup
 
 
 class ConfigFile(BaseSettings):
@@ -31,16 +33,18 @@ class LogLevel(str, Enum):
 
 
 class Settings(BaseSettings):
-    name: Optional[str] = "runner-manager"
+    name: str = "runner-manager"
     redis_om_url: Optional[RedisDsn] = None
-    github_base_url: AnyHttpUrl = AnyHttpUrl("api.github.com", scheme="https")
     api_key: Optional[SecretStr] = None
     allowed_hosts: Optional[Sequence[str]] = [
         "localhost",
         "testserver",
     ]
-    github_webhook_secret: Optional[SecretStr] = None
     log_level: LogLevel = LogLevel.INFO
+    runner_groups: List[BaseRunnerGroup] = []
+
+    github_base_url: AnyHttpUrl = AnyHttpUrl("api.github.com", scheme="https")
+    github_webhook_secret: Optional[SecretStr] = None
     github_token: Optional[SecretStr] = None
     github_app_id: int | str = 0
     github_private_key: SecretStr = SecretStr("")

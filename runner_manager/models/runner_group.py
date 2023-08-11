@@ -1,5 +1,6 @@
 from typing import List, Optional, Union
 
+from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Field as PydanticField
 from redis_om import Field, RedisModel
 from typing_extensions import Annotated
@@ -11,11 +12,10 @@ from runner_manager.models.base import BaseModel
 from runner_manager.models.runner import Runner, RunnerLabel
 
 
-class RunnerGroup(BaseModel):
-    id: Optional[int] = Field(index=True, default=None)
-    name: str = Field(index=True, full_text_search=True)
-    organization: Optional[str] = Field(index=True, full_text_search=True)
-    repository: Optional[str] = Field(index=True, full_text_search=True)
+class BaseRunnerGroup(PydanticBaseModel):
+    name: str
+    organization: Optional[str] = None
+    repository: Optional[str] = None
     allows_public_repositories: Optional[bool] = True
     default: Optional[bool] = None
     runners_url: Optional[str] = None
@@ -24,14 +24,30 @@ class RunnerGroup(BaseModel):
     workflow_restrictions_read_only: Optional[bool] = None
     selected_repository_ids: Optional[List[int]] = None
     runners: Optional[List[int]] = None
-    max: Optional[int] = Field(index=True, ge=1, default=20)
-    min: Optional[int] = Field(index=True, ge=0, default=0)
+    max: Optional[int] = Field(ge=1, default=20)
+    min: Optional[int] = Field(ge=0, default=0)
     labels: List[str]
 
     backend: Annotated[
         Union[BaseBackend, DockerBackend], PydanticField(..., discriminator="name")
     ]
     instance_config: Optional[InstanceConfig] = None
+
+
+class RunnerGroup(BaseModel, BaseRunnerGroup):
+
+    id: Optional[int] = Field(index=True, default=None)
+    name: str = Field(index=True, full_text_search=True)
+    organization: Optional[str] = Field(index=True, full_text_search=True)
+    repository: Optional[str] = Field(index=True, full_text_search=True)
+    max: Optional[int] = Field(index=True, ge=1, default=20)
+    min: Optional[int] = Field(index=True, ge=0, default=0)
+
+    def __post_init_post_parse__(self):
+        """Post init."""
+        super().__post_init_post_parse__()
+        if self.backend.manager is None:
+            self.backend.manager = self.manager
 
     @property
     def runner_labels(self) -> List[RunnerLabel]:
@@ -54,4 +70,13 @@ class RunnerGroup(BaseModel):
         """
         runner.runner_group_id = self.id
         runner.labels = self.runner_labels
+        runner.manager = self.manager
         return self.backend.create(runner)
+
+    def delete_runner(self, runner: Runner) -> int:
+        """Delete a runner instance.
+
+        Returns:
+            Runner: Runner instance.
+        """
+        return self.backend.delete(runner)
