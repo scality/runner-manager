@@ -1,6 +1,9 @@
 {
   "name": "Python 3",
-  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "build": {
+    "context": ".",
+    "dockerfile": "Dockerfile"
+  },
   "containerEnv": {
     "GITHUB_BASE_URL": "http://localhost:4010"
   },
@@ -9,7 +12,6 @@
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/devcontainers/features/sshd:1": {},
     "ghcr.io/devcontainers-contrib/features/poetry:2": {},
-    "ghcr.io/trunk-io/devcontainer-feature/trunk:1": {},
     "ghcr.io/devcontainers/features/kubectl-helm-minikube": {
       "minikube": "none",
       "helm": "none",
