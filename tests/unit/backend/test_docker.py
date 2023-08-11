@@ -11,14 +11,16 @@ from runner_manager.models.runner_group import RunnerGroup
 
 
 @fixture()
-def docker_group() -> RunnerGroup:
+def docker_group(settings) -> RunnerGroup:
     runner_group: RunnerGroup = RunnerGroup(
         id=1,
         name="test",
         organization="test",
+        manager=settings.name,
         backend=DockerBackend(
             name=Backends.docker,
             config=DockerConfig(),
+            manager=settings.name,
             instance_config=DockerInstanceConfig(
                 image="alpine:latest",
                 command=["sleep", "infinity"],
@@ -88,7 +90,7 @@ def test_list_manual_runner(docker_group: RunnerGroup):
         docker_group.backend.instance_config.image,
         remove=True,
         detach=True,
-        labels={"runner-manager": docker_group.backend.runner_manager},
+        labels={"runner-manager": docker_group.backend.manager},
         command=docker_group.backend.instance_config.command,
         name="test-manual",
     )

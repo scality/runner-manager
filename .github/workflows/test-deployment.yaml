@@ -34,3 +34,9 @@ jobs:
       - name: get all resources
         if: failure()
         run: kubectl get all
+      - name: get logs
+        if: failure()
+        run: |
+          kubectl logs -l app.kubernetes.io/name=runner-manager
+          kubectl logs -l app.kubernetes.io/name=runner-manager-worker
+          kubectl logs -l app.kubernetes.io/name=redis
