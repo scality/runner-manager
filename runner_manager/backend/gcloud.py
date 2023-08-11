@@ -4,9 +4,14 @@ from typing import List, Literal
 from google.api_core.exceptions import NotFound
 from google.api_core.extended_operation import ExtendedOperation
 from google.cloud.compute import (
+    AccessConfig,
+    AttachedDisk,
+    AttachedDiskInitializeParams,
+    Image,
     ImagesClient,
     Instance,
     InstancesClient,
+    NetworkInterface,
     Operation,
     ZoneOperationsClient,
 )
@@ -54,9 +59,45 @@ class GCPBackend(BaseBackend):
                 return result
             time.sleep(1)
 
+    def get_image(self) -> Image:
+        return self.image_client.get_from_family(
+            project=self.instance_config.image_project,
+            family=self.instance_config.image_family,
+        )
+
+    def get_disks(self) -> List[AttachedDisk]:
+        return [
+            AttachedDisk(
+                boot=True,
+                auto_delete=True,
+                initialize_params=AttachedDiskInitializeParams(
+                    source_image=self.get_image().self_link
+                ),
+            )
+        ]
+
+    def get_network_interfaces(self) -> List[NetworkInterface]:
+        return [
+            NetworkInterface(
+                network=self.instance_config.network,
+                access_configs=[
+                    AccessConfig(
+                        name="External NAT",
+                    )
+                ],
+            )
+        ]
+
     def create(self, runner: Runner):
         try:
-            instance: Instance = self.instance_config.instance
+            image = self.get_image()
+            disks = self.get_disks()
+            network_interfaces = self.get_network_interfaces()
+            self.instance_config.image = image.self_link
+            self.instance_config.disks = disks
+            self.instance_config.machine_type = f"zones/{self.config.zone}/machineTypes/{self.instance_config.machine_type}"
+            self.instance_config.network_interfaces = network_interfaces
+            instance: Instance = self.instance_config.configure_instance(runner)
             ext_operation: ExtendedOperation = self.compute_client.insert(
                 project=self.config.project_id,
                 zone=self.config.zone,
@@ -124,3 +165,28 @@ class GCPBackend(BaseBackend):
         except Exception as e:
             raise e
         return runners
+
+    def update(self, runner: Runner) -> Runner:
+        try:
+            instance: Instance = self.compute_client.get(
+                project=self.config.project_id,
+                zone=self.config.zone,
+                instance=runner.instance_id,
+            )
+            if instance.status != "RUNNING":
+                raise Exception(f"Instance {instance.name} is not running.")
+            labels = {}
+            if runner.labels is not None:
+                labels = {label.name: label.name for label in runner.labels}
+            instance.labels = labels
+            ext_operation: ExtendedOperation = self.compute_client.update(
+                instance_resource=instance
+            )
+            self.wait_for_operation(
+                project=self.config.project_id,
+                zone=self.config.zone,
+                operation=ext_operation.name,
+            )
+        except Exception as e:
+            raise e
+        return super().update(runner)

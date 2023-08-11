@@ -1,14 +1,11 @@
 from enum import Enum
 from typing import Any, Dict, List, Literal, Optional
 
-from google.cloud.compute import (
-    AttachedDisk,
-    AttachedDiskInitializeParams,
-    ImagesClient,
-    Instance,
-)
+from google.cloud.compute import AttachedDisk, Instance, NetworkInterface
 from pydantic import BaseModel
 from redis_om import Field
+
+from runner_manager.models.runner import Runner
 
 
 class Backends(str, Enum):
@@ -30,9 +27,6 @@ class BackendConfig(BaseModel):
 
 class InstanceConfig(BaseModel):
     """Base class for backend instance configuration."""
-
-    instance: Any = None
-    image: Any = None
 
 
 class DockerInstanceConfig(InstanceConfig):
@@ -64,45 +58,25 @@ class GCPConfig(BackendConfig):
 
 
 class GCPInstanceConfig(InstanceConfig):
-    def __init__(
-        self,
-        gcp_config: GCPConfig,
-        instance_name: str,
-        image_family: str,
-        image_project: str,
-        machine_type: str,
-        network: str,
-        labels: Dict[str, str],
-    ):
-        super().__init__()  # Initialize the base class (InstanceConfig)
-        # Create an Instance object (from google.cloud.compute)
-        self.instance = Instance(name=instance_name)
-        self.image = ImagesClient().get_from_family(
-            project=image_project, family=image_family
+    image_family: str
+    image_project: str
+    machine_type: str
+    network: str = "global/networks/default"
+    labels: Optional[Dict[str, str]] = {}
+    image: Optional[str] = None
+    disks: Optional[List[AttachedDisk]] = None
+    spot: bool = False
+    network_interfaces: Optional[List[NetworkInterface]] = None
+
+    class Config:
+        arbitrary_types_allowed = True
+
+    def configure_instance(self, runner: Runner) -> Instance:
+        """Configure instance."""
+        return Instance(
+            name=runner.name,
+            disks=self.disks,
+            machine_type=self.machine_type,
+            network_interfaces=self.network_interfaces,
+            labels=self.labels,
         )
-        # Set additional attributes specific to GCPInstanceConfig
-        self.instance.disks.append(
-            AttachedDisk(
-                boot=True,
-                auto_delete=True,
-                initialize_params=AttachedDiskInitializeParams(
-                    source_image=self.image.self_link,
-                ),
-            )
-        )
-        # Set additional attributes specific to GCPInstanceConfig
-        self.instance.machine_type = (
-            f"zones/{gcp_config.zone}/machineTypes/{machine_type}"
-        )
-        self.instance.network_interfaces = [
-            {
-                "network": f"projects/{gcp_config.project_id}/global/networks/{network}",
-                "access_configs": [
-                    {
-                        "name": "External NAT",
-                        "type_": "ONE_TO_ONE_NAT",
-                    }
-                ],
-            }
-        ]
-        self.instance.labels = labels or {}
