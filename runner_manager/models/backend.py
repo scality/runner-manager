@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, Dict, List, Literal, Optional
+from typing import Dict, List, Literal, Optional
 
 from google.cloud.compute import AttachedDisk, Instance, NetworkInterface
 from pydantic import BaseModel
