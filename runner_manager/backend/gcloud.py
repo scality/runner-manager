@@ -28,7 +28,7 @@ class GCPBackend(BaseBackend):
     instance_config: GCPInstanceConfig
 
     @property
-    def compute_client(self) -> InstancesClient:
+    def client(self) -> InstancesClient:
         """Returns a GCP Compute Engine client."""
         return InstancesClient()
 
@@ -99,7 +99,7 @@ class GCPBackend(BaseBackend):
             self.instance_config.network_interfaces = network_interfaces
             self.instance_config.labels = {"runner-manager": self.runner_manager}
             instance: Instance = self.instance_config.configure_instance(runner)
-            ext_operation: ExtendedOperation = self.compute_client.insert(
+            ext_operation: ExtendedOperation = self.client.insert(
                 project=self.config.project_id,
                 zone=self.config.zone,
                 instance_resource=instance,
@@ -118,13 +118,13 @@ class GCPBackend(BaseBackend):
     def delete(self, runner: Runner):
         try:
             if runner.instance_id:
-                self.compute_client.delete(
+                self.client.delete(
                     project=self.config.project_id,
                     zone=self.config.zone,
                     instance=runner.instance_id,
                 )
             else:
-                self.compute_client.delete(
+                self.client.delete(
                     project=self.config.project_id,
                     zone=self.config.zone,
                     instance=runner.name,
@@ -136,7 +136,7 @@ class GCPBackend(BaseBackend):
         return super().delete(runner)
 
     def get(self, instance_id: str) -> Runner:
-        instance: Instance = self.compute_client.get(
+        instance: Instance = self.client.get(
             project=self.config.project_id,
             zone=self.config.zone,
             instance=instance_id,
@@ -146,7 +146,7 @@ class GCPBackend(BaseBackend):
     def list(self) -> List[Runner]:
         runners: List[Runner] = []
         try:
-            instances = self.compute_client.list(
+            instances = self.client.list(
                 project=self.config.project_id,
                 zone=self.config.zone,
             )
@@ -169,7 +169,7 @@ class GCPBackend(BaseBackend):
 
     def update(self, runner: Runner) -> Runner:
         try:
-            instance: Instance = self.compute_client.get(
+            instance: Instance = self.client.get(
                 project=self.config.project_id,
                 zone=self.config.zone,
                 instance=runner.instance_id,
@@ -180,7 +180,7 @@ class GCPBackend(BaseBackend):
             if runner.labels is not None:
                 labels = {label.name: label.name for label in runner.labels}
             instance.labels = labels
-            ext_operation: ExtendedOperation = self.compute_client.update(
+            ext_operation: ExtendedOperation = self.client.update(
                 instance_resource=instance
             )
             self.wait_for_operation(

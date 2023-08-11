@@ -55,12 +55,13 @@ class GCPConfig(BackendConfig):
     project_id: str
     zone: str
     service_account_email: str = "default"
+    google_application_credentials: Optional[str] = None
 
 
 class GCPInstanceConfig(InstanceConfig):
-    image_family: str
-    image_project: str
-    machine_type: str
+    image_family: str = "ubuntu-2004-lts"
+    image_project: str = "ubuntu-os-cloud"
+    machine_type: str = "e2-small"
     network: str = "global/networks/default"
     labels: Optional[Dict[str, str]] = {}
     image: Optional[str] = None

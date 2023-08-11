@@ -1,7 +1,6 @@
 import os
 from typing import List
 
-from google.api_core.exceptions import NotFound
 from pytest import fixture, mark, raises
 from redis_om import NotFoundError
 
@@ -16,7 +15,9 @@ def gcp_group() -> RunnerGroup:
     config = GCPConfig(
         project_id=os.environ.get("CLOUDSDK_CORE_PROJECT", ""),
         zone=os.environ.get("CLOUDSDK_COMPUTE_ZONE", ""),
-        service_account_email="default",
+        google_application_credentials=os.environ.get(
+            "GOOGLE_APPLICATION_CREDENTIALS", ""
+        ),
     )
     runner_group: RunnerGroup = RunnerGroup(
         id=2,
@@ -25,12 +26,7 @@ def gcp_group() -> RunnerGroup:
         backend=GCPBackend(
             name=Backends.gcloud,
             config=config,
-            instance_config=GCPInstanceConfig(
-                image_family="ubuntu-2004-lts",
-                image_project="ubuntu-os-cloud",
-                machine_type="e2-small",
-                labels={"test": "test"},
-            ),
+            instance_config=GCPInstanceConfig(),
         ),
         labels=[
             "label",
