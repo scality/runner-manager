@@ -6,6 +6,7 @@ import yaml
 from pytest import fixture
 
 from runner_manager.dependencies import get_settings
+from runner_manager.models.runner_group import RunnerGroup
 from runner_manager.models.settings import ConfigFile, Settings
 
 
@@ -70,3 +71,8 @@ def test_get_settings(config_file):
     get_settings()
     with pytest.raises(FileNotFoundError):
         Settings()
+
+
+def test_settings_runner_group(runner_group: RunnerGroup):
+    settings = Settings(runner_groups=[runner_group])
+    assert settings.runner_groups == [runner_group]
