@@ -1,15 +1,10 @@
 {
   "name": "Python 3",
-  "image": "mcr.microsoft.com/devcontainers/base:1-jammy",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
   "containerEnv": {
-    "GITHUB_BASE_URL": "http://localhost:4010",
-    "PYTHON_PATH": "${containerWorkspaceFolder}/.venv"
+    "GITHUB_BASE_URL": "http://localhost:4010"
   },
   "features": {
-    "ghcr.io/devcontainers/features/python": {
-      "version": "3.11",
-      "installTools": false
-    },
     "ghcr.io/devcontainers/features/docker-in-docker": {},
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/devcontainers/features/sshd:1": {},
@@ -28,6 +23,9 @@
     }
   },
   "customizations": {
+    "codespaces": {
+      "openFiles": [".devcontainer/README.md"]
+    },
     "vscode": {
       "extensions": [
         "GitHub.copilot",
@@ -41,6 +39,7 @@
       "settings": {
         "python": {
           "defaultInterpreterPath": ".venv/bin/python",
+          "venvPath": ".venv",
           "testing": {
             "pytestArgs": ["tests"],
             "unittestEnabled": false,
@@ -58,10 +57,7 @@
   },
   "remoteUser": "vscode",
   "postCreateCommand": "poetry install --no-interaction --no-ansi --no-root --group=docs --group=dev",
-  "postAttachCommand": {
-    "compose": "docker compose --profile develop up --build",
-    "watch": "docker compose alpha watch"
-  },
+  "postAttachCommand": {},
   "portsAttributes": {
     "6379": {
       "label": "redis",

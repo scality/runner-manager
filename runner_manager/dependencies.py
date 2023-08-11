@@ -12,6 +12,7 @@ def get_settings() -> Settings:
     return Settings()
 
 
+@lru_cache()
 def get_redis() -> Redis:
     return get_redis_connection(url=get_settings().redis_om_url, decode_responses=True)
 

@@ -18,6 +18,7 @@ def test_find_runner_group(runner_group: RunnerGroup):
     runner_group.save()
     Migrator().run()
     assert runner_group.get(runner_group.pk) == runner_group
+    print(RunnerGroup.find(RunnerGroup.name == runner_group.name).all())
     assert (
         RunnerGroup.find(RunnerGroup.name == runner_group.name).first() == runner_group
     )

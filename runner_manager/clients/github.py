@@ -11,8 +11,9 @@ missing endpoints here.
 """
 
 
+from datetime import datetime
 from functools import cached_property
-from typing import Dict, List, Optional
+from typing import Dict, List, Literal, Optional
 
 from githubkit import GitHub as GitHubKit
 from githubkit.response import Response
@@ -20,6 +21,8 @@ from githubkit.rest import RestNamespace as RestNamespaceKit
 from githubkit.rest.actions import ActionsClient as ActionsClientKit
 from githubkit.rest.models import GitHubRestModel
 from githubkit.utils import UNSET, Missing, exclude_unset
+from githubkit.webhooks.models import GitHubWebhookModel
+from pydantic import Field
 
 
 class RunnerGroup(GitHubRestModel):
@@ -38,6 +41,18 @@ class RunnerGroup(GitHubRestModel):
 class OrgsOrgActionsRunnerGroupsGetResponse200(GitHubRestModel):
     total_count: int
     runner_groups: List[RunnerGroup]
+
+
+# Missing methods from githubkit.webhooks.models
+class WorkflowStepQueued(GitHubWebhookModel):
+    """Workflow Step (Queued)"""
+
+    name: str = Field(default=...)
+    status: Literal["queued"] = Field(default=...)
+    conclusion: None = Field(default=...)
+    number: int = Field(default=...)
+    started_at: datetime = Field(default=...)
+    completed_at: None = Field(default=...)
 
 
 class ActionsClient(ActionsClientKit):
