@@ -1,14 +1,13 @@
 from uuid import uuid4
 
+from hypothesis import HealthCheck
+from hypothesis import settings as hypothesis_settings
 from pytest import fixture
 from redis import Redis
 from redis_om import Migrator, get_redis_connection
 from rq import Queue
 
-from hypothesis import settings as hypothesis_settings
-from hypothesis import HealthCheck
 from runner_manager import Runner, RunnerGroup, Settings
-
 
 hypothesis_settings.register_profile(
     "unit",
@@ -16,6 +15,7 @@ hypothesis_settings.register_profile(
     max_examples=50,
 )
 hypothesis_settings.load_profile("unit")
+
 
 @fixture(scope="function", autouse=True)
 def settings():

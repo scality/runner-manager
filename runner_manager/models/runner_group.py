@@ -1,13 +1,13 @@
 from typing import List, Optional, Union
 
-from pydantic import Field as PydanticField
-from redis_om import Field, RedisModel
-from typing_extensions import Annotated
 from pydantic import BaseModel as PydanticBaseModel
+from pydantic import Field as PydanticField
+from redis_om import Field, JsonModel, RedisModel
+from typing_extensions import Annotated
+
 from runner_manager.backend.base import BaseBackend
 from runner_manager.backend.docker import DockerBackend
 from runner_manager.models.backend import InstanceConfig
-from runner_manager.models.base import BaseModel
 from runner_manager.models.runner import Runner, RunnerLabel
 
 
@@ -33,7 +33,7 @@ class BaseRunnerGroup(PydanticBaseModel):
     instance_config: Optional[InstanceConfig] = None
 
 
-class RunnerGroup(BaseModel, BaseRunnerGroup):
+class RunnerGroup(BaseRunnerGroup, JsonModel):
 
     id: Optional[int] = Field(index=True, default=None)
     name: str = Field(index=True, full_text_search=True)

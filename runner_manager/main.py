@@ -1,15 +1,16 @@
 import logging
 
 from fastapi import Depends, FastAPI
-from rq import Queue
 from redis import Redis
+from rq import Queue
 
-from runner_manager.dependencies import get_queue, get_settings, get_redis
-from runner_manager.jobs.startup import startup
-from runner_manager.routers import _health, private, public, webhook
 from runner_manager.auth import TrustedHostHealthRoutes
-from runner_manager import Settings
-from runner_manager import Runner, RunnerGroup
+from runner_manager.dependencies import get_queue, get_redis, get_settings
+from runner_manager.jobs.startup import startup
+from runner_manager.models.runner import Runner
+from runner_manager.models.runner_group import RunnerGroup
+from runner_manager.models.settings import Settings
+from runner_manager.routers import _health, private, public, webhook
 
 log = logging.getLogger(__name__)
 app = FastAPI()
@@ -27,7 +28,7 @@ app.add_middleware(TrustedHostHealthRoutes, allowed_hosts=settings.allowed_hosts
 def startup_event(
     redis: Redis = Depends(get_redis),
     queue: Queue = Depends(get_queue),
-    settings: Settings = Depends(get_settings)
+    settings: Settings = Depends(get_settings),
 ):
     job = queue.enqueue(startup)
     status = job.get_status()

@@ -1,8 +1,7 @@
 from rq import Queue
-from githubkit.webhooks.types import WorkflowJobEvent
+
 from runner_manager.models.webhook import AcceptedWebhookEvents
-from runner_manager.logging import log
-from runner_manager.jobs import workflow_job
+
 
 def handle_webhook(webhook: AcceptedWebhookEvents, queue: Queue):
     """Receives a webhook from GitHub and handles it.

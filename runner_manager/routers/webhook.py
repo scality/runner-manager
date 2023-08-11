@@ -1,24 +1,22 @@
-from typing import Annotated
+from typing import Annotated, Set
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Security
 from githubkit.webhooks import verify
 from githubkit.webhooks.types import PingEvent
 from rq import Queue
-from typing import List
 
 from runner_manager.dependencies import get_queue, get_settings
 from runner_manager.models.settings import Settings
 from runner_manager.models.webhook import AcceptedWebhookEvents, WebhookResponse
 
-from runner_manager.logging import log
-
 router = APIRouter(prefix="/webhook")
 
-IMPLEMENTED_WEBHOOKS: List[str] = {
+IMPLEMENTED_WEBHOOKS: Set[str] = {
     "workflow_job.completed",
     "workflow_job.queued",
     "workflow_job.in_progress",
 }
+
 
 def validate_webhook(
     webhook: AcceptedWebhookEvents,

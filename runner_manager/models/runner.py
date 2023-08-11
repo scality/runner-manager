@@ -3,9 +3,7 @@ from enum import Enum
 from typing import List, Literal, Optional
 
 from pydantic import BaseModel as PydanticBaseModel
-from redis_om import Field
-
-from runner_manager.models.base import BaseModel
+from redis_om import Field, JsonModel
 
 # Ideally the runner model would have been inherited
 # from githubkit.rest.models.Runner, like the following:
@@ -34,7 +32,7 @@ class RunnerLabel(PydanticBaseModel):
     type: Optional[Literal["read-only", "custom"]] = "custom"
 
 
-class Runner(BaseModel):
+class Runner(JsonModel):
     name: str = Field(index=True, description="Runner name")
     id: Optional[int] = Field(index=True, default=None, description="Runner id")
     runner_group_id: Optional[int] = Field(
@@ -51,7 +49,9 @@ class Runner(BaseModel):
         default=RunnerStatus.offline, index=True, full_text_search=True
     )
     busy: bool
-    manager: Optional[str] = Field(index=True, description="Runner manager", default=None)
+    manager: Optional[str] = Field(
+        index=True, description="Runner manager", default=None
+    )
     labels: Optional[List[RunnerLabel]] = []
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
