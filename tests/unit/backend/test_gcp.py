@@ -59,27 +59,36 @@ def test_create_delete(gcp_runner, gcp_group):
         Runner.find(Runner.instance_id == runner.instance_id).first()
 
 
+@mark.skipif(
+    not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"), reason="GCP credentials not found"
+)
 def test_update(gcp_runner, gcp_group):
     runner = gcp_group.backend.create(gcp_runner)
     gcp_group.backend.update(runner)
     runner = Runner.find(Runner.labels == runner.labels).first()
     gcp_group.backend.delete(runner)
-    with raises(NotFound):
+    with raises(NotFoundError):
         gcp_group.backend.get(runner.instance_id)
 
 
+@mark.skipif(
+    not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"), reason="GCP credentials not found"
+)
 def test_get(gcp_runner, gcp_group):
     runner = gcp_group.backend.create(gcp_runner)
     assert runner == gcp_group.backend.get(runner.instance_id)
     gcp_group.backend.delete(runner)
-    with raises(NotFound):
+    with raises(NotFoundError):
         gcp_group.backend.get(runner.instance_id)
 
 
+@mark.skipif(
+    not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"), reason="GCP credentials not found"
+)
 def test_list(gcp_runner, gcp_group):
     runner = gcp_group.backend.create(gcp_runner)
     runners: List[Runner] = gcp_group.backend.list()
-    assert runner in runners
+    assert any(runner.name == r.name for r in runners)
     gcp_group.backend.delete(runner)
-    with raises(NotFound):
+    with raises(NotFoundError):
         gcp_group.backend.get(runner.instance_id)

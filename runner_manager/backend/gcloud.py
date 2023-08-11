@@ -97,6 +97,7 @@ class GCPBackend(BaseBackend):
             self.instance_config.disks = disks
             self.instance_config.machine_type = f"zones/{self.config.zone}/machineTypes/{self.instance_config.machine_type}"
             self.instance_config.network_interfaces = network_interfaces
+            self.instance_config.labels = {"runner-manager": self.runner_manager}
             instance: Instance = self.instance_config.configure_instance(runner)
             ext_operation: ExtendedOperation = self.compute_client.insert(
                 project=self.config.project_id,
@@ -145,22 +146,22 @@ class GCPBackend(BaseBackend):
     def list(self) -> List[Runner]:
         runners: List[Runner] = []
         try:
-            instances = self.compute_client.aggregated_list(
+            instances = self.compute_client.list(
                 project=self.config.project_id,
+                zone=self.config.zone,
             )
-            for zone, instance_list in instances.items():
-                for instance in instance_list.instances:
-                    labels = instance.labels or {}
-                    if (
-                        "runner-manager" in labels
-                        and labels["runner-manager"] == self.runner_manager
-                    ):
-                        runner = Runner(
-                            name=instance.name,
-                            instance_id=instance.name,
-                            busy=False,
-                        )
-                        runners.append(runner)
+            for instance in instances:
+                labels = instance.labels or {}
+                if (
+                    "runner-manager" in labels
+                    and labels["runner-manager"] == self.runner_manager
+                ):
+                    runner = Runner(
+                        name=instance.name,
+                        instance_id=instance.name,
+                        busy=False,
+                    )
+                    runners.append(runner)
 
         except Exception as e:
             raise e
