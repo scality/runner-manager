@@ -1,30 +1,27 @@
-
-from rq import Queue
-from rq.job import Job, JobStatus
 from typing import Optional
-from hypothesis import given
-from hypothesis import strategies as st
-from githubkit.webhooks.types import WorkflowJobEvent
-from runner_manager.jobs import workflow_job
-from runner_manager.models.runner_group import RunnerGroup
-from runner_manager.models.runner import Runner
-from redis_om import Migrator, NotFoundError
-from runner_manager.dependencies import get_queue
-
-from pytest import raises
+from uuid import uuid4
 
 from githubkit.webhooks.models import (
-    InstallationLite,
     License,
-    Organization,
     Repository,
     User,
     WorkflowJobCompleted,
     WorkflowJobCompletedPropWorkflowJob,
-    WorkflowJobInProgressPropWorkflowJob,
-    WorkflowJobQueuedPropWorkflowJob,
+    WorkflowJobInProgress,
+    WorkflowJobQueued,
     WorkflowStepCompleted,
 )
+from githubkit.webhooks.types import WorkflowJobEvent
+from hypothesis import assume, given
+from hypothesis import strategies as st
+from pytest import raises
+from redis_om import Migrator, NotFoundError
+from rq import Queue
+from rq.job import Job, JobStatus
+
+from runner_manager.models.runner import Runner
+from runner_manager.models.runner_group import RunnerGroup
+
 
 # The method below is currently facing a KeyError on the license field
 # license field is defined as an alias from license_ = Field(alias="license")
@@ -59,35 +56,62 @@ JobPropStrategy = st.builds(
 )
 
 
-WorkflowJobStrategy = st.builds(
+WorkflowJobCompletedStrategy = st.builds(
     WorkflowJobCompleted,
     action=st.just("completed"),
     repository=RepositoryStrategy,
-    workflow_job=JobPropStrategy,
 )
 
-@given(webhook=WorkflowJobStrategy)
-def test_workflow_job(webhook: WorkflowJobCompleted, queue: Queue):
-    print(webhook.workflow_job.runner_group_name)
+WorkflowJobQueuedStrategy = st.builds(
+    WorkflowJobQueued,
+    action=st.just("queued"),
+    repository=RepositoryStrategy,
+)
+
+WorkflowJobInProgressStrategy = st.builds(
+    WorkflowJobInProgress,
+    action=st.just("in_progress"),
+    repository=RepositoryStrategy,
+)
+
+
+@given(
+    webhook=st.one_of(
+        WorkflowJobCompletedStrategy,
+        WorkflowJobQueuedStrategy,
+        WorkflowJobInProgressStrategy,
+    )
+)
+def test_workflow_job(webhook: WorkflowJobEvent, queue: Queue):
+    runner_group_name: str = webhook.workflow_job.runner_group_name
+    if webhook.action != "queued":
+        assume(webhook.workflow_job.runner_group_name is not None)
+        runner: Runner = Runner(
+            id=webhook.workflow_job.runner_id,
+            name=webhook.workflow_job.runner_name,
+            busy=False,
+            status="online",
+            runner_group_id=webhook.workflow_job.runner_group_id,
+        )
+        runner.save()
+    else:
+        runner_group_name = str(uuid4())
     runner_group: RunnerGroup = RunnerGroup(
-        name=webhook.workflow_job.runner_group_name,
+        name=runner_group_name,
         id=webhook.workflow_job.runner_group_id,
         labels=webhook.workflow_job.labels,
-        backend={"name": "base"}
+        backend={"name": "base"},
     )
     runner_group.save()
-    runner: Runner = Runner(
-        id=webhook.workflow_job.runner_id,
-        name=webhook.workflow_job.runner_name,
-        busy=False,
-        status="online",
-        runner_group_id=runner_group.id,
-    )
-    runner.save()
+
     Migrator().run()
-    job: Job = queue.enqueue(workflow_job.completed, webhook)
+    job: Job = queue.enqueue(
+        f"runner_manager.jobs.workflow_job.{webhook.action}", webhook
+    )
     status: JobStatus = job.get_status()
     assert status == JobStatus.FINISHED
-    with raises(NotFoundError):
-        Runner.get(runner.pk)
-
+    if webhook.action != "queued":
+        with raises(NotFoundError):
+            Runner.get(runner.pk)
+    else:
+        assert Runner.find(Runner.runner_group_id == runner_group.id).count() == 1

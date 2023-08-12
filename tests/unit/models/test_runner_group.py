@@ -49,3 +49,19 @@ def test_list_runners_from_group(runner_group: RunnerGroup):
     runner_group.save()
     runner = runner_group.create_runner(Runner(name="test", busy=False))
     assert runner in runner_group.get_runners()
+
+
+def test_find_runner_group_labels(runner_group: RunnerGroup):
+    runner_group.labels = [
+        "label",
+        "label2",
+        "label3",
+    ]
+    runner_group.save()
+    search = RunnerGroup.find(RunnerGroup.labels << ["label"]).first()
+    assert search == runner_group
+    search = RunnerGroup.find(RunnerGroup.labels << ["label", "label2"]).first()
+    assert search == runner_group
+    search = RunnerGroup.find(RunnerGroup.labels << runner_group.labels).first()
+    with pytest.raises(NotFoundError):
+        RunnerGroup.find(RunnerGroup.labels << ["notfound"]).first()

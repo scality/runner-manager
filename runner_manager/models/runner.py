@@ -40,6 +40,9 @@ class Runner(BaseModel):
     runner_group_id: Optional[int] = Field(
         index=True, default=None, description="Runner group id"
     )
+    runner_group_name: Optional[str] = Field(
+        index=True, full_text_search=True, description="Runner group name"
+    )
     instance_id: Optional[str] = Field(
         index=True,
         full_text_search=True,
