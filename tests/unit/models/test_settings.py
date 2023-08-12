@@ -103,8 +103,8 @@ def test_app_install(stsettings):
     )
 )
 def test_token_auth_strategy(stsettings):
-    assume(stsettings.github_token)
-    assert isinstance(stsettings.github_auth_strategy(), TokenAuthStrategy)
+    if stsettings.github_token:
+        assert isinstance(stsettings.github_auth_strategy(), TokenAuthStrategy)
 
 
 @given(
