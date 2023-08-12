@@ -38,7 +38,9 @@ class Settings(BaseSettings):
     api_key: Optional[SecretStr] = None
     allowed_hosts: Optional[Sequence[str]] = [
         "localhost",
+        "127.0.0.1",
         "testserver",
+        "10.*",
     ]
     log_level: LogLevel = LogLevel.INFO
     runner_groups: List[BaseRunnerGroup] = []
