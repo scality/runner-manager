@@ -34,6 +34,9 @@ jobs:
       - name: get all resources
         if: failure()
         run: kubectl get all
+      - name: describe all resources
+        if: failure()
+        run: kubectl describe all
       - name: get logs
         if: failure()
         run: |
