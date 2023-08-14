@@ -36,6 +36,7 @@ class RunnerLabel(PydanticBaseModel):
 
 class Runner(BaseModel):
     name: str = Field(index=True, description="Runner name")
+    id: Optional[int] = Field(index=True, default=None, description="Runner id")
     runner_group_id: Optional[int] = Field(
         index=True, default=None, description="Runner group id"
     )

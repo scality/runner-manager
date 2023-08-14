@@ -23,8 +23,8 @@ class DockerBackend(BaseBackend):
         return DockerClient(base_url=self.config.base_url)
 
     def create(self, runner: Runner):
-        labels: Dict[str, str] = {
-            "runner-manager": self.runner_manager,
+        labels: Dict[str, str | None] = {
+            "runner-manager": self.manager,
         }
         if self.instance_config.labels:
             labels.update(self.instance_config.labels.items())
@@ -79,7 +79,7 @@ class DockerBackend(BaseBackend):
 
     def list(self) -> List[Runner]:
         containers: List[Container] = self.client.containers.list(
-            filters={"label": f"runner-manager={self.runner_manager}"}
+            filters={"label": f"runner-manager={self.manager}"}
         )
         runners: List[Runner] = []
         for container in containers:

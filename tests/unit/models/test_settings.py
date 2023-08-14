@@ -6,6 +6,7 @@ import yaml
 from pytest import fixture
 
 from runner_manager.dependencies import get_settings
+from runner_manager.models.runner_group import RunnerGroup
 from runner_manager.models.settings import ConfigFile, Settings
 
 
@@ -19,11 +20,11 @@ def yaml_data():
 
 
 @fixture(scope="function")
-def config_file(yaml_data):
+def config_file(yaml_data, monkeypatch):
     # create a yaml file with some data
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as f:
         yaml.dump(yaml_data, f)
-        os.environ["CONFIG_FILE"] = f.name
+        monkeypatch.setenv("CONFIG_FILE", f.name)
         config = ConfigFile()
         return config.config_file
 
@@ -70,3 +71,8 @@ def test_get_settings(config_file):
     get_settings()
     with pytest.raises(FileNotFoundError):
         Settings()
+
+
+def test_settings_runner_group(runner_group: RunnerGroup):
+    settings = Settings(runner_groups=[runner_group])
+    assert settings.runner_groups == [runner_group]
