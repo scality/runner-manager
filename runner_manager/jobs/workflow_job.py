@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from githubkit.webhooks.models import (
     WorkflowJobCompleted,
     WorkflowJobInProgress,
@@ -29,20 +31,13 @@ def completed(webhook: WorkflowJobCompleted) -> int:
 def in_progress(webhook: WorkflowJobInProgress) -> str | None:
     log.info(f"Starting {webhook.action} workflow_job event")
     name: str | None = webhook.workflow_job.runner_name
-    group: str | None = webhook.workflow_job.runner_group_name
-    group_id: int | None = webhook.workflow_job.runner_group_id
-    try:
-        runner_group: RunnerGroup = RunnerGroup.find(RunnerGroup.id == group_id).first()
-        runner: Runner = Runner.find(Runner.name == name).first()
-        log.info(f"Updating runner {name} in group {group}")
-        runner: Runner = runner_group.update_runner(webhook)
-        log.info(f"Runner {name} in group {group} has been updated")
-    except NotFoundError:
-        log.warning(f"Runner {name} belonging to group {group} not found")
+    runner_group: RunnerGroup | None = RunnerGroup.find_from_webhook(webhook)
+    if not runner_group:
+        log.info(f"Runner group for {name} not found")
         return None
-    except Exception:
-        log.error(f"Failed to update runner {name} in group {group}")
-        raise Exception
+    log.info(f"Updating runner {name} in group {runner_group.name}")
+    runner: Runner = runner_group.update_runner(webhook=webhook)
+    log.info(f"Runner {name} in group {runner_group.name} has been updated")
     return runner.pk
 
 

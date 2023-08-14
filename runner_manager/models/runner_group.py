@@ -1,4 +1,4 @@
-from typing import List, Optional, Type, Union
+from typing import List, Optional, Self, Union
 from uuid import uuid4
 
 from githubkit.webhooks.models import WorkflowJobInProgress
@@ -101,7 +101,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         runner.save()
         return self.backend.create(runner)
 
-    def update_runner(self, webhook: WorkflowJobInProgress) -> Runner:
+    def update_runner(self: Self, webhook: WorkflowJobInProgress) -> Runner:
         """Update a runner instance.
 
         Returns:
@@ -127,18 +127,18 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         return self.backend.delete(runner)
 
     @classmethod
-    def find_group_from_runner(cls, runner: Runner) -> Type["RunnerGroup"] | None:
-        """Find the runner group from a runner instance.
+    def find_from_webhook(cls, webhook: WorkflowJobInProgress) -> "RunnerGroup":
+        """Find the runner group from a webhook instance.
 
         Args:
-            runner (Runner): Runner instance.
+            webhook (WorkflowJobInProgress): Webhook instance.
 
         Returns:
             RunnerGroup: Runner group instance.
         """
         try:
             group: RunnerGroup | None = cls.find(
-                cls.id == runner.runner_group_id
+                (cls.id == webhook.workflow_job.runner_group_id)
             ).first()
         except NotFoundError:
             group = None
