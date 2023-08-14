@@ -40,14 +40,14 @@ def test_runner_group_backend(runner_group: RunnerGroup):
 
 def test_create_runner_from_group(runner_group: RunnerGroup):
     runner_group.save()
-    runner = runner_group.create_runner(Runner(name="test", busy=False))
+    runner = runner_group.create_runner()
     assert runner.runner_group_id == runner_group.id
     assert runner.labels == runner_group.runner_labels
 
 
 def test_list_runners_from_group(runner_group: RunnerGroup):
     runner_group.save()
-    runner = runner_group.create_runner(Runner(name="test", busy=False))
+    runner = runner_group.create_runner()
     assert runner in runner_group.get_runners()
 
 
