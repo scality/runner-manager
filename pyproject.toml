@@ -9,7 +9,7 @@ packages = [{ include = "runner_manager" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-fastapi = "^0.101.0"
+fastapi = "^0.101.1"
 uvicorn = { extras = ["standard"], version = "^0.23.2" }
 pydantic = ">=1.10.2,<2.0"
 redis-om = "^0.2.1"
