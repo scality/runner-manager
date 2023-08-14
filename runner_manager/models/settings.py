@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional, Sequence
 import yaml
 from pydantic import AnyHttpUrl, BaseSettings, RedisDsn, SecretStr
 
-from runner_manager.models.runner_group import BaseRunnerGroup
+from runner_manager.models.runner_group import RunnerGroup
 
 
 class ConfigFile(BaseSettings):
@@ -42,7 +42,7 @@ class Settings(BaseSettings):
     ]
     github_webhook_secret: Optional[SecretStr] = None
     log_level: LogLevel = LogLevel.INFO
-    runner_groups: List[BaseRunnerGroup] = []
+    runner_groups: List[RunnerGroup] = []
 
     class Config:
         smart_union = True
