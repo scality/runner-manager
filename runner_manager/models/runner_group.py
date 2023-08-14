@@ -5,6 +5,7 @@ from pydantic import Field as PydanticField
 from redis_om import Field, RedisModel
 from typing_extensions import Annotated
 
+from runner_manager.backend.aws import AWSBackend
 from runner_manager.backend.base import BaseBackend
 from runner_manager.backend.docker import DockerBackend
 from runner_manager.backend.gcloud import GCPBackend
@@ -30,7 +31,7 @@ class BaseRunnerGroup(PydanticBaseModel):
     labels: List[str]
 
     backend: Annotated[
-        Union[BaseBackend, DockerBackend, GCPBackend],
+        Union[BaseBackend, DockerBackend, GCPBackend, AWSBackend],
         PydanticField(..., discriminator="name"),
     ]
     instance_config: Optional[InstanceConfig] = None
