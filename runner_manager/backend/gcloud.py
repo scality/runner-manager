@@ -89,6 +89,9 @@ class GCPBackend(BaseBackend):
         ]
 
     def create(self, runner: Runner):
+        labels: Dict[str, str | None] = {
+            "runner-manager": self.manager,
+        }
         try:
             image = self.get_image()
             disks = self.get_disks()
@@ -100,7 +103,7 @@ class GCPBackend(BaseBackend):
                 f"{self.instance_config.machine_type}"
             )
             self.instance_config.network_interfaces = network_interfaces
-            self.instance_config.labels = {"runner-manager": self.runner_manager}
+            self.instance_config.labels = labels
             instance: Instance = self.instance_config.configure_instance(runner)
             ext_operation: ExtendedOperation = self.client.insert(
                 project=self.config.project_id,
