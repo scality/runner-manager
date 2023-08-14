@@ -158,10 +158,7 @@ class GCPBackend(BaseBackend):
             )
             for instance in instances:
                 labels = instance.labels or {}
-                if (
-                    "runner-manager" in labels
-                    and labels["runner-manager"] == self.runner_manager
-                ):
+                if self.manager and "runner-manager" in labels:
                     runner = Runner(
                         name=instance.name,
                         instance_id=instance.name,
