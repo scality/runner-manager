@@ -2,7 +2,6 @@ import pytest
 from redis_om import Migrator, NotFoundError
 
 from runner_manager.backend.base import BaseBackend
-from runner_manager.models.runner import Runner
 from runner_manager.models.runner_group import RunnerGroup
 
 
