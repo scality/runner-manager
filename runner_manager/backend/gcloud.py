@@ -89,7 +89,7 @@ class GCPBackend(BaseBackend):
         ]
 
     def create(self, runner: Runner):
-        labels: Dict[str, str | None] = {
+        labels: Dict[str, str] = {
             "runner-manager": self.manager,
         }
         try:
