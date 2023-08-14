@@ -10,7 +10,8 @@ def create_runner_group(settings: Settings = get_settings()):
         if runner_group_config.name not in [group.name for group in existing_groups]:
             runner_group = runner_group_config.save()
         else:
-            runner_group = runner_group_config.update()
+            runner_group = RunnerGroup.find(RunnerGroup.name == runner_group_config.name).first()
+            runner_group.update(runner_group_config)
             existing_groups.remove(runner_group)
     for runner_group in existing_groups:
         runner_group.delete()
