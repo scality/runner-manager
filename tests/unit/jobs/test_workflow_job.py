@@ -1,117 +1,188 @@
-from typing import Optional
+from time import sleep
 from uuid import uuid4
 
 from githubkit.webhooks.models import (
-    License,
-    Repository,
-    User,
     WorkflowJobCompleted,
-    WorkflowJobCompletedPropWorkflowJob,
     WorkflowJobInProgress,
     WorkflowJobQueued,
-    WorkflowStepCompleted,
 )
-from githubkit.webhooks.types import WorkflowJobEvent
-from hypothesis import assume, given
-from hypothesis import strategies as st
-from pytest import raises
-from redis_om import Migrator, NotFoundError
+from hypothesis import assume, given, settings
+from redis import Redis
+from redis_om import JsonModel, Migrator
 from rq import Queue
 from rq.job import Job, JobStatus
 
+from runner_manager import Settings
+from runner_manager.jobs import workflow_job
 from runner_manager.models.runner import Runner
 from runner_manager.models.runner_group import RunnerGroup
 
-
-# The method below is currently facing a KeyError on the license field
-# license field is defined as an alias from license_ = Field(alias="license")
-# RepositoryStrategy = st.builds(Repository,
-#     license_=st.builds(License)
-# )
-class Repo(Repository):
-    license: Optional[License] = None
-
-
-UserStrategy = st.builds(
-    User,
-    name=st.just("test"),
-    email=st.just("test@email.com"),
-)
-RepositoryStrategy = st.builds(
-    Repo,
-    license=st.just(None),
-    owner=UserStrategy,
-)
-
-StepStrategy = st.builds(WorkflowStepCompleted)
-
-JobPropStrategy = st.builds(
-    WorkflowJobCompletedPropWorkflowJob,
-    steps=st.lists(StepStrategy, max_size=1),
-    runner_name=st.text(min_size=1, max_size=10),
-    runner_id=st.integers(min_value=1),
-    runner_group_name=st.text(min_size=1, max_size=10),
-    runner_group_id=st.integers(min_value=1),
-    labels=st.lists(st.text(min_size=1, max_size=10)),
+from ...strategies import (
+    QueueStrategy,
+    RedisStrategy,
+    SettingsStrategy,
+    WorkflowJobCompletedStrategy,
+    WorkflowJobInProgressStrategy,
+    WorkflowJobQueuedStrategy,
 )
 
 
-WorkflowJobCompletedStrategy = st.builds(
-    WorkflowJobCompleted,
-    action=st.just("completed"),
-    repository=RepositoryStrategy,
-)
-
-WorkflowJobQueuedStrategy = st.builds(
-    WorkflowJobQueued,
-    action=st.just("queued"),
-    repository=RepositoryStrategy,
-)
-
-WorkflowJobInProgressStrategy = st.builds(
-    WorkflowJobInProgress,
-    action=st.just("in_progress"),
-    repository=RepositoryStrategy,
-)
+def wait_for_migration(model: JsonModel):
+    count = 0
+    while model.find().count() == 0:
+        print("waiting for index to be created")
+        sleep(0.1)
+        count += 1
+        if count > 100:
+            raise Exception("timeout waiting for index to be created")
 
 
+def init_model(model: JsonModel, redis: Redis, settings: Settings):
+    model.Meta.database = redis
+    model.Meta.global_key_prefix = settings.name
+    pks = model.all_pks()
+    for pk in pks:
+        model.delete(pk)
+    Migrator().run()
+
+
+@settings(max_examples=10)
 @given(
-    webhook=st.one_of(
-        WorkflowJobCompletedStrategy,
-        WorkflowJobQueuedStrategy,
-        WorkflowJobInProgressStrategy,
-    )
+    webhook=WorkflowJobCompletedStrategy,
+    queue=QueueStrategy,
+    settings=SettingsStrategy,
+    redis=RedisStrategy,
 )
-def test_workflow_job(webhook: WorkflowJobEvent, queue: Queue):
-    runner_group_name: str = webhook.workflow_job.runner_group_name
-    if webhook.action != "queued":
-        assume(webhook.workflow_job.runner_group_name is not None)
-        runner: Runner = Runner(
-            id=webhook.workflow_job.runner_id,
-            name=webhook.workflow_job.runner_name,
-            busy=False,
-            status="online",
-            runner_group_id=webhook.workflow_job.runner_group_id,
-        )
-        runner.save()
-    else:
-        runner_group_name = str(uuid4())
+def test_workflow_job_completed(
+    webhook: WorkflowJobCompleted, queue: Queue, settings: Settings, redis: Redis
+):
+    init_model(RunnerGroup, redis, settings)
+    init_model(Runner, redis, settings)
+    assume(webhook.action == "completed")
     runner_group: RunnerGroup = RunnerGroup(
-        name=runner_group_name,
+        name=webhook.workflow_job.runner_group_name,
         id=webhook.workflow_job.runner_group_id,
         labels=webhook.workflow_job.labels,
+        manager=settings.name,
         backend={"name": "base"},
     )
     runner_group.save()
+    runner: Runner = Runner(
+        id=webhook.workflow_job.runner_id,
+        name=webhook.workflow_job.runner_name,
+        busy=False,
+        status="online",
+        manager=settings.name,
+        runner_group_id=webhook.workflow_job.runner_group_id,
+        runner_group_name=webhook.workflow_job.runner_group_name,
+    )
+    runner.save()
 
     Migrator().run()
-    job: Job = queue.enqueue(
-        f"runner_manager.jobs.workflow_job.{webhook.action}", webhook
-    )
+    job: Job = queue.enqueue(workflow_job.completed, webhook)
     status: JobStatus = job.get_status()
     assert status == JobStatus.FINISHED
-    if webhook.action != "queued":
-        with raises(NotFoundError):
-            Runner.get(runner.pk)
-    else:
-        assert Runner.find(Runner.runner_group_id == runner_group.id).count() == 1
+    assert (
+        Runner.find(Runner.id == runner.id, Runner.manager == runner.manager).count()
+        == 0
+    )
+
+
+@settings(max_examples=10)
+@given(
+    webhook=WorkflowJobInProgressStrategy,
+    queue=QueueStrategy,
+    settings=SettingsStrategy,
+    redis=RedisStrategy,
+)
+def test_workflow_job_in_progress(
+    webhook: WorkflowJobInProgress, queue: Queue, settings: Settings, redis: Redis
+):
+
+    # flush all keys that start with settings.name in redis
+
+    init_model(RunnerGroup, redis, settings)
+    init_model(Runner, redis, settings)
+    runner_group: RunnerGroup = RunnerGroup(
+        name=webhook.workflow_job.runner_group_name,
+        id=webhook.workflow_job.runner_group_id,
+        labels=webhook.workflow_job.labels,
+        manager=settings.name,
+        backend={"name": "base"},
+    )
+    runner_group.save()
+    runner: Runner = Runner(
+        id=webhook.workflow_job.runner_id,
+        name=webhook.workflow_job.runner_name,
+        busy=False,
+        status="idle",
+        manager=settings.name,
+        runner_group_id=webhook.workflow_job.runner_group_id,
+        runner_group_name=webhook.workflow_job.runner_group_name,
+    )
+    runner.save()
+    Migrator().run()
+    assert runner in Runner.find().all()
+    assert runner_group in RunnerGroup.find().all()
+    job: Job = queue.enqueue(workflow_job.in_progress, webhook)
+
+    status: JobStatus = job.get_status()
+    assert status == JobStatus.FINISHED
+    assert (
+        Runner.find(Runner.id == runner.id, Runner.manager == runner.manager).count()
+        == 1
+    )
+    updated_runner: Runner = Runner.find(
+        Runner.id == runner.id, Runner.manager == runner.manager
+    ).first()
+    assert updated_runner.busy is True
+    assert updated_runner.status == "online"
+    assert updated_runner.id == webhook.workflow_job.runner_id
+    assert updated_runner.name == webhook.workflow_job.runner_name
+    assert updated_runner.updated_at == webhook.workflow_job.started_at
+
+
+@settings(max_examples=10)
+@given(
+    webhook=WorkflowJobQueuedStrategy,
+    queue=QueueStrategy,
+    settings=SettingsStrategy,
+    redis=RedisStrategy,
+)
+def test_workflow_job_queued(
+    webhook: WorkflowJobQueued, queue: Queue, settings: Settings, redis: Redis
+):
+    init_model(RunnerGroup, redis, settings)
+    init_model(Runner, redis, settings)
+    runner_group: RunnerGroup = RunnerGroup(
+        name=uuid4().hex,
+        labels=webhook.workflow_job.labels,
+        manager=settings.name,
+        backend={"name": "base"},
+    )
+    runner_group.save()
+    Migrator().run()
+
+    # wait for index to be created
+    assert runner_group == RunnerGroup.get(runner_group.pk)
+
+    wait_for_migration(RunnerGroup)
+    job: Job = queue.enqueue(workflow_job.queued, webhook)
+    status: JobStatus = job.get_status()
+    assert status == JobStatus.FINISHED
+    Migrator().run()
+
+    wait_for_migration(Runner)
+    assert (
+        Runner.find(
+            Runner.runner_group_name == runner_group.name,
+            Runner.manager == settings.name,
+        ).count()
+        == 1
+    )
+
+    runner: Runner = Runner.find(
+        Runner.runner_group_name == runner_group.name, Runner.manager == settings.name
+    ).first()
+    assert runner.busy is False
+    assert runner.status == "offline"

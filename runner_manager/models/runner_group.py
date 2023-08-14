@@ -1,16 +1,17 @@
-from typing import List, Optional, Union
+from typing import List, Optional, Type, Union
 from uuid import uuid4
 
+from githubkit.webhooks.models import WorkflowJobInProgress
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Field as PydanticField
-from redis_om import Field, RedisModel
+from redis_om import Field, NotFoundError, RedisModel
 from typing_extensions import Annotated
 
 from runner_manager.backend.base import BaseBackend
 from runner_manager.backend.docker import DockerBackend
 from runner_manager.models.backend import InstanceConfig
 from runner_manager.models.base import BaseModel
-from runner_manager.models.runner import Runner, RunnerLabel
+from runner_manager.models.runner import Runner, RunnerLabel, RunnerStatus
 
 
 class BaseRunnerGroup(PydanticBaseModel):
@@ -72,8 +73,6 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             return f"{self.name}-{uuid4()}"
 
         name = _generate_name()
-        while Runner.find(Runner.name == name).count() > 0:
-            name = _generate_name()
         return name
 
     def get_runners(self) -> List[Runner] | List[RedisModel]:
@@ -92,19 +91,31 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         """
         runner: Runner = Runner(
             name=self.generate_runner_name(),
+            status=RunnerStatus.offline,
+            busy=False,
             runner_group_id=self.id,
             runner_group_name=self.name,
             labels=self.runner_labels,
             manager=self.manager,
         )
+        runner.save()
         return self.backend.create(runner)
 
-    def update_runner(self, runner: Runner) -> Runner:
+    def update_runner(self, webhook: WorkflowJobInProgress) -> Runner:
         """Update a runner instance.
 
         Returns:
             Runner: Runner instance.
         """
+        # return self.backend.update(runner)
+        runner: Runner = Runner.find(
+            Runner.name == webhook.workflow_job.runner_name
+        ).first()
+        runner.id = webhook.workflow_job.runner_id
+        runner.status = RunnerStatus.online
+        runner.busy = True
+        runner.updated_at = webhook.workflow_job.started_at
+        runner.save()
         return self.backend.update(runner)
 
     def delete_runner(self, runner: Runner) -> int:
@@ -114,3 +125,21 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             Runner: Runner instance.
         """
         return self.backend.delete(runner)
+
+    @classmethod
+    def find_group_from_runner(cls, runner: Runner) -> Type["RunnerGroup"] | None:
+        """Find the runner group from a runner instance.
+
+        Args:
+            runner (Runner): Runner instance.
+
+        Returns:
+            RunnerGroup: Runner group instance.
+        """
+        try:
+            group: RunnerGroup | None = cls.find(
+                cls.id == runner.runner_group_id
+            ).first()
+        except NotFoundError:
+            group = None
+        return group

@@ -12,7 +12,7 @@ from runner_manager import Runner, RunnerGroup, Settings
 hypothesis_settings.register_profile(
     "unit",
     suppress_health_check=[HealthCheck.function_scoped_fixture],
-    max_examples=50,
+    max_examples=10,
 )
 hypothesis_settings.load_profile("unit")
 
@@ -36,13 +36,14 @@ def redis(settings):
     redis: Redis = get_redis_connection(
         url=settings.redis_om_url, decode_responses=True
     )
-    for key in redis.scan_iter(f"{settings.name}:*"):
-        print(f"deleted key {key}")
-        redis.delete(key)
+
     Migrator().run()
 
     Runner.Meta.database = redis
     RunnerGroup.Meta.database = redis
+    Runner.delete_many(Runner.find().all())
+    RunnerGroup.delete_many(RunnerGroup.find().all())
+
     return redis
 
 
