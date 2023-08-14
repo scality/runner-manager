@@ -1,5 +1,5 @@
 import time
-from typing import List, Literal
+from typing import Dict, List, Literal
 
 from google.api_core.exceptions import NotFound
 from google.api_core.extended_operation import ExtendedOperation
