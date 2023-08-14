@@ -46,9 +46,9 @@ def queued(webhook: WorkflowJobQueued) -> str | None:
     labels = webhook.workflow_job.labels
     log.info(f"Finding runner group with labels {labels}")
     try:
-        runner_group: RunnerGroup = RunnerGroup.find(
-            RunnerGroup.labels << labels  # pyright: ignore
-        ).first()
+        runner_group: RunnerGroup = RunnerGroup.find_from_labels(
+            webhook.workflow_job.labels
+        )
         log.info(f"Found runner group {runner_group.name}")
     except NotFoundError:
         log.warning(f"Runner group with labels {labels} not found")

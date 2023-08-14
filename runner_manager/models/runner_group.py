@@ -143,3 +143,21 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         except NotFoundError:
             group = None
         return group
+
+    @classmethod
+    def find_from_labels(cls, labels: List[str]) -> "RunnerGroup":
+        """Find the runner group from a list of labels.
+
+        Args:
+            labels (List[str]): List of labels.
+
+        Returns:
+            RunnerGroup: Runner group instance.
+        """
+        try:
+            group: RunnerGroup | None = cls.find(
+                (cls.labels << labels)  # pyright: ignore
+            ).first()
+        except NotFoundError:
+            group = None
+        return group
