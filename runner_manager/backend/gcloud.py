@@ -89,9 +89,9 @@ class GCPBackend(BaseBackend):
         ]
 
     def create(self, runner: Runner):
-        labels: Dict[str, str] = {
-            "runner-manager": self.manager,
-        }
+        labels: Dict[str, str] = {}
+        if self.manager:
+            labels["runner-manager"] = self.manager
         try:
             image = self.get_image()
             disks = self.get_disks()

@@ -11,7 +11,7 @@ from runner_manager.models.runner_group import RunnerGroup
 
 
 @fixture()
-def gcp_group() -> RunnerGroup:
+def gcp_group(settings) -> RunnerGroup:
     config = GCPConfig(
         project_id=os.environ.get("CLOUDSDK_CORE_PROJECT", ""),
         zone=os.environ.get("CLOUDSDK_COMPUTE_ZONE", ""),
@@ -23,6 +23,7 @@ def gcp_group() -> RunnerGroup:
         id=2,
         name="test",
         organization="test",
+        manager=settings.name,
         backend=GCPBackend(
             name=Backends.gcloud,
             config=config,
