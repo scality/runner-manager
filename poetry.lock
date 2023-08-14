@@ -619,13 +619,13 @@ requests = ["requests (>=2.20.0,<3.0.0.dev0)"]
 
 [[package]]
 name = "google-cloud-compute"
-version = "1.13.0"
+version = "1.14.0"
 description = "Google Cloud Compute API client library"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "google-cloud-compute-1.13.0.tar.gz", hash = "sha256:93b72129c6443c898da5a060d2021bc2d11c2a57ef2fbb9306afbb5126a376b9"},
-    {file = "google_cloud_compute-1.13.0-py2.py3-none-any.whl", hash = "sha256:0f75d6c09cc504e43f4eceb2a466de9e9eb6fca819ca8ffdcf098ca5b21c7dc1"},
+    {file = "google-cloud-compute-1.14.0.tar.gz", hash = "sha256:02d1a3cfe82127efd623ca696af905d89e87aaaeb9a5062159bdcf3747fd8f66"},
+    {file = "google_cloud_compute-1.14.0-py2.py3-none-any.whl", hash = "sha256:601e6b9f26bae44a4551249daf933e34def4bea95a007294dacc197b3102b52d"},
 ]
 
 [package.dependencies]
@@ -2369,4 +2369,4 @@ dev = ["doc8", "flake8", "flake8-import-order", "rstcheck[sphinx]", "sphinx"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "349874edd8dbbe58a7594518a14cd33a682a8633ba827336ab6d16e55a99ffd4"
+content-hash = "31f102e07d79cc46a4006beb6d2e83ca99bb28d59524d8e7dcb67f1038ebef92"
