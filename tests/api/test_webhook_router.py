@@ -45,6 +45,8 @@ def test_webhook_authentication(workflow_job, client, authentified_app):
     # Second request with authentication
     signature = sign("secret", data, method="sha256")
     response = client.post(
-        "/webhook/", content=data, headers={"X-Hub-Signature-256": signature}
+        "/webhook/",
+        content=data,
+        headers={"X-Hub-Signature-256": signature, "X-GitHub-Event": "workflow_job"},
     )
     assert response.status_code == 200
