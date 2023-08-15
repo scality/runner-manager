@@ -2,8 +2,9 @@ from datetime import datetime
 from enum import Enum
 from typing import List, Literal, Optional
 
+from githubkit.webhooks.types import WorkflowJobEvent
 from pydantic import BaseModel as PydanticBaseModel
-from redis_om import Field
+from redis_om import Field, NotFoundError
 
 from runner_manager.models.base import BaseModel
 
@@ -57,3 +58,24 @@ class Runner(BaseModel):
     labels: Optional[List[RunnerLabel]] = []
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
+
+    @classmethod
+    def find_from_webhook(cls, webhook: WorkflowJobEvent) -> "Runner":
+        """Find a runner from a webhook payload
+
+        Args:
+            webhook (WorkflowJobCompleted): A webhook payload
+        Returns:
+            Runner: A runner object
+        """
+
+        try:
+            runner: Runner | None = cls.find(
+                cls.id == webhook.workflow_job.runner_id
+            ).first()
+        except NotFoundError:
+            runner = None
+        return runner
+
+
+Runner.update_forward_refs()

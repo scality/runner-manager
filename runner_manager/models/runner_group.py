@@ -2,6 +2,7 @@ from typing import List, Optional, Self, Union
 from uuid import uuid4
 
 from githubkit.webhooks.models import WorkflowJobInProgress
+from githubkit.webhooks.types import WorkflowJobEvent
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Field as PydanticField
 from redis_om import Field, NotFoundError, RedisModel
@@ -127,7 +128,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         return self.backend.delete(runner)
 
     @classmethod
-    def find_from_webhook(cls, webhook: WorkflowJobInProgress) -> "RunnerGroup":
+    def find_from_webhook(cls, webhook: WorkflowJobEvent) -> "RunnerGroup":
         """Find the runner group from a webhook instance.
 
         Args:
@@ -161,3 +162,6 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         except NotFoundError:
             group = None
         return group
+
+
+RunnerGroup.update_forward_refs()
