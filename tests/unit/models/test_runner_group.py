@@ -64,7 +64,7 @@ def test_find_runner_group_labels(runner_group: RunnerGroup):
     assert RunnerGroup.find_from_labels(["label"]) == runner_group
     assert RunnerGroup.find_from_labels(["label", "label2"]) == runner_group
     assert RunnerGroup.find_from_labels(runner_group.labels) == runner_group
-    assert RunnerGroup.find_from_labels(["notfound"]) == None
+    assert RunnerGroup.find_from_labels(["notfound"]) is None
 
 
 @given(webhook=WorkflowJobCompletedStrategy)
@@ -73,4 +73,4 @@ def test_find_from_webhook(runner_group: RunnerGroup, webhook: WorkflowJobComple
     runner_group.save()
     assert RunnerGroup.find_from_webhook(webhook) == runner_group
     runner_group.delete(runner_group.pk)
-    assert RunnerGroup.find_from_webhook(webhook) == None
+    assert RunnerGroup.find_from_webhook(webhook) is None
