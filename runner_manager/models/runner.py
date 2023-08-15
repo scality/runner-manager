@@ -50,6 +50,7 @@ class Runner(BaseModel):
         description="Backend instance id",
         default=None,
     )
+    token: Optional[str] = None
     backend: Optional[str] = Field(index=True, description="Backend type")
     status: RunnerStatus = Field(
         default=RunnerStatus.offline, index=True, full_text_search=True

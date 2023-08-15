@@ -46,6 +46,11 @@ RepositoryStrategy = st.builds(
     owner=UserStrategy,
 )
 
+OrgStrategy = st.builds(
+    Organization,
+    login=st.just("octo-org"),
+)
+
 StepStrategy = st.builds(WorkflowStepCompleted)
 
 JobPropCompletedStrategy = st.builds(
@@ -88,7 +93,7 @@ WorkflowJobCompletedStrategy = st.builds(
     action=st.just("completed"),
     repository=RepositoryStrategy,
     sender=UserStrategy,
-    organization=st.builds(Organization),
+    organization=OrgStrategy,
     workflow_job=JobPropCompletedStrategy,
 )
 
@@ -97,7 +102,7 @@ WorkflowJobQueuedStrategy = st.builds(
     action=st.just("queued"),
     repository=RepositoryStrategy,
     sender=UserStrategy,
-    organization=st.builds(Organization),
+    organization=OrgStrategy,
     workflow_job=JobPropQueuedStrategy,
 )
 
@@ -106,7 +111,7 @@ WorkflowJobInProgressStrategy = st.builds(
     action=st.just("in_progress"),
     repository=RepositoryStrategy,
     sender=UserStrategy,
-    organization=st.builds(Organization),
+    organization=OrgStrategy,
     workflow_job=JobPropInProgressStrategy,
 )
 
