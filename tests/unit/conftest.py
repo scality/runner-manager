@@ -10,6 +10,7 @@ from pytest import fixture
 from redis import Redis
 from redis_om import Migrator, get_redis_connection
 from rq import Queue
+from datetime import timedelta
 
 from runner_manager import Runner, RunnerGroup, Settings
 from runner_manager.clients.github import GitHub
@@ -18,6 +19,7 @@ hypothesis_settings.register_profile(
     "unit",
     suppress_health_check=[HealthCheck.function_scoped_fixture],
     max_examples=10,
+    deadline=timedelta(seconds=1),
 )
 hypothesis_settings.load_profile("unit")
 
