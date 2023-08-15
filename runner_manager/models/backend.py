@@ -1,9 +1,10 @@
 from enum import Enum
-from typing import Dict, List, Literal, Optional
+from typing import Dict, List, Literal, Optional, Iterable
 
 from google.cloud.compute import AttachedDisk, Instance, NetworkInterface
 from pydantic import BaseModel
 from redis_om import Field
+from docker.types.containers import ContainerConfig
 
 from runner_manager.models.runner import Runner
 
@@ -32,16 +33,66 @@ class InstanceConfig(BaseModel):
 class DockerInstanceConfig(InstanceConfig):
     """Configuration for Docker backend instance."""
 
-    image: str
+    image: str = "ghcr.io/actions/runner:latest"
 
     # command to run, accept two types: str or List[str].
-    command: Optional[List[str]] = []
+    command: Optional[List[str]] = [
+        "./config.sh",
+        "--name",
+        "${RUNNER_NAME}",
+        "--labels",
+        "${RUNNER_LABELS}",
+        "--token",
+        "${RUNNER_TOKEN}",
+        "--url",
+        "https://github.com/${RUNNER_ORG}/",
+        "--runnergroup",
+        "${RUNNER_GROUP}",
+        "--unattended",
+        "--ephemeral",
+        "&&",
+        "./run.sh"
+    ]
 
     detach: bool = True
     remove: bool = False
-    labels: Optional[Dict[str, str]] = {}
-    environment: Optional[Dict[str, str]] = {}
+    labels: Dict[str, str] = {}
+    environment: Dict[str, str | None] = {
+        'RUNNER_NAME': None,
+        'RUNNER_LABELS': None,
+        'RUNNER_TOKEN': None,
+        'RUNNER_ORG': None,
+        'RUNNER_REPO': None,
+        'RUNNER_GROUP': 'default',
+    }
 
+    def configure_instance(self, runner: Runner) -> ContainerConfig:
+        """Configure instance."""
+        labels: Dict[str, str] = {
+            "repository": runner.repo,
+            "runner_group": runner.runner_group_name,
+            "runner_name": runner.name,
+            "organization": runner.org,
+        }
+        labels.update(self.labels)
+        self.environment['RUNNER_NAME'] = runner.name
+        if runner.labels:
+            self.environment['RUNNER_LABELS'] = ",".join(
+                [label.name for label in runner.labels]
+            )
+        self.environment['RUNNER_TOKEN'] = runner.token
+        self.environment['RUNNER_ORG'] = runner.org
+        self.environment['RUNNER_GROUP'] = runner.runner_group_name
+        # TODO: Verify if this can be set
+        # self.environment['RUNNER_REPO'] = runner.repo
+        return ContainerConfig(
+            version="3",
+            image=self.image,
+            command=self.command,
+            labels=labels,
+            environment=self.environment,
+            detach=self.detach,
+        )
 
 class DockerConfig(BackendConfig):
     """Configuration for Docker backend."""

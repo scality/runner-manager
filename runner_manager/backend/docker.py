@@ -1,4 +1,4 @@
-from typing import Dict, List, Literal
+from typing import Dict, Iterable, List, Literal
 
 from docker import DockerClient
 from docker.errors import APIError, NotFound
@@ -23,20 +23,15 @@ class DockerBackend(BaseBackend):
         return DockerClient(base_url=self.config.base_url)
 
     def create(self, runner: Runner):
-        labels: Dict[str, str | None] = {
-            "runner-manager": self.manager,
-        }
-        if self.instance_config.labels:
-            labels.update(self.instance_config.labels.items())
-
+        if self.manager:
+            labels: Iterable[tuple[str, str]] = [
+                ("runner-manager", self.manager),
+            ]
+            self.instance_config.labels.update(labels)
         container: Container = self.client.containers.run(
-            self.instance_config.image,
-            labels=labels,
-            remove=self.instance_config.remove,
-            detach=self.instance_config.detach,
-            environment=self.instance_config.environment,
-            command=self.instance_config.command,
+            self.instance_config.configure_instance(runner),
             name=runner.name,
+            remove=self.instance_config.remove,
         )
 
         # set container id as instance_id
