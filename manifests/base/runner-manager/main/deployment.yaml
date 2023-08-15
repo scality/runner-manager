@@ -29,7 +29,7 @@ spec:
           livenessProbe:
             failureThreshold: 3
             httpGet:
-              path: /_health
+              path: /_health/
               port: http
             initialDelaySeconds: 5
             periodSeconds: 10
