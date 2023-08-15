@@ -1,10 +1,13 @@
 import pytest
+from githubkit.webhooks.models import WorkflowJobCompleted
 from hypothesis import assume, given
 from hypothesis import strategies as st
 from redis_om import Migrator, NotFoundError
-from githubkit.webhooks.models import WorkflowJobCompleted
+
 from runner_manager.models.runner import Runner
-from ...strategies import WorkflowJobCompletedStrategy, JobPropCompletedStrategy
+
+from ...strategies import JobPropCompletedStrategy, WorkflowJobCompletedStrategy
+
 
 @given(st.builds(Runner))
 def test_validate_runner(instance: Runner):
@@ -40,7 +43,6 @@ def test_find_runner(runner: Runner):
 @given(webhook=WorkflowJobCompletedStrategy)
 def test_find_from_webhook(runner: Runner, webhook: WorkflowJobCompleted):
     webhook.workflow_job.runner_id = runner.id
-    print(webhook.workflow_job.runner_id)
     runner.save()
     assert Runner.find_from_webhook(webhook) == runner
     runner.delete(runner.pk)
