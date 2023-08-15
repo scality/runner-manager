@@ -4,6 +4,8 @@ from typing import Optional
 from githubkit.webhooks.models import (
     License,
     Organization,
+    PingEvent,
+    PingEventPropHook,
     Repository,
     User,
     WorkflowJobCompleted,
@@ -127,3 +129,10 @@ QueueStrategy = st.builds(
     connection=RedisStrategy,
     is_async=st.just(False),
 )
+
+PingHookStrategy = st.builds(
+    PingEventPropHook,
+    events=st.just(["*"]),
+)
+
+PingStrategy = st.builds(PingEvent, hook=PingHookStrategy)

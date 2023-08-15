@@ -8,7 +8,7 @@ from pytest import fixture
 from runner_manager.dependencies import get_settings
 from runner_manager.models.settings import Settings
 
-from ..strategies import WorkflowJobCompletedStrategy
+from ..strategies import PingStrategy, WorkflowJobCompletedStrategy
 
 
 @lru_cache()
@@ -49,4 +49,10 @@ def test_webhook_authentication(workflow_job, client, authentified_app):
         content=data,
         headers={"X-Hub-Signature-256": signature, "X-GitHub-Event": "workflow_job"},
     )
+    assert response.status_code == 200
+
+
+@given(ping=PingStrategy)
+def test_ping_event(ping, client):
+    response = client.post("/webhook", content=ping.json(exclude_unset=True))
     assert response.status_code == 200
