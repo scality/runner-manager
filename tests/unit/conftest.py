@@ -61,6 +61,7 @@ def queue(redis) -> Queue:
 @fixture()
 def runner(settings) -> Runner:
     runner: Runner = Runner(
+        id=1,
         name="test",
         runner_group_id=1,
         status="online",
@@ -69,7 +70,7 @@ def runner(settings) -> Runner:
         manager=settings.name,
     )
     assert runner.Meta.global_key_prefix == settings.name
-    Runner.delete(runner.pk)
+    Runner.delete_many(Runner.find().all())
     return runner
 
 

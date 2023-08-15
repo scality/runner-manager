@@ -57,10 +57,7 @@ def test_find_runner_group_labels(runner_group: RunnerGroup):
         "label3",
     ]
     runner_group.save()
-    search = RunnerGroup.find(RunnerGroup.labels << ["label"]).first()
-    assert search == runner_group
-    search = RunnerGroup.find(RunnerGroup.labels << ["label", "label2"]).first()
-    assert search == runner_group
-    search = RunnerGroup.find(RunnerGroup.labels << runner_group.labels).first()
-    with pytest.raises(NotFoundError):
-        RunnerGroup.find(RunnerGroup.labels << ["notfound"]).first()
+    assert RunnerGroup.find_from_labels(["label"]) == runner_group
+    assert RunnerGroup.find_from_labels(["label", "label2"]) == runner_group
+    assert RunnerGroup.find_from_labels(runner_group.labels) == runner_group
+    assert RunnerGroup.find_from_labels(["notfound"]) == None
