@@ -173,7 +173,7 @@ def test_workflow_job_queued(
     assert runner_group == RunnerGroup.get(runner_group.pk)
 
     wait_for_migration(RunnerGroup)
-    queue.enqueue(workflow_job.queued, webhook)
+    job: Job = queue.enqueue(workflow_job.queued, webhook)
     status: JobStatus = job.get_status()
 
     assert status == JobStatus.FINISHED
