@@ -1,5 +1,11 @@
 ---
 version: 2
+registries:
+  dockerhub: # Define access for a private registry
+    type: docker-registry
+    url: registry.hub.docker.com
+    username: ${{ secrets.DOCKERHUB_LOGIN }}
+    password: ${{ secrets.DOCKERHUB_PASSWORD }}
 updates:
   - package-ecosystem: github-actions
     directory: /
@@ -12,6 +18,8 @@ updates:
       - github-actions
       - dependencies
   - package-ecosystem: docker
+    registries:
+      - dockerhub
     directory: /
     schedule:
       interval: daily
