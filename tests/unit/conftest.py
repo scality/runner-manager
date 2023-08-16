@@ -108,7 +108,7 @@ def runner_group(settings) -> RunnerGroup:
         id=1,
         name="test",
         manager=settings.name,
-        organization="test",
+        organization="octo-org",
         backend={"name": "base"},
         labels=[
             "label",
