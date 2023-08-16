@@ -15,7 +15,7 @@ def docker_group(settings) -> RunnerGroup:
     runner_group: RunnerGroup = RunnerGroup(
         id=1,
         name="test",
-        organization="test",
+        organization="octo-org",
         manager=settings.name,
         backend=DockerBackend(
             name=Backends.docker,

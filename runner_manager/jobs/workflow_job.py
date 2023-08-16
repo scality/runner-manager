@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+from githubkit import Response
+from githubkit.rest.models import AuthenticationToken
 from githubkit.webhooks.models import (
     WorkflowJobCompleted,
     WorkflowJobInProgress,
     WorkflowJobQueued,
 )
 
+from runner_manager.clients.github import GitHub
+from runner_manager.dependencies import get_github
 from runner_manager.logging import log
 from runner_manager.models.runner import Runner
 from runner_manager.models.runner_group import RunnerGroup
@@ -45,5 +49,13 @@ def queued(webhook: WorkflowJobQueued) -> str | None:
         log.warning(f"Runner group with labels {labels} not found")
         return None
     log.info(f"Found runner group {runner_group.name}")
-    runner: Runner = runner_group.create_runner()
+    log.info(f"Creating registration token for runner {runner_group.name}")
+    github: GitHub = get_github()
+    org = runner_group.organization
+    token_response: Response[
+        AuthenticationToken
+    ] = github.rest.actions.create_registration_token_for_org(org=org)
+    token: AuthenticationToken = token_response.parsed_data
+    log.info("Registration token created.")
+    runner: Runner = runner_group.create_runner(token)
     return runner.pk
