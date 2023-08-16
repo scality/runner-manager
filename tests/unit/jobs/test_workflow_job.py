@@ -175,6 +175,7 @@ def test_workflow_job_queued(
     wait_for_migration(RunnerGroup)
     job: Job = queue.enqueue(workflow_job.queued, webhook)
     status: JobStatus = job.get_status()
+
     assert status == JobStatus.FINISHED
     Migrator().run()
 

@@ -1,3 +1,4 @@
+from datetime import timedelta
 from uuid import uuid4
 
 import httpx
@@ -18,6 +19,7 @@ hypothesis_settings.register_profile(
     "unit",
     suppress_health_check=[HealthCheck.function_scoped_fixture],
     max_examples=10,
+    deadline=timedelta(seconds=1),
 )
 hypothesis_settings.load_profile("unit")
 
@@ -28,6 +30,8 @@ def settings():
 
     settings = Settings(
         name=uuid4().hex,
+        github_token="test",
+        github_base_url="http://localhost:4010",
     )
     Runner.Meta.global_key_prefix = settings.name
     RunnerGroup.Meta.global_key_prefix = settings.name
@@ -106,7 +110,7 @@ def runner_group(settings) -> RunnerGroup:
         id=1,
         name="test",
         manager=settings.name,
-        organization="test",
+        organization="octo-org",
         backend={"name": "base"},
         labels=[
             "label",

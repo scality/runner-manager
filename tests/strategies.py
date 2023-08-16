@@ -119,6 +119,8 @@ SettingsStrategy = st.builds(
     Settings,
     name=Text,
     redis_om_url=st.just("redis://localhost:6379/0"),
+    github_base_url=st.just("http://localhost:4010"),
+    github_token=st.just("test"),
 )
 
 RedisStrategy = st.builds(
