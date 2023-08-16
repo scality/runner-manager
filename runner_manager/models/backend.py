@@ -81,3 +81,41 @@ class GCPInstanceConfig(InstanceConfig):
             network_interfaces=self.network_interfaces,
             labels=self.labels,
         )
+
+class AWSConfig(BackendConfig):
+    """Configuration for AWS backend."""
+
+    region: str = "us-west-2"
+
+
+class AWSInstanceConfig(InstanceConfig):
+    """Configuration for AWS backend instance."""
+
+    image: str = "ami-785db401"
+    instance_type: str = "t2.micro"
+    subnet_id: Optional[str] = None
+    security_group_ids: Optional[List[str]] = None
+    key_name: Optional[str] = None
+    MaxCount: int = 1
+    MinCount: int = 1
+    tags: Dict[str, str] = {}
+    user_data: Optional[str] = None
+    block_device_mappings: Optional[List[Dict[str, str]]] = None
+
+    class Config:
+        arbitrary_types_allowed = True
+
+    def configure_instance(self, runner: Runner) -> Dict:
+        """Configure instance."""
+        return {
+            "ImageId": self.image,
+            "InstanceType": self.instance_type,
+            "SubnetId": self.subnet_id,
+            "SecurityGroupIds": self.security_group_ids,
+            "KeyName": self.key_name,
+            "Tags": self.tags,
+            "UserData": self.user_data,
+            "MaxCount": self.MaxCount,
+            "MinCount": self.MinCount,
+            "BlockDeviceMappings": self.block_device_mappings,
+        }
