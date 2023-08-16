@@ -2,7 +2,7 @@
   "include": ["./runner_manager"],
   "exclude": ["**/__pycache__", "**/node_modules"],
   "typeCheckingMode": "basic",
-  "stubPath": "./typings",
+  "typeRoots": ["./typings"],
   "reportMissingTypeStubs": true,
   "venvPath": ".",
   "venv": ".venv"

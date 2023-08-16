@@ -1,6 +1,7 @@
 # Runner Manager
 
 [![codecov](https://codecov.io/github/scality/runner-manager/branch/main/graph/badge.svg?token=Z63RX28ZET)](https://codecov.io/github/scality/runner-manager)
+[![tests](https://github.com/scality/runner-manager/actions/workflows/tests.yaml/badge.svg)](https://github.com/scality/runner-manager/actions/workflows/tests.yaml)
 
 The runner manager is a software used to create predefined virtual machines
 on different cloud providers in order to manage
