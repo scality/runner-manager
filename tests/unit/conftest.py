@@ -35,6 +35,7 @@ def settings():
         runner_groups=[
             BaseRunnerGroup(
                 name="test",
+                organization="octo-org",
                 labels=[
                     "label",
                 ],

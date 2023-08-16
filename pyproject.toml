@@ -47,3 +47,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 addopts = "--cov=runner_manager --cov-report=xml"
+
+[tool.poetry.scripts]
+worker = "runner_manager.scripts.worker:run"
+scheduler = "runner_manager.scripts.scheduler:run"
