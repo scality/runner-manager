@@ -1,4 +1,5 @@
 import pytest
+from githubkit.rest.models import AuthenticationToken
 from githubkit.webhooks.models import WorkflowJobCompleted
 from hypothesis import given
 from redis_om import Migrator, NotFoundError
@@ -43,16 +44,20 @@ def test_runner_group_backend(runner_group: RunnerGroup):
     RunnerGroup.delete(runner_group.pk)
 
 
-def test_create_runner_from_group(runner_group: RunnerGroup):
+def test_create_runner_from_group(
+    runner_group: RunnerGroup, runner_token: AuthenticationToken
+):
     runner_group.save()
-    runner = runner_group.create_runner()
+    runner = runner_group.create_runner(runner_token)
     assert runner.runner_group_id == runner_group.id
     assert runner.labels == runner_group.runner_labels
 
 
-def test_list_runners_from_group(runner_group: RunnerGroup):
+def test_list_runners_from_group(
+    runner_group: RunnerGroup, runner_token: AuthenticationToken
+):
     runner_group.save()
-    runner = runner_group.create_runner()
+    runner = runner_group.create_runner(runner_token)
     assert runner in runner_group.get_runners()
 
 

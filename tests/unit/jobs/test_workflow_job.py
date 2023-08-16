@@ -59,7 +59,9 @@ def test_workflow_job_completed(
     init_model(RunnerGroup, redis, settings)
     init_model(Runner, redis, settings)
     assume(webhook.action == "completed")
+    assert webhook.organization
     runner_group: RunnerGroup = RunnerGroup(
+        organization=webhook.organization.login,
         name=webhook.workflow_job.runner_group_name,
         id=webhook.workflow_job.runner_group_id,
         labels=webhook.workflow_job.labels,
@@ -103,7 +105,9 @@ def test_workflow_job_in_progress(
 
     init_model(RunnerGroup, redis, settings)
     init_model(Runner, redis, settings)
+    assert webhook.organization
     runner_group: RunnerGroup = RunnerGroup(
+        organization=webhook.organization.login,
         name=webhook.workflow_job.runner_group_name,
         id=webhook.workflow_job.runner_group_id,
         labels=webhook.workflow_job.labels,
@@ -154,7 +158,9 @@ def test_workflow_job_queued(
 ):
     init_model(RunnerGroup, redis, settings)
     init_model(Runner, redis, settings)
+    assert webhook.organization
     runner_group: RunnerGroup = RunnerGroup(
+        organization=webhook.organization.login,
         name=uuid4().hex,
         labels=webhook.workflow_job.labels,
         manager=settings.name,
@@ -169,6 +175,7 @@ def test_workflow_job_queued(
     wait_for_migration(RunnerGroup)
     job: Job = queue.enqueue(workflow_job.queued, webhook)
     status: JobStatus = job.get_status()
+
     assert status == JobStatus.FINISHED
     Migrator().run()
 

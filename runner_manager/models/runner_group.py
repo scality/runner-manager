@@ -3,6 +3,7 @@ from uuid import uuid4
 
 import redis
 from githubkit import Response
+from githubkit.rest.models import AuthenticationToken
 from githubkit.webhooks.models import WorkflowJobInProgress
 from githubkit.webhooks.types import WorkflowJobEvent
 from pydantic import BaseModel as PydanticBaseModel
@@ -21,7 +22,7 @@ from runner_manager.models.runner import Runner, RunnerLabel, RunnerStatus
 
 class BaseRunnerGroup(PydanticBaseModel):
     name: str
-    organization: str = Field(default=None)
+    organization: str
     repository: Optional[str] = None
     allows_public_repositories: Optional[bool] = True
     default: Optional[bool] = None
@@ -45,7 +46,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
 
     id: Optional[int] = Field(index=True, default=None)
     name: str = Field(index=True, full_text_search=True)
-    organization: str = Field(default=None, index=True, full_text_search=True)
+    organization: str = Field(index=True, full_text_search=True)
     repository: Optional[str] = Field(index=True, full_text_search=True)
     max: Optional[int] = Field(index=True, ge=1, default=20)
     min: Optional[int] = Field(index=True, ge=0, default=0)
@@ -88,7 +89,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         """
         return Runner.find(Runner.runner_group_id == self.id).all()
 
-    def create_runner(self) -> Runner:
+    def create_runner(self, token: AuthenticationToken) -> Runner:
         """Create a runner instance.
 
         Returns:
@@ -97,6 +98,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         runner: Runner = Runner(
             name=self.generate_runner_name(),
             status=RunnerStatus.offline,
+            token=token.token,
             busy=False,
             runner_group_id=self.id,
             runner_group_name=self.name,
