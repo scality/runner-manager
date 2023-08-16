@@ -1,3 +1,4 @@
+from datetime import timedelta
 from uuid import uuid4
 
 import httpx
@@ -10,7 +11,6 @@ from pytest import fixture
 from redis import Redis
 from redis_om import Migrator, get_redis_connection
 from rq import Queue
-from datetime import timedelta
 
 from runner_manager import Runner, RunnerGroup, Settings
 from runner_manager.clients.github import GitHub

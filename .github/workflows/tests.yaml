@@ -40,7 +40,7 @@ jobs:
       - name: Run tests
         run: poetry run pytest ${{ matrix.test.path }}
         env:
-          GITHUB_TOKEN: 'test'
+          GITHUB_TOKEN: "test"
       - name: Upload coverage
         uses: codecov/codecov-action@v3
         with:
