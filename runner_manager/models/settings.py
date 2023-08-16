@@ -6,7 +6,7 @@ import yaml
 from githubkit import AppInstallationAuthStrategy, TokenAuthStrategy
 from pydantic import AnyHttpUrl, BaseSettings, ConfigError, RedisDsn, SecretStr
 
-from runner_manager.models.runner_group import RunnerGroup
+from runner_manager.models.runner_group import BaseRunnerGroup
 
 
 class ConfigFile(BaseSettings):
@@ -40,7 +40,7 @@ class Settings(BaseSettings):
         "*",
     ]
     log_level: LogLevel = LogLevel.INFO
-    runner_groups: List[RunnerGroup] = []
+    runner_groups: List[BaseRunnerGroup] = []
 
     github_base_url: AnyHttpUrl = AnyHttpUrl("api.github.com", scheme="https")
     github_webhook_secret: Optional[SecretStr] = None
