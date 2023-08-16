@@ -5,9 +5,10 @@ from pytest import fixture, mark, raises
 from redis_om import NotFoundError
 
 from runner_manager.backend.aws import AWSBackend
-from runner_manager.models.backend import Backends, AWSConfig, AWSInstanceConfig
+from runner_manager.models.backend import AWSConfig, AWSInstanceConfig, Backends
 from runner_manager.models.runner import Runner
 from runner_manager.models.runner_group import RunnerGroup
+
 
 @fixture()
 def aws_group(settings) -> RunnerGroup:
@@ -28,11 +29,13 @@ def aws_group(settings) -> RunnerGroup:
     )
     return runner_group
 
+
 @fixture()
 def aws_runner(runner: Runner, aws_group: RunnerGroup) -> Runner:
     # Cleanup and return a runner for testing
     aws_group.backend.delete(runner)
     return runner
+
 
 def test_create_delete(aws_runner, aws_group):
     runner = aws_group.backend.create(aws_runner)

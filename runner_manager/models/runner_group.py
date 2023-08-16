@@ -8,10 +8,10 @@ from pydantic import Field as PydanticField
 from redis_om import Field, NotFoundError, RedisModel
 from typing_extensions import Annotated
 
+from runner_manager.backend.aws import AWSBackend
 from runner_manager.backend.base import BaseBackend
 from runner_manager.backend.docker import DockerBackend
 from runner_manager.backend.gcloud import GCPBackend
-from runner_manager.backend.aws import AWSBackend
 from runner_manager.models.backend import InstanceConfig
 from runner_manager.models.base import BaseModel
 from runner_manager.models.runner import Runner, RunnerLabel, RunnerStatus
@@ -34,7 +34,7 @@ class BaseRunnerGroup(PydanticBaseModel):
     labels: List[str]
 
     backend: Annotated[
-        Union[BaseBackend, DockerBackend, GCPBackend,AWSBackend],
+        Union[BaseBackend, DockerBackend, GCPBackend, AWSBackend],
         PydanticField(..., discriminator="name"),
     ]
     instance_config: Optional[InstanceConfig] = None

@@ -82,6 +82,7 @@ class GCPInstanceConfig(InstanceConfig):
             labels=self.labels,
         )
 
+
 class AWSConfig(BackendConfig):
     """Configuration for AWS backend."""
 

@@ -4,8 +4,9 @@ from typing import Dict, List, Literal
 from boto3 import client
 from botocore.exceptions import ClientError
 from pydantic import Field
-from runner_manager.logging import log
+
 from runner_manager.backend.base import BaseBackend
+from runner_manager.logging import log
 from runner_manager.models.backend import AWSConfig, AWSInstanceConfig, Backends
 from runner_manager.models.runner import Runner
 
@@ -79,4 +80,3 @@ class AWSBackend(BaseBackend):
         except Exception as e:
             raise e
         return runners
-
