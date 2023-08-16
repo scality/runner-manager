@@ -82,10 +82,12 @@ class GCPInstanceConfig(InstanceConfig):
             labels=self.labels,
         )
 
+
 class AWSConfig(BackendConfig):
     """Configuration for AWS backend."""
 
     region: str
+
 
 class AWSInstanceConfig(InstanceConfig):
     """Configuration for AWS backend instance."""
@@ -103,7 +105,7 @@ class AWSInstanceConfig(InstanceConfig):
 
     class Config:
         arbitrary_types_allowed = True
-    
+
     def configure_instance(self, runner: Runner) -> Dict:
         """Configure instance."""
         return {

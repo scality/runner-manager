@@ -94,6 +94,44 @@ jupyter = ["ipython (>=7.8.0)", "tokenize-rt (>=3.2.0)"]
 uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
+name = "boto3"
+version = "1.28.27"
+description = "The AWS SDK for Python"
+optional = false
+python-versions = ">= 3.7"
+files = [
+    {file = "boto3-1.28.27-py3-none-any.whl", hash = "sha256:8da9621931291b6c261fdaae465f05737c16519b9667d8463181cb8b88444572"},
+    {file = "boto3-1.28.27.tar.gz", hash = "sha256:a336cf53a6d86ee6d27b2f6d8b78ec9b320209127e5126359881bbd68f33d0b9"},
+]
+
+[package.dependencies]
+botocore = ">=1.31.27,<1.32.0"
+jmespath = ">=0.7.1,<2.0.0"
+s3transfer = ">=0.6.0,<0.7.0"
+
+[package.extras]
+crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
+
+[[package]]
+name = "botocore"
+version = "1.31.27"
+description = "Low-level, data-driven core of boto 3."
+optional = false
+python-versions = ">= 3.7"
+files = [
+    {file = "botocore-1.31.27-py3-none-any.whl", hash = "sha256:13af1588023750c9bc66d202bb5a934c9412a7dc52587532264ab725c42c2c50"},
+    {file = "botocore-1.31.27.tar.gz", hash = "sha256:739d09e13751e3b9b0f341b5ffe5bf8d0452b8769d435c4084ee88739d42b7f7"},
+]
+
+[package.dependencies]
+jmespath = ">=0.7.1,<2.0.0"
+python-dateutil = ">=2.1,<3.0.0"
+urllib3 = ">=1.25.4,<1.27"
+
+[package.extras]
+crt = ["awscrt (==0.16.26)"]
+
+[[package]]
 name = "cachetools"
 version = "5.3.1"
 description = "Extensible memoizing collections and decorators"
@@ -1030,6 +1068,17 @@ MarkupSafe = ">=2.0"
 
 [package.extras]
 i18n = ["Babel (>=2.7)"]
+
+[[package]]
+name = "jmespath"
+version = "1.0.1"
+description = "JSON Matching Expressions"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "jmespath-1.0.1-py3-none-any.whl", hash = "sha256:02e2e4cc71b5bcab88332eebf907519190dd9e6e82107fa7f83b1003a6252980"},
+    {file = "jmespath-1.0.1.tar.gz", hash = "sha256:90261b206d6defd58fdd5e85f478bf633a2901798906be2ad389150c5c60edbe"},
+]
 
 [[package]]
 name = "jsonschema"
@@ -1973,6 +2022,23 @@ files = [
 ]
 
 [[package]]
+name = "s3transfer"
+version = "0.6.2"
+description = "An Amazon S3 Transfer Manager"
+optional = false
+python-versions = ">= 3.7"
+files = [
+    {file = "s3transfer-0.6.2-py3-none-any.whl", hash = "sha256:b014be3a8a2aab98cfe1abc7229cc5a9a0cf05eb9c1f2b86b230fd8df3f78084"},
+    {file = "s3transfer-0.6.2.tar.gz", hash = "sha256:cab66d3380cca3e70939ef2255d01cd8aece6a4907a9528740f668c4b0611861"},
+]
+
+[package.dependencies]
+botocore = ">=1.12.36,<2.0a.0"
+
+[package.extras]
+crt = ["botocore[crt] (>=1.20.29,<2.0a.0)"]
+
+[[package]]
 name = "setuptools"
 version = "68.0.0"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
@@ -2369,4 +2435,4 @@ dev = ["doc8", "flake8", "flake8-import-order", "rstcheck[sphinx]", "sphinx"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "349874edd8dbbe58a7594518a14cd33a682a8633ba827336ab6d16e55a99ffd4"
+content-hash = "01819300d6e3f079f3203c3b99c363bbc1113c71a37f145dd87015cad4c27728"
