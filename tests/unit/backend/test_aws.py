@@ -45,3 +45,19 @@ def test_create_delete(aws_runner, aws_group):
     aws_group.backend.delete(runner)
     with raises(NotFoundError):
         Runner.find(Runner.instance_id == runner.instance_id).first()
+
+
+def test_get(aws_runner, aws_group):
+    runner = aws_group.backend.create(aws_runner)
+    assert runner == aws_group.backend.get(runner.instance_id)
+    aws_group.backend.delete(runner)
+    with raises(NotFoundError):
+        aws_group.backend.get(runner.instance_id)
+
+
+def test_list(aws_runner, aws_group):
+    runner = aws_group.backend.create(aws_runner)
+    assert runner in aws_group.backend.list()
+    aws_group.backend.delete(runner)
+    with raises(NotFoundError):
+        aws_group.backend.get(runner.instance_id)
