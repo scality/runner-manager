@@ -37,7 +37,8 @@
         "ms-kubernetes-tools.vscode-kubernetes-tools",
         "ms-python.python",
         "ms-python.vscode-pylance",
-        "GitHub.copilot-chat"
+        "GitHub.copilot-chat",
+        "ms-python.isort"
       ],
       "settings": {
         "python": {

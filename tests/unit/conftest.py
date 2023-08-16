@@ -1,5 +1,7 @@
 from uuid import uuid4
 
+import httpx
+from githubkit.config import Config
 from hypothesis import HealthCheck
 from hypothesis import settings as hypothesis_settings
 from pytest import fixture
@@ -8,6 +10,9 @@ from redis_om import Migrator, get_redis_connection
 from rq import Queue
 
 from runner_manager import Runner, RunnerGroup, Settings
+from runner_manager.backend.base import BaseBackend
+from runner_manager.clients.github import GitHub
+from runner_manager.models.runner_group import BaseRunnerGroup
 
 hypothesis_settings.register_profile(
     "unit",
@@ -23,6 +28,15 @@ def settings():
 
     settings = Settings(
         name=uuid4().hex,
+        runner_groups=[
+            BaseRunnerGroup(
+                name="test",
+                labels=[
+                    "label",
+                ],
+                backend=BaseBackend(config=None, instance_config=None),
+            )
+        ],
     )
     Runner.Meta.global_key_prefix = settings.name
     RunnerGroup.Meta.global_key_prefix = settings.name
@@ -92,3 +106,24 @@ def runner_group(settings) -> RunnerGroup:
         print(f"deleted runner {runner.name}")
         Runner.delete(runner.pk)
     return runner_group
+
+
+@fixture()
+def github(settings) -> GitHub:
+    """
+    Return a GitHub client configured with:
+
+    - The mock server as base_url.
+    - Accept application/json as response from the server.
+
+    """
+
+    config = Config(
+        base_url=httpx.URL(settings.github_base_url),
+        accept="*/*",
+        user_agent="runner-manager",
+        follow_redirects=True,
+        timeout=httpx.Timeout(5.0),
+    )
+
+    return GitHub(config=config)

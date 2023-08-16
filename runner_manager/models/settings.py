@@ -39,6 +39,7 @@ class Settings(BaseSettings):
     allowed_hosts: Optional[Sequence[str]] = [
         "*",
     ]
+    healthcheck_interval: int = 60
     log_level: LogLevel = LogLevel.INFO
     runner_groups: List[BaseRunnerGroup] = []
 
