@@ -22,7 +22,7 @@ services:
       - 8000:8000
     environment:
       GITHUB_TOKEN: ${GITHUB_TOKEN}
-      GITHUB_BASE_URL: "http://github-mock:4010"
+      GITHUB_BASE_URL: http://github-mock:4010
       REDIS_OM_URL: redis://redis:6379
       CONFIG_FILE: /app/config.yaml
     command: uvicorn runner_manager.main:app --host 0.0.0.0 --port 8000 --reload
@@ -41,7 +41,7 @@ services:
       REDIS_OM_URL: redis://redis:6379
       CONFIG_FILE: /app/config.yaml
       GITHUB_TOKEN: ${GITHUB_TOKEN}
-      GITHUB_BASE_URL: "http://github-mock:4010"
+      GITHUB_BASE_URL: http://github-mock:4010
   scheduler:
     profiles:
       - main
