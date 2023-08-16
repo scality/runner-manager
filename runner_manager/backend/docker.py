@@ -7,7 +7,7 @@ from pydantic import Field
 from redis_om import NotFoundError
 
 from runner_manager.backend.base import BaseBackend
-from runner_manager.models.backend import Backends, DockerConfig, DockerInstanceConfig
+from runner_manager.models.backend import Backends, DockerConfig, DockerInstanceConfig, ContainerConfig
 from runner_manager.models.runner import Runner
 
 
@@ -28,11 +28,17 @@ class DockerBackend(BaseBackend):
                 ("runner-manager", self.manager),
             ]
             self.instance_config.labels.update(labels)
+        config: ContainerConfig = self.instance_config.configure_instance(runner)
         container: Container = self.client.containers.run(
-            self.instance_config.configure_instance(runner),
+            config,
             name=runner.name,
             remove=self.instance_config.remove,
         )
+        # container: Container = self.client.containers.run(
+        #     self.instance_config.configure_instance(runner),
+        #     name=runner.name,
+        #     remove=self.instance_config.remove,
+        # )
 
         # set container id as instance_id
         runner.instance_id = container.id

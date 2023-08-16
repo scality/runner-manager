@@ -58,6 +58,7 @@ class Runner(BaseModel):
     )
     busy: bool
     labels: Optional[List[RunnerLabel]] = []
+    organization: str = Field(default=None, index=True, description="Organization name")
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
 

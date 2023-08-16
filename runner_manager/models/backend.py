@@ -69,10 +69,9 @@ class DockerInstanceConfig(InstanceConfig):
     def configure_instance(self, runner: Runner) -> ContainerConfig:
         """Configure instance."""
         labels: Dict[str, str] = {
-            "repository": runner.repo,
             "runner_group": runner.runner_group_name,
             "runner_name": runner.name,
-            "organization": runner.org,
+            "organization": runner.organization,
         }
         labels.update(self.labels)
         self.environment['RUNNER_NAME'] = runner.name
@@ -81,7 +80,7 @@ class DockerInstanceConfig(InstanceConfig):
                 [label.name for label in runner.labels]
             )
         self.environment['RUNNER_TOKEN'] = runner.token
-        self.environment['RUNNER_ORG'] = runner.org
+        self.environment['RUNNER_ORG'] = runner.organization
         self.environment['RUNNER_GROUP'] = runner.runner_group_name
         # TODO: Verify if this can be set
         # self.environment['RUNNER_REPO'] = runner.repo

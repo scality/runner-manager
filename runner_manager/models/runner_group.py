@@ -1,3 +1,4 @@
+from sys import orig_argv
 from typing import List, Optional, Self, Union
 from uuid import uuid4
 
@@ -102,6 +103,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             runner_group_name=self.name,
             labels=self.runner_labels,
             manager=self.manager,
+            organization=self.organization,
         )
         runner.save()
         return self.backend.create(runner)
