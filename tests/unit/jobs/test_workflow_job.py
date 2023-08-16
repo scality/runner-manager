@@ -173,25 +173,23 @@ def test_workflow_job_queued(
     assert runner_group == RunnerGroup.get(runner_group.pk)
 
     wait_for_migration(RunnerGroup)
-    workflow_job.queued(webhook)
-    # status: JobStatus = job.get_status()
-    # # print job result
-    # # print(job.return_value(refresh=True))
+    queue.enqueue(workflow_job.queued, webhook)
+    status: JobStatus = job.get_status()
 
-    # assert status == JobStatus.FINISHED
-    # Migrator().run()
+    assert status == JobStatus.FINISHED
+    Migrator().run()
 
-    # wait_for_migration(Runner)
-    # assert (
-    #     Runner.find(
-    #         Runner.runner_group_name == runner_group.name,
-    #         Runner.manager == settings.name,
-    #     ).count()
-    #     == 1
-    # )
+    wait_for_migration(Runner)
+    assert (
+        Runner.find(
+            Runner.runner_group_name == runner_group.name,
+            Runner.manager == settings.name,
+        ).count()
+        == 1
+    )
 
-    # runner: Runner = Runner.find(
-    #     Runner.runner_group_name == runner_group.name, Runner.manager == settings.name
-    # ).first()
-    # assert runner.busy is False
-    # assert runner.status == "offline"
+    runner: Runner = Runner.find(
+        Runner.runner_group_name == runner_group.name, Runner.manager == settings.name
+    ).first()
+    assert runner.busy is False
+    assert runner.status == "offline"

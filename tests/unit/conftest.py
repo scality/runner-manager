@@ -30,6 +30,8 @@ def settings():
 
     settings = Settings(
         name=uuid4().hex,
+        github_token="test",
+        github_base_url="http://localhost:4010",
     )
     Runner.Meta.global_key_prefix = settings.name
     RunnerGroup.Meta.global_key_prefix = settings.name
