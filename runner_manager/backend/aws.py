@@ -1,4 +1,3 @@
-import time
 from typing import Dict, List, Literal
 
 from boto3 import client
@@ -38,7 +37,7 @@ class AWSBackend(BaseBackend):
         """Delete a runner."""
         try:
             if runner.instance_id:
-                instance = self.client.terminate_instances(
+                self.client.terminate_instances(
                     InstanceIds=[runner.instance_id]
                 )
             else:

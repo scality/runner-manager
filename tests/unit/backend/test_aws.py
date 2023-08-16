@@ -1,7 +1,5 @@
-import os
-from typing import List
 
-from pytest import fixture, mark, raises
+from pytest import fixture, raises
 from redis_om import NotFoundError
 
 from runner_manager.backend.aws import AWSBackend
