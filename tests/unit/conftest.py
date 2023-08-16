@@ -17,7 +17,6 @@ from runner_manager.backend.base import BaseBackend
 from runner_manager.clients.github import GitHub
 from runner_manager.models.runner_group import BaseRunnerGroup
 
-
 hypothesis_settings.register_profile(
     "unit",
     suppress_health_check=[HealthCheck.function_scoped_fixture],
