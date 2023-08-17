@@ -14,10 +14,9 @@ from rq.job import Job, JobStatus
 
 from runner_manager import Settings
 from runner_manager.jobs import workflow_job
+from runner_manager.models.base import BaseModel
 from runner_manager.models.runner import Runner
 from runner_manager.models.runner_group import RunnerGroup
-
-from runner_manager.models.base import BaseModel
 
 from ...strategies import (
     QueueStrategy,
