@@ -227,7 +227,9 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             github.rest.actions.delete_self_hosted_runner_group_from_org(
                 org=group.organization, runner_group_id=group.id
             )
-        return super().delete(pk=cls.pk, pipeline=pipeline)
+        db = cls._get_db(pipeline)
+
+        return cls._delete(db, cls.make_primary_key(pk))
 
 
 RunnerGroup.update_forward_refs()
