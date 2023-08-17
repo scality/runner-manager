@@ -5,7 +5,6 @@ from fastapi import FastAPI
 from redis import Redis
 from rq.job import Job
 from rq import Queue
-from runner_manager.auth import TrustedHostHealthRoutes
 from runner_manager.dependencies import (
     get_queue,
     get_redis,
@@ -48,4 +47,3 @@ app.include_router(_health.router)
 app.include_router(private.router)
 app.include_router(public.router)
 app.include_router(runner_groups.router)
-# app.add_middleware(TrustedHostHealthRoutes, allowed_hosts=settings.allowed_hosts)
