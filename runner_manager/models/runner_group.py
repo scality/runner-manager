@@ -87,7 +87,12 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         Returns:
             List[Runner]: List of runners.
         """
-        return Runner.find(Runner.runner_group_id == self.id).all()
+        runners: List[Runner] = []
+        try:
+            runners = Runner.find(Runner.runner_group_name == self.name).all()
+        except NotFoundError:
+            pass
+        return runners
 
     def create_runner(self, token: AuthenticationToken) -> Runner:
         """Create a runner instance.

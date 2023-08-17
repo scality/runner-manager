@@ -5,7 +5,7 @@ from runner_manager import RunnerGroup
 from runner_manager.jobs.startup import startup
 
 
-def test_startup(queue: Queue, settings, github):
+def test_startup(queue: Queue, settings):
     print(queue.connection)
     job: Job = queue.enqueue(startup, settings)
     status: JobStatus = job.get_status()

@@ -17,6 +17,8 @@ from runner_manager.jobs import workflow_job
 from runner_manager.models.runner import Runner
 from runner_manager.models.runner_group import RunnerGroup
 
+from runner_manager.models.base import BaseModel
+
 from ...strategies import (
     QueueStrategy,
     RedisStrategy,
@@ -37,12 +39,14 @@ def wait_for_migration(model: JsonModel):
             raise Exception("timeout waiting for index to be created")
 
 
-def init_model(model: JsonModel, redis: Redis, settings: Settings):
+def init_model(model: BaseModel, redis: Redis, settings: Settings):
     model.Meta.database = redis
     model.Meta.global_key_prefix = settings.name
+    Migrator().run()
     pks = model.all_pks()
     for pk in pks:
-        model.delete(pk)
+        print(f"deleting {pk}")
+        model.delete(pk=pk)
     Migrator().run()
 
 
@@ -56,8 +60,8 @@ def init_model(model: JsonModel, redis: Redis, settings: Settings):
 def test_workflow_job_completed(
     webhook: WorkflowJobCompleted, queue: Queue, settings: Settings, redis: Redis
 ):
-    init_model(RunnerGroup, redis, settings)
     init_model(Runner, redis, settings)
+    init_model(RunnerGroup, redis, settings)
     assume(webhook.action == "completed")
     assert webhook.organization
     runner_group: RunnerGroup = RunnerGroup(
@@ -103,8 +107,8 @@ def test_workflow_job_in_progress(
 
     # flush all keys that start with settings.name in redis
 
-    init_model(RunnerGroup, redis, settings)
     init_model(Runner, redis, settings)
+    init_model(RunnerGroup, redis, settings)
     assert webhook.organization
     runner_group: RunnerGroup = RunnerGroup(
         organization=webhook.organization.login,
@@ -156,8 +160,8 @@ def test_workflow_job_in_progress(
 def test_workflow_job_queued(
     webhook: WorkflowJobQueued, queue: Queue, settings: Settings, redis: Redis
 ):
-    init_model(RunnerGroup, redis, settings)
     init_model(Runner, redis, settings)
+    init_model(RunnerGroup, redis, settings)
     assert webhook.organization
     runner_group: RunnerGroup = RunnerGroup(
         organization=webhook.organization.login,
