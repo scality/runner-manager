@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import List, Literal, Optional
-
+from githubkit.rest.models import Runner as GitHubRunner
 from githubkit.webhooks.types import WorkflowJobEvent
 from pydantic import BaseModel as PydanticBaseModel
 from redis_om import Field, NotFoundError
-
+from runner_manager.logging import log
 from runner_manager.models.base import BaseModel
 
 # Ideally the runner model would have been inherited
@@ -137,6 +137,12 @@ class Runner(BaseModel):
         return self.is_online and self.time_since_started > timedelta(
             minutes=time_to_live
         )
-
+    
+    def update_status(self, github_runner: GitHubRunner):
+        self.status = RunnerStatus(github_runner.status)
+        self.busy = github_runner.busy
+        self.updated_at = datetime.now()
+        log.info(f"Runner {self.name} status updated to {self.status}")
+        return self.save()
 
 Runner.update_forward_refs()
