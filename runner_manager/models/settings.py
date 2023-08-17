@@ -1,6 +1,6 @@
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Dict, List, Optional
 
 import yaml
 from githubkit import AppInstallationAuthStrategy, TokenAuthStrategy
@@ -36,9 +36,6 @@ class Settings(BaseSettings):
     name: str = "runner-manager"
     redis_om_url: Optional[RedisDsn] = None
     api_key: Optional[SecretStr] = None
-    allowed_hosts: Optional[Sequence[str]] = [
-        "*",
-    ]
     log_level: LogLevel = LogLevel.INFO
     runner_groups: List[BaseRunnerGroup] = []
 
