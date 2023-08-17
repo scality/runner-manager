@@ -45,4 +45,4 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
-addopts = "--cov=runner_manager --cov-report=xml"
+addopts = "--disable-warnings --cov=runner_manager --cov-report=xml"

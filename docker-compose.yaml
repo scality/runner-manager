@@ -21,26 +21,28 @@ services:
     ports:
       - 8000:8000
     environment:
+      GITHUB_TOKEN: ${GITHUB_TOKEN}
+      GITHUB_BASE_URL: http://github-mock:4010
       REDIS_OM_URL: redis://redis:6379
+      CONFIG_FILE: /app/config.yaml
     command: uvicorn runner_manager.main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
       - ./runner_manager:/app/runner_manager
-    x-develop:
-      watch:
-        - action: rebuild
-          path: poetry.lock
-        - action: rebuild
-          path: docker-compose.yaml
+      - ./config.yaml:/app/config.yaml
   worker:
     profiles:
       - main
       - develop
     build: .
-    command: rq worker -c runner_manager.jobs.settings
+    command: rq worker --with-scheduler -c runner_manager.jobs.settings
     volumes:
       - .:/app
     environment:
       REDIS_OM_URL: redis://redis:6379
+      CONFIG_FILE: /app/config.yaml
+      GITHUB_TOKEN: ${GITHUB_TOKEN}
+      GITHUB_BASE_URL: http://github-mock:4010
+
   github-mock:
     profiles:
       - develop
@@ -48,11 +50,6 @@ services:
     build: tests/images/github-mock
     ports:
       - 4010:4010
-    x-develop:
-      watch:
-        - action: rebuild
-          path: tests/images/github-mock
-
 volumes:
   redis_data:
     driver: local
