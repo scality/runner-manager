@@ -1,7 +1,7 @@
 from rq import Queue
 from rq.job import Job, JobStatus
 
-from runner_manager import RunnerGroup, Runner
+from runner_manager import Runner, RunnerGroup
 from runner_manager.jobs.startup import startup
 
 

@@ -34,9 +34,16 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-
 app.include_router(webhook.router)
 app.include_router(_health.router)
 app.include_router(private.router)
 app.include_router(public.router)
 app.include_router(runner_groups.router)
+
+
+@app.get("/")
+def homepage():
+    """
+    Homepage
+    """
+    return {"message": "Hello World"}
