@@ -5,7 +5,6 @@ from githubkit.config import Config
 from redis import Redis
 from redis_om import get_redis_connection
 from rq import Queue
-from rq_scheduler import Scheduler
 
 from runner_manager.clients.github import GitHub
 from runner_manager.models.settings import Settings
@@ -26,12 +25,6 @@ def get_redis(decode=True) -> Redis:
 @lru_cache
 def get_queue() -> Queue:
     return Queue(connection=get_redis())
-
-
-@lru_cache
-def get_scheduler() -> Scheduler:
-    queue: Queue = get_queue(decode=False)
-    return Scheduler(queue=queue, connection=queue.connection)
 
 
 @lru_cache()

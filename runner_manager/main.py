@@ -8,7 +8,6 @@ from rq import Queue
 from runner_manager.dependencies import (
     get_queue,
     get_redis,
-    get_scheduler,
     get_settings,
 )
 from runner_manager import Runner, RunnerGroup, Settings, log

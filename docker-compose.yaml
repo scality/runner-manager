@@ -42,19 +42,6 @@ services:
       CONFIG_FILE: /app/config.yaml
       GITHUB_TOKEN: ${GITHUB_TOKEN}
       GITHUB_BASE_URL: http://github-mock:4010
-  scheduler:
-    profiles:
-      - main
-      - develop
-    build: .
-    command: rqscheduler
-    volumes:
-      - .:/app
-    environment:
-      RQ_REDIS_HOST: redis
-      RQ_REDIS_PORT: 6379
-      RQ_REDIS_DB: 0
-      RQ_REDIS_INTERVAL: 10
 
   github-mock:
     profiles:
