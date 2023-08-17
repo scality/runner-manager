@@ -13,6 +13,9 @@ spec:
             - runner_manager.jobs.settings
           command:
             - rq
+          envFrom:
+            - secretRef:
+                name: runner-manager-secrets
           env:
             - name: REDIS_OM_URL
               valueFrom:
