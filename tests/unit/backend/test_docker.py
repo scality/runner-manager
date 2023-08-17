@@ -90,7 +90,7 @@ def test_list_manual_runner(docker_group: RunnerGroup):
         docker_group.backend.instance_config.image,
         remove=True,
         detach=True,
-        labels={"runner-manager": docker_group.backend.manager},
+        labels={"manager": docker_group.backend.manager},
         command=docker_group.backend.instance_config.command,
         name="test-manual",
     )

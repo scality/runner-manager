@@ -23,24 +23,31 @@ class DockerBackend(BaseBackend):
         return DockerClient(base_url=self.config.base_url)
 
     def create(self, runner: Runner):
-        if self.manager:
-            labels: Iterable[tuple[str, str]] = [
-                ("runner-manager", self.manager),
-            ]
-            self.instance_config.labels.update(labels)
-        config: ContainerConfig = self.instance_config.configure_instance(runner)
+        labels: Dict[str, str | None] = {
+            "group": runner.runner_group_name,
+            "name": runner.name,
+            "organization": runner.organization,
+            "manager": self.manager,
+        }
+        labels.update(self.instance_config.labels)
+        environment = self.instance_config.environment
+        environment['RUNNER_NAME'] = runner.name
+        if runner.labels:
+            environment['RUNNER_LABELS'] = ",".join(
+                [label.name for label in runner.labels]
+            )
+        environment['RUNNER_TOKEN'] = runner.token
+        environment['RUNNER_ORG'] = runner.organization
+        environment['RUNNER_GROUP'] = runner.runner_group_name
         container: Container = self.client.containers.run(
-            config,
+            self.instance_config.image,
+            command=self.instance_config.command,
+            detach=self.instance_config.detach,
+            environment=environment,
+            labels=labels,
             name=runner.name,
             remove=self.instance_config.remove,
         )
-        # container: Container = self.client.containers.run(
-        #     self.instance_config.configure_instance(runner),
-        #     name=runner.name,
-        #     remove=self.instance_config.remove,
-        # )
-
-        # set container id as instance_id
         runner.instance_id = container.id
 
         return super().create(runner)
@@ -80,7 +87,7 @@ class DockerBackend(BaseBackend):
 
     def list(self) -> List[Runner]:
         containers: List[Container] = self.client.containers.list(
-            filters={"label": f"runner-manager={self.manager}"}
+            filters={"label": f"manager={self.manager}"}
         )
         runners: List[Runner] = []
         for container in containers:
