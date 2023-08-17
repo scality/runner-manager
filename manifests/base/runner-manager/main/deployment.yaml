@@ -9,6 +9,9 @@ spec:
       containers:
         - name: runner-manager
           image: runner-manager
+          envFrom:
+            - secretRef:
+                name: runner-manager-secrets
           env:
             - name: REDIS_OM_URL
               valueFrom:
