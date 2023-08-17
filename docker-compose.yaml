@@ -25,7 +25,7 @@ services:
       GITHUB_BASE_URL: http://github-mock:4010
       REDIS_OM_URL: redis://redis:6379
       CONFIG_FILE: /app/config.yaml
-    command: uvicorn runner_manager.main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn runner_manager.main:app --host 0.0.0.0 --port 8000 --reload --lifespan=on
     volumes:
       - ./runner_manager:/app/runner_manager
       - ./config.yaml:/app/config.yaml
