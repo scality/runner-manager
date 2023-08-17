@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Optional, Self, Union
 from uuid import uuid4
 
@@ -87,24 +88,29 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         """
         return Runner.find(Runner.runner_group_id == self.id).all()
 
-    def create_runner(self, token: AuthenticationToken) -> Runner:
+    def create_runner(self, token: AuthenticationToken) -> Runner | None:
         """Create a runner instance.
 
         Returns:
             Runner: Runner instance.
         """
-        runner: Runner = Runner(
-            name=self.generate_runner_name(),
-            status=RunnerStatus.offline,
-            token=token.token,
-            busy=False,
-            runner_group_id=self.id,
-            runner_group_name=self.name,
-            labels=self.runner_labels,
-            manager=self.manager,
-        )
-        runner.save()
-        return self.backend.create(runner)
+        count = len(self.get_runners())
+        if count < self.max:
+            runner: Runner = Runner(
+                name=self.generate_runner_name(),
+                status=RunnerStatus.offline,
+                token=token.token,
+                busy=False,
+                runner_group_id=self.id,
+                created_at=datetime.now(),
+                updated_at=datetime.now(),
+                runner_group_name=self.name,
+                labels=self.runner_labels,
+                manager=self.manager,
+            )
+            runner.save()
+            return self.backend.create(runner)
+        return None
 
     def update_runner(self: Self, webhook: WorkflowJobInProgress) -> Runner:
         """Update a runner instance.
@@ -130,6 +136,13 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             Runner: Runner instance.
         """
         return self.backend.delete(runner)
+
+    @property
+    def need_new_runner(self) -> bool:
+        return len(self.get_runners()) < self.min
+
+    # Try to see if this method is possible and does not cause any circular dependency issue
+    # def healthcheck(self, settings: Settings):
 
     @classmethod
     def find_from_webhook(cls, webhook: WorkflowJobEvent) -> "RunnerGroup":

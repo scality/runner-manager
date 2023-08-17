@@ -41,7 +41,8 @@ class Settings(BaseSettings):
     ]
     log_level: LogLevel = LogLevel.INFO
     runner_groups: List[BaseRunnerGroup] = []
-
+    timeout_runner: int = 15  # in minutes
+    time_to_live: int = 60  # in minutes
     github_base_url: AnyHttpUrl = AnyHttpUrl("api.github.com", scheme="https")
     github_webhook_secret: Optional[SecretStr] = None
     github_token: Optional[SecretStr] = None
