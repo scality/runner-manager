@@ -78,15 +78,16 @@ def test_find_runner_group_labels(runner_group: RunnerGroup):
 def test_find_from_webhook(runner_group: RunnerGroup, webhook: WorkflowJobCompleted):
     webhook.workflow_job.runner_group_id = runner_group.id
     runner_group.save()
+    Migrator().run()
     assert RunnerGroup.find_from_webhook(webhook) == runner_group
     runner_group.delete(runner_group.pk)
     assert RunnerGroup.find_from_webhook(webhook) is None
 
 
-def test_runner_group_delete_method(runner_group: RunnerGroup, github: GitHub):
+def test_runner_group_delete_method(runner_group: RunnerGroup, github: GitHub, runner_token):
     runner_group.save(github=github)
     assert runner_group.id is not None
-    runner: Runner = runner_group.create_runner()
+    runner: Runner = runner_group.create_runner(runner_token)
     assert runner.runner_group_id == runner_group.id
     assert runner.runner_group_name == runner_group.name
     Migrator().run()
