@@ -1,6 +1,5 @@
-from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Literal
+from typing import Any, Dict, List, Literal, Optional
 
 import yaml
 from githubkit import AppInstallationAuthStrategy, TokenAuthStrategy
@@ -30,7 +29,7 @@ class Settings(BaseSettings):
     redis_om_url: Optional[RedisDsn] = None
     api_key: Optional[SecretStr] = None
     healthcheck_interval: int = 60
-    log_level: Literal['INFO', 'WARNING', 'DEBUG', 'ERROR'] = "INFO"
+    log_level: Literal["INFO", "WARNING", "DEBUG", "ERROR"] = "INFO"
     runner_groups: List[BaseRunnerGroup] = []
 
     github_base_url: AnyHttpUrl = AnyHttpUrl("api.github.com", scheme="https")

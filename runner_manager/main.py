@@ -1,24 +1,18 @@
-import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from redis import Redis
-from rq.job import Job
 from rq import Queue
-from runner_manager.dependencies import (
-    get_queue,
-    get_redis,
-    get_settings,
-)
+from rq.job import Job
+
 from runner_manager import Runner, RunnerGroup, Settings, log
+from runner_manager.dependencies import get_queue, get_redis, get_settings
 from runner_manager.jobs.startup import startup
-from runner_manager.models.runner import Runner
-from runner_manager.models.runner_group import RunnerGroup
-from runner_manager.models.settings import Settings
 from runner_manager.routers import _health, private, public, runner_groups, webhook
 
 settings = get_settings()
 log.setLevel(settings.log_level)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
