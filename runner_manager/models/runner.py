@@ -59,7 +59,7 @@ class Runner(BaseModel):
         default=RunnerStatus.offline, index=True, full_text_search=True
     )
     busy: bool
-    labels: Optional[List[RunnerLabel]] = []
+    labels: List[RunnerLabel] = []
     organization: str = Field(default=None, index=True, description="Organization name")
     created_at: Optional[datetime]
     updated_at: Optional[datetime]

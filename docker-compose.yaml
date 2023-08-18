@@ -1,12 +1,10 @@
 ---
-version: "2"
-
 services:
   redis:
     profiles:
-      - main
-      - develop
       - tests
+      - dev
+      - main
     image: redis/redis-stack
     ports:
       - 6379:6379
@@ -14,49 +12,54 @@ services:
     volumes:
       - redis_data:/data
   runner-manager:
+    depends_on:
+      - worker
+      - redis
     profiles:
       - main
-      - develop
+      - dev
     build: .
+    user: root
     ports:
       - 8000:8000
     environment:
-      GITHUB_TOKEN: ${GITHUB_TOKEN}
+      GITHUB_TOKEN: ${RUNNER_MANAGER_TOKEN}
       REDIS_OM_URL: redis://redis:6379
       CONFIG_FILE: /app/config.yaml
     command: uvicorn runner_manager.main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
       - ./runner_manager:/app/runner_manager
       - ./config.yaml:/app/config.yaml
-      # bind docker socket to allow docker-in-docker
       - /var/run/docker.sock:/var/run/docker.sock
-  worker:
-    depends_on:
-      - dind
+  webhook:
     profiles:
+      - dev
+    build: tests/images/webhook
+    environment:
+      URL: http://runner-manager:8000/webhook
+      REPO: ${REPO}
+      GITHUB_TOKEN: ${RUNNER_MANAGER_TOKEN}
+
+  worker:
+    profiles:
+      - dev
       - main
-      - develop
+    depends_on:
+      - redis
     build: .
     command: rq worker --with-scheduler -c runner_manager.jobs.settings
-    privileged: true
+    # Required when connecting to docker daemon from inside the container
+    user: root
     volumes:
       - .:/app
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       REDIS_OM_URL: redis://redis:6379
       CONFIG_FILE: /app/config.yaml
-      GITHUB_TOKEN: ${GITHUB_TOKEN}
-      GITHUB_BASE_URL: http://github-mock:4010
-  dind:
-    profiles:
-      - main
-      - develop
-    image: docker:dind
-    privileged: true
-
+      GITHUB_TOKEN: ${RUNNER_MANAGER_TOKEN}
   github-mock:
     profiles:
-      - develop
+      - dev
       - tests
     build: tests/images/github-mock
     ports:
