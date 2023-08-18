@@ -1,7 +1,7 @@
-
 from datetime import datetime
 from typing import List, Optional, Self, Union
 from uuid import uuid4
+
 from githubkit import Response
 from githubkit.rest.models import AuthenticationToken
 from githubkit.rest.models import Runner as GitHubRunner
@@ -16,10 +16,10 @@ from runner_manager.backend.base import BaseBackend
 from runner_manager.backend.docker import DockerBackend
 from runner_manager.backend.gcloud import GCPBackend
 from runner_manager.clients.github import GitHub
+from runner_manager.clients.github import RunnerGroup as GitHubRunnerGroup
 from runner_manager.dependencies import get_github, get_settings
 from runner_manager.logging import log
 from runner_manager.models.backend import InstanceConfig
-from runner_manager.clients.github import RunnerGroup as GitHubRunnerGroup
 from runner_manager.models.base import BaseModel
 from runner_manager.models.runner import Runner, RunnerLabel, RunnerStatus
 from runner_manager.models.settings import Settings
@@ -148,10 +148,10 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         """
         return self.backend.delete(runner)
 
-
     @property
     def need_new_runner(self) -> bool:
         return len(self.get_runners()) < (self.min or 0)
+
     def create_github_group(self, github: GitHub) -> GitHubRunnerGroup:
         """Create a GitHub runner group."""
         github_group: Response[
@@ -181,6 +181,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             github_group: GitHubRunnerGroup = self.create_github_group(github)
             self.id = github_group.id
         return super().save(pipeline=pipeline)
+
     @classmethod
     def find_from_webhook(cls, webhook: WorkflowJobEvent) -> "RunnerGroup":
         """Find the runner group from a webhook instance.
@@ -217,7 +218,6 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             group = None
         return group
 
-
     def healthcheck(self, settings: Settings = get_settings()):
         """Healthcheck runner group."""
         runners = self.get_runners()
@@ -243,6 +243,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             token: AuthenticationToken = token_response.parsed_data
             runner: Runner = self.create_runner(token)
             log.info(f"Runner {runner.name} created")
+
     @classmethod
     def delete(
         cls,
@@ -274,5 +275,6 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         db = cls._get_db(pipeline)
 
         return cls._delete(db, cls.make_primary_key(pk))
+
 
 RunnerGroup.update_forward_refs()
