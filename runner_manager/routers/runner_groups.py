@@ -11,13 +11,13 @@ router = APIRouter(prefix="/groups")
 
 
 @router.get("/")
-def get_all_groups() -> List[str]:
+def get() -> List[str]:
     groups = RunnerGroup.find().all()
     return [group.name for group in groups]
 
 
 @router.delete("/{group_name}")
-def delete_group(
+def delete(
     group_name: str, github: GitHub = Depends(get_github)
 ) -> Dict[str, str]:
     try:

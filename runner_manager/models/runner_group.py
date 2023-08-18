@@ -25,7 +25,7 @@ class BaseRunnerGroup(PydanticBaseModel):
     organization: str
     repository: Optional[str] = None
     allows_public_repositories: Optional[bool] = True
-    default: Optional[bool] = None
+    default: bool = False
     runners_url: Optional[str] = None
     restricted_to_workflows: Optional[bool] = None
     selected_workflows: Optional[List[str]] = None
@@ -139,17 +139,27 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         """
         return self.backend.delete(runner)
 
+
     def create_github_group(self, github: GitHub) -> GitHubRunnerGroup:
         """Create a GitHub runner group."""
-        github_group: Response[
-            GitHubRunnerGroup
-        ] = github.rest.actions.create_self_hosted_runner_group_for_org(
-            org=self.organization,
-            data=GitHubRunnerGroup(
-                name=self.name,
-            ),
+
+        group: Response[GitHubRunnerGroup]
+        data = GitHubRunnerGroup(
+            name=self.name,
+            default=self.default,
         )
-        return github_group.parsed_data
+        if self.id is None:
+            group = github.rest.actions.create_self_hosted_runner_group_for_org(
+                org=self.organization,
+                data=data
+        )
+        else:
+            group = github.rest.actions.update_self_hosted_runner_group_for_org(
+                org=self.organization,
+                runner_group_id=self.id,
+                data=data
+            )
+        return group.parsed_data
 
     def save(
         self,
@@ -200,6 +210,24 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         try:
             group: RunnerGroup | None = cls.find(
                 (cls.labels << labels)  # pyright: ignore
+            ).first()
+        except NotFoundError:
+            group = None
+        return group
+
+    @classmethod
+    def find_from_base(cls, basegroup: "BaseRunnerGroup") -> "RunnerGroup":
+        """Find the runner group from a base instance.
+
+        Args:
+            group (BaseRunnerGroup): Base instance.
+
+        Returns:
+            RunnerGroup: Runner group instance.
+        """
+        try:
+            group: RunnerGroup | None = cls.find(
+                (cls.name == basegroup.name) & (cls.organization == basegroup.organization)
             ).first()
         except NotFoundError:
             group = None

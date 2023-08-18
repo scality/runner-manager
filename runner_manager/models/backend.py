@@ -33,26 +33,10 @@ class InstanceConfig(BaseModel):
 class DockerInstanceConfig(InstanceConfig):
     """Configuration for Docker backend instance."""
 
-    image: str = "ghcr.io/actions/runner:latest"
+    image: str = "runner"
 
     # command to run, accept two types: str or List[str].
-    command: Optional[List[str]] = [
-        "./config.sh",
-        "--name",
-        "${RUNNER_NAME}",
-        "--labels",
-        "${RUNNER_LABELS}",
-        "--token",
-        "${RUNNER_TOKEN}",
-        "--url",
-        "https://github.com/${RUNNER_ORG}/",
-        "--runnergroup",
-        "${RUNNER_GROUP}",
-        "--unattended",
-        "--ephemeral",
-        "&&",
-        "./run.sh"
-    ]
+    command: Optional[List[str]] = []
 
     detach: bool = True
     remove: bool = False
@@ -62,7 +46,6 @@ class DockerInstanceConfig(InstanceConfig):
         'RUNNER_LABELS': None,
         'RUNNER_TOKEN': None,
         'RUNNER_ORG': None,
-        'RUNNER_REPO': None,
         'RUNNER_GROUP': 'default',
     }
 
