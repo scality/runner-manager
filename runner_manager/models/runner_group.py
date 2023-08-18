@@ -25,7 +25,7 @@ class BaseRunnerGroup(PydanticBaseModel):
     organization: str
     repository: Optional[str] = None
     allows_public_repositories: Optional[bool] = True
-    default: bool = False
+    default: Optional[bool] = False
     runners_url: Optional[str] = None
     restricted_to_workflows: Optional[bool] = None
     selected_workflows: Optional[List[str]] = None

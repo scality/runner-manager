@@ -34,7 +34,7 @@ class DockerBackend(BaseBackend):
         path = Path(files("runner_manager").name)
         path = path.parent / context
         self.client.images.build(
-            path=path.name,
+            path=path.as_posix(),
             tag=tag,
             rm=True,
         )

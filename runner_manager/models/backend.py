@@ -31,7 +31,7 @@ class DockerInstanceConfig(InstanceConfig):
 
     # command to run, accept two types: str or List[str].
     command: Optional[List[str]] = []
-    context: Optional[str] = "images/runner"
+    context: Optional[str] = None
     detach: bool = True
     remove: bool = False
     labels: Dict[str, str] = {}
