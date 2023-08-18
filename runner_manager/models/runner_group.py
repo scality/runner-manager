@@ -1,7 +1,7 @@
+
 from datetime import datetime
 from typing import List, Optional, Self, Union
 from uuid import uuid4
-
 from githubkit import Response
 from githubkit.rest.models import AuthenticationToken
 from githubkit.rest.models import Runner as GitHubRunner
@@ -9,7 +9,7 @@ from githubkit.webhooks.models import WorkflowJobInProgress
 from githubkit.webhooks.types import WorkflowJobEvent
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Field as PydanticField
-from redis_om import Field, NotFoundError, RedisModel
+from redis_om import Field, NotFoundError
 from typing_extensions import Annotated
 
 from runner_manager.backend.base import BaseBackend
@@ -19,6 +19,7 @@ from runner_manager.clients.github import GitHub
 from runner_manager.dependencies import get_github, get_settings
 from runner_manager.logging import log
 from runner_manager.models.backend import InstanceConfig
+from runner_manager.clients.github import RunnerGroup as GitHubRunnerGroup
 from runner_manager.models.base import BaseModel
 from runner_manager.models.runner import Runner, RunnerLabel, RunnerStatus
 from runner_manager.models.settings import Settings
@@ -44,7 +45,6 @@ class BaseRunnerGroup(PydanticBaseModel):
         Union[BaseBackend, DockerBackend, GCPBackend],
         PydanticField(..., discriminator="name"),
     ]
-    instance_config: Optional[InstanceConfig] = None
 
 
 class RunnerGroup(BaseModel, BaseRunnerGroup):
@@ -86,13 +86,18 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         name = _generate_name()
         return name
 
-    def get_runners(self) -> List[Runner] | List[RedisModel]:
+    def get_runners(self) -> List[Runner]:
         """Get the runners.
 
         Returns:
             List[Runner]: List of runners.
         """
-        return Runner.find(Runner.runner_group_id == self.id).all()
+        runners: List[Runner] = []
+        try:
+            runners = Runner.find(Runner.runner_group_name == self.name).all()
+        except NotFoundError:
+            pass
+        return runners
 
     def create_runner(self, token: AuthenticationToken) -> Runner | None:
         """Create a runner instance.
@@ -143,13 +148,39 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         """
         return self.backend.delete(runner)
 
+
     @property
     def need_new_runner(self) -> bool:
         return len(self.get_runners()) < (self.min or 0)
+    def create_github_group(self, github: GitHub) -> GitHubRunnerGroup:
+        """Create a GitHub runner group."""
+        github_group: Response[
+            GitHubRunnerGroup
+        ] = github.rest.actions.create_self_hosted_runner_group_for_org(
+            org=self.organization,
+            data=GitHubRunnerGroup(
+                name=self.name,
+            ),
+        )
+        return github_group.parsed_data
 
-    # Try to see if this method is possible and does not cause any circular dependency issue
-    # def healthcheck(self, settings: Settings):
+    def save(
+        self,
+        pipeline: Optional[redis.client.Pipeline] = None,
+        github: Optional[GitHub] = None,
+    ) -> "RunnerGroup":
+        """Create a runner group.
 
+        Args:
+            github (GitHub): GitHub instance.
+
+        Returns:
+            RunnerGroup: Runner group instance.
+        """
+        if github:
+            github_group: GitHubRunnerGroup = self.create_github_group(github)
+            self.id = github_group.id
+        return super().save(pipeline=pipeline)
     @classmethod
     def find_from_webhook(cls, webhook: WorkflowJobEvent) -> "RunnerGroup":
         """Find the runner group from a webhook instance.
@@ -186,6 +217,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             group = None
         return group
 
+
     def healthcheck(self, settings: Settings = get_settings()):
         """Healthcheck runner group."""
         runners = self.get_runners()
@@ -211,6 +243,36 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             token: AuthenticationToken = token_response.parsed_data
             runner: Runner = self.create_runner(token)
             log.info(f"Runner {runner.name} created")
+    @classmethod
+    def delete(
+        cls,
+        pk: Any,
+        pipeline: Optional[redis.client.Pipeline] = None,
+        github: Optional[GitHub] = None,
+    ) -> int:
+        """Delete a runner group.
 
+        Proceeds in the following order:
+        - Delete all runners.
+        - Delete the runner group from GitHub. (if github is not None)
+        - Delete the runner group from the database.
+
+        Args:
+            pk (Any): Runner group primary key.
+            github (GitHub): GitHub instance.
+
+        Returns: int
+        """
+        group: RunnerGroup = cls.get(pk)
+        runners: List[Runner] = group.get_runners()
+        for runner in runners:
+            group.delete_runner(runner)
+        if github and group.id:
+            github.rest.actions.delete_self_hosted_runner_group_from_org(
+                org=group.organization, runner_group_id=group.id
+            )
+        db = cls._get_db(pipeline)
+
+        return cls._delete(db, cls.make_primary_key(pk))
 
 RunnerGroup.update_forward_refs()
