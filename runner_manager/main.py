@@ -1,17 +1,14 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Depends
+from fastapi import Depends, FastAPI
 from redis import Redis
 from rq import Queue
-from typing import List
 from rq.job import Job
 
 from runner_manager import Runner, RunnerGroup, Settings, log
-from runner_manager.dependencies import get_github, get_queue, get_redis, get_settings
+from runner_manager.dependencies import get_queue, get_redis, get_settings
 from runner_manager.jobs.startup import startup
 from runner_manager.routers import _health, private, public, runner_groups, webhook
-
-from runner_manager.clients.github import GitHub
 
 settings = get_settings()
 log.setLevel(settings.log_level)
@@ -45,7 +42,9 @@ app.include_router(runner_groups.router)
 
 
 @app.get("/")
-def homepage(queue: Queue = Depends(get_queue), settings: Settings = Depends(get_settings)):
+def homepage(
+    queue: Queue = Depends(get_queue), settings: Settings = Depends(get_settings)
+):
     """
     Homepage
     """

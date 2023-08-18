@@ -1,5 +1,4 @@
-FROM ghcr.io/actions/actions-runner
-
+FROM ghcr.io/actions/actions-runner:2.308.0
 
 ENV RUNNER_NAME name
 ENV RUNNER_ORG octo-org

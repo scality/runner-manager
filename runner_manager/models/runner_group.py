@@ -139,7 +139,6 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         """
         return self.backend.delete(runner)
 
-
     def create_github_group(self, github: GitHub) -> GitHubRunnerGroup:
         """Create a GitHub runner group."""
 
@@ -150,14 +149,11 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         )
         if self.id is None:
             group = github.rest.actions.create_self_hosted_runner_group_for_org(
-                org=self.organization,
-                data=data
-        )
+                org=self.organization, data=data
+            )
         else:
             group = github.rest.actions.update_self_hosted_runner_group_for_org(
-                org=self.organization,
-                runner_group_id=self.id,
-                data=data
+                org=self.organization, runner_group_id=self.id, data=data
             )
         return group.parsed_data
 
@@ -227,7 +223,8 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         """
         try:
             group: RunnerGroup | None = cls.find(
-                (cls.name == basegroup.name) & (cls.organization == basegroup.organization)
+                (cls.name == basegroup.name)
+                & (cls.organization == basegroup.organization)
             ).first()
         except NotFoundError:
             group = None

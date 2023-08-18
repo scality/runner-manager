@@ -1,4 +1,4 @@
-from typing import Dict, Iterable, List, Literal
+from typing import Dict, List, Literal
 
 from docker import DockerClient
 from docker.errors import APIError, NotFound
@@ -7,7 +7,7 @@ from pydantic import Field
 from redis_om import NotFoundError
 
 from runner_manager.backend.base import BaseBackend
-from runner_manager.models.backend import Backends, DockerConfig, DockerInstanceConfig, ContainerConfig
+from runner_manager.models.backend import Backends, DockerConfig, DockerInstanceConfig
 from runner_manager.models.runner import Runner
 
 
@@ -31,14 +31,14 @@ class DockerBackend(BaseBackend):
         }
         labels.update(self.instance_config.labels)
         environment = self.instance_config.environment
-        environment['RUNNER_NAME'] = runner.name
+        environment["RUNNER_NAME"] = runner.name
         if runner.labels:
-            environment['RUNNER_LABELS'] = ",".join(
+            environment["RUNNER_LABELS"] = ",".join(
                 [label.name for label in runner.labels]
             )
-        environment['RUNNER_TOKEN'] = runner.token
-        environment['RUNNER_ORG'] = runner.organization
-        environment['RUNNER_GROUP'] = runner.runner_group_name
+        environment["RUNNER_TOKEN"] = runner.token
+        environment["RUNNER_ORG"] = runner.organization
+        environment["RUNNER_GROUP"] = runner.runner_group_name
         container: Container = self.client.containers.run(
             self.instance_config.image,
             command=self.instance_config.command,

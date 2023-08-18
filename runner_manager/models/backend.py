@@ -1,10 +1,9 @@
 from enum import Enum
-from typing import Dict, List, Literal, Optional, Iterable
+from typing import Dict, List, Literal, Optional
 
 from google.cloud.compute import AttachedDisk, Instance, NetworkInterface
 from pydantic import BaseModel
 from redis_om import Field
-from docker.types.containers import ContainerConfig
 
 from runner_manager.models.runner import Runner
 
@@ -42,12 +41,13 @@ class DockerInstanceConfig(InstanceConfig):
     remove: bool = False
     labels: Dict[str, str] = {}
     environment: Dict[str, str | None] = {
-        'RUNNER_NAME': None,
-        'RUNNER_LABELS': None,
-        'RUNNER_TOKEN': None,
-        'RUNNER_ORG': None,
-        'RUNNER_GROUP': 'default',
+        "RUNNER_NAME": None,
+        "RUNNER_LABELS": None,
+        "RUNNER_TOKEN": None,
+        "RUNNER_ORG": None,
+        "RUNNER_GROUP": "default",
     }
+
 
 class DockerConfig(BackendConfig):
     """Configuration for Docker backend."""

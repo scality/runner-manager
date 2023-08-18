@@ -32,7 +32,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
   worker:
     depends_on:
-    - dind
+      - dind
     profiles:
       - main
       - develop

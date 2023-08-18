@@ -17,9 +17,7 @@ def get() -> List[str]:
 
 
 @router.delete("/{group_name}")
-def delete(
-    group_name: str, github: GitHub = Depends(get_github)
-) -> Dict[str, str]:
+def delete(group_name: str, github: GitHub = Depends(get_github)) -> Dict[str, str]:
     try:
         group = RunnerGroup.find(RunnerGroup.name == group_name).first()
         group.delete(pk=group.pk, github=github)
