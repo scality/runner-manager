@@ -1,24 +1,27 @@
 from datetime import datetime
 from typing import List, Optional, Self, Union
 from uuid import uuid4
+
 from githubkit import Response
-from githubkit.rest.models import AuthenticationToken, Runner as GitHubRunner
+from githubkit.rest.models import AuthenticationToken
+from githubkit.rest.models import Runner as GitHubRunner
 from githubkit.webhooks.models import WorkflowJobInProgress
 from githubkit.webhooks.types import WorkflowJobEvent
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Field as PydanticField
 from redis_om import Field, NotFoundError, RedisModel
 from typing_extensions import Annotated
-from runner_manager.dependencies import get_settings, get_github
-from runner_manager.logging import log
-from runner_manager.clients.github import GitHub
-from runner_manager.models.settings import Settings
+
 from runner_manager.backend.base import BaseBackend
 from runner_manager.backend.docker import DockerBackend
 from runner_manager.backend.gcloud import GCPBackend
+from runner_manager.clients.github import GitHub
+from runner_manager.dependencies import get_github, get_settings
+from runner_manager.logging import log
 from runner_manager.models.backend import InstanceConfig
 from runner_manager.models.base import BaseModel
 from runner_manager.models.runner import Runner, RunnerLabel, RunnerStatus
+from runner_manager.models.settings import Settings
 
 
 class BaseRunnerGroup(PydanticBaseModel):
@@ -98,7 +101,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             Runner: Runner instance.
         """
         count = len(self.get_runners())
-        if count < self.max:
+        if count < (self.max or 0):
             runner: Runner = Runner(
                 name=self.generate_runner_name(),
                 status=RunnerStatus.offline,
@@ -142,7 +145,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
 
     @property
     def need_new_runner(self) -> bool:
-        return len(self.get_runners()) < self.min
+        return len(self.get_runners()) < (self.min or 0)
 
     # Try to see if this method is possible and does not cause any circular dependency issue
     # def healthcheck(self, settings: Settings):
@@ -184,20 +187,22 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         return group
 
     def healthcheck(self, settings: Settings = get_settings()):
-       """Healthcheck runner group."""
-       runners = self.get_runners()
-       github: GitHub = get_github()
-       for runner in runners:
-           if runner.id is not None:
-               github_runner: GitHubRunner = github.rest.actions.get_self_hosted_runner_for_org(
-                     self.organization, runner.id
-                ).parsed_data
-               runner.update_status(github_runner)
-               if runner.time_to_live_expired(settings.time_to_live):
-                   self.delete_runner(runner)
-               elif runner.time_to_start_expired(settings.timeout_runner):
-                   self.delete_runner(runner)
-       while self.need_new_runner:
+        """Healthcheck runner group."""
+        runners = self.get_runners()
+        github: GitHub = get_github()
+        for runner in runners:
+            if runner.id is not None:
+                github_runner: GitHubRunner = (
+                    github.rest.actions.get_self_hosted_runner_for_org(
+                        self.organization, runner.id
+                    ).parsed_data
+                )
+                runner.update_status(github_runner)
+                if runner.time_to_live_expired(settings.time_to_live):
+                    self.delete_runner(runner)
+                elif runner.time_to_start_expired(settings.timeout_runner):
+                    self.delete_runner(runner)
+        while self.need_new_runner:
             token_response: Response[
                 AuthenticationToken
             ] = github.rest.actions.create_registration_token_for_org(
@@ -206,4 +211,6 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             token: AuthenticationToken = token_response.parsed_data
             runner: Runner = self.create_runner(token)
             log.info(f"Runner {runner.name} created")
+
+
 RunnerGroup.update_forward_refs()
