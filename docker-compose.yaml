@@ -4,7 +4,6 @@ services:
     profiles:
       - tests
       - dev
-      - main
     image: redis/redis-stack
     ports:
       - 6379:6379
@@ -12,12 +11,10 @@ services:
     volumes:
       - redis_data:/data
   runner-manager:
-    depends_on:
-      - worker
-      - redis
     profiles:
-      - main
       - dev
+    depends_on:
+      - redis
     build: .
     user: root
     ports:
@@ -39,11 +36,9 @@ services:
       URL: http://runner-manager:8000/webhook
       REPO: ${REPO}
       GITHUB_TOKEN: ${RUNNER_MANAGER_TOKEN}
-
   worker:
     profiles:
       - dev
-      - main
     depends_on:
       - redis
     build: .
@@ -59,7 +54,6 @@ services:
       GITHUB_TOKEN: ${RUNNER_MANAGER_TOKEN}
   github-mock:
     profiles:
-      - dev
       - tests
     build: tests/images/github-mock
     ports:
