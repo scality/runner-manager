@@ -126,12 +126,12 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         Returns:
             Runner: Runner instance.
         """
-        # return self.backend.update(runner)
         runner: Runner = Runner.find(
             Runner.name == webhook.workflow_job.runner_name
         ).first()
         runner.id = webhook.workflow_job.runner_id
         runner.status = RunnerStatus.online
+        runner.started_at = webhook.workflow_job.started_at
         runner.busy = True
         runner.save()
         return self.backend.update(runner)
