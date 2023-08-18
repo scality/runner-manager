@@ -60,7 +60,7 @@ class Runner(BaseModel):
     busy: bool
     labels: Optional[List[RunnerLabel]] = []
     created_at: Optional[datetime]
-    updated_at: Optional[datetime]
+    started_at: Optional[datetime]
 
     @classmethod
     def find_from_webhook(cls, webhook: WorkflowJobEvent) -> "Runner":
@@ -127,9 +127,9 @@ class Runner(BaseModel):
         Returns:
             datetime: Time since the runner was updated
         """
-        if self.updated_at:
+        if self.started_at:
             now = datetime.now()
-            return now - self.updated_at
+            return now - self.started_at
         return timedelta()
 
     def time_to_start_expired(self, timeout: int) -> bool:
@@ -143,7 +143,6 @@ class Runner(BaseModel):
     def update_status(self, github_runner: GitHubRunner):
         self.status = RunnerStatus(github_runner.status)
         self.busy = github_runner.busy
-        self.updated_at = datetime.now()
         log.info(f"Runner {self.name} status updated to {self.status}")
         return self.save()
 

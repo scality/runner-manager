@@ -146,7 +146,7 @@ def test_workflow_job_in_progress(
     assert updated_runner.status == "online"
     assert updated_runner.id == webhook.workflow_job.runner_id
     assert updated_runner.name == webhook.workflow_job.runner_name
-    assert updated_runner.updated_at == webhook.workflow_job.started_at
+    assert updated_runner.started_at == webhook.workflow_job.started_at
 
 
 @settings(max_examples=10)

@@ -1,7 +1,8 @@
 from datetime import datetime
-from typing import List, Optional, Self, Union
+from typing import Any, List, Optional, Self, Union
 from uuid import uuid4
 
+import redis
 from githubkit import Response
 from githubkit.rest.models import AuthenticationToken
 from githubkit.rest.models import Runner as GitHubRunner
@@ -17,12 +18,9 @@ from runner_manager.backend.docker import DockerBackend
 from runner_manager.backend.gcloud import GCPBackend
 from runner_manager.clients.github import GitHub
 from runner_manager.clients.github import RunnerGroup as GitHubRunnerGroup
-from runner_manager.dependencies import get_github, get_settings
 from runner_manager.logging import log
-from runner_manager.models.backend import InstanceConfig
 from runner_manager.models.base import BaseModel
 from runner_manager.models.runner import Runner, RunnerLabel, RunnerStatus
-from runner_manager.models.settings import Settings
 
 
 class BaseRunnerGroup(PydanticBaseModel):
@@ -114,7 +112,6 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
                 busy=False,
                 runner_group_id=self.id,
                 created_at=datetime.now(),
-                updated_at=datetime.now(),
                 runner_group_name=self.name,
                 labels=self.runner_labels,
                 manager=self.manager,
@@ -136,7 +133,6 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         runner.id = webhook.workflow_job.runner_id
         runner.status = RunnerStatus.online
         runner.busy = True
-        runner.updated_at = webhook.workflow_job.started_at
         runner.save()
         return self.backend.update(runner)
 
@@ -218,22 +214,22 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             group = None
         return group
 
-    def healthcheck(self, settings: Settings = get_settings()):
+    def healthcheck(self, time_to_live: int, timeout_runner: int, github: GitHub):
         """Healthcheck runner group."""
         runners = self.get_runners()
-        github: GitHub = get_github()
         for runner in runners:
+
             if runner.id is not None:
                 github_runner: GitHubRunner = (
                     github.rest.actions.get_self_hosted_runner_for_org(
                         self.organization, runner.id
                     ).parsed_data
                 )
-                runner.update_status(github_runner)
-                if runner.time_to_live_expired(settings.time_to_live):
-                    self.delete_runner(runner)
-                elif runner.time_to_start_expired(settings.timeout_runner):
-                    self.delete_runner(runner)
+                runner = runner.update_status(github_runner)
+            if runner.time_to_live_expired(time_to_live):
+                self.delete_runner(runner)
+            if runner.time_to_start_expired(timeout_runner):
+                self.delete_runner(runner)
         while self.need_new_runner:
             token_response: Response[
                 AuthenticationToken
@@ -242,7 +238,8 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             )
             token: AuthenticationToken = token_response.parsed_data
             runner: Runner = self.create_runner(token)
-            log.info(f"Runner {runner.name} created")
+            if runner:
+                log.info(f"Runner {runner.name} created")
 
     @classmethod
     def delete(
