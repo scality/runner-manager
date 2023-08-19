@@ -136,6 +136,28 @@ class ActionsClient(ActionsClientKit):
             headers=exclude_unset(headers),
         )
 
+    def update_self_hosted_runner_group_for_org(
+        self,
+        org: str,
+        runner_group_id: int,
+        *,
+        headers: Optional[Dict[str, str]] = None,
+        data: Missing[RunnerGroup] = UNSET,
+    ) -> Response[RunnerGroup]:
+        url = f"/orgs/{org}/actions/runner-groups/{runner_group_id}"
+
+        json = data.dict(exclude_unset=True) if data else None
+
+        headers = {"X-GitHub-Api-Version": self._REST_API_VERSION, **(headers or {})}
+
+        return self._github.request(
+            "PATCH",
+            url,
+            headers=exclude_unset(headers),
+            json=json,
+            response_model=RunnerGroup,
+        )
+
 
 class RestNamespace(RestNamespaceKit):
     @cached_property

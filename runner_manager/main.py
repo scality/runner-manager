@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from redis import Redis
 from rq import Queue
 from rq.job import Job
@@ -46,4 +46,4 @@ def homepage():
     """
     Homepage
     """
-    return {"message": "Hello World"}
+    return Response(status_code=200)

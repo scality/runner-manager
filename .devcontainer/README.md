@@ -27,5 +27,5 @@ poetry run pytest tests/api # Run api tests
 To bootstrap a local environment, run the following command:
 
 ```bash
-docker compose --profile develop up --build
+docker compose --profile dev up --build
 ```

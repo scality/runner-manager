@@ -1,3 +1,5 @@
+from importlib.resources import files
+from pathlib import Path
 from typing import Dict, List, Literal
 
 from docker import DockerClient
@@ -14,32 +16,67 @@ from runner_manager.models.runner import Runner
 class DockerBackend(BaseBackend):
     name: Literal[Backends.docker] = Field(default=Backends.docker)
 
-    config: DockerConfig
-    instance_config: DockerInstanceConfig
+    config: DockerConfig = DockerConfig()
+    instance_config: DockerInstanceConfig = DockerInstanceConfig()
 
     @property
     def client(self) -> DockerClient:
         """Returns a docker client."""
         return DockerClient(base_url=self.config.base_url)
 
-    def create(self, runner: Runner):
-        labels: Dict[str, str | None] = {
-            "runner-manager": self.manager,
-        }
-        if self.instance_config.labels:
-            labels.update(self.instance_config.labels.items())
+    def _build(self, context: str, tag: str):
+        """Simple build function to build a docker image.
 
-        container: Container = self.client.containers.run(
-            self.instance_config.image,
-            labels=labels,
-            remove=self.instance_config.remove,
-            detach=self.instance_config.detach,
-            environment=self.instance_config.environment,
-            command=self.instance_config.command,
-            name=runner.name,
+        This function is meant to be used by tests to simplify the process of
+        building a docker image for test environments.
+
+        """
+        path = Path(files("runner_manager").name)
+        path = path.parent / context
+        self.client.images.build(
+            path=path.as_posix(),
+            tag=tag,
+            rm=True,
         )
 
-        # set container id as instance_id
+    def _labels(self, runner: Runner) -> Dict[str, str | None]:
+        """Return labels for the container."""
+        labels: Dict[str, str | None] = {
+            "group": runner.runner_group_name,
+            "name": runner.name,
+            "organization": runner.organization,
+            "manager": self.manager,
+        }
+        labels.update(self.instance_config.labels)
+        return labels
+
+    def _environment(self, runner: Runner) -> Dict[str, str | None]:
+        """Return environment variables for the container."""
+        environment: Dict[str, str | None] = {
+            "RUNNER_NAME": runner.name,
+            "RUNNER_LABELS": ",".join([label.name for label in runner.labels]),
+            "RUNNER_TOKEN": runner.token,
+            "RUNNER_ORG": runner.organization,
+            "RUNNER_GROUP": runner.runner_group_name,
+        }
+        environment.update(self.instance_config.environment)
+        return environment
+
+    def create(self, runner: Runner):
+        if self.instance_config.context:
+            self._build(self.instance_config.context, self.instance_config.image)
+
+        labels = self._labels(runner)
+        environment = self._environment(runner)
+        container: Container = self.client.containers.run(
+            self.instance_config.image,
+            command=self.instance_config.command,
+            detach=self.instance_config.detach,
+            environment=environment,
+            labels=labels,
+            name=runner.name,
+            remove=self.instance_config.remove,
+        )
         runner.instance_id = container.id
 
         return super().create(runner)
@@ -79,7 +116,7 @@ class DockerBackend(BaseBackend):
 
     def list(self) -> List[Runner]:
         containers: List[Container] = self.client.containers.list(
-            filters={"label": f"runner-manager={self.manager}"}
+            filters={"label": f"manager={self.manager}"}
         )
         runners: List[Runner] = []
         for container in containers:

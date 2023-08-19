@@ -6,6 +6,7 @@ authors = ["Platform Engineering <platform.engineering@scality.com>"]
 license = "Apache"
 readme = "README.md"
 packages = [{ include = "runner_manager" }]
+include = ["pyproject.toml", "README.md", "LICENSE", "images/**/*"]
 
 [tool.poetry.dependencies]
 python = "^3.11"
