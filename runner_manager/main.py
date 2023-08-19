@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI, Response
 from redis import Redis
 from rq import Queue
 from rq.job import Job
@@ -42,10 +42,8 @@ app.include_router(runner_groups.router)
 
 
 @app.get("/")
-def homepage(
-    queue: Queue = Depends(get_queue), settings: Settings = Depends(get_settings)
-):
+def homepage():
     """
     Homepage
     """
-    return {"message": "Hello World"}
+    return Response(status_code=200)

@@ -58,26 +58,6 @@ def runner(settings) -> Runner:
 
 
 @fixture()
-def runner_group(settings) -> RunnerGroup:
-    runner_group = RunnerGroup(
-        id=1,
-        name="test",
-        manager=settings.name,
-        organization="octo-org",
-        backend={"name": "base"},
-        labels=[
-            "label",
-        ],
-    )
-    assert runner_group.Meta.global_key_prefix == settings.name
-    # Ensure that the runner group has no runners.
-    for runner in runner_group.get_runners():
-        print(f"deleted runner {runner.name}")
-        Runner.delete(runner.pk)
-    return runner_group
-
-
-@fixture()
 def runner_token(runner_group: RunnerGroup, github: GitHub) -> AuthenticationToken:
     token: Response[
         AuthenticationToken
