@@ -1,4 +1,3 @@
-
 from pytest import fixture, raises
 from redis_om import NotFoundError
 
