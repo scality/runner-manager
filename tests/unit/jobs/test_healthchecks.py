@@ -6,6 +6,7 @@ from hypothesis import strategies as st
 from redis_om import Migrator
 
 from runner_manager.clients.github import GitHub
+from runner_manager.jobs.healthcheck import healthchecks
 from runner_manager.models.runner import Runner, RunnerStatus
 from runner_manager.models.runner_group import RunnerGroup
 from runner_manager.models.settings import Settings
@@ -101,3 +102,14 @@ def test_need_new_runner(
     assert runner_group.need_new_runner is True
     runner_group.create_runner(runner_token)
     assert runner_group.need_new_runner is False
+
+
+def test_runner_groups_healthchecks(
+    runner_group: RunnerGroup, settings: Settings, github: GitHub, runner_token
+):
+    runner_group.save()
+    healthchecks([runner_group])
+    assert len(runner_group.get_runners()) == 0
+    runner_group.create_runner(runner_token)
+    healthchecks([runner_group])
+    assert len(runner_group.get_runners()) == 1
