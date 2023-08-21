@@ -1,0 +1,11 @@
+---
+name: runner-manager
+runner_groups:
+- name: octo-runner-group
+  organization: octo-org
+  labels:
+    - octo-runner
+  backend:
+    name: docker
+    config: {}
+    instance_config: {}

@@ -8,6 +8,10 @@ configMapGenerator:
   - name: redis-config
     envs:
       - redis-config.env
+secretGenerator:
+  - name: runner-manager-secrets
+    envs:
+      - secrets.env
 resources:
   - main
   - worker

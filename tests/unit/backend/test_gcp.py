@@ -22,7 +22,7 @@ def gcp_group(settings) -> RunnerGroup:
     runner_group: RunnerGroup = RunnerGroup(
         id=2,
         name="test",
-        organization="test",
+        organization="octo-org",
         manager=settings.name,
         backend=GCPBackend(
             name=Backends.gcloud,
