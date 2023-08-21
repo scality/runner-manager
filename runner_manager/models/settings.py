@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional
+from datetime import timedelta
 
 import yaml
 from githubkit import AppInstallationAuthStrategy, TokenAuthStrategy
@@ -30,9 +31,9 @@ class Settings(BaseSettings):
     api_key: Optional[SecretStr] = None
     log_level: Literal["INFO", "WARNING", "DEBUG", "ERROR"] = "INFO"
     runner_groups: List[BaseRunnerGroup] = []
-    timeout_runner: int = 15  # in minutes
-    time_to_live: int = 60  # in minutes
-    healthcheck_interval: int = 1  # in minutes
+    timeout_runner: timedelta = timedelta(minutes=15)
+    time_to_live: timedelta = timedelta(hours=1)
+    healthcheck_interval: timedelta = timedelta(minutes=15)
     github_base_url: AnyHttpUrl = AnyHttpUrl("api.github.com", scheme="https")
     github_webhook_secret: Optional[SecretStr] = None
     github_token: Optional[SecretStr] = None

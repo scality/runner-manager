@@ -19,6 +19,7 @@ def main():
         default=False,
         help="Run in burst mode (quit after all work is done)",
     )
+    parser.add_argument('--interval', type=int, default=60, help='interval in seconds')
     args = parser.parse_args()
 
     queue: Queue = get_queue()
@@ -30,6 +31,7 @@ def main():
     scheduler = Scheduler(
         queue=queue,
         connection=queue.connection,
+        interval=args.interval,
     )
     scheduler.run(burst=args.burst)
 

@@ -63,7 +63,7 @@ def bootstrap_healthchecks(
                 "type": "healthcheck",
                 "group": group.name,
             },
-            interval=settings.healthcheck_interval,
+            interval=settings.healthcheck_interval.total_seconds(),
             repeat=None,
         )
 
