@@ -7,7 +7,6 @@ from redis_om import Migrator
 
 from runner_manager.clients.github import GitHub
 from runner_manager.dependencies import get_github, get_settings
-from runner_manager.logging import log
 from runner_manager.models.runner_group import RunnerGroup
 from runner_manager.models.settings import Settings
 

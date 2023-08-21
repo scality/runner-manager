@@ -73,9 +73,7 @@ class DockerBackend(BaseBackend):
 
         labels = self._labels(runner)
         environment = self._environment(runner)
-        log.info(
-            f"Creating container for runner {runner.name}, labels: {labels}, environment: {environment}"
-        )
+        log.info(f"Creating container for runner {runner.name}, labels: {labels}")
         container: Container = self.client.containers.run(
             self.instance_config.image,
             command=self.instance_config.command,

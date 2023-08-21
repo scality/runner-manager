@@ -20,7 +20,6 @@ from runner_manager.backend.docker import DockerBackend
 from runner_manager.backend.gcloud import GCPBackend
 from runner_manager.clients.github import GitHub
 from runner_manager.clients.github import RunnerGroup as GitHubRunnerGroup
-from runner_manager.logging import log
 from runner_manager.models.base import BaseModel
 from runner_manager.models.runner import Runner, RunnerLabel, RunnerStatus
 
