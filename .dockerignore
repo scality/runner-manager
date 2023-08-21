@@ -9,4 +9,5 @@ tests
 site
 .coverage
 coverage.xml
-
+config.yaml*
+.env

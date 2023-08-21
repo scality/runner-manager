@@ -1,9 +1,8 @@
 from enum import Enum
-from typing import Dict, List, Literal, Optional
+from typing import Dict, List, Optional
 
 from google.cloud.compute import AttachedDisk, Instance, NetworkInterface
 from pydantic import BaseModel
-from redis_om import Field
 
 from runner_manager.models.runner import Runner
 
@@ -20,10 +19,6 @@ class Backends(str, Enum):
 class BackendConfig(BaseModel):
     """Base class for backend configuration."""
 
-    name: Literal[Backends.base] = Field(
-        index=True, full_text_search=True, default=Backends.base
-    )
-
 
 class InstanceConfig(BaseModel):
     """Base class for backend instance configuration."""
@@ -32,21 +27,27 @@ class InstanceConfig(BaseModel):
 class DockerInstanceConfig(InstanceConfig):
     """Configuration for Docker backend instance."""
 
-    image: str
+    image: str = "runner:latest"
 
     # command to run, accept two types: str or List[str].
     command: Optional[List[str]] = []
-
+    context: Optional[str] = None
     detach: bool = True
     remove: bool = False
-    labels: Optional[Dict[str, str]] = {}
-    environment: Optional[Dict[str, str]] = {}
+    labels: Dict[str, str] = {}
+    environment: Dict[str, str | None] = {
+        "RUNNER_NAME": None,
+        "RUNNER_LABELS": None,
+        "RUNNER_TOKEN": None,
+        "RUNNER_ORG": None,
+        "RUNNER_GROUP": "default",
+    }
 
 
 class DockerConfig(BackendConfig):
     """Configuration for Docker backend."""
 
-    base_url: str = "unix:///var/run/docker.sock"
+    base_url: str = "unix://var/run/docker.sock"
 
 
 class GCPConfig(BackendConfig):

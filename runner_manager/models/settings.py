@@ -1,6 +1,5 @@
-from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Dict, List, Literal, Optional
 
 import yaml
 from githubkit import AppInstallationAuthStrategy, TokenAuthStrategy
@@ -25,23 +24,14 @@ def yaml_config_settings_source(settings: BaseSettings) -> Dict[str, Any]:
     return {}
 
 
-class LogLevel(str, Enum):
-    INFO = "INFO"
-    WARNING = "WARNING"
-    DEBUG = "DEBUG"
-    ERROR = "ERROR"
-
-
 class Settings(BaseSettings):
     name: str = "runner-manager"
     redis_om_url: Optional[RedisDsn] = None
     api_key: Optional[SecretStr] = None
-    allowed_hosts: Optional[Sequence[str]] = [
-        "*",
-    ]
-    log_level: LogLevel = LogLevel.INFO
+    log_level: Literal["INFO", "WARNING", "DEBUG", "ERROR"] = "INFO"
     runner_groups: List[BaseRunnerGroup] = []
-
+    timeout_runner: int = 15  # in minutes
+    time_to_live: int = 60  # in minutes
     github_base_url: AnyHttpUrl = AnyHttpUrl("api.github.com", scheme="https")
     github_webhook_secret: Optional[SecretStr] = None
     github_token: Optional[SecretStr] = None

@@ -1,10 +1,13 @@
 import pytest
+from githubkit.rest.models import AuthenticationToken
 from githubkit.webhooks.models import WorkflowJobCompleted
 from hypothesis import given
 from redis_om import Migrator, NotFoundError
 
+from runner_manager import Runner
 from runner_manager.backend.base import BaseBackend
-from runner_manager.models.runner_group import RunnerGroup
+from runner_manager.clients.github import GitHub
+from runner_manager.models.runner_group import BaseRunnerGroup, RunnerGroup
 
 from ...strategies import WorkflowJobCompletedStrategy
 
@@ -41,16 +44,20 @@ def test_runner_group_backend(runner_group: RunnerGroup):
     RunnerGroup.delete(runner_group.pk)
 
 
-def test_create_runner_from_group(runner_group: RunnerGroup):
+def test_create_runner_from_group(
+    runner_group: RunnerGroup, runner_token: AuthenticationToken
+):
     runner_group.save()
-    runner = runner_group.create_runner()
+    runner = runner_group.create_runner(runner_token)
     assert runner.runner_group_id == runner_group.id
     assert runner.labels == runner_group.runner_labels
 
 
-def test_list_runners_from_group(runner_group: RunnerGroup):
+def test_list_runners_from_group(
+    runner_group: RunnerGroup, runner_token: AuthenticationToken
+):
     runner_group.save()
-    runner = runner_group.create_runner()
+    runner = runner_group.create_runner(runner_token)
     assert runner in runner_group.get_runners()
 
 
@@ -71,6 +78,40 @@ def test_find_runner_group_labels(runner_group: RunnerGroup):
 def test_find_from_webhook(runner_group: RunnerGroup, webhook: WorkflowJobCompleted):
     webhook.workflow_job.runner_group_id = runner_group.id
     runner_group.save()
+    Migrator().run()
     assert RunnerGroup.find_from_webhook(webhook) == runner_group
     runner_group.delete(runner_group.pk)
     assert RunnerGroup.find_from_webhook(webhook) is None
+
+
+def test_runner_group_delete_method(
+    runner_group: RunnerGroup, github: GitHub, runner_token
+):
+    runner_group.id = None
+    assert runner_group.default is False
+    runner_group.save(github=github)
+    assert runner_group.id is not None
+    runner_group.default = True
+    runner_group.save(github=github)
+    assert runner_group.default is True
+    runner: Runner = runner_group.create_runner(runner_token)
+    assert runner.runner_group_id == runner_group.id
+    assert runner.runner_group_name == runner_group.name
+    Migrator().run()
+    assert runner in runner_group.get_runners()
+    runner_group.delete(runner_group.pk, github=github)
+
+
+def test_update_from_base(runner_group: RunnerGroup, github: GitHub):
+    basegroup: BaseRunnerGroup = BaseRunnerGroup(
+        name="basegroup",
+        organization="test",
+        labels=["test"],
+        min=1,
+        max=1,
+        backend={"name": "base"},
+    )
+    runner_group.save(github=github)
+    assert basegroup.name != runner_group.name
+    runner_group.update(**basegroup.dict(exclude_unset=True))
+    assert basegroup.name == runner_group.name

@@ -1,6 +1,7 @@
 from string import ascii_letters
 from typing import Optional
 
+from githubkit.rest.models import Runner as GitHubRunner
 from githubkit.webhooks.models import (
     License,
     Organization,
@@ -46,6 +47,11 @@ RepositoryStrategy = st.builds(
     owner=UserStrategy,
 )
 
+OrgStrategy = st.builds(
+    Organization,
+    login=st.just("octo-org"),
+)
+
 StepStrategy = st.builds(WorkflowStepCompleted)
 
 JobPropCompletedStrategy = st.builds(
@@ -88,7 +94,7 @@ WorkflowJobCompletedStrategy = st.builds(
     action=st.just("completed"),
     repository=RepositoryStrategy,
     sender=UserStrategy,
-    organization=st.builds(Organization),
+    organization=OrgStrategy,
     workflow_job=JobPropCompletedStrategy,
 )
 
@@ -97,7 +103,7 @@ WorkflowJobQueuedStrategy = st.builds(
     action=st.just("queued"),
     repository=RepositoryStrategy,
     sender=UserStrategy,
-    organization=st.builds(Organization),
+    organization=OrgStrategy,
     workflow_job=JobPropQueuedStrategy,
 )
 
@@ -106,7 +112,7 @@ WorkflowJobInProgressStrategy = st.builds(
     action=st.just("in_progress"),
     repository=RepositoryStrategy,
     sender=UserStrategy,
-    organization=st.builds(Organization),
+    organization=OrgStrategy,
     workflow_job=JobPropInProgressStrategy,
 )
 
@@ -114,6 +120,10 @@ SettingsStrategy = st.builds(
     Settings,
     name=Text,
     redis_om_url=st.just("redis://localhost:6379/0"),
+    github_base_url=st.just("http://localhost:4010"),
+    github_token=st.just("test"),
+    time_to_live=st.integers(1, 60),
+    timeout_runner=st.integers(1, 10),
 )
 
 RedisStrategy = st.builds(
@@ -135,4 +145,11 @@ PingHookStrategy = st.builds(
     events=st.just(["*"]),
 )
 
+GithubRunnerStrategy = st.builds(
+    GitHubRunner,
+    id=st.integers(),
+    status=st.sampled_from(["online", "offline"]),
+    busy=st.booleans(),
+    name=Text,
+)
 PingStrategy = st.builds(PingEvent, hook=PingHookStrategy)
