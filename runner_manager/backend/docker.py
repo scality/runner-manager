@@ -1,3 +1,4 @@
+import logging
 from importlib.resources import files
 from pathlib import Path
 from typing import Dict, List, Literal
@@ -11,6 +12,8 @@ from redis_om import NotFoundError
 from runner_manager.backend.base import BaseBackend
 from runner_manager.models.backend import Backends, DockerConfig, DockerInstanceConfig
 from runner_manager.models.runner import Runner
+
+log = logging.getLogger(__name__)
 
 
 class DockerBackend(BaseBackend):
@@ -52,14 +55,16 @@ class DockerBackend(BaseBackend):
 
     def _environment(self, runner: Runner) -> Dict[str, str | None]:
         """Return environment variables for the container."""
-        environment: Dict[str, str | None] = {
-            "RUNNER_NAME": runner.name,
-            "RUNNER_LABELS": ",".join([label.name for label in runner.labels]),
-            "RUNNER_TOKEN": runner.token,
-            "RUNNER_ORG": runner.organization,
-            "RUNNER_GROUP": runner.runner_group_name,
-        }
-        environment.update(self.instance_config.environment)
+        environment: Dict[str, str | None] = self.instance_config.environment
+        environment.update(
+            {
+                "RUNNER_NAME": runner.name,
+                "RUNNER_LABELS": ", ".join([label.name for label in runner.labels]),
+                "RUNNER_TOKEN": runner.token,
+                "RUNNER_ORG": runner.organization,
+                "RUNNER_GROUP": runner.runner_group_name,
+            }
+        )
         return environment
 
     def create(self, runner: Runner):
@@ -68,6 +73,7 @@ class DockerBackend(BaseBackend):
 
         labels = self._labels(runner)
         environment = self._environment(runner)
+        log.info(f"Creating container for runner {runner.name}, labels: {labels}")
         container: Container = self.client.containers.run(
             self.instance_config.image,
             command=self.instance_config.command,

@@ -1,9 +1,11 @@
+import logging
 from datetime import datetime
 from typing import Any, List, Optional, Self, Union
 from uuid import uuid4
 
 import redis
 from githubkit import Response
+from githubkit.exception import RequestFailed
 from githubkit.rest.models import AuthenticationToken
 from githubkit.rest.models import Runner as GitHubRunner
 from githubkit.webhooks.models import WorkflowJobInProgress
@@ -18,9 +20,10 @@ from runner_manager.backend.docker import DockerBackend
 from runner_manager.backend.gcloud import GCPBackend
 from runner_manager.clients.github import GitHub
 from runner_manager.clients.github import RunnerGroup as GitHubRunnerGroup
-from runner_manager.logging import log
 from runner_manager.models.base import BaseModel
 from runner_manager.models.runner import Runner, RunnerLabel, RunnerStatus
+
+log = logging.getLogger(__name__)
 
 
 class BaseRunnerGroup(PydanticBaseModel):
@@ -51,8 +54,8 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
     name: str = Field(index=True, full_text_search=True)
     organization: str = Field(index=True, full_text_search=True)
     repository: Optional[str] = Field(index=True, full_text_search=True)
-    max: Optional[int] = Field(index=True, ge=1, default=20)
-    min: Optional[int] = Field(index=True, ge=0, default=0)
+    max: int = Field(index=True, ge=1, default=20)
+    min: int = Field(index=True, ge=0, default=0)
     labels: List[str] = Field(index=True)
 
     def __post_init_post_parse__(self):
@@ -104,9 +107,10 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             Runner: Runner instance.
         """
         count = len(self.get_runners())
-        if count < (self.max or 0):
+        if count < self.max:
             runner: Runner = Runner(
                 name=self.generate_runner_name(),
+                organization=self.organization,
                 status=RunnerStatus.offline,
                 token=token.token,
                 busy=False,
@@ -116,22 +120,9 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
                 labels=self.runner_labels,
                 manager=self.manager,
             )
-            runner.save()
+            runner = runner.save()
             return self.backend.create(runner)
         return None
-        runner: Runner = Runner(
-            name=self.generate_runner_name(),
-            status=RunnerStatus.offline,
-            token=token.token,
-            busy=False,
-            runner_group_id=self.id,
-            runner_group_name=self.name,
-            labels=self.runner_labels,
-            manager=self.manager,
-            organization=self.organization,
-        )
-        runner.save()
-        return self.backend.create(runner)
 
     def update_runner(self: Self, webhook: WorkflowJobInProgress) -> Runner:
         """Update a runner instance.
@@ -192,6 +183,9 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         Returns:
             RunnerGroup: Runner group instance.
         """
+        # add label "self-hosted" to the list of labels
+        if "self-hosted" not in self.labels:
+            self.labels.append("self-hosted")
         if github:
             github_group: GitHubRunnerGroup = self.create_github_group(github)
             self.id = github_group.id
@@ -279,6 +273,24 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             group = None
         return group
 
+    def delete_github_group(self, github: GitHub) -> Response[GitHubRunnerGroup] | None:
+        """Delete a GitHub runner group."""
+        if self.id:
+            # check if runner group exists
+            try:
+                github.rest.actions.get_self_hosted_runner_group_for_org(
+                    org=self.organization,
+                    runner_group_id=self.id,
+                )
+            except RequestFailed:
+                log.info("Runner group does not exist")
+                return None
+            return github.rest.actions.delete_self_hosted_runner_group_from_org(
+                org=self.organization, runner_group_id=self.id
+            )
+
+        return None
+
     @classmethod
     def delete(
         cls,
@@ -303,10 +315,8 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         runners: List[Runner] = group.get_runners()
         for runner in runners:
             group.delete_runner(runner)
-        if github and group.id:
-            github.rest.actions.delete_self_hosted_runner_group_from_org(
-                org=group.organization, runner_group_id=group.id
-            )
+        if github:
+            group.delete_github_group(github)
         db = cls._get_db(pipeline)
 
         return cls._delete(db, cls.make_primary_key(pk))
