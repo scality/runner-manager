@@ -17,7 +17,7 @@ class AWSBackend(BaseBackend):
 
     @property
     def client(self) -> client:
-        """Returns a AWS Compute Engine client."""
+        """Return a AWS Compute Engine client."""
         return client("ec2", region_name=self.config.region)
 
     def create(self, runner: Runner) -> Runner:
@@ -35,13 +35,9 @@ class AWSBackend(BaseBackend):
 
     def delete(self, runner: Runner):
         """Delete a runner."""
+        runner_id = runner.instance_id if runner.instance_id else runner.name
         try:
-            if runner.instance_id:
-                self.client.terminate_instances(
-                    InstanceIds=[runner.instance_id]
-                )
-            else:
-                self.client.terminate_instances(InstanceIds=[runner.name])
+            self.client.terminate_instances(InstanceIds=[runner_id])
         except ClientError as e:
             if e.response["Error"]["Code"] == "InvalidInstanceID.NotFound":
                 log.error(f"Instance {runner.instance_id} not found.")
@@ -66,13 +62,13 @@ class AWSBackend(BaseBackend):
         runners: List[Runner] = []
         try:
             instances = self.client.describe_instances()
-            for instance in instances["Reservations"]:
-                for i in instance["Instances"]:
-                    labels = i["Tags"]
+            for reservations in instances["Reservations"]:
+                for instance in reservations["Instances"]:
+                    labels = instance["Tags"]
                     if self.manager and "runner-manager" in labels:
                         runner = Runner(
-                            name=i["InstanceId"],
-                            instance_id=i["InstanceId"],
+                            name=instance["InstanceId"],
+                            instance_id=instance["InstanceId"],
                             busy=False,
                         )
                         runners.append(runner)
