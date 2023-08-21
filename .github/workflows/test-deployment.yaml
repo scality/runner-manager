@@ -28,9 +28,10 @@ jobs:
         run: kubectl apply -k manifests
       - name: Check if deployment is ready
         run: |
-          kubectl rollout status statefulset redis --timeout=90s
+          kubectl rollout status statefulset runner-manager-redis --timeout=90s
           kubectl rollout status deployment runner-manager --timeout=120s
           kubectl rollout status deployment runner-manager-worker --timeout=120s
+          kubectl rollout status deployment runner-manager-scheduler --timeout=120s
       - name: get all resources
         if: failure()
         run: kubectl get all
@@ -41,5 +42,6 @@ jobs:
         if: failure()
         run: |
           kubectl logs -l app.kubernetes.io/name=runner-manager
-          kubectl logs -l app.kubernetes.io/name=runner-manager-worker
-          kubectl logs -l app.kubernetes.io/name=redis
+          kubectl logs -l app.kubernetes.io/component=worker
+          kubectl logs -l app.kubernetes.io/component=scheduler
+          kubectl logs -l app.kubernetes.io/component=redis
