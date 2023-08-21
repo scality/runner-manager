@@ -54,8 +54,8 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
     name: str = Field(index=True, full_text_search=True)
     organization: str = Field(index=True, full_text_search=True)
     repository: Optional[str] = Field(index=True, full_text_search=True)
-    max: Optional[int] = Field(index=True, ge=1, default=20)
-    min: Optional[int] = Field(index=True, ge=0, default=0)
+    max: int = Field(index=True, ge=1, default=20)
+    min: int = Field(index=True, ge=0, default=0)
     labels: List[str] = Field(index=True)
 
     def __post_init_post_parse__(self):
@@ -107,7 +107,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             Runner: Runner instance.
         """
         count = len(self.get_runners())
-        if count < (self.max or 0):
+        if count < self.max:
             runner: Runner = Runner(
                 name=self.generate_runner_name(),
                 organization=self.organization,
