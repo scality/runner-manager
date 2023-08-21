@@ -1,11 +1,14 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from enum import Enum
 from typing import List, Literal, Optional
 
+import redis
+from githubkit.rest.models import Runner as GitHubRunner
 from githubkit.webhooks.types import WorkflowJobEvent
 from pydantic import BaseModel as PydanticBaseModel
 from redis_om import Field, NotFoundError
 
+from runner_manager.logging import log
 from runner_manager.models.base import BaseModel
 
 # Ideally the runner model would have been inherited
@@ -62,7 +65,7 @@ class Runner(BaseModel):
     labels: List[RunnerLabel] = []
     organization: str = Field(default=None, index=True, description="Organization name")
     created_at: Optional[datetime]
-    updated_at: Optional[datetime]
+    started_at: Optional[datetime]
 
     @classmethod
     def find_from_webhook(cls, webhook: WorkflowJobEvent) -> "Runner":
@@ -81,6 +84,85 @@ class Runner(BaseModel):
         except NotFoundError:
             runner = None
         return runner
+
+    @property
+    def is_online(self) -> bool:
+        """Check if the runner is online
+
+        Returns:
+            bool: True if the runner is online, False otherwise.
+        """
+        return self.status == RunnerStatus.online
+
+    @property
+    def is_offline(self) -> bool:
+        """Check if the runner is offline
+
+        Returns:
+            bool: True if the runner is offline, False otherwise.
+        """
+        return self.status == RunnerStatus.offline
+
+    @property
+    def is_idle(self) -> bool:
+        """Check if the runner is idle
+
+        Returns:
+            bool: True if the runner is idle, False otherwise.
+        """
+        return self.status == RunnerStatus.idle
+
+    @property
+    def time_since_created(self) -> timedelta:
+        """Time since the runner was created
+
+        Returns:
+            datetime: Time since the runner was created
+        """
+        if self.created_at:
+            now = datetime.now()
+            return now - self.created_at
+        return timedelta()
+
+    @property
+    def time_since_started(self) -> timedelta:
+        """Home long the runner has been running
+        since last update
+
+        Returns:
+            datetime: Time since the runner was updated
+        """
+        if self.started_at:
+            now = datetime.now()
+            return now - self.started_at
+        return timedelta()
+
+    def time_to_start_expired(self, timeout: int) -> bool:
+        return self.is_offline and self.time_since_created > timedelta(minutes=timeout)
+
+    def time_to_live_expired(self, time_to_live: int) -> bool:
+        return self.is_online and self.time_since_started > timedelta(
+            minutes=time_to_live
+        )
+
+    def update_status(self, github_runner: GitHubRunner):
+        self.status = RunnerStatus(github_runner.status)
+        self.busy = github_runner.busy
+        log.info(f"Runner {self.name} status updated to {self.status}")
+        return self.save()
+
+    def save(
+        self,
+        pipeline: Optional[redis.client.Pipeline] = None,
+    ) -> "Runner":
+        """Create a runner.
+
+        Returns:
+            Runner: Runner instance.
+        """
+        if self.created_at is None:
+            self.created_at = datetime.now()
+        return super().save(pipeline=pipeline)
 
 
 Runner.update_forward_refs()

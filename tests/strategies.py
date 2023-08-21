@@ -1,6 +1,7 @@
 from string import ascii_letters
 from typing import Optional
 
+from githubkit.rest.models import Runner as GitHubRunner
 from githubkit.webhooks.models import (
     License,
     Organization,
@@ -121,6 +122,8 @@ SettingsStrategy = st.builds(
     redis_om_url=st.just("redis://localhost:6379/0"),
     github_base_url=st.just("http://localhost:4010"),
     github_token=st.just("test"),
+    time_to_live=st.integers(1, 60),
+    timeout_runner=st.integers(1, 10),
 )
 
 RedisStrategy = st.builds(
@@ -142,4 +145,11 @@ PingHookStrategy = st.builds(
     events=st.just(["*"]),
 )
 
+GithubRunnerStrategy = st.builds(
+    GitHubRunner,
+    id=st.integers(),
+    status=st.sampled_from(["online", "offline"]),
+    busy=st.booleans(),
+    name=Text,
+)
 PingStrategy = st.builds(PingEvent, hook=PingHookStrategy)
