@@ -133,7 +133,6 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         runner.save()
         return self.backend.create(runner)
 
-
     def update_runner(self: Self, webhook: WorkflowJobInProgress) -> Runner:
         """Update a runner instance.
 

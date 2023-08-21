@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from enum import Enum
 from typing import List, Literal, Optional
 
+import redis
 from githubkit.rest.models import Runner as GitHubRunner
 from githubkit.webhooks.types import WorkflowJobEvent
 from pydantic import BaseModel as PydanticBaseModel
@@ -149,6 +150,19 @@ class Runner(BaseModel):
         self.busy = github_runner.busy
         log.info(f"Runner {self.name} status updated to {self.status}")
         return self.save()
+
+    def save(
+        self,
+        pipeline: Optional[redis.client.Pipeline] = None,
+    ) -> "Runner":
+        """Create a runner.
+
+        Returns:
+            Runner: Runner instance.
+        """
+        if self.created_at is None:
+            self.created_at = datetime.now()
+        return super().save(pipeline=pipeline)
 
 
 Runner.update_forward_refs()

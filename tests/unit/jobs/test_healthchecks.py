@@ -62,6 +62,18 @@ def test_group_healthcheck(
     assert len(runner_group.get_runners()) == 0
 
 
+def test_need_new_runner_healthcheck(
+    runner_group: RunnerGroup, settings: Settings, github: GitHub
+):
+    runner_group.max = 2
+    runner_group.min = 1
+    runner_group.save()
+    assert runner_group.need_new_runner is True
+    runner_group.healthcheck(settings.time_to_live, settings.timeout_runner, github)
+    assert runner_group.need_new_runner is False
+    assert len(runner_group.get_runners()) == 1
+
+
 def test_time_to_start(runner: Runner, settings: Settings):
     runner.created_at = datetime.now() - timedelta(minutes=settings.timeout_runner + 1)
     runner.status = RunnerStatus.offline
