@@ -6,7 +6,9 @@ RUNNER_LABELS=${RUNNER_LABELS:-"runner"}
 RUNNER_TOKEN=${RUNNER_TOKEN:-"token"}
 RUNNER_GROUP=${RUNNER_GROUP:-"default"}
 RUNNER_WORKDIR=${RUNNER_WORKDIR:-"_work"}
-RUNNER_DOWNLOAD_URL=${RUNNER_DOWNLOAD_URL:-""}
+RUNNER_DOWNLOAD_URL=${RUNNER_DOWNLOAD_URL:-"https://github.com/actions/runner/releases/download/v2.308.0/actions-runner-linux-x64-2.308.0.tar.gz"}
+RUNNER_FILE=${RUNNER_FILE:-$(basename "${RUNNER_DOWNLOAD_URL}")}
+LSB_RELEASE_CS=${LSB_RELEASE_CS:-$(lsb_release -cs))}
 
 source /etc/os-release
 LINUX_OS=${ID}
@@ -61,10 +63,11 @@ if [[ ! ${RUNNER_LABELS} =~ "no-docker" ]]; then
 
 	if [[ ${LINUX_OS} == "ubuntu" ]]; then
 		sudo apt-get -y update
-		curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+		curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /tmp/docker.gpg
+		sudo cat /tmp/docker.gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg || true
 		echo \
 			"deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
-          $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
+          ${LSB_RELEASE_CS} stable" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
 		sudo apt-get update --yes --force-yes
 		sudo apt-get install --yes --force-yes docker-ce docker-ce-cli containerd.io
 	elif [[ ${LINUX_OS} == "centos" ]] || [[ ${LINUX_OS} == "rocky" ]] || [[ ${LINUX_OS} == "almalinux" ]]; then
@@ -102,7 +105,8 @@ sudo su - actions
 mkdir -p /home/actions/actions-runner
 cd /home/actions/actions-runner || exit
 # Download the runner package
-curl -O -L "${RUNNER_DOWNLOAD_URL}" | tar xzf -
+curl -L "${RUNNER_DOWNLOAD_URL}" -o "/tmp/${RUNNER_FILE}"
+tar xzf /tmp/"${RUNNER_FILE}"
 # install dependencies
 sudo ./bin/installdependencies.sh
 echo "[Unit]
