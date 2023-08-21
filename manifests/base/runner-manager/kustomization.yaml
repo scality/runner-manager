@@ -7,6 +7,9 @@ images:
     newName: ghcr.io/scality/runner-manager
 
 configMapGenerator:
+  - name: config
+    files:
+      - runner-manager.yaml
   - name: redis-config
     envs:
       - redis-config.env

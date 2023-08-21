@@ -13,11 +13,16 @@ spec:
             - secretRef:
                 name: runner-manager-secrets
           env:
+            - name: CONFIG_FILE
+              value: /app/config/runner-manager.yaml
             - name: REDIS_OM_URL
               valueFrom:
                 configMapKeyRef:
                   key: REDIS_OM_URL
                   name: redis-config
+          volumeMounts:
+            - mountPath: /app/config
+              name: config
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
@@ -48,3 +53,7 @@ spec:
             successThreshold: 1
             timeoutSeconds: 5
           securityContext: {}
+      volumes:
+        - name: config
+          configMap:
+            name: config

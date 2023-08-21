@@ -1,0 +1,13 @@
+---
+
+name: runner-manager
+timeout_runner: 15m
+time_to_live: 12h
+runner_groups:
+  - name: octo-group
+    organization: octo-org
+    default: false
+    labels:
+      - label
+    backend:
+      name: base
