@@ -75,6 +75,15 @@ def test_list(docker_runner, docker_group):
         docker_group.backend.get(runner.instance_id)
 
 
+def test_build(docker_group):
+    docker_group.backend.instance_config.context = "images/runner"
+    docker_group.backend.instance_config.image = "runner:latest"
+    docker_group.backend._build(
+        docker_group.backend.instance_config.context,
+        docker_group.backend.instance_config.image,
+    )
+
+
 def test_list_manual_runner(docker_group: RunnerGroup):
     # test manually created runner and check if it is listed
     # within the database
@@ -90,7 +99,7 @@ def test_list_manual_runner(docker_group: RunnerGroup):
         docker_group.backend.instance_config.image,
         remove=True,
         detach=True,
-        labels={"runner-manager": docker_group.backend.manager},
+        labels={"manager": docker_group.backend.manager},
         command=docker_group.backend.instance_config.command,
         name="test-manual",
     )

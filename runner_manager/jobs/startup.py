@@ -20,12 +20,10 @@ def create_runner_groups(settings: Settings, github: GitHub):
             runner_group: RunnerGroup = RunnerGroup(**runner_group_config.dict())
             runner_group.save(github=github)
         else:
-            runner_group: RunnerGroup = RunnerGroup.find(
-                RunnerGroup.name == runner_group_config.name
-            ).first()
+            runner_group: RunnerGroup = RunnerGroup.find_from_base(runner_group_config)
 
-            runner_group.update(**runner_group_config.dict())
             existing_groups.remove(runner_group)
+            runner_group.update(**runner_group_config.dict())
     for runner_group in existing_groups:
         runner_group.delete(pk=runner_group.pk, github=github)
 

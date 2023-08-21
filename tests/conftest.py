@@ -64,3 +64,23 @@ def queue(settings) -> Queue:
         url=settings.redis_om_url, decode_responses=False
     )
     return Queue(is_async=False, connection=redis)
+
+
+@fixture()
+def runner_group(settings) -> RunnerGroup:
+    runner_group = RunnerGroup(
+        id=1,
+        name="test",
+        manager=settings.name,
+        organization="octo-org",
+        backend={"name": "base"},
+        labels=[
+            "label",
+        ],
+    )
+    assert runner_group.Meta.global_key_prefix == settings.name
+    # Ensure that the runner group has no runners.
+    for runner in runner_group.get_runners():
+        print(f"deleted runner {runner.name}")
+        Runner.delete(runner.pk)
+    return runner_group

@@ -43,8 +43,11 @@ class Runner(BaseModel):
     runner_group_id: Optional[int] = Field(
         index=True, default=None, description="Runner group id"
     )
-    runner_group_name: Optional[str] = Field(
-        index=True, full_text_search=True, description="Runner group name"
+    runner_group_name: str = Field(
+        index=True,
+        full_text_search=True,
+        description="Runner group name",
+        default="default",
     )
     instance_id: Optional[str] = Field(
         index=True,
@@ -58,7 +61,8 @@ class Runner(BaseModel):
         default=RunnerStatus.offline, index=True, full_text_search=True
     )
     busy: bool
-    labels: Optional[List[RunnerLabel]] = []
+    labels: List[RunnerLabel] = []
+    organization: str = Field(default=None, index=True, description="Organization name")
     created_at: Optional[datetime]
     started_at: Optional[datetime]
 
