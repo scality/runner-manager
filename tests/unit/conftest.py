@@ -49,7 +49,7 @@ def runner(settings) -> Runner:
         runner_group_id=1,
         status="online",
         busy=False,
-        labels=[],
+        labels=[{"name": "label"}],
         manager=settings.name,
     )
     assert runner.Meta.global_key_prefix == settings.name
