@@ -1,5 +1,6 @@
 """Jobs to run on startup."""
 
+import logging
 from typing import List
 
 from redis_om import Migrator
@@ -9,6 +10,8 @@ from runner_manager.dependencies import get_github, get_settings
 from runner_manager.logging import log
 from runner_manager.models.runner_group import RunnerGroup
 from runner_manager.models.settings import Settings
+
+log = logging.getLogger(__name__)
 
 
 def create_runner_groups(settings: Settings, github: GitHub):
@@ -25,6 +28,7 @@ def create_runner_groups(settings: Settings, github: GitHub):
             existing_groups.remove(runner_group)
             runner_group.update(**runner_group_config.dict())
     for runner_group in existing_groups:
+        log.info(f"Deleting runner group {runner_group.name}")
         runner_group.delete(pk=runner_group.pk, github=github)
 
 
