@@ -25,7 +25,7 @@ githubkit = { git = "https://github.com/yanyongyu/githubkit", rev = "a4275ac3d3b
 optional = true
 
 [tool.poetry.group.docs.dependencies]
-mkdocs-material = "^9.1.21"
+mkdocs-material = "^9.2.0"
 mkdocs = "^1.4.2"
 
 [tool.poetry.group.dev.dependencies]
