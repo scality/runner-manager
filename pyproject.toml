@@ -38,7 +38,7 @@ black = "^23.7.0"
 isort = "^5.12.0"
 ruff = "^0.0.285"
 yamllint = "^1.32.0"
-types-redis = "^4.6.0.3"
+types-redis = "^4.6.0.4"
 
 
 [build-system]
