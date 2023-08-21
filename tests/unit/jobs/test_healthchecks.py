@@ -49,12 +49,16 @@ def test_group_healthcheck(
     runner_group.save(github=github)
     runner_tts: Runner = runner_group.create_runner(runner_token)
     assert runner_tts is not None
-    runner_tts.created_at = datetime.now() - (settings.timeout_runner + timedelta(minutes=1))
+    runner_tts.created_at = datetime.now() - (
+        settings.timeout_runner + timedelta(minutes=1)
+    )
     runner_tts.save()
     runner_ttl: Runner = runner_group.create_runner(runner_token)
     assert runner_ttl is not None
     runner_ttl.status = RunnerStatus.online
-    runner_ttl.started_at = datetime.now() - (settings.time_to_live + timedelta(minutes=1))
+    runner_ttl.started_at = datetime.now() - (
+        settings.time_to_live + timedelta(minutes=1)
+    )
     runner_ttl.save()
     Migrator().run()
     assert len(runner_group.get_runners()) == 2
@@ -75,11 +79,15 @@ def test_need_new_runner_healthcheck(
 
 
 def test_time_to_start(runner: Runner, settings: Settings):
-    runner.created_at = datetime.now() - (settings.timeout_runner + timedelta(minutes=1))
+    runner.created_at = datetime.now() - (
+        settings.timeout_runner + timedelta(minutes=1)
+    )
     runner.status = RunnerStatus.offline
     assert runner.time_to_start_expired(timeout=settings.timeout_runner) is True
 
-    runner.created_at = datetime.now() - (settings.timeout_runner - timedelta(minutes=1))
+    runner.created_at = datetime.now() - (
+        settings.timeout_runner - timedelta(minutes=1)
+    )
     assert runner.time_to_start_expired(timeout=settings.timeout_runner) is False
 
 

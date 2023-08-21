@@ -1,6 +1,6 @@
+from datetime import timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional
-from datetime import timedelta
 
 import yaml
 from githubkit import AppInstallationAuthStrategy, TokenAuthStrategy
