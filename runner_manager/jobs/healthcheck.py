@@ -12,14 +12,16 @@ def healthchecks(runner_groups: List[RunnerGroup]):
     github: GitHub = get_github()
     for runner_group in runner_groups:
         log.info(f"Checking health for runner group {runner_group.name}")
-        if runner_group.backend.manager is None:
-            log.error(f"Runner group {runner_group.name} has no backend manager")
-            continue
         try:
-            runner_group.healthcheck(
-                settings.time_to_live, settings.timeout_runner, github=github
-            )
+            if runner_group.backend.manager is None:
+                log.error(f"Runner group {runner_group.name} has no backend manager")
+
+            else:
+                runner_group.healthcheck(
+                    settings.time_to_live, settings.timeout_runner, github=github
+                )
         except Exception as e:
             log.error(f"Runner group {runner_group.name} healthcheck failed: {e}")
-        else:
+            # check what to use to continue the loop (not 100% sure)
+            continue
             log.info(f"Runner group {runner_group.name} healthcheck succeeded")
