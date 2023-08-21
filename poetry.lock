@@ -536,16 +536,14 @@ name = "githubkit"
 version = "0.10.6"
 description = "GitHub SDK for Python"
 optional = false
-python-versions = ">=3.8,<4.0"
-files = [
-    {file = "githubkit-0.10.6-py3-none-any.whl", hash = "sha256:ef92ce0beb71af41bdb4f3014a3042a78e9488d0e1f564ffb54be086321bf790"},
-    {file = "githubkit-0.10.6.tar.gz", hash = "sha256:e15a662b1d01b3708a98baf6584a7cb1c0475097d97d292a1cb1a6776f451fe9"},
-]
+python-versions = "^3.8"
+files = []
+develop = false
 
 [package.dependencies]
-httpx = ">=0.23.0,<1.0.0"
-pydantic = ">=1.9.1,<2.0.0"
-typing-extensions = ">=4.3.0,<5.0.0"
+httpx = ">=0.23.0, <1.0.0"
+pydantic = "^1.9.1"
+typing-extensions = "^4.3.0"
 
 [package.extras]
 all = ["PyJWT[crypto] (>=2.4.0,<3.0.0)", "anyio (>=3.6.1,<4.0.0)"]
@@ -553,6 +551,12 @@ auth = ["PyJWT[crypto] (>=2.4.0,<3.0.0)", "anyio (>=3.6.1,<4.0.0)"]
 auth-app = ["PyJWT[crypto] (>=2.4.0,<3.0.0)"]
 auth-oauth-device = ["anyio (>=3.6.1,<4.0.0)"]
 jwt = ["PyJWT[crypto] (>=2.4.0,<3.0.0)"]
+
+[package.source]
+type = "git"
+url = "https://github.com/yanyongyu/githubkit"
+reference = "a4275ac3d3babd64061f3693353db740e6a8e892"
+resolved_reference = "a4275ac3d3babd64061f3693353db740e6a8e892"
 
 [[package]]
 name = "google-api-core"
@@ -2362,4 +2366,4 @@ dev = ["doc8", "flake8", "flake8-import-order", "rstcheck[sphinx]", "sphinx"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "beaa27821a6798306d680923d37ed762aab517b79adf27a45c634aa424a58e20"
+content-hash = "e4ed13007989233f4e84973a335fd38339b8e7b0354cd2a1e2b16f6fa425363a"
