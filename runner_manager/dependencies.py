@@ -1,6 +1,4 @@
-import queue
 from functools import lru_cache
-from socket import IPV6_JOIN_GROUP
 
 import httpx
 from githubkit.config import Config

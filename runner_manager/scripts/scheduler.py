@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import argparse
-import sys
 
 from rq import Queue
 from rq_scheduler.scheduler import Scheduler
