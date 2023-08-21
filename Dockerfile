@@ -29,6 +29,8 @@ RUN poetry config virtualenvs.create false \
 # copy project
 COPY . /app
 
+RUN poetry install --only-root
+
 USER runner-manager
 
 # run entrypoint.sh

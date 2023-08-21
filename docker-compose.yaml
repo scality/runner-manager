@@ -19,7 +19,7 @@ services:
     user: root
     ports:
       - 8000:8000
-    environment:
+    environment: &env
       GITHUB_TOKEN: ${RUNNER_MANAGER_TOKEN}
       REDIS_OM_URL: redis://redis:6379
       CONFIG_FILE: /app/config.yaml
@@ -48,16 +48,24 @@ services:
     volumes:
       - .:/app
       - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      REDIS_OM_URL: redis://redis:6379
-      CONFIG_FILE: /app/config.yaml
-      GITHUB_TOKEN: ${RUNNER_MANAGER_TOKEN}
+    environment: *env
+  scheduler:
+    profiles:
+      - dev
+    depends_on:
+      - redis
+    build: .
+    command: scheduler
+    volumes:
+      - .:/app
+    environment: *env
   github-mock:
     profiles:
       - tests
     build: tests/images/github-mock
     ports:
       - 4010:4010
+
 volumes:
   redis_data:
     driver: local

@@ -1,12 +1,16 @@
 """Jobs to run on startup."""
 
 import logging
+from datetime import datetime
 from typing import List
 
 from redis_om import Migrator
+from rq.job import Job
+from rq_scheduler import Scheduler
 
 from runner_manager.clients.github import GitHub
-from runner_manager.dependencies import get_github, get_settings
+from runner_manager.dependencies import get_github, get_scheduler, get_settings
+from runner_manager.jobs import healthcheck
 from runner_manager.models.runner_group import RunnerGroup
 from runner_manager.models.settings import Settings
 
@@ -31,9 +35,47 @@ def create_runner_groups(settings: Settings, github: GitHub):
         runner_group.delete(pk=runner_group.pk, github=github)
 
 
-def startup(settings: Settings = get_settings(), github: GitHub = get_github()):
+def bootstrap_healthchecks(
+    settings: Settings,
+):
+    scheduler: Scheduler = get_scheduler()
+    jobs: List[Job] = scheduler.get_jobs()
+    groups: List[RunnerGroup] = RunnerGroup.find().all()
+    for job in jobs:
+        # Cancel any existing healthcheck jobs
+        if job.meta.get("type") == "healthcheck":
+            log.info(
+                f"Canceling healthcheck job {job.id} for group {job.meta['group']}"
+            )
+            scheduler.cancel(job)
+
+    for group in groups:
+        log.info(f"Scheduling healthcheck for group {group.name}")
+        scheduler.schedule(
+            scheduled_time=datetime.utcnow(),
+            func=healthcheck.group,
+            args=[
+                group.pk,
+                settings.time_to_live,
+                settings.timeout_runner,
+            ],
+            meta={
+                "type": "healthcheck",
+                "group": group.name,
+            },
+            interval=settings.healthcheck_interval,
+            repeat=None,
+        )
+
+
+def startup(settings: Settings = get_settings()):
     """Bootstrap the application."""
     log.info("Startup complete.")
-
+    github: GitHub = get_github()
     Migrator().run()
+    log.info("Creating runner groups...")
     create_runner_groups(settings, github)
+    log.info("Runner groups created.")
+    log.info("Bootstrapping healthchecks...")
+    bootstrap_healthchecks(settings)
+    log.info("Healthchecks bootstrapped.")

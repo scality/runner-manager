@@ -4,9 +4,9 @@ kind: Kustomization
 
 commonLabels:
   app.kubernetes.io/instance: redis
-  app.kubernetes.io/name: redis
   app.kubernetes.io/component: database
   app.kubernetes.io/part-of: runner-manager
+
 images:
   - name: redis
     newName: redis/redis-stack

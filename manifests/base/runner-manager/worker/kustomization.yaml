@@ -3,8 +3,8 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 commonLabels:
-  app.kubernetes.io/name: runner-manager-worker
-  app.kubernetes.io/instance: runner-manager-worker
+  app.kubernetes.io/instance: worker
+  app.kubernetes.io/component: worker
 
 resources:
   - deployment.yaml
