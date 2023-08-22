@@ -14,7 +14,6 @@ fastapi = "^0.101.0"
 uvicorn = { extras = ["standard"], version = "^0.23.2" }
 pydantic = ">=1.10.2,<2.0"
 redis-om = "^0.2.1"
-githubkit = "^0.10.6"
 rq = "^1.15.1"
 pyyaml = "^6.0.1"
 redis = "^4.6.0"
@@ -23,6 +22,8 @@ google-cloud-compute = "^1.13.0"
 boto3 = "^1.28.27"
 botocore = "^1.31.27"
 boto3-stubs = { extras = ["ec2"], version = "^1.28.30" }
+githubkit = { git = "https://github.com/yanyongyu/githubkit", rev = "a4275ac3d3babd64061f3693353db740e6a8e892" }
+
 
 [tool.poetry.group.docs]
 optional = true
