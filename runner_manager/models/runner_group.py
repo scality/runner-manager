@@ -256,6 +256,25 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             if runner:
                 log.info(f"Runner {runner.name} created")
 
+    def reset(self, github: GitHub) -> "RunnerGroup":
+        """Reset runner group."""
+        runners = self.get_runners()
+        for runner in runners:
+            if runner.id is not None:
+                github_runner: GitHubRunner = (
+                    github.rest.actions.get_self_hosted_runner_for_org(
+                        self.organization, runner.id
+                    ).parsed_data
+                )
+                runner = runner.update_status(github_runner)
+            if runner.status == RunnerStatus.offline:
+                self.delete_runner(runner)
+                token = github.rest.actions.create_registration_token_for_org(
+                    org=self.organization
+                )
+                self.create_runner(token.parsed_data)
+        return self
+
     @classmethod
     def find_from_base(cls, basegroup: "BaseRunnerGroup") -> "RunnerGroup":
         """Find the runner group from a base instance.

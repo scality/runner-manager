@@ -39,3 +39,14 @@ def test_healthcheck(client: TestClient, runner_group: RunnerGroup):
     job: JobResponse = JobResponse.parse_obj(response.json())
     assert job.status == "finished"
     runner_group.save()
+
+
+def test_reset(client: TestClient, runner_group: RunnerGroup):
+    response = client.post(f"/groups/{runner_group.name}/reset")
+    assert response.status_code == 404
+    runner_group.save()
+    response = client.post(f"/groups/{runner_group.name}/reset")
+    assert response.status_code == 200
+    job: JobResponse = JobResponse.parse_obj(response.json())
+    assert job.status == "finished"
+    runner_group.save()
