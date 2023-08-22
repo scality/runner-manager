@@ -10,15 +10,14 @@ spec:
         - command: [scheduler]
           envFrom:
             - secretRef:
-                name: runner-manager-secrets
+                name: secrets
+            - configMapRef:
+                name: redis-config
           env:
             - name: CONFIG_FILE
               value: /app/config/runner-manager.yaml
             - name: REDIS_OM_URL
-              valueFrom:
-                configMapKeyRef:
-                  key: REDIS_OM_URL
-                  name: redis-config
+              value: redis://$(REDIS_HOST):$(REDIS_PORT)
           volumeMounts:
             - mountPath: /app/config
               name: config

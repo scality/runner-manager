@@ -1,7 +1,8 @@
 ---
 name: runner-manager
-timeout_runner: 15m
-time_to_live: 12h
+# 15 minutes
+timeout_runner: PT15M
+time_to_live: PT12H
 runner_groups:
   - name: octo-group
     organization: octo-org

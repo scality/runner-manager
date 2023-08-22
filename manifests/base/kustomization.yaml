@@ -6,6 +6,19 @@ namePrefix: runner-manager-
 commonLabels:
   app.kubernetes.io/name: runner-manager
 
+replacements:
+  - source:
+      kind: Service
+      name: redis
+      fieldPath: metadata.name
+    targets:
+      - select:
+          kind: ConfigMap
+          name: redis-config
+        fieldPaths:
+          - data.REDIS_HOST
+        options:
+          create: true
+
 resources:
   - runner-manager
-  - redis

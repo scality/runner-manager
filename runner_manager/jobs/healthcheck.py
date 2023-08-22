@@ -1,4 +1,5 @@
 import logging
+from datetime import timedelta
 
 from redis_om import NotFoundError
 
@@ -9,7 +10,7 @@ from runner_manager.dependencies import get_github
 log = logging.getLogger(__name__)
 
 
-def group(pk: str, time_to_live: int, timeout_runner: int):
+def group(pk: str, time_to_live: timedelta, timeout_runner: timedelta):
     """Job to healthcheck a runner group.
 
     Args:
