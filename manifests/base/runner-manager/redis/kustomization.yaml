@@ -4,13 +4,19 @@ kind: Kustomization
 
 commonLabels:
   app.kubernetes.io/instance: redis
-  app.kubernetes.io/name: redis
   app.kubernetes.io/component: database
   app.kubernetes.io/part-of: runner-manager
+
 images:
   - name: redis
     newName: redis/redis-stack
     newTag: 6.2.6-v9
+
+configMapGenerator:
+  - name: redis-config
+    envs:
+      - redis-config.env
+
 resources:
   - statefulset.yaml
   - service.yaml

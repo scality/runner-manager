@@ -137,13 +137,11 @@ class Runner(BaseModel):
             return now - self.started_at
         return timedelta()
 
-    def time_to_start_expired(self, timeout: int) -> bool:
-        return self.is_offline and self.time_since_created > timedelta(minutes=timeout)
+    def time_to_start_expired(self, timeout: timedelta) -> bool:
+        return self.is_offline and self.time_since_created > timeout
 
-    def time_to_live_expired(self, time_to_live: int) -> bool:
-        return self.is_online and self.time_since_started > timedelta(
-            minutes=time_to_live
-        )
+    def time_to_live_expired(self, time_to_live: timedelta) -> bool:
+        return self.is_online and self.time_since_started > time_to_live
 
     def update_status(self, github_runner: GitHubRunner):
         self.status = RunnerStatus(github_runner.status)

@@ -20,6 +20,7 @@ redis = "^4.6.0"
 docker = "^6.1.3"
 google-cloud-compute = "^1.13.0"
 githubkit = { git = "https://github.com/yanyongyu/githubkit", rev = "a4275ac3d3babd64061f3693353db740e6a8e892" }
+rq-scheduler = "^0.13.1"
 
 [tool.poetry.group.docs]
 optional = true
@@ -47,3 +48,8 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 addopts = "--disable-warnings --cov=runner_manager --cov-report=xml"
+
+# Add poetry scripts
+[tool.poetry.scripts]
+runner-manager = "runner_manager.main:main"
+scheduler = "runner_manager.scripts.scheduler:main"

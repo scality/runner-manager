@@ -1,3 +1,4 @@
+from datetime import timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional
 
@@ -30,8 +31,9 @@ class Settings(BaseSettings):
     api_key: Optional[SecretStr] = None
     log_level: Literal["INFO", "WARNING", "DEBUG", "ERROR"] = "INFO"
     runner_groups: List[BaseRunnerGroup] = []
-    timeout_runner: int = 15  # in minutes
-    time_to_live: int = 60  # in minutes
+    timeout_runner: Optional[timedelta] = timedelta(minutes=15)
+    time_to_live: Optional[timedelta] = timedelta(hours=12)
+    healthcheck_interval: timedelta = timedelta(minutes=15)
     github_base_url: AnyHttpUrl = AnyHttpUrl("api.github.com", scheme="https")
     github_webhook_secret: Optional[SecretStr] = None
     github_token: Optional[SecretStr] = None

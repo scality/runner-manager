@@ -4,6 +4,7 @@ from pytest import fixture
 from redis import Redis
 from redis_om import Migrator, get_redis_connection
 from rq import Queue
+from rq_scheduler import Scheduler
 
 from runner_manager import Runner, RunnerGroup, Settings
 from runner_manager.backend.base import BaseBackend
@@ -64,6 +65,12 @@ def queue(settings) -> Queue:
         url=settings.redis_om_url, decode_responses=False
     )
     return Queue(is_async=False, connection=redis)
+
+
+@fixture(scope="function")
+def scheduler(queue) -> Scheduler:
+    """Return a RQ Scheduler instance."""
+    return Scheduler(queue=queue, connection=queue.connection)
 
 
 @fixture()

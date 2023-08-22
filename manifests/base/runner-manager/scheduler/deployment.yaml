@@ -1,18 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: worker
+  name: scheduler
 spec:
   template:
     spec:
       serviceAccountName: default
       containers:
-        - args:
-            - worker
-            - -c
-            - runner_manager.jobs.settings
-          command:
-            - rq
+        - command: [scheduler]
           envFrom:
             - secretRef:
                 name: secrets

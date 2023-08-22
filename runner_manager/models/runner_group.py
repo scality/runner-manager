@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any, List, Optional, Self, Union
 from uuid import uuid4
 
@@ -227,7 +227,9 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             group = None
         return group
 
-    def healthcheck(self, time_to_live: int, timeout_runner: int, github: GitHub):
+    def healthcheck(
+        self, time_to_live: timedelta, timeout_runner: timedelta, github: GitHub
+    ):
         """Healthcheck runner group."""
         runners = self.get_runners()
         for runner in runners:
