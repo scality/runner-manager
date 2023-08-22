@@ -10,6 +10,7 @@ from pytest import fixture
 
 from runner_manager import Runner, RunnerGroup
 from runner_manager.clients.github import GitHub
+from runner_manager.models.runner import RunnerLabel
 
 hypothesis_settings.register_profile(
     "unit",
@@ -49,7 +50,7 @@ def runner(settings) -> Runner:
         runner_group_id=1,
         status="online",
         busy=False,
-        labels=[],
+        labels=[RunnerLabel(name="label")],
         manager=settings.name,
     )
     assert runner.Meta.global_key_prefix == settings.name
