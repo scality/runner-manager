@@ -4,6 +4,7 @@ from boto3 import client
 from botocore.exceptions import ClientError
 from mypy_boto3_ec2 import EC2Client
 from pydantic import Field
+from redis_om import NotFoundError
 
 from runner_manager.backend.base import BaseBackend
 from runner_manager.logging import log
@@ -35,17 +36,26 @@ class AWSBackend(BaseBackend):
             runner.instance_id = instance["Instances"][0]["InstanceId"]
         except Exception as e:
             raise e
+        # Wait for instance to be running
+        try:
+            waiter = self.client.get_waiter("instance_running")
+            waiter.wait(InstanceIds=[runner.instance_id])
+        except Exception as e:
+            raise e
         return super().create(runner)
 
     def delete(self, runner: Runner):
         """Delete a runner."""
-        runner_id = runner.instance_id if runner.instance_id else runner.name
         try:
-            self.client.terminate_instances(InstanceIds=[runner_id])
+            if runner.instance_id:
+                self.client.terminate_instances(InstanceIds=[runner.instance_id])
         except ClientError as e:
             error = e.response.get("Error", {})
             if error.get("Code") == "InvalidInstanceID.NotFound":
-                log.error(f"Instance {runner.instance_id} not found.")
+                pass
+            if error.get("Code") == "InvalidInstanceID.Malformed":
+                log.error(f"Instance {runner.instance_id} malformed.")
+                pass
             else:
                 raise e
         return super().delete(runner)
@@ -79,15 +89,29 @@ class AWSBackend(BaseBackend):
         """List runners."""
         runners: List[Runner] = []
         try:
-            instances = self.client.describe_instances()
+            reservations = self.client.describe_instances(
+                Filters=[
+                    {
+                        "Name": "tag:runner-manager",
+                        "Values": ["aws"],
+                    },
+                    {
+                        "Name": "instance-state-name",
+                        "Values": ["running"],
+                    },
+                ]
+            ).get("Reservations", [])
         except Exception as e:
             raise e
-        for reservations in instances.get("Reservations", []):
-            for instance in reservations.get("Instances", []):
-                labels = instance.get("Tags", [])
-                if self.manager and any(
-                    label.get("Key") == "runner-manager" for label in labels
-                ):
+        for reservation in reservations:
+            for instance in reservation.get("Instances", []):
+                try:
+                    runners.append(
+                        Runner.find(
+                            Runner.instance_id == instance.get("InstanceId", "")
+                        ).first()
+                    )
+                except NotFoundError:
                     runner = Runner(
                         name=instance.get("InstanceId", ""),
                         instance_id=instance.get("InstanceId", ""),
@@ -102,7 +126,10 @@ class AWSBackend(BaseBackend):
             if runner.instance_id:
                 self.client.describe_instances(
                     InstanceIds=[runner.instance_id],
-                    Filters=[{"Name": "instance-state-name", "Values": ["running"]}],
+                    Filters=[
+                        {"Name": "instance-state-name", "Values": ["running"]},
+                        {"Name": "tag:runner-manager", "Values": ["aws"]},
+                    ],
                 )
         except ClientError as e:
             error = e.response.get("Error", {})
@@ -111,11 +138,11 @@ class AWSBackend(BaseBackend):
             else:
                 raise e
         try:
-            if runner.labels:
-                client.create_tags(
+            if runner.labels and runner.instance_id:
+                self.client.create_tags(
                     Resources=[runner.instance_id],
                     Tags=[
-                        {"Key": label.id, "Value": label.name}
+                        {"Key": label.name, "Value": label.name}
                         for label in runner.labels
                     ],
                 )

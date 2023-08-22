@@ -93,16 +93,15 @@ class AWSConfig(BackendConfig):
 class AWSInstanceConfig(InstanceConfig):
     """Configuration for AWS backend instance."""
 
-    image: str = "ami-785db401"
-    instance_type: str = "t2.micro"
-    subnet_id: Optional[str] = None
-    security_group_ids: Optional[List[str]] = None
-    key_name: Optional[str] = None
-    MaxCount: int = 1
-    MinCount: int = 1
-    tags: Dict[str, str] = {}
-    user_data: Optional[str] = None
-    block_device_mappings: Optional[List[Dict[str, str]]] = None
+    image: str = "ami-0735c191cf914754d"  # Ubuntu 22.04
+    instance_type: str = "t3.micro"
+    subnet_id: Optional[str] = ""
+    security_group_ids: Optional[List[str]] = []
+    max_count: int = 1
+    min_count: int = 1
+    user_data: Optional[str] = ""
+    block_device_mappings: Optional[List[Dict[str, str]]] = []
+    labels: Optional[Dict[str, str]] = None
 
     class Config:
         arbitrary_types_allowed = True
@@ -114,10 +113,19 @@ class AWSInstanceConfig(InstanceConfig):
             "InstanceType": self.instance_type,
             "SubnetId": self.subnet_id,
             "SecurityGroupIds": self.security_group_ids,
-            "KeyName": self.key_name,
-            "Tags": self.tags,
+            "TagSpecifications": [
+                {
+                    "ResourceType": "instance",
+                    "Tags": [
+                        {
+                            "Key": "Name",
+                            "Value": runner.name,
+                        },
+                    ],
+                }
+            ],
             "UserData": self.user_data,
-            "MaxCount": self.MaxCount,
-            "MinCount": self.MinCount,
+            "MaxCount": self.max_count,
+            "MinCount": self.min_count,
             "BlockDeviceMappings": self.block_device_mappings,
         }
