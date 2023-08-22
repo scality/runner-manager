@@ -12,7 +12,6 @@ from runner_manager import Runner, RunnerGroup
 from runner_manager.clients.github import GitHub
 from runner_manager.models.runner import RunnerLabel
 
-
 hypothesis_settings.register_profile(
     "unit",
     suppress_health_check=[HealthCheck.function_scoped_fixture],
