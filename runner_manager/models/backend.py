@@ -45,7 +45,7 @@ class InstanceConfig(BaseModel):
 
         return RunnerEnv(
             RUNNER_NAME=runner.name,
-            RUNNER_LABELS=", ".join([label.name for label in runner.labels]),
+            RUNNER_LABELS=",".join([label.name for label in runner.labels]),
             RUNNER_TOKEN=runner.token,
             RUNNER_ORG=runner.organization,
             RUNNER_GROUP=runner.runner_group_name,
