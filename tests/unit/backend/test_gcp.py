@@ -1,10 +1,12 @@
 import os
 from typing import List
 
+from google.cloud.compute import Items
 from pytest import fixture, mark, raises
 from redis_om import NotFoundError
 
 from runner_manager.backend.gcloud import GCPBackend
+from runner_manager.bin import startup_sh
 from runner_manager.models.backend import Backends, GCPConfig, GCPInstanceConfig
 from runner_manager.models.runner import Runner
 from runner_manager.models.runner_group import RunnerGroup
@@ -41,6 +43,17 @@ def gcp_runner(runner: Runner, gcp_group: RunnerGroup) -> Runner:
     # Cleanup and return a runner for testing
     gcp_group.backend.delete(runner)
     return runner
+
+
+def test_gcp_instance(runner: Runner):
+    instance: GCPInstanceConfig = GCPInstanceConfig()
+    items: List[Items] = instance.runner_env(runner)
+    startup: bool = False
+    for item in items:
+        if item.key == "startup-script":
+            startup = True
+            assert item.value == startup_sh.read_text()
+    assert startup is True
 
 
 @mark.skipif(

@@ -53,26 +53,12 @@ class DockerBackend(BaseBackend):
         labels.update(self.instance_config.labels)
         return labels
 
-    def _environment(self, runner: Runner) -> Dict[str, str | None]:
-        """Return environment variables for the container."""
-        environment: Dict[str, str | None] = self.instance_config.environment
-        environment.update(
-            {
-                "RUNNER_NAME": runner.name,
-                "RUNNER_LABELS": ", ".join([label.name for label in runner.labels]),
-                "RUNNER_TOKEN": runner.token,
-                "RUNNER_ORG": runner.organization,
-                "RUNNER_GROUP": runner.runner_group_name,
-            }
-        )
-        return environment
-
     def create(self, runner: Runner):
         if self.instance_config.context:
             self._build(self.instance_config.context, self.instance_config.image)
 
         labels = self._labels(runner)
-        environment = self._environment(runner)
+        environment = self.instance_config.runner_env(runner).dict()
         log.info(f"Creating container for runner {runner.name}, labels: {labels}")
         container: Container = self.client.containers.run(
             self.instance_config.image,

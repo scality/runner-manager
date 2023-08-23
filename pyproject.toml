@@ -23,26 +23,27 @@ boto3 = "^1.28.27"
 botocore = "^1.31.27"
 boto3-stubs = { extras = ["ec2"], version = "^1.28.30" }
 githubkit = { git = "https://github.com/yanyongyu/githubkit", rev = "a4275ac3d3babd64061f3693353db740e6a8e892" }
+rq-scheduler = "^0.13.1"
 
 
 [tool.poetry.group.docs]
 optional = true
 
 [tool.poetry.group.docs.dependencies]
-mkdocs-material = "^9.1.21"
+mkdocs-material = "^9.2.3"
 mkdocs = "^1.4.2"
 
 [tool.poetry.group.dev.dependencies]
 connexion = "^2.14.2"
 pytest = "^7.4.0"
 pytest-cov = "^4.0.0"
-hypothesis = "^6.82.3"
-pyright = "^1.1.321"
+hypothesis = "^6.82.6"
+pyright = "^1.1.323"
 black = "^23.7.0"
 isort = "^5.12.0"
 ruff = "^0.0.285"
 yamllint = "^1.32.0"
-types-redis = "^4.6.0.3"
+types-redis = "^4.6.0.5"
 
 
 [build-system]
@@ -51,3 +52,8 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 addopts = "--disable-warnings --cov=runner_manager --cov-report=xml"
+
+# Add poetry scripts
+[tool.poetry.scripts]
+runner-manager = "runner_manager.main:main"
+scheduler = "runner_manager.scripts.scheduler:main"
