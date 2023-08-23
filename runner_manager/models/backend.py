@@ -88,6 +88,7 @@ class AWSConfig(BackendConfig):
     """Configuration for AWS backend."""
 
     region: str = "us-west-2"
+    subnet_id: str
 
 
 class AWSInstanceConfig(InstanceConfig):
@@ -95,7 +96,7 @@ class AWSInstanceConfig(InstanceConfig):
 
     image: str = "ami-0735c191cf914754d"  # Ubuntu 22.04
     instance_type: str = "t3.micro"
-    subnet_id: Optional[str] = ""
+    subnet_id: Optional[str] = None
     security_group_ids: Optional[List[str]] = []
     max_count: int = 1
     min_count: int = 1
@@ -108,7 +109,7 @@ class AWSInstanceConfig(InstanceConfig):
 
     def configure_instance(self, runner: Runner) -> Dict:
         """Configure instance."""
-        return {
+        instance_config = {
             "ImageId": self.image,
             "InstanceType": self.instance_type,
             "SubnetId": self.subnet_id,
@@ -121,6 +122,10 @@ class AWSInstanceConfig(InstanceConfig):
                             "Key": "Name",
                             "Value": runner.name,
                         },
+                        {
+                            "Key": "runner-manager",
+                            "Value": runner.manager,
+                        },
                     ],
                 }
             ],
@@ -129,3 +134,8 @@ class AWSInstanceConfig(InstanceConfig):
             "MinCount": self.min_count,
             "BlockDeviceMappings": self.block_device_mappings,
         }
+        if self.tags:
+            instance_config["TagSpecifications"][0]["Tags"].extend(
+                [{"Key": key, "Value": value} for key, value in self.tags.items()]
+            )
+        return instance_config

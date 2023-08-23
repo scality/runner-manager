@@ -11,7 +11,7 @@ from runner_manager.models.runner_group import RunnerGroup
 
 @fixture()
 def aws_group(settings) -> RunnerGroup:
-    config = AWSConfig()
+    config = AWSConfig(subnet_id=os.getenv("AWS_SUBNET_ID", ""))
     runner_group: RunnerGroup = RunnerGroup(
         id=3,
         name="test",
@@ -20,7 +20,7 @@ def aws_group(settings) -> RunnerGroup:
         backend=AWSBackend(
             name=Backends.aws,
             config=config,
-            instance_config=AWSInstanceConfig(subnet_id="subnet-00c935cd1250d606f"),
+            instance_config=AWSInstanceConfig(),
         ),
         labels=[
             "label",

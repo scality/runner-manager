@@ -27,6 +27,7 @@ class AWSBackend(BaseBackend):
         labels: Dict[str, str] = {}
         if self.manager:
             labels["runner-manager"] = self.manager
+        self.instance_config.subnet_id = self.config.subnet_id
         instance_resource: Dict = self.instance_config.configure_instance(runner)
         try:
             instance = self.client.run_instances(**instance_resource)
@@ -87,8 +88,8 @@ class AWSBackend(BaseBackend):
             reservations = self.client.describe_instances(
                 Filters=[
                     {
-                        "Name": "runner-manager",
-                        "Values": [self.manager],
+                        "Name": "tag-key",
+                        "Values": ["runner-manager"],
                     },
                     {
                         "Name": "instance-state-name",
@@ -123,7 +124,7 @@ class AWSBackend(BaseBackend):
                     InstanceIds=[runner.instance_id],
                     Filters=[
                         {"Name": "instance-state-name", "Values": ["running"]},
-                        {"Name": "runner-manager", "Values": [self.manager]},
+                        {"Name": "tag-key", "Values": ["runner-manager"]},
                     ],
                 )
         except ClientError as e:
