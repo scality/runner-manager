@@ -125,7 +125,7 @@ def test_runner_group_name():
         "42",
         "a" * 39,
     ]
-    forbiddent_names = ["TEST", "test 42", "42-test", "a" * 40]
+    forbidden_names = ["TEST", "test 42", "42-test", "a" * 40]
     for name in allowed_names:
         group = RunnerGroup(
             name=name,
@@ -134,7 +134,7 @@ def test_runner_group_name():
             labels=["test"],
         )
         assert group.name == name
-    for name in forbiddent_names:
+    for name in forbidden_names:
         with pytest.raises(ValidationError):
             RunnerGroup(
                 name=name,
