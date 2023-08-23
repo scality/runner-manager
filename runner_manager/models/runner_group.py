@@ -76,7 +76,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         '[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}'.
         """
         assert regex.fullmatch(v), f"Group name {v} must be match of regex: {regex}"
-        return v.lower()
+        return v
 
     @property
     def runner_labels(self) -> List[RunnerLabel]:
