@@ -143,7 +143,6 @@ class GCPBackend(BaseBackend):
         except BadRequest:
             if runner.instance_id is None:
                 log.info(f"Instance {runner.name} is misconfigured and does not exist.")
-                pass
             raise
         except Exception as e:
             raise e
