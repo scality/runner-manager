@@ -164,7 +164,7 @@ def test_workflow_job_queued(
     assert webhook.organization
     runner_group: RunnerGroup = RunnerGroup(
         organization=webhook.organization.login,
-        name=uuid4().hex,
+        name=f"queued-{uuid4().hex.lower()}",
         labels=webhook.workflow_job.labels,
         manager=settings.name,
         backend={"name": "base"},
