@@ -11,7 +11,7 @@ if curl -s -f -m 5 -o /dev/null http://metadata.google.internal/computeMetadata/
 	for key in ${METADATA_KEYS}; do
 		# if the key starts with RUNNER_ then we export it as an environment variable
 		if [[ ${key} =~ ^RUNNER_ ]]; then
-			export ${key}="$(curl -s -f -m 5 http://metadata.google.internal/computeMetadata/v1/instance/attributes/${key} -H 'Metadata-Flavor: Google')"
+			export "${key}"="$(curl -s -f -m 5 http://metadata.google.internal/computeMetadata/v1/instance/attributes/"${key}" -H 'Metadata-Flavor: Google')"
 		fi
 	done
 fi
@@ -84,7 +84,7 @@ if [[ ! ${RUNNER_LABELS} =~ "no-docker" ]]; then
 		sudo chmod a+r /etc/apt/keyrings/docker.gpg
 		echo \
 			"deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-			"$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" |
+			"$(. /etc/os-release && echo "${VERSION_CODENAME}")" stable" |
 			sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
 		sudo apt-get update --yes
 		sudo apt-get install --yes docker-ce docker-ce-cli containerd.io
