@@ -30,17 +30,12 @@ class AWSBackend(BaseBackend):
         instance_resource: Dict = self.instance_config.configure_instance(runner)
         try:
             instance = self.client.run_instances(**instance_resource)
-        except ClientError as e:
-            raise e
-        try:
             runner.instance_id = instance["Instances"][0]["InstanceId"]
-        except Exception as e:
-            raise e
-        # Wait for instance to be running
-        try:
+            # Wait for instance to be running
             waiter = self.client.get_waiter("instance_running")
             waiter.wait(InstanceIds=[runner.instance_id])
         except Exception as e:
+            log.error(e)
             raise e
         return super().create(runner)
 
@@ -92,8 +87,8 @@ class AWSBackend(BaseBackend):
             reservations = self.client.describe_instances(
                 Filters=[
                     {
-                        "Name": "tag:runner-manager",
-                        "Values": ["aws"],
+                        "Name": "runner-manager",
+                        "Values": [self.manager],
                     },
                     {
                         "Name": "instance-state-name",
@@ -128,7 +123,7 @@ class AWSBackend(BaseBackend):
                     InstanceIds=[runner.instance_id],
                     Filters=[
                         {"Name": "instance-state-name", "Values": ["running"]},
-                        {"Name": "tag:runner-manager", "Values": ["aws"]},
+                        {"Name": "runner-manager", "Values": [self.manager]},
                     ],
                 )
         except ClientError as e:

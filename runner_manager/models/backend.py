@@ -101,7 +101,7 @@ class AWSInstanceConfig(InstanceConfig):
     min_count: int = 1
     user_data: Optional[str] = ""
     block_device_mappings: Optional[List[Dict[str, str]]] = []
-    labels: Optional[Dict[str, str]] = None
+    tags: Optional[Dict[str, str]] = None
 
     class Config:
         arbitrary_types_allowed = True
