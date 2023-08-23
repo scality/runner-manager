@@ -2,6 +2,7 @@ import pytest
 from githubkit.rest.models import AuthenticationToken
 from githubkit.webhooks.models import WorkflowJobCompleted
 from hypothesis import given
+from pydantic import ValidationError
 from redis_om import Migrator, NotFoundError
 
 from runner_manager import Runner
@@ -115,3 +116,29 @@ def test_update_from_base(runner_group: RunnerGroup, github: GitHub):
     assert basegroup.name != runner_group.name
     runner_group.update(**basegroup.dict(exclude_unset=True))
     assert basegroup.name == runner_group.name
+
+
+def test_runner_group_name():
+    allowed_names = [
+        "test",
+        "test-42",
+        "42",
+        "a" * 39,
+    ]
+    forbiddent_names = ["TEST", "test 42", "42-test", "a" * 40]
+    for name in allowed_names:
+        group = RunnerGroup(
+            name=name,
+            organization="test",
+            backend={"name": "base"},
+            labels=["test"],
+        )
+        assert group.name == name
+    for name in forbiddent_names:
+        with pytest.raises(ValidationError):
+            RunnerGroup(
+                name=name,
+                organization="test",
+                backend={"name": "base"},
+                labels=["test"],
+            )

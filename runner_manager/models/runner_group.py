@@ -1,4 +1,5 @@
 import logging
+import re
 from datetime import datetime, timedelta
 from typing import Any, List, Optional, Self, Union
 from uuid import uuid4
@@ -12,6 +13,7 @@ from githubkit.webhooks.models import WorkflowJobInProgress
 from githubkit.webhooks.types import WorkflowJobEvent
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Field as PydanticField
+from pydantic import validator
 from redis_om import Field, NotFoundError
 from typing_extensions import Annotated
 
@@ -24,6 +26,8 @@ from runner_manager.models.base import BaseModel
 from runner_manager.models.runner import Runner, RunnerLabel, RunnerStatus
 
 log = logging.getLogger(__name__)
+
+regex = re.compile(r"[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}")
 
 
 class BaseRunnerGroup(PydanticBaseModel):
@@ -51,7 +55,7 @@ class BaseRunnerGroup(PydanticBaseModel):
 class RunnerGroup(BaseModel, BaseRunnerGroup):
 
     id: Optional[int] = Field(index=True, default=None)
-    name: str = Field(index=True, full_text_search=True)
+    name: str = Field(index=True, full_text_search=True, max_length=39)
     organization: str = Field(index=True, full_text_search=True)
     repository: Optional[str] = Field(index=True, full_text_search=True)
     max: int = Field(index=True, ge=1, default=20)
@@ -64,6 +68,16 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         if self.backend.manager is None:
             self.backend.manager = self.manager
 
+    @validator("name")
+    def validate_name(cls, v):
+        """Validate group name.
+
+        A group name must match the following regex:
+        '[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}'.
+        """
+        assert regex.fullmatch(v), f"Group name {v} must be match of regex: {regex}"
+        return v.lower()
+
     @property
     def runner_labels(self) -> List[RunnerLabel]:
         """Return self.labels as a list of RunnerLabel."""
@@ -75,16 +89,12 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         Returns a string used as the runner name.
         - Prefixed by the group name.
         - Suffixed by a random uuid.
-        - Limited by 63 characters.
+        - Match the following regex:
+          '[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}'.
         - Must be unique and not already exist in the database.
         """
 
-        def _generate_name() -> str:
-            """Generate a random name."""
-
-            return f"{self.name}-{uuid4()}"
-
-        name = _generate_name()
+        name: str = f"{self.name}-{uuid4()}"
         return name
 
     def get_runners(self) -> List[Runner]:
