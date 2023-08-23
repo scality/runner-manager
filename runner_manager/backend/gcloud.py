@@ -1,7 +1,8 @@
+import logging
 import time
 from typing import Dict, List, Literal
 
-from google.api_core.exceptions import NotFound
+from google.api_core.exceptions import BadRequest, NotFound
 from google.api_core.extended_operation import ExtendedOperation
 from google.cloud.compute import (
     AccessConfig,
@@ -20,6 +21,8 @@ from pydantic import Field
 from runner_manager.backend.base import BaseBackend
 from runner_manager.models.backend import Backends, GCPConfig, GCPInstanceConfig
 from runner_manager.models.runner import Runner
+
+log = logging.getLogger(__name__)
 
 
 class GCPBackend(BaseBackend):
@@ -137,6 +140,11 @@ class GCPBackend(BaseBackend):
                 )
         except NotFound:
             pass
+        except BadRequest:
+            if runner.instance_id is None:
+                log.info(f"Instance {runner.name} is misconfigured and does not exist.")
+                return super().delete(runner)
+            raise
         except Exception as e:
             raise e
         return super().delete(runner)
