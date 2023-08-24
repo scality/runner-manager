@@ -30,8 +30,8 @@ from ...strategies import (
 
 def wait_for_migration(model: JsonModel):
     count = 0
+    print("waiting for index to be created")
     while model.find().count() == 0:
-        print("waiting for index to be created")
         sleep(0.1)
         count += 1
         if count > 100:
@@ -163,6 +163,7 @@ def test_workflow_job_queued(
     init_model(RunnerGroup, redis, settings)
     assert webhook.organization
     runner_group: RunnerGroup = RunnerGroup(
+        id=1,
         organization=webhook.organization.login,
         name=f"queued-{uuid4().hex.lower()}",
         labels=webhook.workflow_job.labels,

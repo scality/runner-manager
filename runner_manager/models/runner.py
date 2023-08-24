@@ -59,9 +59,7 @@ class Runner(BaseModel):
         default=None,
     )
     token: Optional[str] = None
-    encoded_jit_config: Optional[str] = Field(
-        default=None, description="Encoded JIT config"
-    )
+    encoded_jit_config: Optional[str] = None
     backend: Optional[str] = Field(index=True, description="Backend type")
     status: RunnerStatus = Field(
         default=RunnerStatus.offline, index=True, full_text_search=True
