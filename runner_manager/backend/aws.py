@@ -132,16 +132,16 @@ class AWSBackend(BaseBackend):
                     return super().update(runner)
                 else:
                     raise e
-        if runner.labels and runner.instance_id:
-            try:
-                self.client.create_tags(
-                    Resources=[runner.instance_id],
-                    Tags=[
-                        {"Key": label.name, "Value": label.name}
-                        for label in runner.labels
-                    ],
-                )
-            except Exception as e:
-                log.error(e)
-                raise e
+            if runner.labels:
+                try:
+                    self.client.create_tags(
+                        Resources=[runner.instance_id],
+                        Tags=[
+                            {"Key": label.name, "Value": label.name}
+                            for label in runner.labels
+                        ],
+                    )
+                except Exception as e:
+                    log.error(e)
+                    raise e
         return super().update(runner)
