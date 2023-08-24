@@ -128,7 +128,7 @@ class AWSConfig(BackendConfig):
 class AWSInstanceConfig(InstanceConfig):
     """Configuration for AWS backend instance."""
 
-    image: str = "ami-0735c191cf914754d"  # Ubuntu 22.04
+    image: str = "ami-0735c191cf914754d"  # Ubuntu 22.04 for us-west-2
     instance_type: str = "t3.micro"
     subnet_id: Optional[str] = None
     security_group_ids: Optional[List[str]] = []
