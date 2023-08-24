@@ -1,4 +1,5 @@
 import os
+from typing import Dict
 
 from pytest import fixture, mark, raises
 from redis_om import NotFoundError
@@ -34,6 +35,15 @@ def aws_runner(runner: Runner, aws_group: RunnerGroup) -> Runner:
     # Cleanup and return a runner for testing
     aws_group.backend.delete(runner)
     return runner
+
+
+def test_aws_instance_config(runner: Runner):
+    config = AWSConfig(subnet_id="i-0f9b0a3b7b3b3b3b3")
+    instance_config = AWSInstanceConfig(tags={"test": "test"})
+    instance_config.subnet_id = config.subnet_id
+    instance_resource: Dict = instance_config.configure_instance(runner)
+    assert instance_resource["SubnetId"] == config.subnet_id
+    assert instance_resource["Tags"] == [{"Key": "test", "Value": "test"}]
 
 
 @mark.skipif(not os.getenv("AWS_ACCESS_KEY_ID"), reason="AWS credentials not found")

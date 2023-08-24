@@ -42,18 +42,17 @@ class AWSBackend(BaseBackend):
 
     def delete(self, runner: Runner):
         """Delete a runner."""
-        try:
-            if runner.instance_id:
+        if runner.instance_id:
+            try:
                 self.client.terminate_instances(InstanceIds=[runner.instance_id])
-        except ClientError as e:
-            error = e.response.get("Error", {})
-            if error.get("Code") == "InvalidInstanceID.NotFound":
-                pass
-            if error.get("Code") == "InvalidInstanceID.Malformed":
-                log.error(f"Instance {runner.instance_id} malformed.")
-                pass
-            else:
-                raise e
+            except ClientError as e:
+                error = e.response.get("Error", {})
+                if error.get("Code") == "InvalidInstanceID.NotFound":
+                    log.error(f"Instance {runner.instance_id} not found.")
+                elif error.get("Code") == "InvalidInstanceID.Malformed":
+                    log.error(f"Instance {runner.instance_id} malformed.")
+                else:
+                    raise e
         return super().delete(runner)
 
     def get(self, instance_id: str) -> Runner:
@@ -65,20 +64,17 @@ class AWSBackend(BaseBackend):
             error = e.response.get("Error", {})
             if error.get("Code") == "InvalidInstanceID.NotFound":
                 log.error(f"Instance {instance_id} not found.")
+                return Runner.find(Runner.instance_id == instance_id).first()
             else:
                 raise e
         try:
-            reservations = instance.get("Reservations", [])
+            reservations = instance.get("Reservations")
             if reservations:
-                instances = reservations[0].get("Instances", [])
+                instances = reservations[0].get("Instances")
                 if instances:
                     instance_id = instances[0]["InstanceId"]
-                else:
-                    raise ValueError(f"No instances found for {instance_id}")
-            else:
-                raise ValueError(f"No reservations found for {instance_id}")
-        except Exception as e:
-            raise e
+        except Exception:
+            raise
         return Runner.find(Runner.instance_id == instance_id).first()
 
     def list(self) -> List[Runner]:
@@ -96,21 +92,23 @@ class AWSBackend(BaseBackend):
                         "Values": ["running"],
                     },
                 ]
-            ).get("Reservations", [])
+            ).get("Reservations")
         except Exception as e:
+            log.error(e)
             raise e
         for reservation in reservations:
             for instance in reservation.get("Instances", []):
+                instance_id = instance.get("InstanceId", "")
                 try:
                     runners.append(
                         Runner.find(
-                            Runner.instance_id == instance.get("InstanceId", "")
+                            Runner.instance_id == instance_id,
                         ).first()
                     )
                 except NotFoundError:
                     runner = Runner(
-                        name=instance.get("InstanceId", ""),
-                        instance_id=instance.get("InstanceId", ""),
+                        name=instance_id,
+                        instance_id=instance_id,
                         busy=False,
                     )
                     runners.append(runner)
@@ -118,8 +116,8 @@ class AWSBackend(BaseBackend):
 
     def update(self, runner: Runner) -> Runner:
         """Update a runner."""
-        try:
-            if runner.instance_id:
+        if runner.instance_id:
+            try:
                 self.client.describe_instances(
                     InstanceIds=[runner.instance_id],
                     Filters=[
@@ -127,14 +125,15 @@ class AWSBackend(BaseBackend):
                         {"Name": "tag-key", "Values": ["runner-manager"]},
                     ],
                 )
-        except ClientError as e:
-            error = e.response.get("Error", {})
-            if error.get("Code") == "InvalidInstanceID.NotFound":
-                log.error(f"Instance {runner.instance_id} not found.")
-            else:
-                raise e
-        try:
-            if runner.labels and runner.instance_id:
+            except ClientError as e:
+                error = e.response.get("Error", {})
+                if error.get("Code") == "InvalidInstanceID.NotFound":
+                    log.error(f"Instance {runner.instance_id} not found.")
+                    return super().update(runner)
+                else:
+                    raise e
+        if runner.labels and runner.instance_id:
+            try:
                 self.client.create_tags(
                     Resources=[runner.instance_id],
                     Tags=[
@@ -142,6 +141,7 @@ class AWSBackend(BaseBackend):
                         for label in runner.labels
                     ],
                 )
-        except Exception as e:
-            raise e
+            except Exception as e:
+                log.error(e)
+                raise e
         return super().update(runner)
