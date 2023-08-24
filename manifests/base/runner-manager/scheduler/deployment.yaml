@@ -13,9 +13,9 @@ spec:
                 name: secrets
             - configMapRef:
                 name: redis-config
+            - configMapRef:
+                name: env
           env:
-            - name: CONFIG_FILE
-              value: /app/config/runner-manager.yaml
             - name: REDIS_OM_URL
               value: redis://$(REDIS_HOST):$(REDIS_PORT)
           volumeMounts:

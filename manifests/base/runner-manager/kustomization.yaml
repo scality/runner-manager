@@ -10,6 +10,9 @@ configMapGenerator:
   - name: config
     files:
       - runner-manager.yaml
+  - name: env
+    envs:
+      - config.env
 
 secretGenerator:
   - name: secrets
@@ -17,7 +20,7 @@ secretGenerator:
       - secrets.env
   - name: gcloud-creds
     literals:
-      - creds.json=''
+      - application_default_credentials.json=''
 
 resources:
   - redis
