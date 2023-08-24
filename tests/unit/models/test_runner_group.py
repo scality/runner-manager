@@ -1,5 +1,4 @@
 import pytest
-from githubkit.rest.models import AuthenticationToken
 from githubkit.webhooks.models import WorkflowJobCompleted
 from hypothesis import given
 from pydantic import ValidationError

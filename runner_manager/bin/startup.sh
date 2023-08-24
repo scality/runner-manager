@@ -132,7 +132,7 @@ Description={{Description}}
 After=network.target
 
 [Service]
-ExecStart=/bin/bash {{RunnerRoot}}/runsvc.sh --jitconfig \"$RUNNER_JIT_CONFIG\"
+ExecStart=/bin/bash {{RunnerRoot}}/runsvc.sh --jitconfig \"${RUNNER_JIT_CONFIG}\"
 User={{User}}
 WorkingDirectory={{RunnerRoot}}
 KillMode=process
@@ -148,5 +148,5 @@ if command -v systemctl; then
 	sudo ./svc.sh install
 	sudo ./svc.sh start
 else
-	nohup /home/actions/actions-runner/run.sh --jitconfig "$RUNNER_JIT_CONFIG" 2>/home/actions/actions-runner/logs &
+	nohup /home/actions/actions-runner/run.sh --jitconfig "${RUNNER_JIT_CONFIG}" 2>/home/actions/actions-runner/logs &
 fi

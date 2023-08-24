@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from githubkit import Response
-from githubkit.rest.models import AuthenticationToken
 from githubkit.webhooks.models import (
     WorkflowJobCompleted,
     WorkflowJobInProgress,

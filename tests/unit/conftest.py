@@ -1,14 +1,12 @@
 from datetime import timedelta
 
 import httpx
-from githubkit import Response
 from githubkit.config import Config
-from githubkit.rest.models import AuthenticationToken
 from hypothesis import HealthCheck
 from hypothesis import settings as hypothesis_settings
 from pytest import fixture
 
-from runner_manager import Runner, RunnerGroup
+from runner_manager import Runner
 from runner_manager.clients.github import GitHub
 from runner_manager.models.runner import RunnerLabel
 
