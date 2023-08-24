@@ -8,6 +8,7 @@ from redis_om import Migrator, NotFoundError
 from runner_manager import Runner
 from runner_manager.backend.base import BaseBackend
 from runner_manager.clients.github import GitHub
+from runner_manager.models.runner import RunnerStatus
 from runner_manager.models.runner_group import BaseRunnerGroup, RunnerGroup
 
 from ...strategies import WorkflowJobCompletedStrategy
@@ -142,3 +143,19 @@ def test_runner_group_name():
                 backend={"name": "base"},
                 labels=["test"],
             )
+
+
+def test_need_new_runner(runner_group: RunnerGroup, runner_token: AuthenticationToken):
+    runner_group.min = 1
+    runner_group.max = 2
+    runner_group.save()
+    assert runner_group.need_new_runner is True
+    runner = runner_group.create_runner(runner_token)
+    assert runner is not None
+    assert runner_group.need_new_runner is False
+    runner.status = RunnerStatus.online
+    runner.busy = True
+    runner.save()
+    assert runner_group.need_new_runner is True
+    runner_group.create_runner(runner_token)
+    assert runner_group.need_new_runner is False
