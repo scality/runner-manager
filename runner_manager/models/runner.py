@@ -4,10 +4,12 @@ from typing import List, Literal, Optional
 
 import redis
 from githubkit.rest.models import Runner as GitHubRunner
+from githubkit.rest.types import OrgsOrgActionsRunnersGenerateJitconfigPostBodyType
 from githubkit.webhooks.types import WorkflowJobEvent
 from pydantic import BaseModel as PydanticBaseModel
 from redis_om import Field, NotFoundError
 
+from runner_manager.clients.github import GitHub
 from runner_manager.logging import log
 from runner_manager.models.base import BaseModel
 
@@ -57,6 +59,9 @@ class Runner(BaseModel):
         default=None,
     )
     token: Optional[str] = None
+    encoded_jit_config: Optional[str] = Field(
+        default=None, description="Encoded JIT config"
+    )
     backend: Optional[str] = Field(index=True, description="Backend type")
     status: RunnerStatus = Field(
         default=RunnerStatus.offline, index=True, full_text_search=True
@@ -143,10 +148,32 @@ class Runner(BaseModel):
     def time_to_live_expired(self, time_to_live: timedelta) -> bool:
         return self.is_online and self.time_since_started > time_to_live
 
-    def update_status(self, github_runner: GitHubRunner):
-        self.status = RunnerStatus(github_runner.status)
-        self.busy = github_runner.busy
+    def update_from_github(self, github: GitHub) -> "Runner":
+        if self.id is not None:
+            github_runner: GitHubRunner = (
+                github.rest.actions.get_self_hosted_runner_for_org(
+                    org=self.organization, runner_id=self.id
+                ).parsed_data
+            )
+            self.status = RunnerStatus(self.status)
+            self.busy = github_runner.busy
         log.info(f"Runner {self.name} status updated to {self.status}")
+        return self.save()
+
+    def generate_jit_config(self, github: GitHub) -> "Runner":
+        """Generate JIT config for the runner"""
+        assert self.organization is not None, "Organization name is required"
+        assert self.runner_group_id is not None, "Runner group id is required"
+        jitconfig = github.rest.actions.generate_runner_jitconfig_for_org(
+            org=self.organization,
+            data=OrgsOrgActionsRunnersGenerateJitconfigPostBodyType(
+                name=self.name,
+                runner_group_id=self.runner_group_id,
+                labels=[label.name for label in self.labels],
+            ),
+        ).parsed_data
+        self.id = jitconfig.runner.id
+        self.encoded_jit_config = jitconfig.encoded_jit_config
         return self.save()
 
     def save(

@@ -56,13 +56,3 @@ def runner(settings) -> Runner:
     assert runner.Meta.global_key_prefix == settings.name
     Runner.delete_many(Runner.find().all())
     return runner
-
-
-@fixture()
-def runner_token(runner_group: RunnerGroup, github: GitHub) -> AuthenticationToken:
-    token: Response[
-        AuthenticationToken
-    ] = github.rest.actions.create_registration_token_for_org(
-        org=runner_group.organization
-    )
-    return token.parsed_data
