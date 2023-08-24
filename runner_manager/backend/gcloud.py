@@ -192,8 +192,8 @@ class GCPBackend(BaseBackend):
                 zone=self.config.zone,
                 instance=runner.instance_id or runner.name,
             )
-            instance.labels["status"] = runner.status
-            instance.labels["busy"] = str(runner.busy)
+            instance.labels["status"] = self._sanitize_label_value(runner.status)
+            instance.labels["busy"] = self._sanitize_label_value(str(runner.busy))
 
             log.info(f"Updating {runner.name} labels to {instance.labels}")
             self.client.update(
