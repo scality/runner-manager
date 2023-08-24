@@ -15,6 +15,9 @@ secretGenerator:
   - name: secrets
     envs:
       - secrets.env
+  - name: gcloud-creds
+    literals:
+      - creds.json=''
 
 resources:
   - redis
