@@ -13,8 +13,6 @@ spec:
             - secretRef:
                 name: env
             - configMapRef:
-                name: redis-config
-            - configMapRef:
                 name: env
           env:
             - name: REDIS_OM_URL
