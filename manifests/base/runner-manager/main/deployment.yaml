@@ -11,21 +11,19 @@ spec:
           image: runner-manager
           envFrom:
             - secretRef:
-                name: secrets
+                name: env
             - configMapRef:
                 name: redis-config
             - configMapRef:
                 name: env
           env:
-            - name: CONFIG_FILE
-              value: /app/config/runner-manager.yaml
             - name: REDIS_OM_URL
               value: redis://$(REDIS_HOST):$(REDIS_PORT)
           volumeMounts:
             - mountPath: /app/config
               name: config
-            - mountPath: /app/gcloud/
-              name: gcloud-creds
+            - mountPath: /app/secrets/
+              name: secrets
               readOnly: true
           imagePullPolicy: IfNotPresent
           ports:
@@ -63,9 +61,6 @@ spec:
         - name: config
           configMap:
             name: config
-        - name: gcloud-creds
+        - name: secrets
           secret:
-            secretName: gcloud-creds
-            items:
-              - key: application_default_credentials.json
-                path: application_default_credentials.json
+            secretName: secrets

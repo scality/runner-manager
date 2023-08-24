@@ -10,7 +10,7 @@ spec:
         - command: [scheduler]
           envFrom:
             - secretRef:
-                name: secrets
+                name: env
             - configMapRef:
                 name: redis-config
             - configMapRef:

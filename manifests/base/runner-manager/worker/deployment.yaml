@@ -15,7 +15,7 @@ spec:
             - rq
           envFrom:
             - secretRef:
-                name: secrets
+                name: env
             - configMapRef:
                 name: redis-config
             - configMapRef:
@@ -26,8 +26,8 @@ spec:
           volumeMounts:
             - mountPath: /app/config
               name: config
-            - mountPath: /app/gcloud
-              name: gcloud-creds
+            - mountPath: /app/secrets
+              name: secrets
               readOnly: true
           image: runner-manager
           imagePullPolicy: IfNotPresent
@@ -44,9 +44,6 @@ spec:
         - name: config
           configMap:
             name: config
-        - name: gcloud-creds
+        - name: secrets
           secret:
-            secretName: gcloud-creds
-            items:
-              - key: application_default_credentials.json
-                path: application_default_credentials.json
+            secretName: secrets

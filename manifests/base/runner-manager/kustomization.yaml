@@ -15,12 +15,11 @@ configMapGenerator:
       - config.env
 
 secretGenerator:
-  - name: secrets
+  - name: env
     envs:
       - secrets.env
-  - name: gcloud-creds
-    literals:
-      - application_default_credentials.json=''
+  - name: secrets
+
 
 resources:
   - redis
