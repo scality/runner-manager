@@ -20,7 +20,6 @@ secretGenerator:
       - secrets.env
   - name: secrets
 
-
 resources:
   - redis
   - main
