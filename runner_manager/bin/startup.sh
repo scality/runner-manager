@@ -1,5 +1,21 @@
 #!/usr/bin/env bash
 
+# check if the script is being run inside a google cloud compute instance
+# to perform this check we are looking for the metadata server
+# if the metadata server is not found, we assume that the script is being run
+# outside of a google cloud compute instance
+if curl -s -f -m 5 -o /dev/null http://metadata.google.internal/computeMetadata/v1/instance/attributes/ -H "Metadata-Flavor: Google"; then
+	# We are running inside a google cloud compute instance
+	# Retrieving the metadata keys
+	METADATA_KEYS=$(curl -s -f -m 5 http://metadata.google.internal/computeMetadata/v1/instance/attributes/ -H "Metadata-Flavor: Google")
+	for key in ${METADATA_KEYS}; do
+		# if the key starts with RUNNER_ then we export it as an environment variable
+		if [[ ${key} =~ ^RUNNER_ ]]; then
+			export "${key}"="$(curl -s -f -m 5 http://metadata.google.internal/computeMetadata/v1/instance/attributes/"${key}" -H 'Metadata-Flavor: Google')"
+		fi
+	done
+fi
+
 RUNNER_NAME=${RUNNER_NAME:-$(hostname)}
 RUNNER_ORG=${RUNNER_ORG:-"org"}
 RUNNER_LABELS=${RUNNER_LABELS:-"runner"}
@@ -62,14 +78,16 @@ fi
 if [[ ! ${RUNNER_LABELS} =~ "no-docker" ]]; then
 
 	if [[ ${LINUX_OS} == "ubuntu" ]]; then
+		sudo install -m 0755 -d /etc/apt/keyrings
 		sudo apt-get -y update
-		curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /tmp/docker.gpg
-		sudo cat /tmp/docker.gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg || true
+		curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+		sudo chmod a+r /etc/apt/keyrings/docker.gpg
 		echo \
-			"deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
-          ${LSB_RELEASE_CS} stable" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
-		sudo apt-get update --yes --force-yes
-		sudo apt-get install --yes --force-yes docker-ce docker-ce-cli containerd.io
+			deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+			"$(. /etc/os-release && echo "${VERSION_CODENAME}")" stable |
+			sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
+		sudo apt-get update --yes
+		sudo apt-get install --yes docker-ce docker-ce-cli containerd.io
 	elif [[ ${LINUX_OS} == "centos" ]] || [[ ${LINUX_OS} == "rocky" ]] || [[ ${LINUX_OS} == "almalinux" ]]; then
 		sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 		sudo yum install -y epel-release docker-ce docker-ce-cli containerd.io
@@ -101,7 +119,6 @@ if [[ ! ${RUNNER_LABELS} =~ "no-docker" ]]; then
 fi
 
 # Login as actions user so that all the following commands are executed as actions user
-sudo su - actions
 mkdir -p /home/actions/actions-runner
 cd /home/actions/actions-runner || exit
 # Download the runner package
@@ -124,7 +141,8 @@ TimeoutStopSec=5min
 [Install]
 WantedBy=multi-user.target" >/home/actions/actions-runner/bin/actions.runner.service.template
 
-./config.sh \
+sudo chown -Rh actions:actions /home/actions/actions-runner
+sudo -u actions /home/actions/actions-runner/config.sh \
 	--url "https://github.com/${RUNNER_ORG}" \
 	--token "${RUNNER_TOKEN}" \
 	--name "${RUNNER_NAME}" \
