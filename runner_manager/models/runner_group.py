@@ -160,9 +160,9 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
     @property
     def need_new_runner(self) -> bool:
         runners = self.get_runners()
-        idle = len([runner for runner in runners if runner.busy is False])
+        not_active = len([runner for runner in runners if runner.is_active is False])
         count = len(runners)
-        return idle < self.min and count < self.max
+        return not_active < self.min and count < self.max
 
     def create_github_group(self, github: GitHub) -> GitHubRunnerGroup:
         """Create a GitHub runner group."""
@@ -254,6 +254,12 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             runner: Runner = self.create_runner(github)
             if runner:
                 log.info(f"Runner {runner.name} created")
+        idle_runners = [runner for runner in self.get_runners() if runner.is_idle]
+        # check if there's more idle runners than the minimum
+        while len(idle_runners) > self.min:
+            runner = idle_runners.pop()
+            self.delete_runner(runner)
+            log.info(f"Runner {runner.name} deleted")
 
     @classmethod
     def find_from_base(cls, basegroup: "BaseRunnerGroup") -> "RunnerGroup":

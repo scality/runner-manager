@@ -45,8 +45,9 @@ def runner(settings) -> Runner:
     runner: Runner = Runner(
         id=1,
         name="test",
+        organization="octo-org",
         runner_group_id=1,
-        status="online",
+        status="offline",
         busy=False,
         labels=[RunnerLabel(name="label")],
         manager=settings.name,
