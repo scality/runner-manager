@@ -37,7 +37,7 @@ hypothesis = "^6.82.6"
 pyright = "^1.1.324"
 black = "^23.7.0"
 isort = "^5.12.0"
-ruff = "^0.0.285"
+ruff = "^0.0.286"
 yamllint = "^1.32.0"
 types-redis = "^4.6.0.5"
 
