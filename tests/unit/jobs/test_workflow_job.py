@@ -122,7 +122,7 @@ def test_workflow_job_in_progress(
         id=webhook.workflow_job.runner_id,
         name=webhook.workflow_job.runner_name,
         busy=False,
-        status="idle",
+        status="online",
         manager=settings.name,
         runner_group_id=webhook.workflow_job.runner_group_id,
         runner_group_name=webhook.workflow_job.runner_group_name,

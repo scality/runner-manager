@@ -45,6 +45,7 @@ def test_healthchecks_hypothesis(
 def test_group_healthcheck(
     runner_group: RunnerGroup, settings: Settings, github: GitHub
 ):
+
     runner_group.save(github=github)
     runner_tts: Runner = runner_group.create_runner(github)
     assert runner_tts is not None
@@ -55,6 +56,7 @@ def test_group_healthcheck(
     runner_ttl: Runner = runner_group.create_runner(github)
     assert runner_ttl is not None
     runner_ttl.status = RunnerStatus.online
+    runner_ttl.busy = True
     runner_ttl.started_at = datetime.now() - (
         settings.time_to_live + timedelta(minutes=1)
     )
