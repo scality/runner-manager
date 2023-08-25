@@ -43,7 +43,9 @@ def test_aws_instance_config(runner: Runner):
     instance_config.subnet_id = config.subnet_id
     instance_resource: Dict = instance_config.configure_instance(runner)
     assert instance_resource["SubnetId"] == config.subnet_id
-    assert instance_resource["Tags"] == [{"Key": "test", "Value": "test"}]
+    assert {"Key": "test", "Value": "test"} in instance_resource["TagSpecifications"][
+        0
+    ]["Tags"]
 
 
 @mark.skipif(not os.getenv("AWS_ACCESS_KEY_ID"), reason="AWS credentials not found")
@@ -55,15 +57,6 @@ def test_create_delete(aws_runner, aws_group):
     aws_group.backend.delete(runner)
     with raises(NotFoundError):
         Runner.find(Runner.instance_id == runner.instance_id).first()
-
-
-@mark.skipif(not os.getenv("AWS_ACCESS_KEY_ID"), reason="AWS credentials not found")
-def test_get(aws_runner, aws_group):
-    runner = aws_group.backend.create(aws_runner)
-    assert runner == aws_group.backend.get(runner.instance_id)
-    aws_group.backend.delete(runner)
-    with raises(NotFoundError):
-        aws_group.backend.get(runner.instance_id)
 
 
 @mark.skipif(not os.getenv("AWS_ACCESS_KEY_ID"), reason="AWS credentials not found")

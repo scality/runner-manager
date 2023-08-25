@@ -170,9 +170,6 @@ class AWSInstanceConfig(InstanceConfig):
         }
         if self.tags:
             instance_config["TagSpecifications"][0]["Tags"].extend(
-                [
-                    {"Key": f"tag:{key}", "Value": value}
-                    for key, value in self.tags.items()
-                ]
+                [{"Key": key, "Value": value} for key, value in self.tags.items()]
             )
         return instance_config
