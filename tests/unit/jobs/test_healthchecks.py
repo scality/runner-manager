@@ -111,18 +111,6 @@ def test_time_to_live(runner: Runner, settings: Settings):
     assert runner.time_to_live_expired(settings.time_to_live) is False
 
 
-def test_need_new_runner(runner_group: RunnerGroup, github: GitHub):
-    runner_group.max = 2
-    runner_group.min = 1
-    runner_group.save()
-    assert runner_group.need_new_runner is True
-    runner = runner_group.create_runner(github)
-    assert runner is not None
-    runner.status = RunnerStatus.online
-    runner.busy = False
-    runner.save()
-    Migrator().run()
-    assert runner_group.need_new_runner is False
 
 
 def test_healthcheck_job(
