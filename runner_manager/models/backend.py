@@ -9,7 +9,7 @@ from google.cloud.compute import (
     Metadata,
     NetworkInterface,
 )
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from runner_manager.bin import startup_sh
 from runner_manager.models.runner import Runner
@@ -136,7 +136,7 @@ class AWSInstanceConfig(InstanceConfig):
     min_count: int = 1
     user_data: Optional[str] = ""
     block_device_mappings: Optional[List[Dict[str, str]]] = []
-    tags: Optional[Dict[str, str]] = None
+    tags: Dict[str, str] = Field(default_factory=dict)
 
     class Config:
         arbitrary_types_allowed = True
@@ -156,7 +156,9 @@ class AWSInstanceConfig(InstanceConfig):
             "TagSpecifications": [
                 {
                     "ResourceType": "instance",
-                    "Tags": [{"Key": key, "Value": value} for key, value in tags.items()]
+                    "Tags": [
+                        {"Key": key, "Value": value} for key, value in tags.items()
+                    ],
                 }
             ],
             "UserData": self.user_data,

@@ -57,7 +57,7 @@ class AWSBackend(BaseBackend):
 
     def list(self) -> List[Runner]:
         """List runners."""
-        runners: List[Runner] = []
+
         try:
             reservations = self.client.describe_instances(
                 Filters=[
@@ -74,6 +74,7 @@ class AWSBackend(BaseBackend):
         except Exception as e:
             log.error(e)
             raise e
+        runners: List[Runner] = []
         for reservation in reservations:
             for instance in reservation.get("Instances", []):
                 instance_id = instance.get("InstanceId", "")
