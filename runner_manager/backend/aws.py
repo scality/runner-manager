@@ -117,31 +117,13 @@ class AWSBackend(BaseBackend):
     def update(self, runner: Runner) -> Runner:
         """Update a runner."""
         if runner.instance_id:
+
             try:
-                self.client.describe_instances(
-                    InstanceIds=[runner.instance_id],
-                    Filters=[
-                        {"Name": "instance-state-name", "Values": ["running"]},
-                        {"Name": "tag-key", "Values": ["runner-manager"]},
-                    ],
+                self.client.create_tags(
+                    Resources=[runner.instance_id],
+                    Tags=[{"Key": "tag:status", "Value": runner.status}]
                 )
-            except ClientError as e:
-                error = e.response.get("Error", {})
-                if error.get("Code") == "InvalidInstanceID.NotFound":
-                    log.error(f"Instance {runner.instance_id} not found.")
-                    return super().update(runner)
-                else:
-                    raise e
-            if runner.labels:
-                try:
-                    self.client.create_tags(
-                        Resources=[runner.instance_id],
-                        Tags=[
-                            {"Key": label.name, "Value": label.name}
-                            for label in runner.labels
-                        ],
-                    )
-                except Exception as e:
-                    log.error(e)
-                    raise e
+            except Exception as e:
+                log.error(e)
+                raise e
         return super().update(runner)
