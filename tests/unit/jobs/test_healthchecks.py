@@ -111,8 +111,6 @@ def test_time_to_live(runner: Runner, settings: Settings):
     assert runner.time_to_live_expired(settings.time_to_live) is False
 
 
-
-
 def test_healthcheck_job(
     runner_group: RunnerGroup, settings: Settings, queue: Queue, github: GitHub
 ):
