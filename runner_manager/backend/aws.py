@@ -49,10 +49,8 @@ class AWSBackend(BaseBackend):
                 error = e.response.get("Error", {})
                 if error.get("Code") == "InvalidInstanceID.NotFound":
                     log.error(f"Instance {runner.instance_id} not found.")
-                    return super().delete(runner)
                 elif error.get("Code") == "InvalidInstanceID.Malformed":
                     log.error(f"Instance {runner.instance_id} malformed.")
-                    return super().delete(runner)
                 else:
                     raise e
         return super().delete(runner)
@@ -80,24 +78,21 @@ class AWSBackend(BaseBackend):
             for instance in reservation.get("Instances", []):
                 instance_id = instance.get("InstanceId", "")
                 try:
-                    runners.append(
-                        Runner.find(
-                            Runner.instance_id == instance_id,
-                        ).first()
-                    )
+                    runner = Runner.find(
+                        Runner.instance_id == instance_id,
+                    ).first()
                 except NotFoundError:
                     runner = Runner(
                         name=instance_id,
                         instance_id=instance_id,
                         busy=False,
                     )
-                    runners.append(runner)
-        return runners or []
+                runners.append(runner)
+        return runners
 
     def update(self, runner: Runner) -> Runner:
         """Update a runner."""
         if runner.instance_id:
-
             try:
                 self.client.create_tags(
                     Resources=[runner.instance_id],
