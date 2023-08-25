@@ -160,9 +160,9 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
     @property
     def need_new_runner(self) -> bool:
         runners = self.get_runners()
-        idle = len([runner for runner in runners if runner.is_idle])
+        not_active = len([runner for runner in runners if runner.is_active is False])
         count = len(runners)
-        return idle < self.min and count < self.max
+        return not_active < self.min and count < self.max
 
     def create_github_group(self, github: GitHub) -> GitHubRunnerGroup:
         """Create a GitHub runner group."""

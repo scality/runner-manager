@@ -146,10 +146,12 @@ def test_need_new_runner(runner_group: RunnerGroup, github: GitHub):
     runner_group.save()
     assert runner_group.need_new_runner is True
     runner = runner_group.create_runner(github)
+    # One runner is expected to be created we don't need a new one.
+    assert runner_group.need_new_runner is False
     assert runner is not None
-    # Set the runner as idle.
+    # Pretend the runner is now active.
     runner.status = RunnerStatus.online
-    runner.busy = False
+    runner.busy = True
     runner.save()
     Migrator().run()
-    assert runner_group.need_new_runner is False
+    assert runner_group.need_new_runner is True
