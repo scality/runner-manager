@@ -1,4 +1,5 @@
 import logging
+import re
 from datetime import datetime, timedelta
 from typing import Any, List, Optional, Self, Union
 from uuid import uuid4
@@ -6,12 +7,11 @@ from uuid import uuid4
 import redis
 from githubkit import Response
 from githubkit.exception import RequestFailed
-from githubkit.rest.models import AuthenticationToken
-from githubkit.rest.models import Runner as GitHubRunner
 from githubkit.webhooks.models import WorkflowJobInProgress
 from githubkit.webhooks.types import WorkflowJobEvent
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Field as PydanticField
+from pydantic import validator
 from redis_om import Field, NotFoundError
 from typing_extensions import Annotated
 
@@ -25,6 +25,8 @@ from runner_manager.models.base import BaseModel
 from runner_manager.models.runner import Runner, RunnerLabel, RunnerStatus
 
 log = logging.getLogger(__name__)
+
+regex = re.compile(r"[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}")
 
 
 class BaseRunnerGroup(PydanticBaseModel):
@@ -52,7 +54,7 @@ class BaseRunnerGroup(PydanticBaseModel):
 class RunnerGroup(BaseModel, BaseRunnerGroup):
 
     id: Optional[int] = Field(index=True, default=None)
-    name: str = Field(index=True, full_text_search=True)
+    name: str = Field(index=True, full_text_search=True, max_length=39)
     organization: str = Field(index=True, full_text_search=True)
     repository: Optional[str] = Field(index=True, full_text_search=True)
     max: int = Field(index=True, ge=1, default=20)
@@ -65,6 +67,16 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         if self.backend.manager is None:
             self.backend.manager = self.manager
 
+    @validator("name")
+    def validate_name(cls, v):
+        """Validate group name.
+
+        A group name must match the following regex:
+        '[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}'.
+        """
+        assert regex.fullmatch(v), f"Group name {v} must be match of regex: {regex}"
+        return v
+
     @property
     def runner_labels(self) -> List[RunnerLabel]:
         """Return self.labels as a list of RunnerLabel."""
@@ -76,16 +88,12 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         Returns a string used as the runner name.
         - Prefixed by the group name.
         - Suffixed by a random uuid.
-        - Limited by 63 characters.
+        - Match the following regex:
+          '[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}'.
         - Must be unique and not already exist in the database.
         """
 
-        def _generate_name() -> str:
-            """Generate a random name."""
-
-            return f"{self.name}-{uuid4()}"
-
-        name = _generate_name()
+        name: str = f"{self.name}-{uuid4()}"
         return name
 
     def get_runners(self) -> List[Runner]:
@@ -101,19 +109,18 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             pass
         return runners
 
-    def create_runner(self, token: AuthenticationToken) -> Runner | None:
+    def create_runner(self, github: GitHub) -> Runner | None:
         """Create a runner instance.
 
         Returns:
             Runner: Runner instance.
         """
         count = len(self.get_runners())
-        if count < self.max:
+        if count < self.max and self.id:
             runner: Runner = Runner(
                 name=self.generate_runner_name(),
                 organization=self.organization,
                 status=RunnerStatus.offline,
-                token=token.token,
                 busy=False,
                 runner_group_id=self.id,
                 created_at=datetime.now(),
@@ -121,7 +128,9 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
                 labels=self.runner_labels,
                 manager=self.manager,
             )
-            runner = runner.save()
+            runner.save()
+            runner.generate_jit_config(github)
+
             return self.backend.create(runner)
         return None
 
@@ -151,7 +160,10 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
 
     @property
     def need_new_runner(self) -> bool:
-        return len(self.get_runners()) < (self.min or 0)
+        runners = self.get_runners()
+        idle = len([runner for runner in runners if runner.busy is False])
+        count = len(runners)
+        return idle < self.min and count < self.max
 
     def create_github_group(self, github: GitHub) -> GitHubRunnerGroup:
         """Create a GitHub runner group."""
@@ -234,26 +246,13 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         """Healthcheck runner group."""
         runners = self.get_runners()
         for runner in runners:
-
-            if runner.id is not None:
-                github_runner: GitHubRunner = (
-                    github.rest.actions.get_self_hosted_runner_for_org(
-                        self.organization, runner.id
-                    ).parsed_data
-                )
-                runner = runner.update_status(github_runner)
+            runner.update_from_github(github)
             if runner.time_to_live_expired(time_to_live):
                 self.delete_runner(runner)
             if runner.time_to_start_expired(timeout_runner):
                 self.delete_runner(runner)
         while self.need_new_runner:
-            token_response: Response[
-                AuthenticationToken
-            ] = github.rest.actions.create_registration_token_for_org(
-                org=self.organization
-            )
-            token: AuthenticationToken = token_response.parsed_data
-            runner: Runner = self.create_runner(token)
+            runner: Runner = self.create_runner(github)
             if runner:
                 log.info(f"Runner {runner.name} created")
 

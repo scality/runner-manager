@@ -1,4 +1,4 @@
-from string import ascii_letters
+from string import ascii_lowercase
 from typing import Optional
 
 from githubkit.rest.models import Runner as GitHubRunner
@@ -33,8 +33,12 @@ class Repo(Repository):
     license: Optional[License] = None
 
 
-# Text strategy with only normal characters
-Text = st.text(ascii_letters, min_size=10, max_size=10)
+# Text strategy with only ascii characters
+# that must start with a alphabetic character,
+# and only lowercase characters
+Text = st.text(ascii_lowercase, min_size=10, max_size=10).filter(
+    lambda x: x[0].isalpha()
+)
 Int = st.integers(min_value=1, max_value=100)
 UserStrategy = st.builds(
     User,

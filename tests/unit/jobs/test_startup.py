@@ -1,11 +1,12 @@
 from rq import Queue
 from rq.job import Job, JobStatus
 
-from runner_manager import Runner, RunnerGroup
+from runner_manager import Runner, RunnerGroup, Settings
+from runner_manager.clients.github import GitHub
 from runner_manager.jobs.startup import startup
 
 
-def test_startup(queue: Queue, settings, runner_token):
+def test_startup(queue: Queue, settings: Settings, github: GitHub):
     job: Job = queue.enqueue(startup, settings)
     status: JobStatus = job.get_status()
     assert status == JobStatus.FINISHED
@@ -32,7 +33,7 @@ def test_startup(queue: Queue, settings, runner_token):
         backend={"name": "base"},
     )
     runner_group.save()
-    runner_group.create_runner(runner_token)
+    runner_group.create_runner(github)
     runners = Runner.find().count()
     assert RunnerGroup.find().count() == 2
     job: Job = queue.enqueue(startup, settings)

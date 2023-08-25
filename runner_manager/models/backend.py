@@ -33,7 +33,7 @@ class RunnerEnv(BaseModel):
 
     RUNNER_NAME: Optional[str] = None
     RUNNER_LABELS: Optional[str] = None
-    RUNNER_TOKEN: Optional[str] = None
+    RUNNER_JIT_CONFIG: Optional[str] = None
     RUNNER_ORG: Optional[str] = None
     RUNNER_GROUP: Optional[str] = None
 
@@ -45,8 +45,8 @@ class InstanceConfig(BaseModel):
 
         return RunnerEnv(
             RUNNER_NAME=runner.name,
-            RUNNER_LABELS=", ".join([label.name for label in runner.labels]),
-            RUNNER_TOKEN=runner.token,
+            RUNNER_LABELS=",".join([label.name for label in runner.labels]),
+            RUNNER_JIT_CONFIG=runner.encoded_jit_config,
             RUNNER_ORG=runner.organization,
             RUNNER_GROUP=runner.runner_group_name,
         )

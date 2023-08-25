@@ -12,11 +12,6 @@ images:
     newName: redis/redis-stack
     newTag: 6.2.6-v9
 
-configMapGenerator:
-  - name: redis-config
-    envs:
-      - redis-config.env
-
 resources:
   - statefulset.yaml
   - service.yaml
