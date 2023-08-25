@@ -7,8 +7,6 @@ from uuid import uuid4
 import redis
 from githubkit import Response
 from githubkit.exception import RequestFailed
-from githubkit.rest.models import AuthenticationToken
-from githubkit.rest.models import Runner as GitHubRunner
 from githubkit.webhooks.models import WorkflowJobInProgress
 from githubkit.webhooks.types import WorkflowJobEvent
 from pydantic import BaseModel as PydanticBaseModel
@@ -110,19 +108,18 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             pass
         return runners
 
-    def create_runner(self, token: AuthenticationToken) -> Runner | None:
+    def create_runner(self, github: GitHub) -> Runner | None:
         """Create a runner instance.
 
         Returns:
             Runner: Runner instance.
         """
         count = len(self.get_runners())
-        if count < self.max:
+        if count < self.max and self.id:
             runner: Runner = Runner(
                 name=self.generate_runner_name(),
                 organization=self.organization,
                 status=RunnerStatus.offline,
-                token=token.token,
                 busy=False,
                 runner_group_id=self.id,
                 created_at=datetime.now(),
@@ -130,7 +127,9 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
                 labels=self.runner_labels,
                 manager=self.manager,
             )
-            runner = runner.save()
+            runner.save()
+            runner.generate_jit_config(github)
+
             return self.backend.create(runner)
         return None
 
@@ -160,7 +159,10 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
 
     @property
     def need_new_runner(self) -> bool:
-        return len(self.get_runners()) < (self.min or 0)
+        runners = self.get_runners()
+        idle = len([runner for runner in runners if runner.busy is False])
+        count = len(runners)
+        return idle < self.min and count < self.max
 
     def create_github_group(self, github: GitHub) -> GitHubRunnerGroup:
         """Create a GitHub runner group."""
@@ -243,26 +245,13 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         """Healthcheck runner group."""
         runners = self.get_runners()
         for runner in runners:
-
-            if runner.id is not None:
-                github_runner: GitHubRunner = (
-                    github.rest.actions.get_self_hosted_runner_for_org(
-                        self.organization, runner.id
-                    ).parsed_data
-                )
-                runner = runner.update_status(github_runner)
+            runner.update_from_github(github)
             if runner.time_to_live_expired(time_to_live):
                 self.delete_runner(runner)
             if runner.time_to_start_expired(timeout_runner):
                 self.delete_runner(runner)
         while self.need_new_runner:
-            token_response: Response[
-                AuthenticationToken
-            ] = github.rest.actions.create_registration_token_for_org(
-                org=self.organization
-            )
-            token: AuthenticationToken = token_response.parsed_data
-            runner: Runner = self.create_runner(token)
+            runner: Runner = self.create_runner(github)
             if runner:
                 log.info(f"Runner {runner.name} created")
 

@@ -20,6 +20,7 @@ RUNNER_NAME=${RUNNER_NAME:-$(hostname)}
 RUNNER_ORG=${RUNNER_ORG:-"org"}
 RUNNER_LABELS=${RUNNER_LABELS:-"runner"}
 RUNNER_TOKEN=${RUNNER_TOKEN:-"token"}
+RUNNER_JIT_CONFIG=${RUNNER_JIT_CONFIG:-""}
 RUNNER_GROUP=${RUNNER_GROUP:-"default"}
 RUNNER_WORKDIR=${RUNNER_WORKDIR:-"_work"}
 RUNNER_DOWNLOAD_URL=${RUNNER_DOWNLOAD_URL:-"https://github.com/actions/runner/releases/download/v2.308.0/actions-runner-linux-x64-2.308.0.tar.gz"}
@@ -131,7 +132,7 @@ Description={{Description}}
 After=network.target
 
 [Service]
-ExecStart=/bin/bash {{RunnerRoot}}/runsvc.sh
+ExecStart=/bin/bash {{RunnerRoot}}/runsvc.sh --jitconfig \"${RUNNER_JIT_CONFIG}\"
 User={{User}}
 WorkingDirectory={{RunnerRoot}}
 KillMode=process
@@ -142,20 +143,11 @@ TimeoutStopSec=5min
 WantedBy=multi-user.target" >/home/actions/actions-runner/bin/actions.runner.service.template
 
 sudo chown -Rh actions:actions /home/actions/actions-runner
-sudo -u actions /home/actions/actions-runner/config.sh \
-	--url "https://github.com/${RUNNER_ORG}" \
-	--token "${RUNNER_TOKEN}" \
-	--name "${RUNNER_NAME}" \
-	--work "${RUNNER_WORKDIR}" \
-	--labels "${RUNNER_LABELS}" \
-	--runnergroup "${RUNNER_GROUP}" \
-	--replace \
-	--unattended \
-	--ephemeral
 
 if command -v systemctl; then
-	sudo ./svc.sh install
-	sudo ./svc.sh start
+	sudo -H -u actions bash -c 'cd /home/actions/actions-runner &&
+	sudo ./svc.sh install &&
+	sudo ./svc.sh start'
 else
-	nohup /home/actions/actions-runner/run.sh 2>/home/actions/actions-runner/logs &
+	nohup /home/actions/actions-runner/run.sh --jitconfig "${RUNNER_JIT_CONFIG}" 2>/home/actions/actions-runner/logs &
 fi

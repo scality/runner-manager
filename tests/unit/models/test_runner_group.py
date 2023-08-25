@@ -1,5 +1,4 @@
 import pytest
-from githubkit.rest.models import AuthenticationToken
 from githubkit.webhooks.models import WorkflowJobCompleted
 from hypothesis import given
 from pydantic import ValidationError
@@ -8,6 +7,7 @@ from redis_om import Migrator, NotFoundError
 from runner_manager import Runner
 from runner_manager.backend.base import BaseBackend
 from runner_manager.clients.github import GitHub
+from runner_manager.models.runner import RunnerStatus
 from runner_manager.models.runner_group import BaseRunnerGroup, RunnerGroup
 
 from ...strategies import WorkflowJobCompletedStrategy
@@ -45,20 +45,18 @@ def test_runner_group_backend(runner_group: RunnerGroup):
     RunnerGroup.delete(runner_group.pk)
 
 
-def test_create_runner_from_group(
-    runner_group: RunnerGroup, runner_token: AuthenticationToken
-):
+def test_create_runner_from_group(runner_group: RunnerGroup, github: GitHub):
     runner_group.save()
-    runner = runner_group.create_runner(runner_token)
+    runner = runner_group.create_runner(github)
     assert runner.runner_group_id == runner_group.id
     assert runner.labels == runner_group.runner_labels
+    assert runner.id is not None
+    assert runner.encoded_jit_config is not None
 
 
-def test_list_runners_from_group(
-    runner_group: RunnerGroup, runner_token: AuthenticationToken
-):
+def test_list_runners_from_group(runner_group: RunnerGroup, github: GitHub):
     runner_group.save()
-    runner = runner_group.create_runner(runner_token)
+    runner = runner_group.create_runner(github)
     assert runner in runner_group.get_runners()
 
 
@@ -85,9 +83,7 @@ def test_find_from_webhook(runner_group: RunnerGroup, webhook: WorkflowJobComple
     assert RunnerGroup.find_from_webhook(webhook) is None
 
 
-def test_runner_group_delete_method(
-    runner_group: RunnerGroup, github: GitHub, runner_token
-):
+def test_runner_group_delete_method(runner_group: RunnerGroup, github: GitHub):
     runner_group.id = None
     assert runner_group.default is False
     runner_group.save(github=github)
@@ -95,7 +91,7 @@ def test_runner_group_delete_method(
     runner_group.default = True
     runner_group.save(github=github)
     assert runner_group.default is True
-    runner: Runner = runner_group.create_runner(runner_token)
+    runner: Runner = runner_group.create_runner(github)
     assert runner.runner_group_id == runner_group.id
     assert runner.runner_group_name == runner_group.name
     Migrator().run()
@@ -142,3 +138,19 @@ def test_runner_group_name():
                 backend={"name": "base"},
                 labels=["test"],
             )
+
+
+def test_need_new_runner(runner_group: RunnerGroup, github: GitHub):
+    runner_group.min = 1
+    runner_group.max = 2
+    runner_group.save()
+    assert runner_group.need_new_runner is True
+    runner = runner_group.create_runner(github)
+    assert runner is not None
+    assert runner_group.need_new_runner is False
+    runner.status = RunnerStatus.online
+    runner.busy = True
+    runner.save()
+    assert runner_group.need_new_runner is True
+    runner_group.create_runner(github)
+    assert runner_group.need_new_runner is False
