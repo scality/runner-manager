@@ -49,8 +49,10 @@ class AWSBackend(BaseBackend):
                 error = e.response.get("Error", {})
                 if error.get("Code") == "InvalidInstanceID.NotFound":
                     log.error(f"Instance {runner.instance_id} not found.")
+                    return super().delete(runner)
                 elif error.get("Code") == "InvalidInstanceID.Malformed":
                     log.error(f"Instance {runner.instance_id} malformed.")
+                    return super().delete(runner)
                 else:
                     raise e
         return super().delete(runner)
@@ -75,7 +77,7 @@ class AWSBackend(BaseBackend):
                     instance_id = instances[0]["InstanceId"]
         except Exception:
             raise
-        return Runner.find(Runner.instance_id == instance_id).first()
+        return Runner.find((Runner.name == name) | (Runner.instance_id == instance_id)).first()
 
     def list(self) -> List[Runner]:
         """List runners."""
