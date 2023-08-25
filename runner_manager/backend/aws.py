@@ -57,28 +57,6 @@ class AWSBackend(BaseBackend):
                     raise e
         return super().delete(runner)
 
-    def get(self, instance_id: str) -> Runner:
-        """Get a runner."""
-        instance = {}
-        try:
-            instance = self.client.describe_instances(InstanceIds=[instance_id])
-        except ClientError as e:
-            error = e.response.get("Error", {})
-            if error.get("Code") == "InvalidInstanceID.NotFound":
-                log.error(f"Instance {instance_id} not found.")
-                return Runner.find(Runner.instance_id == instance_id).first()
-            else:
-                raise e
-        try:
-            reservations = instance.get("Reservations")
-            if reservations:
-                instances = reservations[0].get("Instances")
-                if instances:
-                    instance_id = instances[0]["InstanceId"]
-        except Exception:
-            raise
-        return Runner.find((Runner.name == name) | (Runner.instance_id == instance_id)).first()
-
     def list(self) -> List[Runner]:
         """List runners."""
         runners: List[Runner] = []
@@ -123,7 +101,7 @@ class AWSBackend(BaseBackend):
             try:
                 self.client.create_tags(
                     Resources=[runner.instance_id],
-                    Tags=[{"Key": "tag:status", "Value": runner.status}]
+                    Tags=[{"Key": "tag:status", "Value": runner.status}],
                 )
             except Exception as e:
                 log.error(e)
