@@ -143,6 +143,11 @@ class AWSInstanceConfig(InstanceConfig):
 
     def configure_instance(self, runner: Runner) -> Dict:
         """Configure instance."""
+        tags = {
+            "Name": runner.name,
+            "runner-manager": runner.manager,
+        }
+        tags.update(self.tags)
         instance_config = {
             "ImageId": self.image,
             "InstanceType": self.instance_type,
@@ -151,16 +156,7 @@ class AWSInstanceConfig(InstanceConfig):
             "TagSpecifications": [
                 {
                     "ResourceType": "instance",
-                    "Tags": [
-                        {
-                            "Key": "Name",
-                            "Value": runner.name,
-                        },
-                        {
-                            "Key": "runner-manager",
-                            "Value": runner.manager,
-                        },
-                    ],
+                    "Tags": [{"Key": key, "Value": value} for key, value in tags.items()]
                 }
             ],
             "UserData": self.user_data,
@@ -168,8 +164,4 @@ class AWSInstanceConfig(InstanceConfig):
             "MinCount": self.min_count,
             "BlockDeviceMappings": self.block_device_mappings,
         }
-        if self.tags:
-            instance_config["TagSpecifications"][0]["Tags"].extend(
-                [{"Key": key, "Value": value} for key, value in self.tags.items()]
-            )
         return instance_config
