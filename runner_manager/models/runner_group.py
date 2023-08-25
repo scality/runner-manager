@@ -254,6 +254,12 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             runner: Runner = self.create_runner(github)
             if runner:
                 log.info(f"Runner {runner.name} created")
+        idle_runners = [runner for runner in self.get_runners() if runner.is_idle]
+        # check if there's more idle runners than the minimum
+        while len(idle_runners) > self.min:
+            runner = idle_runners.pop()
+            self.delete_runner(runner)
+            log.info(f"Runner {runner.name} deleted")
 
     @classmethod
     def find_from_base(cls, basegroup: "BaseRunnerGroup") -> "RunnerGroup":
