@@ -145,8 +145,9 @@ WantedBy=multi-user.target" >/home/actions/actions-runner/bin/actions.runner.ser
 sudo chown -Rh actions:actions /home/actions/actions-runner
 
 if command -v systemctl; then
-	sudo ./svc.sh install
-	sudo ./svc.sh start
+	sudo -H -u actions bash -c 'cd /home/actions/actions-runner &&
+	sudo ./svc.sh install &&
+	sudo ./svc.sh start'
 else
 	nohup /home/actions/actions-runner/run.sh --jitconfig "${RUNNER_JIT_CONFIG}" 2>/home/actions/actions-runner/logs &
 fi
