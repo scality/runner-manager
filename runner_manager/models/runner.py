@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import List, Literal, Optional
@@ -10,9 +11,9 @@ from pydantic import BaseModel as PydanticBaseModel
 from redis_om import Field, NotFoundError
 
 from runner_manager.clients.github import GitHub
-from runner_manager.logging import log
 from runner_manager.models.base import BaseModel
 
+log = logging.getLogger(__name__)
 # Ideally the runner model would have been inherited
 # from githubkit.rest.models.Runner, like the following:
 # class Runner(BaseModel, githubkit.rest.models.Runner):
@@ -25,7 +26,6 @@ from runner_manager.models.base import BaseModel
 
 class RunnerStatus(str, Enum):
     online = "online"
-    idle = "idle"
     offline = "offline"
 
 
@@ -89,17 +89,19 @@ class Runner(BaseModel):
         return runner
 
     @property
-    def is_online(self) -> bool:
-        """Check if the runner is online
+    def is_active(self) -> bool:
+        """Check if the runner is active.
+
+        An active runner is a runner that is running a job.
 
         Returns:
-            bool: True if the runner is online, False otherwise.
+            bool: True if the runner is active, False otherwise.
         """
-        return self.status == RunnerStatus.online
+        return self.status == RunnerStatus.online and self.busy is True
 
     @property
     def is_offline(self) -> bool:
-        """Check if the runner is offline
+        """Check if the runner is offline.
 
         Returns:
             bool: True if the runner is offline, False otherwise.
@@ -108,12 +110,15 @@ class Runner(BaseModel):
 
     @property
     def is_idle(self) -> bool:
-        """Check if the runner is idle
+        """Check if the runner is idle.
+
+        An idle runner is a runner that is online and
+        properly attached to GitHub but is not running a job.
 
         Returns:
             bool: True if the runner is idle, False otherwise.
         """
-        return self.status == RunnerStatus.idle
+        return self.status == RunnerStatus.online and self.busy is False
 
     @property
     def time_since_created(self) -> timedelta:
@@ -144,7 +149,7 @@ class Runner(BaseModel):
         return self.is_offline and self.time_since_created > timeout
 
     def time_to_live_expired(self, time_to_live: timedelta) -> bool:
-        return self.is_online and self.time_since_started > time_to_live
+        return self.is_active and self.time_since_started > time_to_live
 
     def update_from_github(self, github: GitHub) -> "Runner":
         if self.id is not None:
@@ -153,9 +158,9 @@ class Runner(BaseModel):
                     org=self.organization, runner_id=self.id
                 ).parsed_data
             )
-            self.status = RunnerStatus(self.status)
+            self.status = RunnerStatus(github_runner.status)
             self.busy = github_runner.busy
-        log.info(f"Runner {self.name} status updated to {self.status}")
+            log.info(f"Runner {self.name} status updated to {self.status}")
         return self.save()
 
     def generate_jit_config(self, github: GitHub) -> "Runner":

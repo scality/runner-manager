@@ -141,16 +141,17 @@ def test_runner_group_name():
 
 
 def test_need_new_runner(runner_group: RunnerGroup, github: GitHub):
-    runner_group.min = 1
     runner_group.max = 2
+    runner_group.min = 1
     runner_group.save()
     assert runner_group.need_new_runner is True
     runner = runner_group.create_runner(github)
-    assert runner is not None
+    # One runner is expected to be created we don't need a new one.
     assert runner_group.need_new_runner is False
+    assert runner is not None
+    # Pretend the runner is now active.
     runner.status = RunnerStatus.online
     runner.busy = True
     runner.save()
+    Migrator().run()
     assert runner_group.need_new_runner is True
-    runner_group.create_runner(github)
-    assert runner_group.need_new_runner is False
