@@ -59,7 +59,6 @@ class AWSBackend(BaseBackend):
 
     def list(self) -> List[Runner]:
         """List runners."""
-
         try:
             reservations = self.client.describe_instances(
                 Filters=[

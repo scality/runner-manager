@@ -147,6 +147,7 @@ class AWSInstanceConfig(InstanceConfig):
             "Name": runner.name,
             "runner-manager": runner.manager,
         }
+        tags.update(self.tags)
         block_device_mappings = [
             {
                 "DeviceName": "/dev/sda1",
@@ -155,7 +156,6 @@ class AWSInstanceConfig(InstanceConfig):
                 },
             }
         ]
-        tags.update(self.tags)
         instance_config = {
             "ImageId": self.image,
             "InstanceType": self.instance_type,
