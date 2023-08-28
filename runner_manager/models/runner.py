@@ -1,9 +1,10 @@
 import logging
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import List, Literal, Optional
+from typing import Dict, List, Literal, Optional
 
 import redis
+from githubkit.exception import RequestFailed
 from githubkit.rest.models import Runner as GitHubRunner
 from githubkit.rest.types import OrgsOrgActionsRunnersGenerateJitconfigPostBodyType
 from githubkit.webhooks.types import WorkflowJobEvent
@@ -151,16 +152,23 @@ class Runner(BaseModel):
     def time_to_live_expired(self, time_to_live: timedelta) -> bool:
         return self.is_active and self.time_since_started > time_to_live
 
-    def update_from_github(self, github: GitHub) -> "Runner":
+    def update_from_github(
+        self, github: GitHub, headers: Optional[Dict[str, str]] = None
+    ) -> "Runner":
         if self.id is not None:
-            github_runner: GitHubRunner = (
-                github.rest.actions.get_self_hosted_runner_for_org(
-                    org=self.organization, runner_id=self.id
-                ).parsed_data
-            )
-            self.status = RunnerStatus(github_runner.status)
-            self.busy = github_runner.busy
-            log.info(f"Runner {self.name} status updated to {self.status}")
+            try:
+                github_runner: GitHubRunner = (
+                    github.rest.actions.get_self_hosted_runner_for_org(
+                        org=self.organization, runner_id=self.id, headers=headers
+                    ).parsed_data
+                )
+                self.status = RunnerStatus(github_runner.status)
+                self.busy = github_runner.busy
+            except RequestFailed:
+                log.info(f"Runner {self.name} does not exist anymore.")
+                self.status = RunnerStatus.offline
+                self.busy = False
+        log.info(f"Runner {self.name} status updated to {self.status}")
         return self.save()
 
     def generate_jit_config(self, github: GitHub) -> "Runner":
