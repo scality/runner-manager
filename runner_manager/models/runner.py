@@ -162,12 +162,13 @@ class Runner(BaseModel):
                         org=self.organization, runner_id=self.id, headers=headers
                     ).parsed_data
                 )
-                self.status = RunnerStatus(github_runner.status)
-                self.busy = github_runner.busy
             except RequestFailed:
                 log.info(f"Runner {self.name} does not exist anymore.")
                 self.status = RunnerStatus.offline
                 self.busy = False
+            else:
+                self.status = RunnerStatus(github_runner.status)
+                self.busy = github_runner.busy
         log.info(f"Runner {self.name} status updated to {self.status}")
         return self.save()
 
