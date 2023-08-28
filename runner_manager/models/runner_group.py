@@ -232,10 +232,9 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             RunnerGroup: Runner group instance.
         """
         try:
-            query = cls.find(
+            group: RunnerGroup | None = cls.find(
                 *(cls.labels << label for label in labels)  # pyright: ignore
-            )
-            group: RunnerGroup | None = query.first()
+            ).first()
         except NotFoundError:
             group = None
         return group
