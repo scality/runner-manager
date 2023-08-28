@@ -70,7 +70,13 @@ def test_find_runner_group_labels(runner_group: RunnerGroup):
     assert RunnerGroup.find_from_labels(["label"]) == runner_group
     assert RunnerGroup.find_from_labels(["label", "label2"]) == runner_group
     assert RunnerGroup.find_from_labels(runner_group.labels) == runner_group
+
+
+def test_find_group_not_found(runner_group: RunnerGroup):
+    runner_group.save()
     assert RunnerGroup.find_from_labels(["notfound"]) is None
+    assert RunnerGroup.find_from_labels(["self-hosted", "notfound"]) is None
+    assert RunnerGroup.find_from_labels(["label", "self-hosted", "notfound"]) is None
 
 
 @given(webhook=WorkflowJobCompletedStrategy)

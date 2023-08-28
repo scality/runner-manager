@@ -233,7 +233,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         """
         try:
             group: RunnerGroup | None = cls.find(
-                (cls.labels << labels)  # pyright: ignore
+                *(cls.labels << label for label in labels)  # pyright: ignore
             ).first()
         except NotFoundError:
             group = None
