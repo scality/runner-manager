@@ -49,10 +49,8 @@ class AWSBackend(BaseBackend):
                 error = e.response.get("Error", {})
                 if error.get("Code") == "InvalidInstanceID.NotFound":
                     log.error(f"Instance {runner.instance_id} not found.")
-                    return super().delete(runner)
                 elif error.get("Code") == "InvalidInstanceID.Malformed":
                     log.error(f"Instance {runner.instance_id} malformed.")
-                    return super().delete(runner)
                 else:
                     raise e
         return super().delete(runner)
