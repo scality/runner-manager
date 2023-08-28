@@ -149,9 +149,15 @@ def test_need_new_runner(runner_group: RunnerGroup, github: GitHub):
     # One runner is expected to be created we don't need a new one.
     assert runner_group.need_new_runner is False
     assert runner is not None
+    assert runner_group.queued == 0
     # Pretend the runner is now active.
     runner.status = RunnerStatus.online
     runner.busy = True
     runner.save()
     Migrator().run()
     assert runner_group.need_new_runner is True
+    # increase the queue by simulating a new job
+    runner_group.queued += 1
+    assert runner_group.need_new_runner is True
+    runner = runner_group.create_runner(github)
+    assert runner_group.queued == 0

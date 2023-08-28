@@ -20,6 +20,12 @@ def completed(webhook: WorkflowJobCompleted) -> int:
     if not runner_group or not runner:
         log.warning(f"Runner {webhook.workflow_job.runner_name} not found")
         return 0
+    log.info(f"Deleting runner {runner.name} in group {runner_group.name}")
+    if runner_group.queued > 0:
+        log.info(f"Runner group {runner_group.name} has a queue")
+        log.info(f"Creating new runner for group {runner_group.name}")
+        github: GitHub = get_github()
+        runner_group.create_runner(github)
     return runner_group.delete_runner(runner)
 
 

@@ -59,6 +59,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
     max: int = Field(index=True, ge=1, default=20)
     min: int = Field(index=True, ge=0, default=0)
     labels: List[str] = Field(index=True)
+    queued: int = Field(default=0, ge=0)
 
     def __post_init_post_parse__(self):
         """Post init."""
@@ -129,9 +130,12 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             )
             runner.save()
             runner.generate_jit_config(github)
-
+            if self.queued > 0:
+                self.queued -= 1
             return self.backend.create(runner)
-        return None
+        else:
+            self.queued += 1
+            return None
 
     def update_runner(self: Self, webhook: WorkflowJobInProgress) -> Runner:
         """Update a runner instance.
@@ -162,7 +166,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         runners = self.get_runners()
         not_active = len([runner for runner in runners if runner.is_active is False])
         count = len(runners)
-        return not_active < self.min and count < self.max
+        return (not_active < self.min and count < self.max) or self.queued > 0
 
     def create_github_group(self, github: GitHub) -> GitHubRunnerGroup:
         """Create a GitHub runner group."""
