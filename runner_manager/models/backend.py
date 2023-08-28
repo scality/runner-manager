@@ -135,8 +135,8 @@ class AWSInstanceConfig(InstanceConfig):
     max_count: int = 1
     min_count: int = 1
     user_data: Optional[str] = ""
-    block_device_mappings: Optional[List[Dict[str, str]]] = []
     tags: Dict[str, str] = Field(default_factory=dict)
+    volume_type: str = "gp3"
 
     class Config:
         arbitrary_types_allowed = True
@@ -147,6 +147,14 @@ class AWSInstanceConfig(InstanceConfig):
             "Name": runner.name,
             "runner-manager": runner.manager,
         }
+        block_device_mappings = [
+            {
+                "DeviceName": "/dev/sda1",
+                "Ebs": {
+                    "VolumeType": self.volume_type,
+                },
+            }
+        ]
         tags.update(self.tags)
         instance_config = {
             "ImageId": self.image,
@@ -164,6 +172,6 @@ class AWSInstanceConfig(InstanceConfig):
             "UserData": self.user_data,
             "MaxCount": self.max_count,
             "MinCount": self.min_count,
-            "BlockDeviceMappings": self.block_device_mappings,
+            "BlockDeviceMappings": block_device_mappings,
         }
         return instance_config
