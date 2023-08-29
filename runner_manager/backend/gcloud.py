@@ -75,7 +75,8 @@ class GCPBackend(BaseBackend):
                 boot=True,
                 auto_delete=True,
                 initialize_params=AttachedDiskInitializeParams(
-                    source_image=self.get_image().self_link
+                    source_image=self.get_image().self_link,
+                    disk_size_gb=self.instance_config.disk_size_gb,
                 ),
             )
         ]

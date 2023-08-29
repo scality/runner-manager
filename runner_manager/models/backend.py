@@ -91,6 +91,7 @@ class GCPInstanceConfig(InstanceConfig):
     disks: Optional[List[AttachedDisk]] = None
     spot: bool = False
     network_interfaces: Optional[List[NetworkInterface]] = None
+    disk_size_gb: int = 20
 
     class Config:
         arbitrary_types_allowed = True
@@ -137,6 +138,7 @@ class AWSInstanceConfig(InstanceConfig):
     user_data: Optional[str] = ""
     tags: Dict[str, str] = Field(default_factory=dict)
     volume_type: str = "gp3"
+    disk_size_gb: int = 20
 
     class Config:
         arbitrary_types_allowed = True
@@ -153,6 +155,7 @@ class AWSInstanceConfig(InstanceConfig):
                 "DeviceName": "/dev/sda1",
                 "Ebs": {
                     "VolumeType": self.volume_type,
+                    "VolumeSize": self.disk_size_gb,
                 },
             }
         ]
