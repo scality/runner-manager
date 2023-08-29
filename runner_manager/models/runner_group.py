@@ -134,7 +134,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
                 self.queued -= 1
                 self.save()
             return self.backend.create(runner)
-  
+
         self.queued += 1
         self.save()
         return None
