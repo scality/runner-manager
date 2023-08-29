@@ -33,8 +33,9 @@ def delete(name: str, github: GitHub = Depends(get_github)) -> Dict[str, str]:
         group = RunnerGroup.find(RunnerGroup.name == name).first()
     except NotFoundError:
         raise HTTPException(status_code=404, detail=f"Runner group {name} not found.")
-    group.delete(pk=group.pk, github=github)
-    return {"message": f"Runner group {name} deleted."}
+    else:
+        group.delete(pk=group.pk, github=github)
+        return {"message": f"Runner group {name} deleted."}
 
 
 @router.post("/{name}/healthcheck")
@@ -47,7 +48,8 @@ def healthcheck(
         group = RunnerGroup.find(RunnerGroup.name == name).first()
     except NotFoundError:
         raise HTTPException(status_code=404, detail=f"Runner group {name} not found.")
-    job: Job = queue.enqueue(
-        group_healthcheck, group.pk, settings.time_to_live, settings.timeout_runner
-    )
+    else:
+        job: Job = queue.enqueue(
+            group_healthcheck, group.pk, settings.time_to_live, settings.timeout_runner
+        )
     return JobResponse(id=job.id, status=job.get_status())
