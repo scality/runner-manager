@@ -15,6 +15,7 @@ from pydantic import validator
 from redis_om import Field, NotFoundError
 from typing_extensions import Annotated
 
+from runner_manager.backend.aws import AWSBackend
 from runner_manager.backend.base import BaseBackend
 from runner_manager.backend.docker import DockerBackend
 from runner_manager.backend.gcloud import GCPBackend
@@ -45,7 +46,7 @@ class BaseRunnerGroup(PydanticBaseModel):
     labels: List[str]
 
     backend: Annotated[
-        Union[BaseBackend, DockerBackend, GCPBackend],
+        Union[BaseBackend, DockerBackend, GCPBackend, AWSBackend],
         PydanticField(..., discriminator="name"),
     ]
 
