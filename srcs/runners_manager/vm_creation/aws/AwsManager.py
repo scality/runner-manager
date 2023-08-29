@@ -90,7 +90,7 @@ class AwsManager(CloudManager):
                         'Ebs': {
                             'VolumeSize': int(runner.vm_type.config["disk_size_gb"]),
                             'DeleteOnTermination': True,
-                            'VolumeType': 'gp2'
+                            'VolumeType': 'gp3'
                         },
                     },
                 ],
