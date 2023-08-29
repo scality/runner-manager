@@ -161,3 +161,43 @@ def test_need_new_runner(runner_group: RunnerGroup, github: GitHub):
     runner.save()
     Migrator().run()
     assert runner_group.need_new_runner is True
+
+
+# test queue of runner_group
+def test_runner_group_queue(runner_group: RunnerGroup, github: GitHub):
+    runner_group.max = 2
+    runner_group.min = 1
+    runner_group.save()
+    # Initially, we should need a new runner due to the min requirement
+    assert runner_group.need_new_runner is True
+
+    # Create a runner and simulate it being active (online and busy)
+    runner = runner_group.create_runner(github)
+    assert runner is not None
+    assert runner_group.need_new_runner is False
+    runner.status = RunnerStatus.online
+    runner.busy = True
+    runner.save()
+    # Now, the runner is active (online and busy), and
+    #  we haven't reached the min requirement,
+    # so we still need a new runner
+    assert runner_group.need_new_runner is True
+    # Create a second runner, but it won't be added to the queue
+    # since we haven't reached the max
+    runner2 = runner_group.create_runner(github)
+    assert runner2 is not None
+    assert runner_group.need_new_runner is False
+    # create a third runner so it goes to the queue
+    runner3 = runner_group.create_runner(github)
+    assert runner3 is None
+    assert runner_group.queued == 1
+    # Delete one of the active runners
+    runner_group.backend.delete(runner)
+    runner_group.save()
+    # this reduces the total number of active runners
+    # allowing the queued runner to be created
+    assert runner_group.need_new_runner is True
+    # create the queued runner
+    runner4 = runner_group.create_runner(github)
+    assert runner4 is not None
+    assert runner_group.queued == 0
