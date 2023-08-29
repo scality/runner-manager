@@ -49,7 +49,6 @@ def healthcheck(
     except NotFoundError:
         raise HTTPException(status_code=404, detail=f"Runner group {name} not found.")
 
-
 @router.post("/{name}/reset")
 def reset(
     name: str,

@@ -40,7 +40,6 @@ def test_healthcheck(client: TestClient, runner_group: RunnerGroup):
     assert job.status == "finished"
     runner_group.save()
 
-
 def test_reset(client: TestClient, runner_group: RunnerGroup):
     response = client.post(f"/groups/{runner_group.name}/reset")
     assert response.status_code == 404
