@@ -10,11 +10,15 @@ configMapGenerator:
   - name: config
     files:
       - runner-manager.yaml
+  - name: env
+    envs:
+      - config.env
 
 secretGenerator:
-  - name: secrets
+  - name: env
     envs:
       - secrets.env
+  - name: secrets
 
 resources:
   - redis

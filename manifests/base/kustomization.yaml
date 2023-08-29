@@ -14,7 +14,7 @@ replacements:
     targets:
       - select:
           kind: ConfigMap
-          name: redis-config
+          name: env
         fieldPaths:
           - data.REDIS_HOST
         options:

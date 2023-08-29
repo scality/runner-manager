@@ -9,7 +9,7 @@ from google.cloud.compute import (
     Metadata,
     NetworkInterface,
 )
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from runner_manager.bin import startup_sh
 from runner_manager.models.runner import Runner
@@ -33,7 +33,7 @@ class RunnerEnv(BaseModel):
 
     RUNNER_NAME: Optional[str] = None
     RUNNER_LABELS: Optional[str] = None
-    RUNNER_TOKEN: Optional[str] = None
+    RUNNER_JIT_CONFIG: Optional[str] = None
     RUNNER_ORG: Optional[str] = None
     RUNNER_GROUP: Optional[str] = None
 
@@ -45,8 +45,8 @@ class InstanceConfig(BaseModel):
 
         return RunnerEnv(
             RUNNER_NAME=runner.name,
-            RUNNER_LABELS=", ".join([label.name for label in runner.labels]),
-            RUNNER_TOKEN=runner.token,
+            RUNNER_LABELS=",".join([label.name for label in runner.labels]),
+            RUNNER_JIT_CONFIG=runner.encoded_jit_config,
             RUNNER_ORG=runner.organization,
             RUNNER_GROUP=runner.runner_group_name,
         )
@@ -116,3 +116,62 @@ class GCPInstanceConfig(InstanceConfig):
             labels=self.labels,
             metadata=Metadata(items=items),
         )
+
+
+class AWSConfig(BackendConfig):
+    """Configuration for AWS backend."""
+
+    region: str = "us-west-2"
+    subnet_id: str
+
+
+class AWSInstanceConfig(InstanceConfig):
+    """Configuration for AWS backend instance."""
+
+    image: str = "ami-0735c191cf914754d"  # Ubuntu 22.04 for us-west-2
+    instance_type: str = "t3.micro"
+    subnet_id: Optional[str] = None
+    security_group_ids: Optional[List[str]] = []
+    max_count: int = 1
+    min_count: int = 1
+    user_data: Optional[str] = ""
+    tags: Dict[str, str] = Field(default_factory=dict)
+    volume_type: str = "gp3"
+
+    class Config:
+        arbitrary_types_allowed = True
+
+    def configure_instance(self, runner: Runner) -> Dict:
+        """Configure instance."""
+        tags = {
+            "Name": runner.name,
+            "runner-manager": runner.manager,
+        }
+        tags.update(self.tags)
+        block_device_mappings = [
+            {
+                "DeviceName": "/dev/sda1",
+                "Ebs": {
+                    "VolumeType": self.volume_type,
+                },
+            }
+        ]
+        instance_config = {
+            "ImageId": self.image,
+            "InstanceType": self.instance_type,
+            "SubnetId": self.subnet_id,
+            "SecurityGroupIds": self.security_group_ids,
+            "TagSpecifications": [
+                {
+                    "ResourceType": "instance",
+                    "Tags": [
+                        {"Key": key, "Value": value} for key, value in tags.items()
+                    ],
+                }
+            ],
+            "UserData": self.user_data,
+            "MaxCount": self.max_count,
+            "MinCount": self.min_count,
+            "BlockDeviceMappings": block_device_mappings,
+        }
+        return instance_config

@@ -1,7 +1,9 @@
+import logging
+import re
 import time
 from typing import Dict, List, Literal
 
-from google.api_core.exceptions import NotFound
+from google.api_core.exceptions import BadRequest, NotFound
 from google.api_core.extended_operation import ExtendedOperation
 from google.cloud.compute import (
     AccessConfig,
@@ -20,6 +22,8 @@ from pydantic import Field
 from runner_manager.backend.base import BaseBackend
 from runner_manager.models.backend import Backends, GCPConfig, GCPInstanceConfig
 from runner_manager.models.runner import Runner
+
+log = logging.getLogger(__name__)
 
 
 class GCPBackend(BaseBackend):
@@ -137,6 +141,11 @@ class GCPBackend(BaseBackend):
                 )
         except NotFound:
             pass
+        except BadRequest:
+            if runner.instance_id is None:
+                log.info(f"Instance {runner.name} is misconfigured and does not exist.")
+                return super().delete(runner)
+            raise
         except Exception as e:
             raise e
         return super().delete(runner)
@@ -170,27 +179,31 @@ class GCPBackend(BaseBackend):
             raise e
         return runners
 
+    def _sanitize_label_value(self, value: str) -> str:
+        value = value[:63]
+        value = value.lower()
+        value = re.sub(r"[^a-z0-9_-]", "-", value)
+        return value
+
     def update(self, runner: Runner) -> Runner:
         try:
             instance: Instance = self.client.get(
                 project=self.config.project_id,
                 zone=self.config.zone,
-                instance=runner.instance_id,
+                instance=runner.instance_id or runner.name,
             )
-            if instance.status != "RUNNING":
-                raise Exception(f"Instance {instance.name} is not running.")
-            labels = {}
-            if runner.labels is not None:
-                labels = {label.name: label.name for label in runner.labels}
-            instance.labels = labels
-            ext_operation: ExtendedOperation = self.client.update(
-                instance_resource=instance
-            )
-            self.wait_for_operation(
+            instance.labels["status"] = self._sanitize_label_value(runner.status)
+            instance.labels["busy"] = self._sanitize_label_value(str(runner.busy))
+
+            log.info(f"Updating {runner.name} labels to {instance.labels}")
+            self.client.update(
+                instance=runner.instance_id or runner.name,
                 project=self.config.project_id,
                 zone=self.config.zone,
-                operation=ext_operation.name,
+                instance_resource=instance,
             )
+            log.info(f"Updated {runner.name} labels to {instance.labels}")
         except Exception as e:
+            super().update(runner)
             raise e
         return super().update(runner)
