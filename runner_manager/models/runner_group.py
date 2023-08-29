@@ -132,10 +132,12 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             runner.generate_jit_config(github)
             if self.queued > 0:
                 self.queued -= 1
+                self.save()
             return self.backend.create(runner)
-        else:
-            self.queued += 1
-            return None
+  
+        self.queued += 1
+        self.save()
+        return None
 
     def update_runner(self: Self, webhook: WorkflowJobInProgress) -> Runner:
         """Update a runner instance.
@@ -166,7 +168,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         runners = self.get_runners()
         not_active = len([runner for runner in runners if runner.is_active is False])
         count = len(runners)
-        return (not_active < self.min and count < self.max) or self.queued > 0
+        return (not_active < self.min or self.queued > 0) and count < self.max
 
     def create_github_group(self, github: GitHub) -> GitHubRunnerGroup:
         """Create a GitHub runner group."""
