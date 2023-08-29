@@ -11,17 +11,18 @@ spec:
           image: runner-manager
           envFrom:
             - secretRef:
-                name: secrets
+                name: env
             - configMapRef:
-                name: redis-config
+                name: env
           env:
-            - name: CONFIG_FILE
-              value: /app/config/runner-manager.yaml
             - name: REDIS_OM_URL
               value: redis://$(REDIS_HOST):$(REDIS_PORT)
           volumeMounts:
             - mountPath: /app/config
               name: config
+            - mountPath: /app/secrets/
+              name: secrets
+              readOnly: true
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
@@ -38,17 +39,19 @@ spec:
             httpGet:
               path: /_health/
               port: http
-            initialDelaySeconds: 5
-            periodSeconds: 10
+              scheme: HTTP
+            initialDelaySeconds: 60
+            periodSeconds: 30
             successThreshold: 1
             timeoutSeconds: 5
           readinessProbe:
-            failureThreshold: 3
+            failureThreshold: 5
             httpGet:
-              path: /_health
+              path: /_health/
               port: http
-            initialDelaySeconds: 5
-            periodSeconds: 10
+              scheme: HTTP
+            initialDelaySeconds: 60
+            periodSeconds: 30
             successThreshold: 1
             timeoutSeconds: 5
           securityContext: {}
@@ -56,3 +59,6 @@ spec:
         - name: config
           configMap:
             name: config
+        - name: secrets
+          secret:
+            secretName: secrets

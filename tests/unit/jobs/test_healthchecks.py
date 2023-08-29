@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 
-from githubkit.rest.models import AuthenticationToken
 from hypothesis import given, settings
 from hypothesis import strategies as st
 from redis_om import Migrator
@@ -44,18 +43,27 @@ def test_healthchecks_hypothesis(
 
 
 def test_group_healthcheck(
-    runner_group: RunnerGroup, settings: Settings, github: GitHub, runner_token
+    runner_group: RunnerGroup, settings: Settings, github: GitHub
 ):
+    assert settings.timeout_runner
+    assert settings.time_to_live
+    assert runner_group.min == 0
     runner_group.save(github=github)
-    runner_tts: Runner = runner_group.create_runner(runner_token)
+
+    runner_tts: Runner = runner_group.create_runner(github)
     assert runner_tts is not None
     runner_tts.created_at = datetime.now() - (
         settings.timeout_runner + timedelta(minutes=1)
     )
+    # Removing id to avoid retrieving info from GitHub mock API
+    runner_tts.id = None
     runner_tts.save()
-    runner_ttl: Runner = runner_group.create_runner(runner_token)
+    runner_ttl: Runner = runner_group.create_runner(github)
     assert runner_ttl is not None
+    # Removing id to avoid retrieving info from GitHub mock API
+    runner_ttl.id = None
     runner_ttl.status = RunnerStatus.online
+    runner_ttl.busy = True
     runner_ttl.started_at = datetime.now() - (
         settings.time_to_live + timedelta(minutes=1)
     )
@@ -69,9 +77,10 @@ def test_group_healthcheck(
 def test_need_new_runner_healthcheck(
     runner_group: RunnerGroup, settings: Settings, github: GitHub
 ):
-    runner_group.max = 2
+    runner_group.max = 1
     runner_group.min = 1
     runner_group.save()
+    assert len(runner_group.get_runners()) == 0
     assert runner_group.need_new_runner is True
     runner_group.healthcheck(settings.time_to_live, settings.timeout_runner, github)
     assert runner_group.need_new_runner is False
@@ -92,25 +101,18 @@ def test_time_to_start(runner: Runner, settings: Settings):
 
 
 def test_time_to_live(runner: Runner, settings: Settings):
+    assert settings.time_to_live
     runner.started_at = datetime.now() - (settings.time_to_live + timedelta(minutes=1))
     runner.status = RunnerStatus.online
+    runner.busy = True
     assert runner.time_to_live_expired(settings.time_to_live) is True
 
     runner.started_at = datetime.now() - (settings.time_to_live - timedelta(minutes=1))
     assert runner.time_to_live_expired(settings.time_to_live) is False
 
 
-def test_need_new_runner(runner_group: RunnerGroup, runner_token: AuthenticationToken):
-    runner_group.max = 2
-    runner_group.min = 1
-    runner_group.save()
-    assert runner_group.need_new_runner is True
-    runner_group.create_runner(runner_token)
-    assert runner_group.need_new_runner is False
-
-
 def test_healthcheck_job(
-    runner_group: RunnerGroup, settings: Settings, queue: Queue, runner_token
+    runner_group: RunnerGroup, settings: Settings, queue: Queue, github: GitHub
 ):
     runner_group.save()
     queue.enqueue(
@@ -120,7 +122,7 @@ def test_healthcheck_job(
         settings.timeout_runner,
     )
     assert len(runner_group.get_runners()) == 0
-    runner_group.create_runner(runner_token)
+    runner_group.create_runner(github)
     queue.enqueue(
         healthcheck.group,
         runner_group.pk,

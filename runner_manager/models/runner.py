@@ -1,16 +1,20 @@
+import logging
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import List, Literal, Optional
+from typing import Dict, List, Literal, Optional
 
 import redis
+from githubkit.exception import RequestFailed
 from githubkit.rest.models import Runner as GitHubRunner
+from githubkit.rest.types import OrgsOrgActionsRunnersGenerateJitconfigPostBodyType
 from githubkit.webhooks.types import WorkflowJobEvent
 from pydantic import BaseModel as PydanticBaseModel
 from redis_om import Field, NotFoundError
 
-from runner_manager.logging import log
+from runner_manager.clients.github import GitHub
 from runner_manager.models.base import BaseModel
 
+log = logging.getLogger(__name__)
 # Ideally the runner model would have been inherited
 # from githubkit.rest.models.Runner, like the following:
 # class Runner(BaseModel, githubkit.rest.models.Runner):
@@ -23,7 +27,6 @@ from runner_manager.models.base import BaseModel
 
 class RunnerStatus(str, Enum):
     online = "online"
-    idle = "idle"
     offline = "offline"
 
 
@@ -57,6 +60,7 @@ class Runner(BaseModel):
         default=None,
     )
     token: Optional[str] = None
+    encoded_jit_config: Optional[str] = None
     backend: Optional[str] = Field(index=True, description="Backend type")
     status: RunnerStatus = Field(
         default=RunnerStatus.offline, index=True, full_text_search=True
@@ -86,17 +90,19 @@ class Runner(BaseModel):
         return runner
 
     @property
-    def is_online(self) -> bool:
-        """Check if the runner is online
+    def is_active(self) -> bool:
+        """Check if the runner is active.
+
+        An active runner is a runner that is running a job.
 
         Returns:
-            bool: True if the runner is online, False otherwise.
+            bool: True if the runner is active, False otherwise.
         """
-        return self.status == RunnerStatus.online
+        return self.status == RunnerStatus.online and self.busy is True
 
     @property
     def is_offline(self) -> bool:
-        """Check if the runner is offline
+        """Check if the runner is offline.
 
         Returns:
             bool: True if the runner is offline, False otherwise.
@@ -105,12 +111,15 @@ class Runner(BaseModel):
 
     @property
     def is_idle(self) -> bool:
-        """Check if the runner is idle
+        """Check if the runner is idle.
+
+        An idle runner is a runner that is online and
+        properly attached to GitHub but is not running a job.
 
         Returns:
             bool: True if the runner is idle, False otherwise.
         """
-        return self.status == RunnerStatus.idle
+        return self.status == RunnerStatus.online and self.busy is False
 
     @property
     def time_since_created(self) -> timedelta:
@@ -141,12 +150,42 @@ class Runner(BaseModel):
         return self.is_offline and self.time_since_created > timeout
 
     def time_to_live_expired(self, time_to_live: timedelta) -> bool:
-        return self.is_online and self.time_since_started > time_to_live
+        return self.is_active and self.time_since_started > time_to_live
 
-    def update_status(self, github_runner: GitHubRunner):
-        self.status = RunnerStatus(github_runner.status)
-        self.busy = github_runner.busy
+    def update_from_github(
+        self, github: GitHub, headers: Optional[Dict[str, str]] = None
+    ) -> "Runner":
+        if self.id is not None:
+            try:
+                github_runner: GitHubRunner = (
+                    github.rest.actions.get_self_hosted_runner_for_org(
+                        org=self.organization, runner_id=self.id, headers=headers
+                    ).parsed_data
+                )
+            except RequestFailed:
+                log.info(f"Runner {self.name} does not exist anymore.")
+                self.status = RunnerStatus.offline
+                self.busy = False
+            else:
+                self.status = RunnerStatus(github_runner.status)
+                self.busy = github_runner.busy
         log.info(f"Runner {self.name} status updated to {self.status}")
+        return self.save()
+
+    def generate_jit_config(self, github: GitHub) -> "Runner":
+        """Generate JIT config for the runner"""
+        assert self.organization is not None, "Organization name is required"
+        assert self.runner_group_id is not None, "Runner group id is required"
+        jitconfig = github.rest.actions.generate_runner_jitconfig_for_org(
+            org=self.organization,
+            data=OrgsOrgActionsRunnersGenerateJitconfigPostBodyType(
+                name=self.name,
+                runner_group_id=self.runner_group_id,
+                labels=[label.name for label in self.labels],
+            ),
+        ).parsed_data
+        self.id = jitconfig.runner.id
+        self.encoded_jit_config = jitconfig.encoded_jit_config
         return self.save()
 
     def save(

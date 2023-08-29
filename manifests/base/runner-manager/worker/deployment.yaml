@@ -15,17 +15,18 @@ spec:
             - rq
           envFrom:
             - secretRef:
-                name: secrets
+                name: env
             - configMapRef:
-                name: redis-config
+                name: env
           env:
-            - name: CONFIG_FILE
-              value: /app/config/runner-manager.yaml
             - name: REDIS_OM_URL
               value: redis://$(REDIS_HOST):$(REDIS_PORT)
           volumeMounts:
             - mountPath: /app/config
               name: config
+            - mountPath: /app/secrets
+              name: secrets
+              readOnly: true
           image: runner-manager
           imagePullPolicy: IfNotPresent
           name: runner-manager
@@ -41,3 +42,6 @@ spec:
         - name: config
           configMap:
             name: config
+        - name: secrets
+          secret:
+            secretName: secrets

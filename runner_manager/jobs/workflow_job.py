@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from githubkit import Response
-from githubkit.rest.models import AuthenticationToken
 from githubkit.webhooks.models import (
     WorkflowJobCompleted,
     WorkflowJobInProgress,
@@ -51,11 +49,6 @@ def queued(webhook: WorkflowJobQueued) -> str | None:
     log.info(f"Found runner group {runner_group.name}")
     log.info(f"Creating registration token for runner {runner_group.name}")
     github: GitHub = get_github()
-    org = runner_group.organization
-    token_response: Response[
-        AuthenticationToken
-    ] = github.rest.actions.create_registration_token_for_org(org=org)
-    token: AuthenticationToken = token_response.parsed_data
     log.info("Registration token created.")
-    runner: Runner = runner_group.create_runner(token)
-    return runner.pk
+    runner: Runner | None = runner_group.create_runner(github)
+    return runner.pk if runner else None

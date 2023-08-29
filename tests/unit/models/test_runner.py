@@ -4,6 +4,7 @@ from hypothesis import given
 from hypothesis import strategies as st
 from redis_om import Migrator, NotFoundError
 
+from runner_manager.clients.github import GitHub
 from runner_manager.models.runner import Runner
 
 from ...strategies import WorkflowJobCompletedStrategy
@@ -12,7 +13,7 @@ from ...strategies import WorkflowJobCompletedStrategy
 @given(st.builds(Runner))
 def test_validate_runner(instance: Runner):
     assert instance.name is not None
-    assert instance.status in ["online", "offline", "idle"]
+    assert instance.status in ["online", "offline"]
     assert isinstance(instance.busy, bool)
 
 
@@ -47,3 +48,22 @@ def test_find_from_webhook(runner: Runner, webhook: WorkflowJobCompleted):
     assert Runner.find_from_webhook(webhook) == runner
     runner.delete(runner.pk)
     assert Runner.find_from_webhook(webhook) is None
+
+
+def test_update_from_github(runner: Runner, github: GitHub):
+    runner.save()
+    assert runner.id is not None, "Runner must have an id"
+    github_runner = github.rest.actions.get_self_hosted_runner_for_org(
+        org=runner.organization, runner_id=runner.id
+    ).parsed_data
+    print(github_runner)
+    runner.update_from_github(github)
+    assert runner.busy == github_runner.busy
+    assert runner.status == github_runner.status
+    assert runner.status == "online"
+
+    # Pretend the runner was deleted from github side
+    # by forcing the mock server to return 404
+    runner.update_from_github(github, headers={"Prefer": "code=404"})
+    assert runner.status == "offline"
+    assert runner.busy is False

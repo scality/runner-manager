@@ -1,14 +1,12 @@
 from datetime import timedelta
 
 import httpx
-from githubkit import Response
 from githubkit.config import Config
-from githubkit.rest.models import AuthenticationToken
 from hypothesis import HealthCheck
 from hypothesis import settings as hypothesis_settings
 from pytest import fixture
 
-from runner_manager import Runner, RunnerGroup
+from runner_manager import Runner
 from runner_manager.clients.github import GitHub
 from runner_manager.models.runner import RunnerLabel
 
@@ -47,8 +45,9 @@ def runner(settings) -> Runner:
     runner: Runner = Runner(
         id=1,
         name="test",
+        organization="octo-org",
         runner_group_id=1,
-        status="online",
+        status="offline",
         busy=False,
         labels=[RunnerLabel(name="label")],
         manager=settings.name,
@@ -56,13 +55,3 @@ def runner(settings) -> Runner:
     assert runner.Meta.global_key_prefix == settings.name
     Runner.delete_many(Runner.find().all())
     return runner
-
-
-@fixture()
-def runner_token(runner_group: RunnerGroup, github: GitHub) -> AuthenticationToken:
-    token: Response[
-        AuthenticationToken
-    ] = github.rest.actions.create_registration_token_for_org(
-        org=runner_group.organization
-    )
-    return token.parsed_data
