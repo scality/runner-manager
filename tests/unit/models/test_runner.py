@@ -61,3 +61,9 @@ def test_update_from_github(runner: Runner, github: GitHub):
     assert runner.busy == github_runner.busy
     assert runner.status == github_runner.status
     assert runner.status == "online"
+
+    # Pretend the runner was deleted from github side
+    # by forcing the mock server to return 404
+    runner.update_from_github(github, headers={"Prefer": "code=404"})
+    assert runner.status == "offline"
+    assert runner.busy is False
