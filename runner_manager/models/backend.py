@@ -90,10 +90,8 @@ class GCPInstanceConfig(InstanceConfig):
     image: Optional[str] = None
     disks: Optional[List[Annotated[dict, AttachedDisk]]] = []
     spot: bool = False
-    network_interfaces: Optional[List[NetworkInterface]] = None
     disk_size_gb: int = 20
     network_interfaces: Optional[List[Annotated[dict, NetworkInterface]]] = []
-
 
     class Config:
         arbitrary_types_allowed = True
