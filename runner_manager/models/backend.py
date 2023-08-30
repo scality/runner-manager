@@ -150,9 +150,18 @@ class AWSInstanceConfig(InstanceConfig):
     tags: Dict[str, str] = Field(default_factory=dict)
     volume_type: str = "gp3"
     disk_size_gb: int = 20
+    startup_script: str = startup_sh.as_posix()
 
     class Config:
         arbitrary_types_allowed = True
+
+    def runner_env(self, runner: Runner) -> str:
+        env_vars = ""
+        env: RunnerEnv = super().runner_env(runner)
+        for key, value in env.dict().items():
+            env_vars += f"{key}={value} "
+        Path(self.startup_script).read_text()
+        return f"{env_vars}\n{self.startup_script}"
 
     def configure_instance(self, runner: Runner) -> Dict:
         """Configure instance."""
@@ -161,6 +170,7 @@ class AWSInstanceConfig(InstanceConfig):
             "runner-manager": runner.manager,
         }
         tags.update(self.tags)
+        user_data = self.runner_env(runner)
         block_device_mappings = [
             {
                 "DeviceName": "/dev/sda1",
@@ -183,7 +193,7 @@ class AWSInstanceConfig(InstanceConfig):
                     ],
                 }
             ],
-            "UserData": self.user_data,
+            "UserData": user_data,
             "MaxCount": self.max_count,
             "MinCount": self.min_count,
             "BlockDeviceMappings": block_device_mappings,
