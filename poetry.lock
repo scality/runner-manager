@@ -518,13 +518,13 @@ xray = ["mypy-boto3-xray (>=1.28.0,<1.29.0)"]
 
 [[package]]
 name = "botocore"
-version = "1.31.27"
+version = "1.31.37"
 description = "Low-level, data-driven core of boto 3."
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "botocore-1.31.27-py3-none-any.whl", hash = "sha256:13af1588023750c9bc66d202bb5a934c9412a7dc52587532264ab725c42c2c50"},
-    {file = "botocore-1.31.27.tar.gz", hash = "sha256:739d09e13751e3b9b0f341b5ffe5bf8d0452b8769d435c4084ee88739d42b7f7"},
+    {file = "botocore-1.31.37-py3-none-any.whl", hash = "sha256:72e10759be3dff39c5eeb29f85c11a227c369c946d044f2caf62c352d6a6fc06"},
+    {file = "botocore-1.31.37.tar.gz", hash = "sha256:5c92c8bc3c6b49950c95501b30f0ac551fd4952359b53a6fba243094028157de"},
 ]
 
 [package.dependencies]
@@ -3120,4 +3120,4 @@ dev = ["doc8", "flake8", "flake8-import-order", "rstcheck[sphinx]", "sphinx"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "10d6627dec73c9595791ec04e8591c63ce53b21c0d0234819093b50fee82d194"
+content-hash = "32519fe8b1fde82b3f60e0602282a19cefbc214bad2291a842a7619f51b7e8ba"
