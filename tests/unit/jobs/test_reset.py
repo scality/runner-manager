@@ -2,16 +2,18 @@ from rq import Queue
 from rq.job import JobStatus
 
 from runner_manager import RunnerGroup
+from runner_manager.clients.github import GitHub
 from runner_manager.jobs import reset
 from runner_manager.models.runner import RunnerStatus
 
 
-def test_reset_job(runner_group: RunnerGroup, queue: Queue, runner_token):
+def test_reset_job(runner_group: RunnerGroup, queue: Queue, github: GitHub):
     # setup runner group
     runner_group.save()
-    runner = runner_group.create_runner(runner_token)
+    runner = runner_group.create_runner(github)
     assert runner in runner_group.get_runners()
     runner.status = RunnerStatus.online
+    runner.busy = True
     runner.save()
     # run reset job with online runner
     job = queue.enqueue(

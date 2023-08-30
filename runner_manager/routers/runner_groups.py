@@ -69,4 +69,3 @@ def reset(
     else:
         job: Job = queue.enqueue(group_reset, group.pk)
         return JobResponse(id=job.id, status=job.get_status())
-
