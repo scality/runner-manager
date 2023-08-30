@@ -18,7 +18,8 @@ def group(pk: str):
     github: GitHub = get_github()
     try:
         group = RunnerGroup.get(pk)
-        group.reset(github)
-    except NotFoundError as e:
+    except NotFoundError:
         log.error(f"Runner group {pk} not found")
-        raise e
+        raise
+    else:
+        group.reset(github)
