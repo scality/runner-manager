@@ -1,6 +1,6 @@
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Annotated, Dict, List, Optional
 
 from google.cloud.compute import (
     AttachedDisk,
@@ -88,10 +88,12 @@ class GCPInstanceConfig(InstanceConfig):
     network: str = "global/networks/default"
     labels: Optional[Dict[str, str]] = {}
     image: Optional[str] = None
-    disks: Optional[List[AttachedDisk]] = None
+    disks: Optional[List[Annotated[dict, AttachedDisk]]] = []
     spot: bool = False
     network_interfaces: Optional[List[NetworkInterface]] = None
     disk_size_gb: int = 20
+    network_interfaces: Optional[List[Annotated[dict, NetworkInterface]]] = []
+
 
     class Config:
         arbitrary_types_allowed = True
