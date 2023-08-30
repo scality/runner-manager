@@ -7,6 +7,7 @@ from uuid import uuid4
 import redis
 from githubkit import Response
 from githubkit.exception import RequestFailed
+from githubkit.rest.models import Runner as GitHubRunner
 from githubkit.webhooks.models import WorkflowJobInProgress
 from githubkit.webhooks.types import WorkflowJobEvent
 from pydantic import BaseModel as PydanticBaseModel
@@ -275,10 +276,10 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
                 runner = runner.update_status(github_runner)
             if runner.status == RunnerStatus.offline:
                 self.delete_runner(runner)
-                token = github.rest.actions.create_registration_token_for_org(
+                github.rest.actions.create_registration_token_for_org(
                     org=self.organization
                 )
-                self.create_runner(token.parsed_data)
+                self.create_runner(github)
         return self
 
     @classmethod
