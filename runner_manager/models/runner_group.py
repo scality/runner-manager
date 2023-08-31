@@ -61,6 +61,8 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
     min: int = Field(index=True, ge=0, default=0)
     labels: List[str] = Field(index=True)
     queued: int = Field(default=0, ge=0)
+    os: str = Field(default="linux")
+    arch: str = Field(default="x64")
 
     def __post_init_post_parse__(self):
         """Post init."""
@@ -110,6 +112,19 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             pass
         return runners
 
+    def download_url(self, github: GitHub) -> str:
+        try:
+            apps = github.rest.actions.list_runner_applications_for_org(
+                org=self.organization
+            ).parsed_data
+            for app in apps:
+                if app.os == self.os and app.architecture == self.arch:
+                    return app.download_url
+        except RequestFailed as e:
+            log.error("Failed to retrieve runner applications")
+            raise e
+        raise Exception("No runner application found")
+
     def create_runner(self, github: GitHub) -> Runner | None:
         """Create a runner instance.
 
@@ -128,6 +143,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
                 runner_group_name=self.name,
                 labels=self.runner_labels,
                 manager=self.manager,
+                download_url=self.download_url(github),
             )
             runner.save()
             runner.generate_jit_config(github)

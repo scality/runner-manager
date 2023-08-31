@@ -60,6 +60,7 @@ class Runner(BaseModel):
         default=None,
     )
     token: Optional[str] = None
+    download_url: Optional[str] = None
     encoded_jit_config: Optional[str] = None
     backend: Optional[str] = Field(index=True, description="Backend type")
     status: RunnerStatus = Field(
