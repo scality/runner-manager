@@ -1,7 +1,6 @@
 import os
 from typing import List
 
-from google.cloud.compute import Metadata
 from pytest import fixture, mark, raises
 from redis_om import NotFoundError
 
@@ -45,11 +44,15 @@ def gcp_runner(runner: Runner, gcp_group: RunnerGroup) -> Runner:
 
 
 def test_gcp_instance(runner: Runner):
-    instance: GCPInstanceConfig = GCPInstanceConfig()
-    metadata: Metadata = instance.configure_metadata(runner)
+    gcp_instance: GCPInstanceConfig = GCPInstanceConfig()
+    instance = gcp_instance.configure_instance(runner)
+    # Assert name is defined
+    assert instance.name == runner.name
+
+    # Assert metadata are properly set
     startup: bool = False
-    items = metadata.items
-    for item in items:
+    assert runner.encoded_jit_config is not None
+    for item in instance.metadata.items:
         if item.key == "startup-script":
             assert runner.name in item.value
             assert runner.labels[0].name in item.value
