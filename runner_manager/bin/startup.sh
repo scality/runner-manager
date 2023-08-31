@@ -1,31 +1,10 @@
 #!/usr/bin/env bash
 
-# check if the script is being run inside a google cloud compute instance
-# to perform this check we are looking for the metadata server
-# if the metadata server is not found, we assume that the script is being run
-# outside of a google cloud compute instance
-if curl -s -f -m 5 -o /dev/null http://metadata.google.internal/computeMetadata/v1/instance/attributes/ -H "Metadata-Flavor: Google"; then
-	# We are running inside a google cloud compute instance
-	# Retrieving the metadata keys
-	METADATA_KEYS=$(curl -s -f -m 5 http://metadata.google.internal/computeMetadata/v1/instance/attributes/ -H "Metadata-Flavor: Google")
-	for key in ${METADATA_KEYS}; do
-		# if the key starts with RUNNER_ then we export it as an environment variable
-		if [[ ${key} =~ ^RUNNER_ ]]; then
-			export "${key}"="$(curl -s -f -m 5 http://metadata.google.internal/computeMetadata/v1/instance/attributes/"${key}" -H 'Metadata-Flavor: Google')"
-		fi
-	done
-fi
-
-RUNNER_NAME=${RUNNER_NAME:-$(hostname)}
-RUNNER_ORG=${RUNNER_ORG:-"org"}
-RUNNER_LABELS=${RUNNER_LABELS:-"runner"}
-RUNNER_TOKEN=${RUNNER_TOKEN:-"token"}
-RUNNER_JIT_CONFIG=${RUNNER_JIT_CONFIG:-""}
-RUNNER_GROUP=${RUNNER_GROUP:-"default"}
-RUNNER_WORKDIR=${RUNNER_WORKDIR:-"_work"}
-RUNNER_DOWNLOAD_URL=${RUNNER_DOWNLOAD_URL:-"https://github.com/actions/runner/releases/download/v2.308.0/actions-runner-linux-x64-2.308.0.tar.gz"}
-RUNNER_FILE=${RUNNER_FILE:-$(basename "${RUNNER_DOWNLOAD_URL}")}
-LSB_RELEASE_CS=${LSB_RELEASE_CS:-$(lsb_release -cs))}
+NAME=${RUNNER_NAME}
+LABELS=${RUNNER_LABELS}
+JIT_CONFIG=${RUNNER_JIT_CONFIG}
+DOWNLOAD_URL=${RUNNER_DOWNLOAD_URL:-"https://github.com/actions/runner/releases/download/v2.308.0/actions-runner-linux-x64-2.308.0.tar.gz"}
+FILE=${FILE:-$(basename "${DOWNLOAD_URL}")}
 
 source /etc/os-release
 LINUX_OS=${ID}
@@ -76,7 +55,7 @@ else
 	exit 1
 fi
 
-if [[ ! ${RUNNER_LABELS} =~ "no-docker" ]]; then
+if [[ ! ${LABELS} =~ "no-docker" ]]; then
 
 	if [[ ${LINUX_OS} == "ubuntu" ]]; then
 		sudo install -m 0755 -d /etc/apt/keyrings
@@ -123,8 +102,8 @@ fi
 mkdir -p /home/actions/actions-runner
 cd /home/actions/actions-runner || exit
 # Download the runner package
-curl -L "${RUNNER_DOWNLOAD_URL}" -o "/tmp/${RUNNER_FILE}"
-tar xzf /tmp/"${RUNNER_FILE}"
+curl -L "${DOWNLOAD_URL}" -o "/tmp/${FILE}"
+tar xzf /tmp/"${FILE}"
 # install dependencies
 sudo ./bin/installdependencies.sh
 echo "[Unit]
@@ -132,7 +111,7 @@ Description={{Description}}
 After=network.target
 
 [Service]
-ExecStart=/bin/bash {{RunnerRoot}}/runsvc.sh --jitconfig \"${RUNNER_JIT_CONFIG}\"
+ExecStart=/bin/bash {{RunnerRoot}}/runsvc.sh --jitconfig \"${JIT_CONFIG}\"
 User={{User}}
 WorkingDirectory={{RunnerRoot}}
 KillMode=process
@@ -143,4 +122,4 @@ TimeoutStopSec=5min
 WantedBy=multi-user.target" >/home/actions/actions-runner/bin/actions.runner.service.template
 
 sudo chown -Rh actions:actions /home/actions/actions-runner
-sudo -H -u actions bash -c "nohup /home/actions/actions-runner/run.sh --jitconfig \"${RUNNER_JIT_CONFIG}\" 2>/home/actions/actions-runner/logs &"
+sudo -H -u actions bash -c "nohup /home/actions/actions-runner/run.sh --jitconfig \"${JIT_CONFIG}\" 2>/home/actions/actions-runner/logs &"
