@@ -108,7 +108,7 @@ class GCPInstanceConfig(InstanceConfig):
 
     def configure_metadata(self, runner: Runner) -> Metadata:
         items: List[Items] = []
-        env: RunnerEnv = super().runner_env(runner)
+        env: RunnerEnv = self.runner_env(runner)
         for key, value in env.dict().items():
             items.append(Items(key=key, value=value))
         # Template the startup script to install and setup the runner
