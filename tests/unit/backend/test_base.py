@@ -31,6 +31,5 @@ def test_instance_config_template(backend, runner):
     runner = backend.create(runner)
     template = backend.instance_config.template_startup(runner)
     assert runner.name in template
-    assert runner.organization in template
-    assert runner.runner_group_name in template
     assert runner.labels[0].name in template
+    assert runner.encoded_jit_config in template

@@ -52,8 +52,8 @@ def test_gcp_instance(runner: Runner):
     for item in items:
         if item.key == "startup-script":
             assert runner.name in item.value
-            assert runner.organization in item.value
-            assert runner.runner_group_name in item.value
+            assert runner.labels[0].name in item.value
+            assert runner.encoded_jit_config in item.value
             startup = True
 
     assert startup is True
