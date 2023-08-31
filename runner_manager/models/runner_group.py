@@ -272,17 +272,9 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         """Reset runner group."""
         for runner in self.get_runners():
             if runner.id is not None:
-                (
-                    github.rest.actions.get_self_hosted_runner_for_org(
-                        self.organization, runner.id
-                    ).parsed_data
-                )
                 runner.update_from_github(github)
             if not runner.is_active:
                 self.delete_runner(runner)
-                github.rest.actions.create_registration_token_for_org(
-                    org=self.organization
-                )
                 self.create_runner(github)
                 self.save()
 
