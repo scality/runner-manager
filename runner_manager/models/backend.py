@@ -1,5 +1,6 @@
 from enum import Enum
 from pathlib import Path
+from string import Template
 from typing import Annotated, Dict, List, Optional
 
 from google.cloud.compute import (
@@ -41,6 +42,8 @@ class RunnerEnv(BaseModel):
 class InstanceConfig(BaseModel):
     """Base class for backend instance configuration."""
 
+    startup_script: str = startup_sh.as_posix()
+
     def runner_env(self, runner: Runner) -> RunnerEnv:
 
         return RunnerEnv(
@@ -50,6 +53,12 @@ class InstanceConfig(BaseModel):
             RUNNER_ORG=runner.organization,
             RUNNER_GROUP=runner.runner_group_name,
         )
+
+    def template_startup(self, runner: Runner) -> str:
+        """Template file with runner environment variables."""
+        env: RunnerEnv = self.runner_env(runner)
+        file = Path(self.startup_script)
+        return Template(file.read_text()).safe_substitute(**env.dict())
 
 
 class DockerInstanceConfig(InstanceConfig):
@@ -84,7 +93,6 @@ class GCPInstanceConfig(InstanceConfig):
     image_family: str = "ubuntu-2004-lts"
     image_project: str = "ubuntu-os-cloud"
     machine_type: str = "e2-small"
-    startup_script: str = startup_sh.as_posix()
     network: str = "global/networks/default"
     labels: Optional[Dict[str, str]] = {}
     image: Optional[str] = None
@@ -98,26 +106,27 @@ class GCPInstanceConfig(InstanceConfig):
     class Config:
         arbitrary_types_allowed = True
 
-    def runner_env(self, runner: Runner) -> List[Items]:
+    def configure_metadata(self, runner: Runner) -> Metadata:
         items: List[Items] = []
-        env: RunnerEnv = super().runner_env(runner)
+        env: RunnerEnv = self.runner_env(runner)
         for key, value in env.dict().items():
             items.append(Items(key=key, value=value))
-        # Adding startup script to install and configure runner
-        startup_script = Path(self.startup_script).read_text()
+        # Template the startup script to install and setup the runner
+        # with the appropriate configuration.
+        startup_script = self.template_startup(runner)
         items.append(Items(key="startup-script", value=startup_script))
-        return items
+        return Metadata(items=items)
 
     def configure_instance(self, runner: Runner) -> Instance:
         """Configure instance."""
-        items: List[Items] = self.runner_env(runner)
+        metadata: Metadata = self.configure_metadata(runner)
         return Instance(
             name=runner.name,
             disks=self.disks,
             machine_type=self.machine_type,
             network_interfaces=self.network_interfaces,
             labels=self.labels,
-            metadata=Metadata(items=items),
+            metadata=metadata,
         )
 
 

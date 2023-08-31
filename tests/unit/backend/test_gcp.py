@@ -1,12 +1,10 @@
 import os
 from typing import List
 
-from google.cloud.compute import Items
 from pytest import fixture, mark, raises
 from redis_om import NotFoundError
 
 from runner_manager.backend.gcloud import GCPBackend
-from runner_manager.bin import startup_sh
 from runner_manager.models.backend import Backends, GCPConfig, GCPInstanceConfig
 from runner_manager.models.runner import Runner
 from runner_manager.models.runner_group import RunnerGroup
@@ -46,13 +44,21 @@ def gcp_runner(runner: Runner, gcp_group: RunnerGroup) -> Runner:
 
 
 def test_gcp_instance(runner: Runner):
-    instance: GCPInstanceConfig = GCPInstanceConfig()
-    items: List[Items] = instance.runner_env(runner)
+    gcp_instance: GCPInstanceConfig = GCPInstanceConfig()
+    instance = gcp_instance.configure_instance(runner)
+    # Assert name is defined
+    assert instance.name == runner.name
+
+    # Assert metadata are properly set
     startup: bool = False
-    for item in items:
+    assert runner.encoded_jit_config is not None
+    for item in instance.metadata.items:
         if item.key == "startup-script":
+            assert runner.name in item.value
+            assert runner.labels[0].name in item.value
+            assert runner.encoded_jit_config in item.value
             startup = True
-            assert item.value == startup_sh.read_text()
+
     assert startup is True
 
 

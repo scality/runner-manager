@@ -25,3 +25,11 @@ def test_backend_update_runner(backend, runner):
     runner = backend.update(runner)
     assert runner.busy is True
     assert runner.status == "online"
+
+
+def test_instance_config_template(backend, runner):
+    runner = backend.create(runner)
+    template = backend.instance_config.template_startup(runner)
+    assert runner.name in template
+    assert runner.labels[0].name in template
+    assert runner.encoded_jit_config in template
