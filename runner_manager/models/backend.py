@@ -1,7 +1,9 @@
+from ast import In
 from enum import Enum
 from pathlib import Path
+from re import S, T
 from string import Template
-from typing import Annotated, Dict, List, Optional
+from typing import Annotated, Dict, List, Optional, Sequence, TypedDict
 
 from google.cloud.compute import (
     AttachedDisk,
@@ -9,6 +11,13 @@ from google.cloud.compute import (
     Items,
     Metadata,
     NetworkInterface,
+)
+from mypy_boto3_ec2.literals import InstanceTypeType, VolumeTypeType
+from mypy_boto3_ec2.type_defs import (
+    BlockDeviceMappingTypeDef,
+    EbsBlockDeviceTypeDef,
+    TagSpecificationTypeDef,
+    TagTypeDef,
 )
 from pydantic import BaseModel, Field
 
@@ -134,68 +143,75 @@ class AWSConfig(BackendConfig):
     """Configuration for AWS backend."""
 
     region: str = "us-west-2"
-    subnet_id: str
+
+
+AwsInstance = TypedDict(
+    "AwsInstance",
+    {
+        "ImageId": str,
+        "InstanceType": InstanceTypeType,
+        "SubnetId": str,
+        "SecurityGroupIds": Sequence[str],
+        "TagSpecifications": Sequence[TagSpecificationTypeDef],
+        "UserData": str,
+        "BlockDeviceMappings": Sequence[BlockDeviceMappingTypeDef],
+        "MaxCount": int,
+        "MinCount": int,
+    },
+)
 
 
 class AWSInstanceConfig(InstanceConfig):
     """Configuration for AWS backend instance."""
 
     image: str = "ami-0735c191cf914754d"  # Ubuntu 22.04 for us-west-2
-    instance_type: str = "t3.micro"
-    subnet_id: Optional[str] = None
-    security_group_ids: Optional[List[str]] = []
+    instance_type: InstanceTypeType = "t3.micro"
+    subnet_id: str
+    security_group_ids: Sequence[str] = []
     max_count: int = 1
     min_count: int = 1
     user_data: Optional[str] = ""
-    tags: Dict[str, str] = Field(default_factory=dict)
-    volume_type: str = "gp3"
+    tags: Dict[str, str] = {}
+    volume_type: VolumeTypeType = "gp3"
     disk_size_gb: int = 20
-    startup_script: str = startup_sh.as_posix()
 
-    class Config:
-        arbitrary_types_allowed = True
-
-    def runner_env(self, runner: Runner) -> str:
-        env_vars = ""
-        env: RunnerEnv = super().runner_env(runner)
-        for key, value in env.dict().items():
-            env_vars += f"{key}={value} "
-        Path(self.startup_script).read_text()
-        return f"{env_vars}\n{self.startup_script}"
-
-    def configure_instance(self, runner: Runner) -> Dict:
+    def configure_instance(self, runner: Runner) -> AwsInstance:
         """Configure instance."""
-        tags = {
-            "Name": runner.name,
-            "runner-manager": runner.manager,
-        }
-        tags.update(self.tags)
-        user_data = self.runner_env(runner)
-        block_device_mappings = [
-            {
-                "DeviceName": "/dev/sda1",
-                "Ebs": {
-                    "VolumeType": self.volume_type,
-                    "VolumeSize": self.disk_size_gb,
-                },
-            }
+        tags: Sequence[TagTypeDef] = [
+            TagTypeDef(Key="Name", Value=runner.name),
+            TagTypeDef(
+                Key="runner-manager", Value=runner.manager if runner.manager else ""
+            ),
         ]
-        instance_config = {
-            "ImageId": self.image,
-            "InstanceType": self.instance_type,
-            "SubnetId": self.subnet_id,
-            "SecurityGroupIds": self.security_group_ids,
-            "TagSpecifications": [
-                {
-                    "ResourceType": "instance",
-                    "Tags": [
-                        {"Key": key, "Value": value} for key, value in tags.items()
-                    ],
-                }
-            ],
-            "UserData": user_data,
-            "MaxCount": self.max_count,
-            "MinCount": self.min_count,
-            "BlockDeviceMappings": block_device_mappings,
-        }
-        return instance_config
+        tags.extend(
+            [TagTypeDef(Key=key, Value=value) for key, value in self.tags.items()]
+        )
+        user_data = self.template_startup(runner)
+
+        block_device_mappings: Sequence[BlockDeviceMappingTypeDef] = [
+            BlockDeviceMappingTypeDef(
+                DeviceName="/dev/sda1",
+                Ebs=EbsBlockDeviceTypeDef(
+                    VolumeType=self.volume_type,
+                    VolumeSize=self.disk_size_gb,
+                    DeleteOnTermination=True,
+                ),
+            )
+        ]
+        tags_specification: Sequence[TagSpecificationTypeDef] = [
+            TagSpecificationTypeDef(
+                ResourceType="instance",
+                Tags=tags,
+            )
+        ]
+        return AwsInstance(
+            ImageId=self.image,
+            InstanceType=self.instance_type,
+            SubnetId=self.subnet_id,
+            SecurityGroupIds=self.security_group_ids,
+            TagSpecifications=tags_specification,
+            UserData=user_data,
+            MaxCount=self.max_count,
+            MinCount=self.min_count,
+            BlockDeviceMappings=block_device_mappings,
+        )
