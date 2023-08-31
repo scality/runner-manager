@@ -9,6 +9,7 @@ from runner_manager import RunnerGroup, Settings
 from runner_manager.clients.github import GitHub
 from runner_manager.dependencies import get_github, get_queue, get_settings
 from runner_manager.jobs.healthcheck import group as group_healthcheck
+from runner_manager.jobs.reset import group as group_reset
 from runner_manager.models.api import JobResponse
 
 router = APIRouter(prefix="/groups")
@@ -52,4 +53,19 @@ def healthcheck(
         job: Job = queue.enqueue(
             group_healthcheck, group.pk, settings.time_to_live, settings.timeout_runner
         )
-    return JobResponse(id=job.id, status=job.get_status())
+        return JobResponse(id=job.id, status=job.get_status())
+
+
+@router.post("/{name}/reset")
+def reset(
+    name: str,
+    queue: Queue = Depends(get_queue),
+    settings: Settings = Depends(get_settings),
+) -> JobResponse:
+    try:
+        group = RunnerGroup.find(RunnerGroup.name == name).first()
+    except NotFoundError:
+        raise HTTPException(status_code=404, detail=f"Runner group {name} not found.")
+    else:
+        job: Job = queue.enqueue(group_reset, group.pk)
+        return JobResponse(id=job.id, status=job.get_status())

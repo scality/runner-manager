@@ -268,6 +268,16 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             self.delete_runner(runner)
             log.info(f"Runner {runner.name} deleted")
 
+    def reset(self, github: GitHub):
+        """Reset runner group."""
+        for runner in self.get_runners():
+            if runner.id is not None:
+                runner.update_from_github(github)
+            if not runner.is_active:
+                self.delete_runner(runner)
+                self.create_runner(github)
+                self.save()
+
     @classmethod
     def find_from_base(cls, basegroup: "BaseRunnerGroup") -> "RunnerGroup":
         """Find the runner group from a base instance.
