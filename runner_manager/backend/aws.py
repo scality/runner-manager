@@ -1,4 +1,4 @@
-from typing import Dict, List, Literal
+from typing import List, Literal
 
 from boto3 import client
 from botocore.exceptions import ClientError
@@ -8,7 +8,12 @@ from redis_om import NotFoundError
 
 from runner_manager.backend.base import BaseBackend
 from runner_manager.logging import log
-from runner_manager.models.backend import AWSConfig, AWSInstanceConfig, Backends
+from runner_manager.models.backend import (
+    AWSConfig,
+    AwsInstance,
+    AWSInstanceConfig,
+    Backends,
+)
 from runner_manager.models.runner import Runner
 
 
@@ -24,17 +29,10 @@ class AWSBackend(BaseBackend):
 
     def create(self, runner: Runner) -> Runner:
         """Create a runner."""
-        labels: Dict[str, str] = {}
-        if self.manager:
-            labels["runner-manager"] = self.manager
-        self.instance_config.subnet_id = self.config.subnet_id
-        instance_resource: Dict = self.instance_config.configure_instance(runner)
+        instance_resource: AwsInstance = self.instance_config.configure_instance(runner)
         try:
             instance = self.client.run_instances(**instance_resource)
             runner.instance_id = instance["Instances"][0]["InstanceId"]
-            # Wait for instance to be running
-            waiter = self.client.get_waiter("instance_running")
-            waiter.wait(InstanceIds=[runner.instance_id])
         except Exception as e:
             log.error(e)
             raise e

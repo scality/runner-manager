@@ -1,18 +1,24 @@
 import os
-from typing import Dict
 
+from mypy_boto3_ec2.type_defs import TagTypeDef
 from pytest import fixture, mark, raises
 from redis_om import NotFoundError
 
 from runner_manager.backend.aws import AWSBackend
-from runner_manager.models.backend import AWSConfig, AWSInstanceConfig, Backends
+from runner_manager.models.backend import (
+    AWSConfig,
+    AwsInstance,
+    AWSInstanceConfig,
+    Backends,
+)
 from runner_manager.models.runner import Runner, RunnerLabel
 from runner_manager.models.runner_group import RunnerGroup
 
 
 @fixture()
 def aws_group(settings) -> RunnerGroup:
-    config = AWSConfig(subnet_id=os.getenv("AWS_SUBNET_ID", ""))
+    config = AWSConfig()
+    subnet_id = os.getenv("AWS_SUBNET_ID", "")
     runner_group: RunnerGroup = RunnerGroup(
         id=3,
         name="test",
@@ -21,7 +27,7 @@ def aws_group(settings) -> RunnerGroup:
         backend=AWSBackend(
             name=Backends.aws,
             config=config,
-            instance_config=AWSInstanceConfig(),
+            instance_config=AWSInstanceConfig(subnet_id=subnet_id),
         ),
         labels=[
             "label",
@@ -38,14 +44,18 @@ def aws_runner(runner: Runner, aws_group: RunnerGroup) -> Runner:
 
 
 def test_aws_instance_config(runner: Runner):
-    config = AWSConfig(subnet_id="i-0f9b0a3b7b3b3b3b3")
-    instance_config = AWSInstanceConfig(tags={"test": "test"})
-    instance_config.subnet_id = config.subnet_id
-    instance_resource: Dict = instance_config.configure_instance(runner)
-    assert instance_resource["SubnetId"] == config.subnet_id
-    assert {"Key": "test", "Value": "test"} in instance_resource["TagSpecifications"][
-        0
-    ]["Tags"]
+    AWSConfig()
+    instance_config = AWSInstanceConfig(
+        tags={"test": "test"}, subnet_id="i-0f9b0a3b7b3b3b3b3"
+    )
+    instance: AwsInstance = instance_config.configure_instance(runner)
+    assert instance["ImageId"] == instance_config.image
+    assert instance["SubnetId"] == instance_config.subnet_id
+    assert runner.name in instance["UserData"]
+    tags = instance["TagSpecifications"][0]["Tags"]
+    assert TagTypeDef(Key="test", Value="test") in tags
+    assert TagTypeDef(Key="Name", Value=runner.name) in tags
+    assert runner.encoded_jit_config in instance["UserData"]
 
 
 @mark.skipif(not os.getenv("AWS_ACCESS_KEY_ID"), reason="AWS credentials not found")
