@@ -1,7 +1,5 @@
-from ast import In
 from enum import Enum
 from pathlib import Path
-from re import S, T
 from string import Template
 from typing import Annotated, Dict, List, Optional, Sequence, TypedDict
 
@@ -19,7 +17,7 @@ from mypy_boto3_ec2.type_defs import (
     TagSpecificationTypeDef,
     TagTypeDef,
 )
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from runner_manager.bin import startup_sh
 from runner_manager.models.runner import Runner

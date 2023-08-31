@@ -1,6 +1,6 @@
 import os
-from typing import Dict
 
+from mypy_boto3_ec2.type_defs import TagTypeDef
 from pytest import fixture, mark, raises
 from redis_om import NotFoundError
 
@@ -11,7 +11,6 @@ from runner_manager.models.backend import (
     AWSInstanceConfig,
     Backends,
 )
-from mypy_boto3_ec2.type_defs import TagTypeDef
 from runner_manager.models.runner import Runner, RunnerLabel
 from runner_manager.models.runner_group import RunnerGroup
 
@@ -45,7 +44,7 @@ def aws_runner(runner: Runner, aws_group: RunnerGroup) -> Runner:
 
 
 def test_aws_instance_config(runner: Runner):
-    config = AWSConfig()
+    AWSConfig()
     instance_config = AWSInstanceConfig(
         tags={"test": "test"}, subnet_id="i-0f9b0a3b7b3b3b3b3"
     )
