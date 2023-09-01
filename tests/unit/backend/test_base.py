@@ -1,5 +1,8 @@
 from redis_om import Migrator
 
+from runner_manager import RunnerGroup
+from runner_manager.models.backend import InstanceConfig
+
 
 def test_backend_create_runner(backend, runner):
     runner = backend.create(runner)
@@ -33,3 +36,31 @@ def test_instance_config_template(backend, runner):
     assert runner.name in template
     assert runner.labels[0].name in template
     assert runner.encoded_jit_config in template
+
+
+def test_setup_redhat_credentials(runner, monkeypatch):
+    monkeypatch.setenv("REDHAT_USERNAME", "username")
+    monkeypatch.setenv("REDHAT_PASSWORD", "password")
+    # Test loading from an InstanceConfig object
+    instance = InstanceConfig()
+    assert instance.redhat_username == "username"
+    assert instance.redhat_password is not None
+    assert instance.redhat_password.get_secret_value() == "password"
+    # Test loading from a runnerGroup object
+    runner_group: RunnerGroup = RunnerGroup(
+        name="test",
+        backend={"name": "base", "instance_config": {}},
+        organization="octo-org",
+        labels=["label"],
+    )
+    assert runner_group.backend.instance_config
+    assert runner_group.backend.instance_config.redhat_username == "username"
+    assert runner_group.backend.instance_config.redhat_password is not None
+    assert (
+        runner_group.backend.instance_config.redhat_password.get_secret_value()
+        == "password"
+    )
+    # Ensure that the template is rendered correctly
+    template = runner_group.backend.instance_config.template_startup(runner)
+    assert 'REDHAT_USERNAME="username"' in template
+    assert 'REDHAT_PASSWORD="password"' in template
