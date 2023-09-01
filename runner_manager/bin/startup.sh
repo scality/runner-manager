@@ -3,7 +3,7 @@
 NAME="${RUNNER_NAME}"
 LABELS="${RUNNER_LABELS}"
 JIT_CONFIG="${RUNNER_JIT_CONFIG}"
-DOWNLOAD_URL=${RUNNER_DOWNLOAD_URL:-"https://github.com/actions/runner/releases/download/v2.308.0/actions-runner-linux-x64-2.308.0.tar.gz"}
+DOWNLOAD_URL="${RUNNER_DOWNLOAD_URL}"
 FILE=${FILE:-$(basename "${DOWNLOAD_URL}")}
 
 source /etc/os-release

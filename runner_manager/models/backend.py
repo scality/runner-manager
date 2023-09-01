@@ -41,6 +41,7 @@ class RunnerEnv(BaseModel):
 
     RUNNER_NAME: Optional[str] = None
     RUNNER_LABELS: Optional[str] = None
+    RUNNER_DOWNLOAD_URL: Optional[str] = None
     RUNNER_JIT_CONFIG: Optional[str] = None
     RUNNER_ORG: Optional[str] = None
     RUNNER_GROUP: Optional[str] = None
@@ -59,6 +60,7 @@ class InstanceConfig(BaseModel):
             RUNNER_JIT_CONFIG=runner.encoded_jit_config,
             RUNNER_ORG=runner.organization,
             RUNNER_GROUP=runner.runner_group_name,
+            RUNNER_DOWNLOAD_URL=runner.download_url,
         )
 
     def template_startup(self, runner: Runner) -> str:
