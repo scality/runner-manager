@@ -42,6 +42,7 @@ class RunnerEnv(BaseModel):
 
     RUNNER_NAME: Optional[str] = None
     RUNNER_LABELS: Optional[str] = None
+    RUNNER_DOWNLOAD_URL: Optional[str] = None
     RUNNER_JIT_CONFIG: Optional[str] = None
     RUNNER_ORG: Optional[str] = None
     RUNNER_GROUP: Optional[str] = None
@@ -70,6 +71,7 @@ class InstanceConfig(BaseSettings):
             RUNNER_JIT_CONFIG=runner.encoded_jit_config,
             RUNNER_ORG=runner.organization,
             RUNNER_GROUP=runner.runner_group_name,
+            RUNNER_DOWNLOAD_URL=runner.download_url,
             RUNNER_REDHAT_USERNAME=self.redhat_username,
             RUNNER_REDHAT_PASSWORD=self.redhat_password.get_secret_value()
             if self.redhat_password
