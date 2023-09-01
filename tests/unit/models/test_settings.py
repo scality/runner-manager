@@ -20,6 +20,18 @@ def yaml_data():
         "name": "test-runner-manager",
         "redis_om_url": "redis://localhost:6379/0",
         "github_base_url": "https://github.com",
+        "runner_groups": [
+            {
+                "name": "test",
+                "backend": {
+                    "name": "base",
+                    "config": {},
+                    "instance_config": {},
+                },
+                "organization": "octo-org",
+                "labels": ["label"],
+            }
+        ],
     }
 
 
@@ -55,6 +67,21 @@ def test_yaml_config(config_file, yaml_data):
     assert settings.name == yaml_data["name"]
     assert settings.redis_om_url == yaml_data["redis_om_url"]
     assert settings.github_base_url == yaml_data["github_base_url"]
+
+
+def test_redhat_credentials(config_file, monkeypatch):
+    monkeypatch.setenv("REDHAT_USERNAME", "username")
+    monkeypatch.setenv("REDHAT_PASSWORD", "password")
+    settings = Settings()
+    assert (
+        settings.runner_groups[0].backend.instance_config.redhat_username == "username"
+    )
+    assert (
+        settings.runner_groups[
+            0
+        ].backend.instance_config.redhat_password.get_secret_value()
+        == "password"
+    )
 
 
 def test_env_file():

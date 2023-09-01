@@ -3,6 +3,8 @@
 NAME="${RUNNER_NAME}"
 LABELS="${RUNNER_LABELS}"
 JIT_CONFIG="${RUNNER_JIT_CONFIG}"
+REDHAT_USERNAME="${RUNNER_REDHAT_USERNAME}"
+REDHAT_PASSWORD="${RUNNER_REDHAT_PASSWORD}"
 DOWNLOAD_URL="${RUNNER_DOWNLOAD_URL}"
 FILE=${FILE:-$(basename "${DOWNLOAD_URL}")}
 
@@ -30,7 +32,7 @@ if [[ ${LINUX_OS} == "ubuntu" ]]; then
 elif [[ ${LINUX_OS} == "centos" ]] || [[ ${LINUX_OS} == "rocky" ]] || [[ ${LINUX_OS} == "almalinux" ]]; then
 	sudo yum install -y bind-utils yum-utils
 elif [[ ${LINUX_OS} == "rhel" ]]; then
-	sudo bash -c 'cat <<EOF > /etc/systemd/system/redhat_registration.service
+	echo "
 [Unit]
 Description=Redhat registration
 After=network-online.target
@@ -39,13 +41,13 @@ After=network-online.target
 Type=oneshot
 RemainAfterExit=true
 TimeoutStartSec=300
-ExecStart=/sbin/subscription-manager register --username={{ redhat_username }} --password={{ redhat_password }} --auto-attach
+ExecStart=/sbin/subscription-manager register --username=${REDHAT_USERNAME} --password=${REDHAT_PASSWORD} --auto-attach
 TimeoutStopSec=300
 ExecStop=-/sbin/subscription-manager unregister
 
 [Install]
 WantedBy=multi-user.target
-EOF'
+" | sudo tee /etc/systemd/system/redhat_registration.service
 	sudo chmod 600 /etc/systemd/system/redhat_registration.service
 	sudo systemctl daemon-reload
 	sudo systemctl enable redhat_registration.service
