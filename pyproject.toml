@@ -30,7 +30,7 @@ rq-scheduler = "^0.13.1"
 optional = true
 
 [tool.poetry.group.docs.dependencies]
-mkdocs-material = "^9.2.5"
+mkdocs-material = "^9.2.6"
 mkdocs = "^1.4.2"
 
 [tool.poetry.group.dev.dependencies]
