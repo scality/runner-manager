@@ -50,12 +50,6 @@ class RunnerEnv(BaseModel):
     RUNNER_REDHAT_PASSWORD: Optional[str] = None
 
 
-def get_redhat_password() -> Optional[SecretStr]:
-    """Get redhat password from environment variable."""
-    redhat_password = getenv("REDHAT_PASSWORD")
-    return SecretStr(redhat_password) if redhat_password else None
-
-
 class InstanceConfig(BaseSettings):
     """Base class for backend instance configuration."""
 
