@@ -26,16 +26,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install Poetry
-        run: |
-          pipx install poetry
+        run: pipx install poetry
       - uses: actions/setup-python@v4
         with:
           python-version: 3.x
           cache: poetry
       - name: Install Dependencies
-        run: |
-          poetry install --only docs
-      - run: mkdocs build --strict
+        run: poetry install --only docs
+      - name: Build documentation
+        run: poetry run mkdocs build --strict
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - uses: actions/upload-pages-artifact@v2
