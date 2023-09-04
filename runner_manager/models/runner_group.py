@@ -52,7 +52,6 @@ class BaseRunnerGroup(PydanticBaseModel):
 
 
 class RunnerGroup(BaseModel, BaseRunnerGroup):
-
     id: Optional[int] = Field(index=True, default=None)
     name: str = Field(index=True, full_text_search=True, max_length=39)
     organization: str = Field(index=True, full_text_search=True)
@@ -173,7 +172,6 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         return self.backend.update(runner)
 
     def delete_runner(self, runner: Runner, github: GitHub) -> int:
-
         """Delete a runner instance.
         Start by checking if the runner still exists on GitHub,
         delete it if it does, then proceed to delete it from the backend.
