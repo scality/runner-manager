@@ -172,12 +172,26 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         runner.save()
         return self.backend.update(runner)
 
-    def delete_runner(self, runner: Runner) -> int:
-        """Delete a runner instance.
+    def delete_runner(self, runner: Runner, github: GitHub) -> int:
 
+        """Delete a runner instance.
+        Start by checking if the runner still exists on GitHub,
+        delete it if it does, then proceed to delete it from the backend.
         Returns:
             Runner: Runner instance.
         """
+        if runner.id is not None:
+            try:
+                github.rest.actions.get_self_hosted_runner_for_org(
+                    org=self.organization, runner_id=runner.id
+                )
+            except RequestFailed:
+                log.info("Runner does not exist")
+                pass
+            else:
+                github.rest.actions.delete_self_hosted_runner_from_org(
+                    org=self.organization, runner_id=runner.id
+                )
         return self.backend.delete(runner)
 
     @property
@@ -270,9 +284,9 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         for runner in runners:
             runner.update_from_github(github)
             if runner.time_to_live_expired(time_to_live):
-                self.delete_runner(runner)
+                self.delete_runner(runner, github)
             if runner.time_to_start_expired(timeout_runner):
-                self.delete_runner(runner)
+                self.delete_runner(runner, github)
         while self.need_new_runner:
             runner: Runner = self.create_runner(github)
             if runner:
@@ -281,7 +295,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         # check if there's more idle runners than the minimum
         while len(idle_runners) > self.min:
             runner = idle_runners.pop()
-            self.delete_runner(runner)
+            self.delete_runner(runner, github)
             log.info(f"Runner {runner.name} deleted")
 
     def reset(self, github: GitHub):
@@ -290,7 +304,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             if runner.id is not None:
                 runner.update_from_github(github)
             if not runner.is_active:
-                self.delete_runner(runner)
+                self.delete_runner(runner, github)
                 self.create_runner(github)
                 self.save()
 
@@ -353,10 +367,17 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         """
         group: RunnerGroup = cls.get(pk)
         runners: List[Runner] = group.get_runners()
-        for runner in runners:
-            group.delete_runner(runner)
+        """for runner in runners:
+            group.delete_runner(runner,github)
         if github:
             group.delete_github_group(github)
+        """
+        for runner in runners:
+            if github:
+                group.delete_runner(runner, github)
+        if github:
+            group.delete_github_group(github)
+
         db = cls._get_db(pipeline)
 
         return cls._delete(db, cls.make_primary_key(pk))
