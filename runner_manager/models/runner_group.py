@@ -185,7 +185,6 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
                 )
             except RequestFailed:
                 log.info("Runner does not exist")
-                pass
             else:
                 github.rest.actions.delete_self_hosted_runner_from_org(
                     org=self.organization, runner_id=runner.id
@@ -365,17 +364,10 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         """
         group: RunnerGroup = cls.get(pk)
         runners: List[Runner] = group.get_runners()
-        """for runner in runners:
-            group.delete_runner(runner,github)
         if github:
-            group.delete_github_group(github)
-        """
-        for runner in runners:
-            if github:
+            for runner in runners:
                 group.delete_runner(runner, github)
-        if github:
             group.delete_github_group(github)
-
         db = cls._get_db(pipeline)
 
         return cls._delete(db, cls.make_primary_key(pk))
