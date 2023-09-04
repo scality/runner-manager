@@ -28,7 +28,7 @@ jobs:
       REDIS_OM_URL: redis://localhost:6379/0
       GITHUB_BASE_URL: http://localhost:4010
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Boot compose services
         run: docker compose --profile tests up --build --detach
       - run: pipx install poetry
