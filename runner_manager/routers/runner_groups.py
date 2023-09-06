@@ -69,3 +69,14 @@ def reset(
     else:
         job: Job = queue.enqueue(group_reset, group.pk)
         return JobResponse(id=job.id, status=job.get_status())
+
+
+@router.post("/{name}/runner")
+def create_runner(name: str, queue: Queue = Depends(get_queue)) -> JobResponse:
+    try:
+        group = RunnerGroup.find(RunnerGroup.name == name).first()
+    except NotFoundError:
+        raise HTTPException(status_code=404, detail=f"Runner group {name} not found.")
+    else:
+        job: Job = queue.enqueue(group.create_runner)
+        return JobResponse(id=job.id, status=job.get_status())
