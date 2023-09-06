@@ -106,17 +106,17 @@ uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "boto3"
-version = "1.28.40"
+version = "1.28.41"
 description = "The AWS SDK for Python"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "boto3-1.28.40-py3-none-any.whl", hash = "sha256:bd7c760afb195eaeaab907dc6b2c21fa64ddbba3fed4a869e80d820ddbd6cc70"},
-    {file = "boto3-1.28.40.tar.gz", hash = "sha256:6ff9a5b815e106656596064d51c9b6ba97a307807baa5f89634384b7d3f7ecc6"},
+    {file = "boto3-1.28.41-py3-none-any.whl", hash = "sha256:47215c08645d1ea2568f9f358f25ffd4a42e08bce9af2fa1dd70c93c682dc880"},
+    {file = "boto3-1.28.41.tar.gz", hash = "sha256:2f655ab7e577c7543f9ee4e42d98641ccf02230d2f33695a6b39617b765401f5"},
 ]
 
 [package.dependencies]
-botocore = ">=1.31.40,<1.32.0"
+botocore = ">=1.31.41,<1.32.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -2928,4 +2928,4 @@ dev = ["doc8", "flake8", "flake8-import-order", "rstcheck[sphinx]", "sphinx"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "809e852816f296317037d73c2c002077b584b6db39e306e061c4598afa8aad48"
+content-hash = "66699e6e925d72d425e1e9feddb0b70b44c5d73a1fcc0ac17b9130f921c0dfaf"
