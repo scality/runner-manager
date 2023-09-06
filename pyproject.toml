@@ -19,9 +19,9 @@ pyyaml = "^6.0.1"
 redis = "^4.6.0"
 docker = "^6.1.3"
 google-cloud-compute = "^1.13.0"
-boto3 = "^1.28.38"
-botocore = "^1.31.40"
-boto3-stubs = { extras = ["ec2"], version = "^1.28.40" }
+boto3 = "^1.28.40"
+botocore = "^1.31.41"
+boto3-stubs = { extras = ["ec2"], version = "^1.28.41" }
 githubkit = { git = "https://github.com/yanyongyu/githubkit", rev = "a4275ac3d3babd64061f3693353db740e6a8e892" }
 rq-scheduler = "^0.13.1"
 
@@ -30,14 +30,14 @@ rq-scheduler = "^0.13.1"
 optional = true
 
 [tool.poetry.group.docs.dependencies]
-mkdocs-material = "^9.2.6"
+mkdocs-material = "^9.2.8"
 mkdocs = "^1.4.2"
 
 [tool.poetry.group.dev.dependencies]
 connexion = "^2.14.2"
-pytest = "^7.4.0"
+pytest = "^7.4.1"
 pytest-cov = "^4.0.0"
-hypothesis = "^6.83.0"
+hypothesis = "^6.84.0"
 pyright = "^1.1.325"
 black = "^23.7.0"
 isort = "^5.12.0"
