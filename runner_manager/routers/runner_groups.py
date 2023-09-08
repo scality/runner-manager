@@ -8,6 +8,7 @@ from rq.job import Job
 from runner_manager import RunnerGroup, Settings
 from runner_manager.clients.github import GitHub
 from runner_manager.dependencies import get_github, get_queue, get_settings
+from runner_manager.jobs.create import runner as runner_create
 from runner_manager.jobs.healthcheck import group as group_healthcheck
 from runner_manager.jobs.reset import group as group_reset
 from runner_manager.models.api import JobResponse
@@ -78,5 +79,5 @@ def create_runner(name: str, queue: Queue = Depends(get_queue)) -> JobResponse:
     except NotFoundError:
         raise HTTPException(status_code=404, detail=f"Runner group {name} not found.")
     else:
-        job: Job = queue.enqueue(group.create_runner)
+        job: Job = queue.enqueue(runner_create, group)
         return JobResponse(id=job.id, status=job.get_status())

@@ -150,10 +150,9 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
                 self.queued -= 1
                 self.save()
             return self.backend.create(runner)
-
-        self.queued += 1
-        self.save()
-        return None
+        else:
+            self.queued += 1
+            self.save()
 
     def update_runner(self: Self, webhook: WorkflowJobInProgress) -> Runner:
         """Update a runner instance.
