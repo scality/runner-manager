@@ -2,11 +2,20 @@
 version: 2
 groups:
   major:
-    update-types: major
+    patterns:
+      - *
+    update-types:
+      - major
   minor:
-    update-types: minor
+    patterns:
+      - *
+    update-types:
+      - minor
   patch:
-    update-types: patch
+    patterns:
+      - *
+    update-types:
+      - patch
 registries:
   dockerhub: # Define access for a private registry
     type: docker-registry
