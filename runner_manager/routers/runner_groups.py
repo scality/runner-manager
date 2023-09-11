@@ -8,9 +8,9 @@ from rq.job import Job
 from runner_manager import RunnerGroup, Settings
 from runner_manager.clients.github import GitHub
 from runner_manager.dependencies import get_github, get_queue, get_settings
-from runner_manager.jobs.create import runner as runner_create
 from runner_manager.jobs.healthcheck import group as group_healthcheck
 from runner_manager.jobs.reset import group as group_reset
+from runner_manager.jobs.runner import runner as runner_create
 from runner_manager.models.api import JobResponse
 
 router = APIRouter(prefix="/groups")
