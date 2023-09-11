@@ -1,21 +1,5 @@
 ---
 version: 2
-groups:
-  major:
-    patterns:
-      - "*"
-    update-types:
-      - major
-  minor:
-    patterns:
-      - "*"
-    update-types:
-      - minor
-  patch:
-    patterns:
-      - "*"
-    update-types:
-      - patch
 registries:
   dockerhub: # Define access for a private registry
     type: docker-registry
@@ -33,6 +17,13 @@ updates:
     labels:
       - github-actions
       - dependencies
+    groups:
+      actions:
+        patterns:
+          - "*"
+        update-types:
+          - patch
+          - minor
   - package-ecosystem: docker
     registries:
       - dockerhub
@@ -45,6 +36,13 @@ updates:
     labels:
       - docker
       - dependencies
+    groups:
+      docker:
+        patterns:
+          - "*"
+        update-types:
+          - patch
+          - minor
   - package-ecosystem: pip
     directory: /
     schedule:
@@ -55,3 +53,10 @@ updates:
     labels:
       - pip
       - dependencies
+    groups:
+      pip:
+        patterns:
+          - "*"
+        update-types:
+          - patch
+          - minor
