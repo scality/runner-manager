@@ -3,17 +3,17 @@ version: 2
 groups:
   major:
     patterns:
-      - *
+      - "*"
     update-types:
       - major
   minor:
     patterns:
-      - *
+      - "*"
     update-types:
       - minor
   patch:
     patterns:
-      - *
+      - "*"
     update-types:
       - patch
 registries:
