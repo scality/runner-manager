@@ -1,5 +1,12 @@
 ---
 version: 2
+groups:
+  major:
+    update-types: major
+  minor:
+    update-types: minor
+  patch:
+    update-types: patch
 registries:
   dockerhub: # Define access for a private registry
     type: docker-registry
@@ -10,7 +17,7 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: daily
+      interval: weekly
     commit-message:
       prefix: github-actions
       include: scope
@@ -22,7 +29,7 @@ updates:
       - dockerhub
     directory: /
     schedule:
-      interval: daily
+      interval: weekly
     commit-message:
       prefix: docker
       include: scope
@@ -32,7 +39,7 @@ updates:
   - package-ecosystem: pip
     directory: /
     schedule:
-      interval: daily
+      interval: weekly
     commit-message:
       prefix: pip
       include: scope
