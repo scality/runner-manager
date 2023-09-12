@@ -17,23 +17,46 @@ from runner_manager.models.settings import Settings
 log = logging.getLogger(__name__)
 
 
-def create_runner_groups(settings: Settings, github: GitHub):
+def sync_runner_groups(settings: Settings, github: GitHub): # creation des runner groups
+    """ Sync runner groups between the settings of the database and GitHub.
+
+    Args:
+        settings (Settings): Settings of the application
+        github (GitHub): GitHub client
+    """
+
     runner_groups_configs = settings.runner_groups
-    existing_groups: List[RunnerGroup] = RunnerGroup.find().all()
-
+    existing_groups: List[RunnerGroup] = RunnerGroup.find().all() #cree la liste des runner_groups deja existants dans la db voir repo Redis_om
+    existing_groups_github = github.list_self_hosted_runner_groups_for_org() #cree la liste des runner_groups deja existants sur github, possible problème de liste
+    
     for runner_group_config in runner_groups_configs:
-        if runner_group_config.name not in [group.name for group in existing_groups]:
-            runner_group: RunnerGroup = RunnerGroup(**runner_group_config.dict())
-            runner_group.save(github=github)
-        else:
-            runner_group: RunnerGroup = RunnerGroup.find_from_base(runner_group_config)
-
+        if runner_group_config.name not in [group.name for group in existing_groups] and runner_group_config.name not in [group.name for group in existing_groups_github]: # group not exists in db and not in gh
+            runner_group: RunnerGroup = RunnerGroup(**runner_group_config.dict()) # construire un RunnerGroup dans la base de données
+            runner_group.save(github=github) # créer le runner_grp correspondant sur github + update dans la base de données
+        elif runner_group_config.name in [group.name for group in existing_groups] and runner_group_config.name not in [group.name for group in existing_groups_github]: # group exists in db but not in gh
+            runner_group: RunnerGroup = RunnerGroup.find_from_base(runner_group_config) # chercher la config du runner_grp
+            runner_group.update(**runner_group_config.dict()) # mettre à jour le runner_grp existant dans la base de données
+            runner_group.save(github=github) # créer le runner_grp correspondant sur github
             existing_groups.remove(runner_group)
+        elif runner_group_config.name not in [group.name for group in existing_groups] and runner_group_config.name in [group.name for group in existing_groups_github]: # group exists in gh but not in db
+            # écrire le runner_grp existant sur github dans la base de données
+            runner_group: RunnerGroup = RunnerGroup(**runner_group_config.dict())
+            runner_group.save(github=github) # update github ou recrée dans github ?
+            existing_groups_github.remove(runner_group)
+        else: # runner_grp exists in db and in gh
+            runner_group: RunnerGroup = RunnerGroup.find_from_base(runner_group_config) # chercher la config du runner_grp 
             runner_group.update(**runner_group_config.dict())
+            runner_group.save(github=github)
+            existing_groups.remove(runner_group)
+            existing_groups_github.remove(runner_group)
+
     for runner_group in existing_groups:
         log.info(f"Deleting runner group {runner_group.name}")
         runner_group.delete(pk=runner_group.pk, github=github)
 
+    for runner_group in existing_groups_github:
+        log.info(f"Deleting runner group {runner_group.name}")
+        runner_group.delete(pk=runner_group.pk, github=github)
 
 def bootstrap_healthchecks(
     settings: Settings,
@@ -74,7 +97,7 @@ def startup(settings: Settings = get_settings()):
     github: GitHub = get_github()
     Migrator().run()
     log.info("Creating runner groups...")
-    create_runner_groups(settings, github)
+    sync_runner_groups(settings, github)
     log.info("Runner groups created.")
     log.info("Bootstrapping healthchecks...")
     bootstrap_healthchecks(settings)
