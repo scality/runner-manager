@@ -10,32 +10,53 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: daily
+      interval: weekly
     commit-message:
       prefix: github-actions
       include: scope
     labels:
       - github-actions
       - dependencies
+    groups:
+      actions:
+        patterns:
+          - "*"
+        update-types:
+          - patch
+          - minor
   - package-ecosystem: docker
     registries:
       - dockerhub
     directory: /
     schedule:
-      interval: daily
+      interval: weekly
     commit-message:
       prefix: docker
       include: scope
     labels:
       - docker
       - dependencies
+    groups:
+      docker:
+        patterns:
+          - "*"
+        update-types:
+          - patch
+          - minor
   - package-ecosystem: pip
     directory: /
     schedule:
-      interval: daily
+      interval: weekly
     commit-message:
       prefix: pip
       include: scope
     labels:
       - pip
       - dependencies
+    groups:
+      pip:
+        patterns:
+          - "*"
+        update-types:
+          - patch
+          - minor
