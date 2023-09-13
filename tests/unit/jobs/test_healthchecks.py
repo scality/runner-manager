@@ -88,7 +88,7 @@ def test_need_new_runner_healthcheck(
 
 
 def test_time_to_start(runner: Runner, settings: Settings):
-    runner.created_at = datetime.now(timezone.utc) - (
+    runner.created_at = datetime.now() - (
         settings.timeout_runner + timedelta(minutes=1)
     )
     runner.status = RunnerStatus.offline
