@@ -1,6 +1,6 @@
 import logging
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, List, Optional, Self, Union
 from uuid import uuid4
 
@@ -138,7 +138,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
                 status=RunnerStatus.offline,
                 busy=False,
                 runner_group_id=self.id,
-                created_at=datetime.now(),
+                created_at=datetime.now(timezone.utc),
                 runner_group_name=self.name,
                 labels=self.runner_labels,
                 manager=self.manager,
