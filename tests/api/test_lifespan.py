@@ -1,15 +1,13 @@
 from rq import Queue
-from rq.job import JobStatus, Job
+from rq.job import Job, JobStatus
 from starlette.testclient import TestClient
 
-from rq_scheduler import Scheduler
-
 from runner_manager.jobs.startup import startup
-from runner_manager.jobs.healthcheck import group
 
 
 def enqueue_startup(queue: Queue) -> bool:
     for job in queue.get_jobs():
+        job: Job
         if startup == job.func:
             if job.get_status() == JobStatus.QUEUED:
                 queue.enqueue_job(job)
@@ -17,7 +15,7 @@ def enqueue_startup(queue: Queue) -> bool:
     return False
 
 
-def test_lifespan(fastapp, queue: Queue, scheduler: Scheduler):
+def test_lifespan(fastapp, queue: Queue):
     with TestClient(fastapp) as client:
         # Application's lifespan is called on entering the block.
         response = client.get("/")
