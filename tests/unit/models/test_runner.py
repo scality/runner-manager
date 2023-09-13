@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 import pytest
 from githubkit.webhooks.models import WorkflowJobCompleted
 from hypothesis import given
@@ -67,3 +69,11 @@ def test_update_from_github(runner: Runner, github: GitHub):
     runner.update_from_github(github, headers={"Prefer": "code=404"})
     assert runner.status == "offline"
     assert runner.busy is False
+
+
+def test_runner_timezone(runner: Runner):
+    runner.started_at = datetime.now(timezone.utc)
+    assert runner.created_at is not None
+    assert runner.created_at.tzinfo == timezone.utc
+    assert runner.started_at.tzinfo == timezone.utc
+    assert runner.time_since_created > runner.time_since_started

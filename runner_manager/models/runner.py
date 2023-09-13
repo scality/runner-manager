@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Dict, List, Literal, Optional
 
@@ -130,7 +130,7 @@ class Runner(BaseModel):
             datetime: Time since the runner was created
         """
         if self.created_at:
-            now = datetime.now()
+            now = datetime.now(timezone.utc)
             return now - self.created_at
         return timedelta()
 
@@ -143,7 +143,7 @@ class Runner(BaseModel):
             datetime: Time since the runner was updated
         """
         if self.started_at:
-            now = datetime.now()
+            now = datetime.now(timezone.utc)
             return now - self.started_at
         return timedelta()
 
@@ -199,7 +199,7 @@ class Runner(BaseModel):
             Runner: Runner instance.
         """
         if self.created_at is None:
-            self.created_at = datetime.now()
+            self.created_at = datetime.now(timezone.utc)
         return super().save(pipeline=pipeline)
 
 
