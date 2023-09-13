@@ -1,3 +1,5 @@
+from datetime import timezone
+
 import pytest
 from githubkit.webhooks.models import WorkflowJobCompleted
 from hypothesis import given
@@ -48,10 +50,13 @@ def test_runner_group_backend(runner_group: RunnerGroup):
 def test_create_runner_from_group(runner_group: RunnerGroup, github: GitHub):
     runner_group.save()
     runner = runner_group.create_runner(github)
+    assert runner is not None
     assert runner.runner_group_id == runner_group.id
     assert runner.labels == runner_group.runner_labels
     assert runner.id is not None
     assert runner.encoded_jit_config is not None
+    assert runner.created_at is not None
+    assert runner.created_at.tzinfo == timezone.utc
 
 
 def test_list_runners_from_group(runner_group: RunnerGroup, github: GitHub):

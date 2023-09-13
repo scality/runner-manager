@@ -1,5 +1,5 @@
 from base64 import b64encode
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 
 import httpx
 from githubkit.config import Config
@@ -47,6 +47,7 @@ def runner(settings) -> Runner:
         id=1,
         name="test",
         organization="octo-org",
+        created_at=datetime.now(timezone.utc),
         runner_group_id=1,
         status="offline",
         busy=False,
