@@ -9,7 +9,6 @@ from rq.job import Job
 from rq_scheduler import Scheduler
 
 from runner_manager.clients.github import GitHub
-from runner_manager.clients.github import ActionsClient as actions
 from runner_manager.dependencies import get_github, get_scheduler, get_settings
 from runner_manager.jobs import healthcheck
 from runner_manager.models.runner_group import RunnerGroup
@@ -29,26 +28,21 @@ def sync_runner_groups(
     """
 
     runner_groups_configs = settings.runner_groups
-    existing_groups: List[
-        RunnerGroup
-    ] = (
-        RunnerGroup.find().all()
-    )
+    existing_groups: List[RunnerGroup] = RunnerGroup.find().all()
     for runner_group_config in runner_groups_configs:
         if runner_group_config in [group.name for group in existing_groups]:
-            runner_group: RunnerGroup = RunnerGroup.find_from_base(
-                runner_group_config
-            )
+            runner_group: RunnerGroup = RunnerGroup.find_from_base(runner_group_config)
             runner_group.update(**runner_group_config.dict())
             runner_group.save(github=github)
             existing_groups.remove(runner_group)
         else:
             runner_group: RunnerGroup = RunnerGroup(**runner_group_config.dict())
             runner_group.save(github=github)
-            
+
     for runner_group in existing_groups:
         log.info(f"Deleting runner group {runner_group.name}")
         runner_group.delete(pk=runner_group.pk, github=github)
+
 
 def bootstrap_healthchecks(
     settings: Settings,

@@ -209,4 +209,3 @@ def test_runner_group_exists(runner_group: RunnerGroup, github: GitHub):
     assert exists is not None
     group = runner_group.save(github=github)
     assert exists.id == group.id
-
