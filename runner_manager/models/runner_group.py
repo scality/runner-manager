@@ -190,6 +190,20 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
                 )
         return self.backend.delete(runner)
 
+    def github_group_exists(self, github: GitHub) -> GitHubRunnerGroup | None:
+        """
+            List the groups defined in GitHub and return true if
+            one of the group has the same name.
+        """
+        for group in github.paginate(
+            github.rest.actions.list_self_hosted_runner_groups_for_org,
+            map_func=lambda r: r.parsed_data.runner_groups,
+            org=self.organization
+        ):
+            group: GitHubRunnerGroup
+            if group.name == self.name:
+                return group
+
     @property
     def need_new_runner(self) -> bool:
         runners = self.get_runners()
@@ -199,6 +213,10 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
 
     def create_github_group(self, github: GitHub) -> GitHubRunnerGroup:
         """Create a GitHub runner group."""
+
+        exists = self.github_group_exists(github)
+        if exists is not None:
+            self.id = exists.id
 
         group: Response[GitHubRunnerGroup]
         data = GitHubRunnerGroup(
