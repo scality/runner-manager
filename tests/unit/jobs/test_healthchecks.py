@@ -102,12 +102,16 @@ def test_time_to_start(runner: Runner, settings: Settings):
 
 def test_time_to_live(runner: Runner, settings: Settings):
     assert settings.time_to_live
-    runner.started_at = datetime.now(timezone.utc) - (settings.time_to_live + timedelta(minutes=1))
+    runner.started_at = datetime.now(timezone.utc) - (
+        settings.time_to_live + timedelta(minutes=1)
+    )
     runner.status = RunnerStatus.online
     runner.busy = True
     assert runner.time_to_live_expired(settings.time_to_live) is True
 
-    runner.started_at = datetime.now(timezone.utc) - (settings.time_to_live - timedelta(minutes=1))
+    runner.started_at = datetime.now(timezone.utc) - (
+        settings.time_to_live - timedelta(minutes=1)
+    )
     assert runner.time_to_live_expired(settings.time_to_live) is False
 
 
