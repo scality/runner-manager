@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 
 def sync_runner_groups(
     settings: Settings, github: GitHub
-):  # creation des runner groups
+):
     """Sync runner groups between the settings of the database and GitHub.
 
     Args:
