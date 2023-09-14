@@ -17,9 +17,7 @@ from runner_manager.models.settings import Settings
 log = logging.getLogger(__name__)
 
 
-def sync_runner_groups(
-    settings: Settings, github: GitHub
-):
+def sync_runner_groups(settings: Settings, github: GitHub):
     """Sync runner groups between the settings of the database and GitHub.
 
     Args:
@@ -30,7 +28,7 @@ def sync_runner_groups(
     runner_groups_configs = settings.runner_groups
     existing_groups: List[RunnerGroup] = RunnerGroup.find().all()
     for runner_group_config in runner_groups_configs:
-        if runner_group_config in [group.name for group in existing_groups]:
+        if runner_group_config.name in [group.name for group in existing_groups]:
             runner_group: RunnerGroup = RunnerGroup.find_from_base(runner_group_config)
             runner_group.update(**runner_group_config.dict())
             runner_group.save(github=github)

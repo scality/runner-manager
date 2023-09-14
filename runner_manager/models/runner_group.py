@@ -214,9 +214,9 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
     def create_github_group(self, github: GitHub) -> GitHubRunnerGroup:
         """Create a GitHub runner group."""
 
-        exists = self.github_group_exists(github)
-        if exists is not None and self.id is None:
-            self.id = exists.id
+        if self.id is None:
+            exists = self.github_group_exists(github)
+            self.id = exists.id if exists is not None else None
 
         group: Response[GitHubRunnerGroup]
         data = GitHubRunnerGroup(
