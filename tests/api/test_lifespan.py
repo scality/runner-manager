@@ -1,5 +1,5 @@
 from rq import Queue
-from rq.job import JobStatus
+from rq.job import Job, JobStatus
 from starlette.testclient import TestClient
 
 from runner_manager.jobs.startup import startup
@@ -7,6 +7,7 @@ from runner_manager.jobs.startup import startup
 
 def enqueue_startup(queue: Queue) -> bool:
     for job in queue.get_jobs():
+        job: Job
         if startup == job.func:
             if job.get_status() == JobStatus.QUEUED:
                 queue.enqueue_job(job)

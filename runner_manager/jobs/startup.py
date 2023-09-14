@@ -64,6 +64,11 @@ def bootstrap_healthchecks(
                 "group": group.name,
             },
             interval=settings.healthcheck_interval.total_seconds(),
+            # As described in the documentation of rq-scheduler, the result_ttl
+            # must be set to a value greater than the interval, otherwise
+            # the entry job with the details will expire and the job will not get
+            # rescheduled.
+            result_ttl=settings.healthcheck_interval.total_seconds() * 10,
             repeat=None,
         )
 
