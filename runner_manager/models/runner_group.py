@@ -190,7 +190,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
                 )
         return self.backend.delete(runner)
 
-    def github_group_exists(self, github: GitHub) -> GitHubRunnerGroup | None:
+    def find_github_group(self, github: GitHub) -> GitHubRunnerGroup | None:
         """
         List the groups defined in GitHub and return a
         GitHubRunnerGroup instance if the group exists, None otherwise.
@@ -217,7 +217,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         """Create a GitHub runner group."""
 
         if self.id is None:
-            exists = self.github_group_exists(github)
+            exists = self.find_github_group(github)
             self.id = exists.id if exists is not None else None
 
         group: Response[GitHubRunnerGroup]
