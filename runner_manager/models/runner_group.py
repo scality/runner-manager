@@ -192,8 +192,10 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
 
     def github_group_exists(self, github: GitHub) -> GitHubRunnerGroup | None:
         """
-        List the groups defined in GitHub and return true if
-        one of the group has the same name.
+        List the groups defined in GitHub and return a
+        GitHubRunnerGroup instance if the group exists, None otherwise.
+
+        A group is considered to exist if the name matches.
         """
         for group in github.paginate(
             github.rest.actions.list_self_hosted_runner_groups_for_org,
