@@ -206,3 +206,11 @@ def test_runner_group_queue(runner_group: RunnerGroup, github: GitHub):
     runner4 = runner_group.create_runner(github)
     assert runner4 is not None
     assert runner_group.queued == 0
+
+
+def test_find_github_group(runner_group: RunnerGroup, github: GitHub):
+    runner_group.name = "octo-runner-group"
+    exists = runner_group.find_github_group(github)
+    assert exists is not None
+    group = runner_group.save(github=github)
+    assert exists.id == group.id
