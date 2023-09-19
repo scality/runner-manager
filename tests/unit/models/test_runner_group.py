@@ -208,9 +208,9 @@ def test_runner_group_queue(runner_group: RunnerGroup, github: GitHub):
     assert runner_group.queued == 0
 
 
-def test_runner_group_exists(runner_group: RunnerGroup, github: GitHub):
+def test_find_github_group(runner_group: RunnerGroup, github: GitHub):
     runner_group.name = "octo-runner-group"
-    exists = runner_group.github_group_exists(github)
+    exists = runner_group.find_github_group(github)
     assert exists is not None
     group = runner_group.save(github=github)
     assert exists.id == group.id
