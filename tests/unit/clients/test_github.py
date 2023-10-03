@@ -31,6 +31,13 @@ def test_get_runner_group(github, runner_group, org):
     assert group.name == runner_group.name
 
 
+def test_update_runner_group(github, runner_group, org):
+    resp: Response = github.rest.actions.update_self_hosted_runner_group_for_org(
+        org=org, runner_group_id=runner_group.id, data=runner_group
+    )
+    assert resp.status_code == 200
+
+
 def test_delete_runner_group(github, runner_group, org):
     resp: Response = github.rest.actions.delete_self_hosted_runner_group_from_org(
         org=org, runner_group_id=runner_group.id

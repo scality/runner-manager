@@ -223,7 +223,6 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         group: Response[GitHubRunnerGroup]
         data = GitHubRunnerGroup(
             name=self.name,
-            default=self.default,
             allows_public_repositories=self.allows_public_repositories,
         )
         if self.id is None:

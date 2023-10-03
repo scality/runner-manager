@@ -147,7 +147,9 @@ class ActionsClient(ActionsClientKit):
         url = f"/orgs/{org}/actions/runner-groups/{runner_group_id}"
 
         # exclude id from data
-        json = data.dict(exclude_unset=True, exclude={"id"}) if data else None
+        json = (
+            data.dict(exclude_unset=True, exclude={"id", "default"}) if data else None
+        )
 
         headers = {"X-GitHub-Api-Version": self._REST_API_VERSION, **(headers or {})}
 
