@@ -77,10 +77,7 @@ def test_redhat_credentials(config_file, monkeypatch):
         settings.runner_groups[0].backend.instance_config.redhat_username == "username"
     )
     assert (
-        settings.runner_groups[
-            0
-        ].backend.instance_config.redhat_password.get_secret_value()
-        == "password"
+        settings.runner_groups[0].backend.instance_config.redhat_password == "password"
     )
 
 
