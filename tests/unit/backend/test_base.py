@@ -45,7 +45,7 @@ def test_setup_redhat_credentials(runner, monkeypatch):
     instance = InstanceConfig()
     assert instance.redhat_username == "username"
     assert instance.redhat_password is not None
-    assert instance.redhat_password.get_secret_value() == "password"
+    assert instance.redhat_password == "password"
     # Test loading from a runnerGroup object
     runner_group: RunnerGroup = RunnerGroup(
         name="test",
@@ -53,13 +53,14 @@ def test_setup_redhat_credentials(runner, monkeypatch):
         organization="octo-org",
         labels=["label"],
     )
+    runner_group.save()
+
+    # Test the remaining config when the group is retrieved from the database
+    runner_group = RunnerGroup.get(runner_group.pk)
     assert runner_group.backend.instance_config
     assert runner_group.backend.instance_config.redhat_username == "username"
     assert runner_group.backend.instance_config.redhat_password is not None
-    assert (
-        runner_group.backend.instance_config.redhat_password.get_secret_value()
-        == "password"
-    )
+    assert runner_group.backend.instance_config.redhat_password == "password"
     # Ensure that the template is rendered correctly
     template = runner_group.backend.instance_config.template_startup(runner)
     assert 'REDHAT_USERNAME="username"' in template
