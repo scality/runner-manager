@@ -10,6 +10,7 @@ from google.cloud.compute import (
     Items,
     Metadata,
     NetworkInterface,
+    Scheduling,
 )
 from mypy_boto3_ec2.literals import InstanceTypeType, VolumeTypeType
 from mypy_boto3_ec2.type_defs import (
@@ -110,6 +111,7 @@ class GCPInstanceConfig(InstanceConfig):
     image_family: str = "ubuntu-2004-lts"
     image_project: str = "ubuntu-os-cloud"
     machine_type: str = "e2-small"
+    spot: bool = False
     network: str = "global/networks/default"
     enable_nested_virtualization: bool = True
     labels: Optional[Dict[str, str]] = {}
@@ -123,6 +125,18 @@ class GCPInstanceConfig(InstanceConfig):
 
     class Config:
         arbitrary_types_allowed = True
+
+    @property
+    def scheduling(self) -> Scheduling:
+        """Configure scheduling."""
+        if self.spot:
+            return Scheduling(
+                provisioning_model="SPOT", instance_termination_action="DELETE"
+            )
+        else:
+            return Scheduling(
+                provisioning_model="STANDARD", instance_termination_action="DEFAULT"
+            )
 
     def configure_metadata(self, runner: Runner) -> Metadata:
         items: List[Items] = []
@@ -148,6 +162,7 @@ class GCPInstanceConfig(InstanceConfig):
             advanced_machine_features=AdvancedMachineFeatures(
                 enable_nested_virtualization=self.enable_nested_virtualization
             ),
+            scheduling=self.scheduling,
         )
 
 
