@@ -4,6 +4,7 @@ from string import Template
 from typing import Annotated, Dict, List, Optional, Sequence, TypedDict
 
 from google.cloud.compute import (
+    AdvancedMachineFeatures,
     AttachedDisk,
     Instance,
     Items,
@@ -110,6 +111,7 @@ class GCPInstanceConfig(InstanceConfig):
     image_project: str = "ubuntu-os-cloud"
     machine_type: str = "e2-small"
     network: str = "global/networks/default"
+    enable_nested_virtualization: bool = True
     labels: Optional[Dict[str, str]] = {}
     image: Optional[str] = None
     disks: Optional[List[Annotated[dict, AttachedDisk]]] = []
@@ -143,6 +145,9 @@ class GCPInstanceConfig(InstanceConfig):
             network_interfaces=self.network_interfaces,
             labels=self.labels,
             metadata=metadata,
+            advanced_machine_features=AdvancedMachineFeatures(
+                enable_nested_virtualization=self.enable_nested_virtualization
+            ),
         )
 
 
