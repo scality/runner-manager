@@ -1,17 +1,8 @@
 from enum import Enum
 from pathlib import Path
 from string import Template
-from typing import Annotated, Dict, List, Optional, Sequence, TypedDict
+from typing import Dict, List, Optional, Sequence, TypedDict
 
-from google.cloud.compute import (
-    AdvancedMachineFeatures,
-    AttachedDisk,
-    Instance,
-    Items,
-    Metadata,
-    NetworkInterface,
-    Scheduling,
-)
 from mypy_boto3_ec2.literals import InstanceTypeType, VolumeTypeType
 from mypy_boto3_ec2.type_defs import (
     BlockDeviceMappingTypeDef,
@@ -114,56 +105,11 @@ class GCPInstanceConfig(InstanceConfig):
     spot: bool = False
     network: str = "global/networks/default"
     enable_nested_virtualization: bool = True
-    labels: Optional[Dict[str, str]] = {}
-    image: Optional[str] = None
-    disks: Optional[List[Annotated[dict, AttachedDisk]]] = []
     spot: bool = False
-
     disk_size_gb: int = 20
-
-    network_interfaces: Optional[List[Annotated[dict, NetworkInterface]]] = []
 
     class Config:
         arbitrary_types_allowed = True
-
-    @property
-    def scheduling(self) -> Scheduling:
-        """Configure scheduling."""
-        if self.spot:
-            return Scheduling(
-                provisioning_model="SPOT", instance_termination_action="DELETE"
-            )
-        else:
-            return Scheduling(
-                provisioning_model="STANDARD", instance_termination_action="DEFAULT"
-            )
-
-    def configure_metadata(self, runner: Runner) -> Metadata:
-        items: List[Items] = []
-        env: RunnerEnv = self.runner_env(runner)
-        for key, value in env.dict().items():
-            items.append(Items(key=key, value=value))
-        # Template the startup script to install and setup the runner
-        # with the appropriate configuration.
-        startup_script = self.template_startup(runner)
-        items.append(Items(key="startup-script", value=startup_script))
-        return Metadata(items=items)
-
-    def configure_instance(self, runner: Runner) -> Instance:
-        """Configure instance."""
-        metadata: Metadata = self.configure_metadata(runner)
-        return Instance(
-            name=runner.name,
-            disks=self.disks,
-            machine_type=self.machine_type,
-            network_interfaces=self.network_interfaces,
-            labels=self.labels,
-            metadata=metadata,
-            advanced_machine_features=AdvancedMachineFeatures(
-                enable_nested_virtualization=self.enable_nested_virtualization
-            ),
-            scheduling=self.scheduling,
-        )
 
 
 class AWSConfig(BackendConfig):
