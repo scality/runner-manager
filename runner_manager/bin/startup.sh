@@ -15,6 +15,30 @@ DOCKER_SERVICE_START="yes"
 
 SSH_KEYS=${SSH_KEYS:-""}
 
+function setup_service {
+	# When running the runner as a just-in-time runner, the runsvc.sh script
+	# is not created. Therefore we are manually creating it here.
+
+	echo "[Unit]
+Description=GitHub Actions Runner
+After=network.target
+
+[Service]
+ExecStart=/bin/bash /home/actions/actions-runner/bin/runsvc.sh --jitconfig \"${JIT_CONFIG}\"
+User=actions
+WorkingDirectory=/home/actions/actions-runner
+KillMode=process
+KillSignal=SIGTERM
+TimeoutStopSec=5min
+
+[Install]
+WantedBy=multi-user.target" | sudo tee /etc/systemd/system/actions.runner.service
+
+	sudo systemctl daemon-reload
+	sudo chown -Rh actions:actions /home/actions/actions-runner
+
+}
+
 sudo groupadd -f docker
 sudo useradd -m actions
 sudo usermod -aG docker,root actions
@@ -22,7 +46,7 @@ sudo bash -c "echo 'actions ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers"
 sudo -H -u actions bash -c 'mkdir -p /home/actions/.ssh'
 sudo -H -u actions bash -c 'echo "${SSH_KEYS}" >>  /home/actions/.ssh/authorized_keys'
 
-if [[ ${LINUX_OS} == "ubuntu" ]]; then
+if [[ ${LINUX_OS} == "ubuntu" ]] || [[ ${LINUX_OS} == "debian" ]]; then
 	sudo apt-get -y update
 	sudo DEBIAN_FRONTEND=noninteractive apt-get -y install apt-transport-https \
 		ca-certificates \
@@ -59,7 +83,7 @@ fi
 
 if [[ ! ${LABELS} =~ "no-docker" ]]; then
 
-	if [[ ${LINUX_OS} == "ubuntu" ]]; then
+	if [[ ${LINUX_OS} == "ubuntu" ]] || [[ ${LINUX_OS} == "debian" ]]; then
 		sudo install -m 0755 -d /etc/apt/keyrings
 		sudo apt-get -y update
 		curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
@@ -108,20 +132,12 @@ curl -L "${DOWNLOAD_URL}" -o "/tmp/${FILE}"
 tar xzf /tmp/"${FILE}"
 # install dependencies
 sudo ./bin/installdependencies.sh
-echo "[Unit]
-Description={{Description}}
-After=network.target
 
-[Service]
-ExecStart=/bin/bash {{RunnerRoot}}/runsvc.sh --jitconfig \"${JIT_CONFIG}\"
-User={{User}}
-WorkingDirectory={{RunnerRoot}}
-KillMode=process
-KillSignal=SIGTERM
-TimeoutStopSec=5min
-
-[Install]
-WantedBy=multi-user.target" >/home/actions/actions-runner/bin/actions.runner.service.template
-
-sudo chown -Rh actions:actions /home/actions/actions-runner
-sudo -H -u actions bash -c "nohup /home/actions/actions-runner/run.sh --jitconfig \"${JIT_CONFIG}\" 2>/home/actions/actions-runner/logs &"
+# check if systemctl is available
+if [[ -x "$(command -v systemctl)" ]]; then
+	setup_service
+	sudo systemctl enable actions.runner.service
+	sudo systemctl start actions.runner.service
+else
+	sudo -H -u actions bash -c "nohup /home/actions/actions-runner/run.sh --jitconfig \"${JIT_CONFIG}\" 2>/home/actions/actions-runner/logs &"
+fi
