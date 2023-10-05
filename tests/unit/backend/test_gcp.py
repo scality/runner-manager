@@ -62,6 +62,17 @@ def test_gcp_instance(runner: Runner):
     assert startup is True
 
 
+def test_gcp_spot_config(runner: Runner):
+    gcp_instance: GCPInstanceConfig = GCPInstanceConfig(spot=True)
+    instance = gcp_instance.configure_instance(runner)
+    assert instance.scheduling.provisioning_model == "SPOT"
+    assert instance.scheduling.instance_termination_action == "DELETE"
+    gcp_instance: GCPInstanceConfig = GCPInstanceConfig(spot=False)
+    instance = gcp_instance.configure_instance(runner)
+    assert instance.scheduling.provisioning_model == "STANDARD"
+    assert instance.scheduling.instance_termination_action == "DEFAULT"
+
+
 @mark.skipif(
     not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"), reason="GCP credentials not found"
 )
