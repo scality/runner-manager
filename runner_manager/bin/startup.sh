@@ -24,7 +24,7 @@ Description=GitHub Actions Runner
 After=network.target
 
 [Service]
-ExecStart=/bin/bash /home/actions/actions-runner/bin/runsvc.sh --jitconfig \"${JIT_CONFIG}\"
+ExecStart=/bin/bash /home/actions/actions-runner/run.sh --jitconfig \"${JIT_CONFIG}\"
 User=actions
 WorkingDirectory=/home/actions/actions-runner
 KillMode=process
