@@ -1,20 +1,24 @@
 import logging
 import re
 import time
-from typing import Dict, List, Literal
+from typing import List, Literal, MutableMapping
 
 from google.api_core.exceptions import BadRequest, NotFound
 from google.api_core.extended_operation import ExtendedOperation
 from google.cloud.compute import (
     AccessConfig,
+    AdvancedMachineFeatures,
     AttachedDisk,
     AttachedDiskInitializeParams,
     Image,
     ImagesClient,
     Instance,
     InstancesClient,
+    Items,
+    Metadata,
     NetworkInterface,
     Operation,
+    Scheduling,
     ZoneOperationsClient,
 )
 from pydantic import Field
@@ -63,25 +67,28 @@ class GCPBackend(BaseBackend):
                 return result
             time.sleep(1)
 
-    def get_image(self) -> Image:
+    @property
+    def image(self) -> Image:
         return self.image_client.get_from_family(
             project=self.instance_config.image_project,
             family=self.instance_config.image_family,
         )
 
-    def get_disks(self) -> List[AttachedDisk]:
+    @property
+    def disks(self) -> List[AttachedDisk]:
         return [
             AttachedDisk(
                 boot=True,
                 auto_delete=True,
                 initialize_params=AttachedDiskInitializeParams(
-                    source_image=self.get_image().self_link,
+                    source_image=self.image.self_link,
                     disk_size_gb=self.instance_config.disk_size_gb,
                 ),
             )
         ]
 
-    def get_network_interfaces(self) -> List[NetworkInterface]:
+    @property
+    def network_interfaces(self) -> List[NetworkInterface]:
         return [
             NetworkInterface(
                 network=self.instance_config.network,
@@ -93,23 +100,65 @@ class GCPBackend(BaseBackend):
             )
         ]
 
-    def create(self, runner: Runner):
-        labels: Dict[str, str] = {}
-        if self.manager:
-            labels["runner-manager"] = self.manager
-        try:
-            image = self.get_image()
-            disks = self.get_disks()
-            network_interfaces = self.get_network_interfaces()
-            self.instance_config.image = image.self_link
-            self.instance_config.disks = disks
-            self.instance_config.machine_type = (
+    @property
+    def scheduling(self) -> Scheduling:
+        """Configure scheduling."""
+        if self.instance_config.spot:
+            return Scheduling(
+                provisioning_model="SPOT", instance_termination_action="DELETE"
+            )
+        else:
+            return Scheduling(
+                provisioning_model="STANDARD", instance_termination_action="DEFAULT"
+            )
+
+    def configure_metadata(self, runner: Runner) -> Metadata:
+        items: List[Items] = []
+        env = self.instance_config.runner_env(runner)
+        for key, value in env.dict().items():
+            items.append(Items(key=key, value=value))
+        # Template the startup script to install and setup the runner
+        # with the appropriate configuration.
+        startup_script = self.instance_config.template_startup(runner)
+        items.append(Items(key="startup-script", value=startup_script))
+        return Metadata(items=items)
+
+    def configure_instance(self, runner: Runner) -> Instance:
+        """Configure instance."""
+        return Instance(
+            name=runner.name,
+            disks=self.disks,
+            machine_type=(
                 f"zones/{self.config.zone}/machineTypes/"
                 f"{self.instance_config.machine_type}"
-            )
-            self.instance_config.network_interfaces = network_interfaces
-            self.instance_config.labels = labels
-            instance: Instance = self.instance_config.configure_instance(runner)
+            ),
+            network_interfaces=self.network_interfaces,
+            labels=self.setup_labels(runner),
+            metadata=self.configure_metadata(runner),
+            advanced_machine_features=AdvancedMachineFeatures(
+                enable_nested_virtualization=self.instance_config.enable_nested_virtualization
+            ),
+            scheduling=self.scheduling,
+        )
+
+    def _sanitize_label_value(self, value: str) -> str:
+        value = value[:63]
+        value = value.lower()
+        value = re.sub(r"[^a-z0-9_-]", "-", value)
+        return value
+
+    def setup_labels(self, runner: Runner) -> MutableMapping[str, str]:
+        labels: MutableMapping[str, str] = dict()
+        if self.manager:
+            labels["runner-manager"] = self.manager
+        labels["status"] = self._sanitize_label_value(runner.status)
+        labels["busy"] = self._sanitize_label_value(str(runner.busy))
+        return labels
+
+    def create(self, runner: Runner):
+        try:
+            instance: Instance = self.configure_instance(runner)
+
             ext_operation: ExtendedOperation = self.client.insert(
                 project=self.config.project_id,
                 zone=self.config.zone,
@@ -180,12 +229,6 @@ class GCPBackend(BaseBackend):
             raise e
         return runners
 
-    def _sanitize_label_value(self, value: str) -> str:
-        value = value[:63]
-        value = value.lower()
-        value = re.sub(r"[^a-z0-9_-]", "-", value)
-        return value
-
     def update(self, runner: Runner) -> Runner:
         try:
             instance: Instance = self.client.get(
@@ -193,8 +236,7 @@ class GCPBackend(BaseBackend):
                 zone=self.config.zone,
                 instance=runner.instance_id or runner.name,
             )
-            instance.labels["status"] = self._sanitize_label_value(runner.status)
-            instance.labels["busy"] = self._sanitize_label_value(str(runner.busy))
+            instance.labels = self.setup_labels(runner)
 
             log.info(f"Updating {runner.name} labels to {instance.labels}")
             self.client.update(
