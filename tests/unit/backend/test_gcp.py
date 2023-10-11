@@ -97,6 +97,8 @@ def test_gcp_disks(runner: Runner, gcp_group: RunnerGroup):
     # patch self.image.self_link to return a fake image
 
     disks = gcp_group.backend.disks
+    zone = gcp_group.backend.config.zone
+    disk_type = gcp_group.backend.instance_config.disk_type
     assert len(disks) == 1
     assert (
         disks[0].initialize_params.disk_size_gb
@@ -104,6 +106,7 @@ def test_gcp_disks(runner: Runner, gcp_group: RunnerGroup):
     )
     assert disks[0].boot is True
     assert disks[0].auto_delete is True
+    assert disks[0].initialize_params.disk_type == f"zones/{zone}/diskTypes/{disk_type}"
 
 
 def test_gcp_instance(runner: Runner, gcp_group: RunnerGroup):
