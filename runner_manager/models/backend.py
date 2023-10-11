@@ -1,7 +1,7 @@
 from enum import Enum
 from pathlib import Path
 from string import Template
-from typing import Dict, List, Optional, Sequence, TypedDict
+from typing import Dict, List, Literal, Optional, Sequence, TypedDict
 
 from mypy_boto3_ec2.literals import InstanceTypeType, VolumeTypeType
 from mypy_boto3_ec2.type_defs import (
@@ -107,6 +107,7 @@ class GCPInstanceConfig(InstanceConfig):
     enable_nested_virtualization: bool = True
     spot: bool = False
     disk_size_gb: int = 20
+    disk_type: Literal["pd-ssd", "pd-standard"] = "pd-ssd"
 
     class Config:
         arbitrary_types_allowed = True

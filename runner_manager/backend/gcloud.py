@@ -83,6 +83,7 @@ class GCPBackend(BaseBackend):
                 initialize_params=AttachedDiskInitializeParams(
                     source_image=self.image.self_link,
                     disk_size_gb=self.instance_config.disk_size_gb,
+                    disk_type=f"zones/{self.config.zone}/diskTypes/{self.instance_config.disk_type}",
                 ),
             )
         ]
