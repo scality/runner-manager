@@ -63,6 +63,12 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
     os: str = Field(default="linux")
     arch: str = Field(default="x64")
 
+    def __str__(self) -> str:
+        return (
+            f"{self.name} (max: {self.max}, min: {self.min}, "
+            f"current: {len(self.get_runners())}, queued: {self.queued})"
+        )
+
     def __post_init_post_parse__(self):
         """Post init."""
         super().__post_init_post_parse__()
