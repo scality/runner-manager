@@ -73,7 +73,7 @@ class Runner(BaseModel):
     started_at: Optional[datetime]
 
     def __str__(self):
-        return f"self.name (status: {self.status}, busy: {self.busy})"
+        return f"{self.name} (status: {self.status}, busy: {self.busy})"
 
     @classmethod
     def find_from_webhook(cls, webhook: WorkflowJobEvent) -> "Runner | None":
