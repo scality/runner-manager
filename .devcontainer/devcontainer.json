@@ -5,7 +5,10 @@
     "dockerfile": "Dockerfile"
   },
   "containerEnv": {
-    "GITHUB_BASE_URL": "http://localhost:4010"
+    "GITHUB_BASE_URL": "http://localhost:4010",
+    "DD_SERVICE": "$GITHUB_REPOSITORY",
+    "DD_CIVISIBILITY_AGENTLESS_ENABLED": "true",
+    "DD_ENV": "codespace"
   },
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker": {},
