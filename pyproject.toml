@@ -44,6 +44,7 @@ isort = "^5.12.0"
 ruff = "^0.0.292"
 yamllint = "^1.32.0"
 types-redis = "^4.6.0.7"
+ddtrace = "^2.1.1"
 
 
 [build-system]
@@ -51,7 +52,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
-addopts = "--disable-warnings --cov=runner_manager --cov-report=xml"
+addopts = "--disable-warnings --cov=runner_manager --cov-report=xml --ddtrace"
 
 # Add poetry scripts
 [tool.poetry.scripts]
