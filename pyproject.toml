@@ -10,7 +10,7 @@ include = ["pyproject.toml", "README.md", "LICENSE", "images/**/*"]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-fastapi = "^0.103.2"
+fastapi = "^0.104.0"
 uvicorn = { extras = ["standard"], version = "^0.23.2" }
 pydantic = ">=1.10.2,<2.0"
 redis-om = "^0.2.1"
@@ -20,8 +20,8 @@ redis = "^4.6.0"
 docker = "^6.1.3"
 google-cloud-compute = "^1.14.1"
 boto3 = "^1.28.58"
-botocore = "^1.31.62"
-boto3-stubs = { extras = ["ec2"], version = "^1.28.62" }
+botocore = "^1.31.67"
+boto3-stubs = { extras = ["ec2"], version = "^1.28.67" }
 githubkit = { git = "https://github.com/yanyongyu/githubkit", rev = "a4275ac3d3babd64061f3693353db740e6a8e892" }
 rq-scheduler = "^0.13.1"
 
@@ -41,7 +41,7 @@ hypothesis = "^6.87.3"
 pyright = "^1.1.330"
 black = "^23.9.1"
 isort = "^5.12.0"
-ruff = "^0.0.292"
+ruff = "^0.1.0"
 yamllint = "^1.32.0"
 types-redis = "^4.6.0.7"
 ddtrace = "^2.1.1"
