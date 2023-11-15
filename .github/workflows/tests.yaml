@@ -12,13 +12,6 @@ on:
 permissions:
   contents: read
 
-env:
-  DD_API_KEY: "${{ secrets.DD_API_KEY }}"
-  DD_SERVICE: "${{ github.repository }}"
-  DD_CIVISIBILITY_AGENTLESS_ENABLED: true
-  DD_CIVISIBILITY_ITR_ENABLED: true
-  DD_ENV: ci
-
 jobs:
   test:
     name: ${{ matrix.test.name }}
