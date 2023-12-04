@@ -219,6 +219,11 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         count = len(runners)
         return (not_active < self.min or self.queued > 0) and count < self.max
 
+    @property
+    def is_full(self) -> bool:
+        """Return True if the max number of runners has been reached."""
+        return len(self.get_runners()) >= self.max
+
     def create_github_group(self, github: GitHub) -> GitHubRunnerGroup:
         """Create a GitHub runner group."""
 

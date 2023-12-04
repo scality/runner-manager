@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from datetime import timedelta
 
 from githubkit.webhooks.models import (
     WorkflowJobCompleted,
@@ -9,8 +10,9 @@ from githubkit.webhooks.models import (
 )
 from githubkit.webhooks.types import WorkflowJobEvent
 
+from runner_manager import Settings
 from runner_manager.clients.github import GitHub
-from runner_manager.dependencies import get_github
+from runner_manager.dependencies import get_github, get_settings
 from runner_manager.models.runner import Runner
 from runner_manager.models.runner_group import RunnerGroup
 
@@ -23,6 +25,11 @@ def log_workflow_job(webhook: WorkflowJobEvent) -> None:
         f"conclusion: {webhook.workflow_job.conclusion}, "
         f"repository: {webhook.repository.full_name})"
     )
+
+
+def time_to_start(webhook: WorkflowJobInProgress | WorkflowJobCompleted) -> timedelta:
+    """From a given webhook, calculate the time it took to start the job"""
+    return webhook.workflow_job.started_at - webhook.workflow_job.created_at
 
 
 def completed(webhook: WorkflowJobCompleted) -> int:
@@ -47,6 +54,7 @@ def completed(webhook: WorkflowJobCompleted) -> int:
 
 def in_progress(webhook: WorkflowJobInProgress) -> str | None:
     log_workflow_job(webhook)
+    settings: Settings = get_settings()
     name: str | None = webhook.workflow_job.runner_name
     runner_group: RunnerGroup | None = RunnerGroup.find_from_webhook(webhook)
     if not runner_group:
@@ -55,6 +63,17 @@ def in_progress(webhook: WorkflowJobInProgress) -> str | None:
     log.info(f"Updating runner {name} in group {runner_group.name}")
     runner: Runner = runner_group.update_runner(webhook=webhook)
     log.info(f"Runner {name} in group {runner_group.name} has been updated")
+    tts = time_to_start(webhook)
+    log.info(f"{runner} took {tts} to start")
+    # If the time to start is greater than settings.timeout_runner,
+    # create an extra runner.
+    # The main reason we perform this action is to ensure that
+    # in the case we have missed a webhook, we still have a runner
+    # available for the jobs that are requesting it.
+    if tts > settings.timeout_runner and runner_group.is_full is False:
+        log.info(f"Runner group {runner_group.name} needs a new runner")
+        github: GitHub = get_github()
+        runner_group.create_runner(github)
     return runner.pk
 
 
