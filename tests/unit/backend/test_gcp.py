@@ -28,7 +28,11 @@ def gcp_group(settings, monkeypatch) -> RunnerGroup:
         backend=GCPBackend(
             name=Backends.gcloud,
             config=config,
-            instance_config=GCPInstanceConfig(),
+            instance_config=GCPInstanceConfig(
+                labels={
+                    "key": "value",
+                }
+            ),
         ),
         labels=[
             "label",
@@ -80,6 +84,7 @@ def test_gcp_setup_labels(runner: Runner, gcp_group: RunnerGroup):
     labels = gcp_group.backend.setup_labels(runner)
     assert labels["status"] == runner.status
     assert labels["busy"] == str(runner.busy).lower()
+    assert labels["key"] == "value"
 
 
 def test_gcp_spot_config(runner: Runner, gcp_group: RunnerGroup):
