@@ -80,6 +80,7 @@ JobPropInProgressStrategy = st.builds(
     runner_group_id=Int,
     labels=st.lists(Text, min_size=1, max_size=5),
     started_at=st.datetimes(),
+    created_at=st.datetimes(),
 )
 
 JobPropQueuedStrategy = st.builds(
@@ -127,7 +128,7 @@ SettingsStrategy = st.builds(
     github_base_url=st.just("http://localhost:4010"),
     github_token=st.just("test"),
     time_to_live=st.integers(1, 60),
-    timeout_runner=st.integers(1, 10),
+    timeout_runner=st.integers(120, 600),
 )
 
 RedisStrategy = st.builds(

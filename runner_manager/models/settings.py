@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     api_key: Optional[SecretStr] = None
     log_level: Literal["INFO", "WARNING", "DEBUG", "ERROR"] = "INFO"
     runner_groups: List[BaseRunnerGroup] = []
-    timeout_runner: Optional[timedelta] = timedelta(minutes=15)
+    timeout_runner: timedelta = timedelta(minutes=15)
     time_to_live: Optional[timedelta] = timedelta(hours=12)
     healthcheck_interval: timedelta = timedelta(minutes=15)
     github_base_url: Optional[AnyHttpUrl] = Field(default="https://api.github.com")

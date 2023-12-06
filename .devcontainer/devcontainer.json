@@ -56,7 +56,7 @@
             "typeCheckingMode": "basic"
           },
           "editor": {
-            "defaultFormatter": "ms-python.python"
+            "defaultFormatter": "ms-python.black-formatter"
           }
         }
       }

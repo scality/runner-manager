@@ -214,3 +214,14 @@ def test_find_github_group(runner_group: RunnerGroup, github: GitHub):
     assert exists is not None
     group = runner_group.save(github=github)
     assert exists.id == group.id
+
+
+def test_is_full(runner_group: RunnerGroup, github: GitHub):
+    runner_group.max = 2
+    runner_group.min = 1
+    runner_group.save()
+    assert runner_group.is_full is False
+    runner_group.create_runner(github)
+    assert runner_group.is_full is False
+    runner_group.create_runner(github)
+    assert runner_group.is_full is True
