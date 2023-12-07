@@ -108,6 +108,7 @@ class GCPInstanceConfig(InstanceConfig):
     spot: bool = False
     disk_size_gb: int = 20
     disk_type: Literal["pd-ssd", "pd-standard"] = "pd-ssd"
+    labels: Dict[str, str] = {}
 
     class Config:
         arbitrary_types_allowed = True

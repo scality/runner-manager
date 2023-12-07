@@ -149,7 +149,7 @@ class GCPBackend(BaseBackend):
         return value
 
     def setup_labels(self, runner: Runner) -> MutableMapping[str, str]:
-        labels: MutableMapping[str, str] = dict()
+        labels: MutableMapping[str, str] = self.instance_config.labels.copy()
         if self.manager:
             labels["runner-manager"] = self.manager
         labels["status"] = self._sanitize_label_value(runner.status)
