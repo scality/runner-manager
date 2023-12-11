@@ -323,7 +323,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         while len(idle_runners) > self.min:
             runner = idle_runners.pop()
             self.delete_runner(runner, github)
-            log.info(f"Runner {runner.name} deleted")
+            log.info(f"Deleted idle {runner}")
 
     def reset(self, github: GitHub):
         """Reset runner group."""
