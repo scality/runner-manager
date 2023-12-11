@@ -102,7 +102,6 @@ class GCPInstanceConfig(InstanceConfig):
     image_family: str = "ubuntu-2004-lts"
     image_project: str = "ubuntu-os-cloud"
     machine_type: str = "e2-small"
-    spot: bool = False
     network: str = "global/networks/default"
     enable_nested_virtualization: bool = True
     spot: bool = False
