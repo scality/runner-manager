@@ -72,7 +72,7 @@ def in_progress(webhook: WorkflowJobInProgress) -> str | None:
     # available for the jobs that are requesting it.
     if tts > settings.timeout_runner and runner_group.is_full is False:
         log.info(
-            f"Time to start is too high ({tts}), creating new runner for {runner_group.name}"
+            f"Time to start too high ({tts}), creating runner for {runner_group.name}"
         )
         github: GitHub = get_github()
         runner_group.create_runner(github)
