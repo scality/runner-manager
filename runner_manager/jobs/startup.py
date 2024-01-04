@@ -30,9 +30,9 @@ def sync_runner_groups(settings: Settings, github: GitHub):
     for runner_group_config in runner_groups_configs:
         if runner_group_config.name in [group.name for group in existing_groups]:
             runner_group: RunnerGroup = RunnerGroup.find_from_base(runner_group_config)
+            existing_groups.remove(runner_group)
             runner_group.update(**runner_group_config.dict())
             runner_group.save(github=github)
-            existing_groups.remove(runner_group)
         else:
             runner_group: RunnerGroup = RunnerGroup(**runner_group_config.dict())
             runner_group.save(github=github)
