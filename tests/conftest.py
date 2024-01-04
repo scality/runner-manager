@@ -1,5 +1,10 @@
+from typing import List, TypeVar, cast
 from uuid import uuid4
 
+import httpx
+from githubkit.config import Config
+from githubkit.paginator import Paginator
+from githubkit.response import Response
 from pytest import fixture
 from redis import Redis
 from redis_om import Migrator, get_redis_connection
@@ -8,7 +13,53 @@ from rq_scheduler import Scheduler
 
 from runner_manager import Runner, RunnerGroup, Settings
 from runner_manager.backend.base import BaseBackend
+from runner_manager.clients.github import GitHub
 from runner_manager.models.runner_group import BaseRunnerGroup
+
+RT = TypeVar("RT")
+
+
+def get_next_monkeypatch(self: Paginator):
+    """monkeypatch Paginator._get_next_page to limit the number of pages to 2"""
+    if self._current_page == 2:
+        return []
+
+    response = self.request(
+        *self.args,
+        **self.kwargs,
+        page=self._current_page,  # type: ignore
+        per_page=self._per_page,  # type: ignore
+    )
+    self._cached_data = (
+        cast(Response[List[RT]], response).parsed_data
+        if self.map_func is None
+        else self.map_func(response)
+    )
+    self._index = 0
+    self._current_page += 1
+    return self._cached_data
+
+
+@fixture()
+def github(settings, monkeypatch) -> GitHub:
+    """
+    Return a GitHub client configured with:
+
+    - The mock server as base_url.
+    - Accept application/json as response from the server.
+
+    """
+
+    config = Config(
+        base_url=httpx.URL(settings.github_base_url),
+        accept="*/*",
+        user_agent="runner-manager",
+        follow_redirects=True,
+        timeout=httpx.Timeout(5.0),
+    )
+
+    monkeypatch.setattr(Paginator, "_get_next_page", get_next_monkeypatch)
+    return GitHub(config=config)
 
 
 @fixture(scope="function", autouse=True)
