@@ -17,7 +17,7 @@ from runner_manager.models.settings import Settings
 log = logging.getLogger(__name__)
 
 
-def sync_runner_groups(settings: Settings, github: GitHub):
+def sync_runner_groups(settings: Settings):
     """Sync runner groups between the settings of the database and GitHub.
 
     Args:
@@ -25,14 +25,15 @@ def sync_runner_groups(settings: Settings, github: GitHub):
         github (GitHub): GitHub client
     """
 
+    github: GitHub = get_github()
     runner_groups_configs = settings.runner_groups
     existing_groups: List[RunnerGroup] = RunnerGroup.find().all()
     for runner_group_config in runner_groups_configs:
         if runner_group_config.name in [group.name for group in existing_groups]:
             runner_group: RunnerGroup = RunnerGroup.find_from_base(runner_group_config)
+            existing_groups.remove(runner_group)
             runner_group.update(**runner_group_config.dict())
             runner_group.save(github=github)
-            existing_groups.remove(runner_group)
         else:
             runner_group: RunnerGroup = RunnerGroup(**runner_group_config.dict())
             runner_group.save(github=github)
@@ -82,12 +83,12 @@ def bootstrap_healthchecks(
 
 def startup(settings: Settings = get_settings()):
     """Bootstrap the application."""
-    log.info("Startup complete.")
-    github: GitHub = get_github()
+    log.info("Startup initiated.")
     Migrator().run()
     log.info("Creating runner groups...")
-    sync_runner_groups(settings, github)
+    sync_runner_groups(settings)
     log.info("Runner groups created.")
     log.info("Bootstrapping healthchecks...")
     bootstrap_healthchecks(settings)
     log.info("Healthchecks bootstrapped.")
+    log.info("Startup complete.")

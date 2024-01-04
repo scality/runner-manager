@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi.testclient import TestClient
 
 from runner_manager import RunnerGroup
@@ -60,3 +62,18 @@ def test_create_runner(client: TestClient, runner_group: RunnerGroup):
     assert response.status_code == 200
     job: JobResponse = JobResponse.parse_obj(response.json())
     assert job.status == "finished"
+
+
+def test_sync_runner_groups(client: TestClient):
+    response = client.post("/groups/sync")
+    assert response.status_code == 200
+    job: JobResponse = JobResponse.parse_obj(response.json())
+    assert job.status == "finished"
+    response = client.get("/groups")
+    assert response.status_code == 200
+    print(response.json())
+
+    group: List[RunnerGroup] = [
+        RunnerGroup.parse_obj(group) for group in response.json()
+    ]
+    assert len(group) == 1

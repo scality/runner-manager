@@ -11,6 +11,7 @@ from runner_manager.dependencies import get_github, get_queue, get_settings
 from runner_manager.jobs.healthcheck import group as group_healthcheck
 from runner_manager.jobs.reset import group as group_reset
 from runner_manager.jobs.runner import runner as runner_create
+from runner_manager.jobs.startup import sync_runner_groups
 from runner_manager.models.api import JobResponse
 
 router = APIRouter(prefix="/groups")
@@ -19,6 +20,15 @@ router = APIRouter(prefix="/groups")
 @router.get("/")
 def list() -> List[RunnerGroup]:
     return RunnerGroup.find().all()
+
+
+@router.post("/sync")
+def sync(
+    queue: Queue = Depends(get_queue),
+    settings: Settings = Depends(get_settings),
+) -> JobResponse:
+    job: Job = queue.enqueue(sync_runner_groups, settings)
+    return JobResponse(id=job.id, status=job.get_status())
 
 
 @router.get("/{name}")
