@@ -19,6 +19,7 @@ from google.cloud.compute import (
     NetworkInterface,
     Operation,
     Scheduling,
+    ServiceAccount,
     ZoneOperationsClient,
 )
 from pydantic import Field
@@ -140,6 +141,15 @@ class GCPBackend(BaseBackend):
                 enable_nested_virtualization=self.instance_config.enable_nested_virtualization
             ),
             scheduling=self.scheduling,
+            service_accounts=[
+                ServiceAccount(
+                    email="default",
+                    scopes=[
+                        "https://www.googleapis.com/auth/logging.write",
+                        "https://www.googleapis.com/auth/monitoring.write",
+                    ],
+                )
+            ],
         )
 
     def _sanitize_label_value(self, value: str) -> str:
