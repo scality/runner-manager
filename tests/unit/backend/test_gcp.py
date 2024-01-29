@@ -1,7 +1,7 @@
 import os
 from typing import List
 
-from google.cloud.compute import Image
+from google.cloud.compute import Image, NetworkInterface
 from pytest import fixture, mark, raises
 from redis_om import NotFoundError
 
@@ -57,6 +57,12 @@ def gcp_runner(runner: Runner, gcp_group: RunnerGroup) -> Runner:
 def test_gcp_network_interfaces(gcp_group: RunnerGroup):
     interfaces = gcp_group.backend.network_interfaces
     assert len(interfaces) == 1
+    assert interfaces[0].access_configs[0].name == "External NAT"
+    # Test disabling external IP
+    gcp_group.backend.instance_config.enable_external_ip = False
+    interfaces: List[NetworkInterface] = gcp_group.backend.network_interfaces
+    assert len(interfaces) == 1
+    assert len(interfaces[0].access_configs) == 0
 
 
 def test_gcp_group(gcp_group: RunnerGroup):

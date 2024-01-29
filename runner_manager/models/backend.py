@@ -104,6 +104,7 @@ class GCPInstanceConfig(InstanceConfig):
     machine_type: str = "e2-small"
     network: str = "global/networks/default"
     enable_nested_virtualization: bool = True
+    enable_external_ip: bool = True
     spot: bool = False
     disk_size_gb: int = 20
     disk_type: Literal["pd-ssd", "pd-standard"] = "pd-ssd"

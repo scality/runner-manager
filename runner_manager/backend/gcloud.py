@@ -91,16 +91,16 @@ class GCPBackend(BaseBackend):
 
     @property
     def network_interfaces(self) -> List[NetworkInterface]:
-        return [
-            NetworkInterface(
-                network=self.instance_config.network,
-                access_configs=[
-                    AccessConfig(
-                        name="External NAT",
-                    )
-                ],
-            )
-        ]
+        network_interface: NetworkInterface = NetworkInterface(
+            network=self.instance_config.network,
+        )
+        if self.instance_config.enable_external_ip:
+            network_interface.access_configs = [
+                AccessConfig(
+                    name="External NAT",
+                )
+            ]
+        return [network_interface]
 
     @property
     def scheduling(self) -> Scheduling:
