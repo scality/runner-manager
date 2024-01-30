@@ -15,6 +15,7 @@ from runner_manager.models.runner_group import RunnerGroup
 def gcp_group(settings, monkeypatch) -> RunnerGroup:
     config = GCPConfig(
         project_id=os.environ.get("CLOUDSDK_CORE_PROJECT", ""),
+        region=os.environ.get("CLOUDSDK_COMPUTE_REGION", ""),
         zone=os.environ.get("CLOUDSDK_COMPUTE_ZONE", ""),
         google_application_credentials=os.environ.get(
             "GOOGLE_APPLICATION_CREDENTIALS", ""
@@ -55,8 +56,9 @@ def gcp_runner(runner: Runner, gcp_group: RunnerGroup) -> Runner:
 
 
 def test_gcp_network_interfaces(gcp_group: RunnerGroup):
-    interfaces = gcp_group.backend.network_interfaces
+    interfaces: List[NetworkInterface] = gcp_group.backend.network_interfaces
     assert len(interfaces) == 1
+    assert "default" in gcp_group.backend.network_interfaces[0].subnetwork
     assert interfaces[0].access_configs[0].name == "External NAT"
     # Test disabling external IP
     gcp_group.backend.instance_config.enable_external_ip = False
