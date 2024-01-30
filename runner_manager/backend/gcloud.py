@@ -92,7 +92,7 @@ class GCPBackend(BaseBackend):
     @property
     def network_interfaces(self) -> List[NetworkInterface]:
         network_interface: NetworkInterface = NetworkInterface(
-            network=self.instance_config.network,
+            subnetwork=f"projects/{self.config.project_id}/regions/{self.config.region}/subnetworks/{self.instance_config.subnetwork}",
         )
         if self.instance_config.enable_external_ip:
             network_interface.access_configs = [

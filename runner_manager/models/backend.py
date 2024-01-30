@@ -94,6 +94,7 @@ class GCPConfig(BackendConfig):
 
     project_id: str
     zone: str
+    region: str = "europe-west1"
     service_account_email: str = "default"
     google_application_credentials: Optional[str] = None
 
@@ -102,7 +103,7 @@ class GCPInstanceConfig(InstanceConfig):
     image_family: str = "ubuntu-2004-lts"
     image_project: str = "ubuntu-os-cloud"
     machine_type: str = "e2-small"
-    network: str = "global/networks/default"
+    subnetwork: str = "default"
     enable_nested_virtualization: bool = True
     enable_external_ip: bool = True
     spot: bool = False
