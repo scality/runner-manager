@@ -42,10 +42,12 @@ jobs:
         env:
           GITHUB_TOKEN: test
       - name: Upload coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           flags: ${{ matrix.test.name }}
           name: ${{ matrix.test.name }}
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       - name: Dump logs
         run: docker compose --profile tests logs
         if: always()
