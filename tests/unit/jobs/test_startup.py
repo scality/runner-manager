@@ -1,5 +1,8 @@
+from typing import List
+
 from rq import Queue
 from rq.job import Job, JobStatus
+from rq_scheduler import Scheduler
 
 from runner_manager import Runner, RunnerGroup, Settings
 from runner_manager.clients.github import GitHub
@@ -41,6 +44,25 @@ def test_startup(queue: Queue, settings: Settings, github: GitHub):
     assert runner_group not in RunnerGroup.find().all()
     assert RunnerGroup.find().count() == 1
     assert Runner.find().count() == runners - 1
+
+
+def test_scheduler(
+    queue: Queue, settings: Settings, github: GitHub, scheduler: Scheduler
+):
+    """Test that the scheduler is bootstrapped with the correct jobs."""
+    queue.enqueue(startup, settings)
+    jobs: List[Job] = scheduler.get_jobs()
+    is_indexing: bool = False
+    is_healthcheck: bool = False
+    for job in jobs:
+        job_type = job.meta.get("type")
+        if job_type == "indexing":
+            is_indexing = True
+        elif job_type == "healthcheck":
+            is_healthcheck = True
+
+    assert is_indexing is True
+    assert is_healthcheck is True
 
 
 def test_update_group_sync(settings: Settings, github: GitHub):
