@@ -1,0 +1,10 @@
+---
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+codecov:
+  notify:
+    wait_for_ci: true
