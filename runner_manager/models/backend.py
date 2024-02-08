@@ -10,8 +10,8 @@ from mypy_boto3_ec2.type_defs import (
     TagSpecificationTypeDef,
     TagTypeDef,
 )
-from pydantic import BaseModel, BaseSettings
-
+from pydantic import BaseModel
+from pydantic_settings import BaseSettings
 from runner_manager.bin import startup_sh
 from runner_manager.models.runner import Runner
 
@@ -46,8 +46,8 @@ class InstanceConfig(BaseSettings):
     """Base class for backend instance configuration."""
 
     startup_script: str = startup_sh.as_posix()
-    redhat_username: Optional[str]
-    redhat_password: Optional[str]
+    redhat_username: Optional[str] = None
+    redhat_password: Optional[str] = None
 
     def runner_env(self, runner: Runner) -> RunnerEnv:
         return RunnerEnv(

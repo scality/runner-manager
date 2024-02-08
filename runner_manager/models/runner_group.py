@@ -7,8 +7,8 @@ from uuid import uuid4
 import redis
 from githubkit import Response
 from githubkit.exception import RequestFailed
-from githubkit.webhooks.models import WorkflowJobInProgress
-from githubkit.webhooks.types import WorkflowJobEvent
+from githubkit.versions.latest.models import WebhookWorkflowJobInProgress
+from githubkit.versions.latest.webhooks import WorkflowJobEvent
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Field as PydanticField
 from pydantic import validator
@@ -51,7 +51,7 @@ class BaseRunnerGroup(PydanticBaseModel):
     ]
 
 
-class RunnerGroup(BaseModel, BaseRunnerGroup):
+class RunnerGroup(BaseRunnerGroup, BaseModel):
     id: Optional[int] = Field(index=True, default=None)
     name: str = Field(index=True, full_text_search=True, max_length=39)
     organization: str = Field(index=True, full_text_search=True)
@@ -160,7 +160,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             self.queued += 1
             self.save()
 
-    def update_runner(self: Self, webhook: WorkflowJobInProgress) -> Runner:
+    def update_runner(self: Self, webhook: WorkflowJobEvent) -> Runner:
         """Update a runner instance.
 
         Returns:
@@ -272,7 +272,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         """Find the runner group from a webhook instance.
 
         Args:
-            webhook (WorkflowJobInProgress): Webhook instance.
+            webhook (Webhook): Webhook instance.
 
         Returns:
             RunnerGroup: Runner group instance.

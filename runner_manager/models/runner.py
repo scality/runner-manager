@@ -5,9 +5,9 @@ from typing import Dict, List, Literal, Optional
 
 import redis
 from githubkit.exception import RequestFailed
-from githubkit.rest.models import Runner as GitHubRunner
-from githubkit.rest.types import OrgsOrgActionsRunnersGenerateJitconfigPostBodyType
-from githubkit.webhooks.types import WorkflowJobEvent
+from githubkit.versions.latest.models import Runner as GitHubRunner
+from githubkit.versions.latest.models import OrgsOrgActionsRunnersGenerateJitconfigPostBody
+from githubkit.versions.latest.webhooks import WorkflowJobEvent
 from pydantic import BaseModel as PydanticBaseModel
 from redis_om import Field, NotFoundError
 
@@ -182,7 +182,7 @@ class Runner(BaseModel):
         assert self.runner_group_id is not None, "Runner group id is required"
         jitconfig = github.rest.actions.generate_runner_jitconfig_for_org(
             org=self.organization,
-            data=OrgsOrgActionsRunnersGenerateJitconfigPostBodyType(
+            data=OrgsOrgActionsRunnersGenerateJitconfigPostBody(
                 name=self.name,
                 runner_group_id=self.runner_group_id,
                 labels=[label.name for label in self.labels],
