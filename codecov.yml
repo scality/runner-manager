@@ -1,0 +1,13 @@
+---
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+        flags:
+          - unit
+          - api
+codecov:
+  notify:
+    wait_for_ci: true
