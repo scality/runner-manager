@@ -1,10 +1,10 @@
 version: 0.1
 cli:
-  version: 1.15.0
+  version: 1.19.0
 plugins:
   sources:
     - id: trunk
-      ref: v1.2.3
+      ref: v1.4.2
       uri: https://github.com/trunk-io/plugins
 lint:
   definitions:
@@ -23,16 +23,16 @@ lint:
     - dotenv-linter@3.3.0
     - shellcheck@0.9.0
     - shfmt@3.6.0
-    - black@23.9.1
-    - isort@5.12.0
-    - ruff@0.0.288
-    - yamllint@1.32.0
-    - pyright@1.1.326
+    - black@24.1.1
+    - isort@5.13.2
+    - ruff@0.2.1
+    - yamllint@1.34.0
+    - pyright@1.1.350
     - taplo@0.8.1
-    - actionlint@1.6.25
+    - actionlint@1.6.26
     - git-diff-check
-    - markdownlint@0.36.0
-    - prettier@3.0.3
+    - markdownlint@0.39.0
+    - prettier@3.2.5
     - hadolint@2.12.0
   disabled:
     - trufflehog
