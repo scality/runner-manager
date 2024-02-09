@@ -39,13 +39,22 @@ function setup_runner_hook {
 }
 
 function job_started {
-	# This function is called when the job starts
-	echo "Job started"
+	# This function is called before the job starts
+	echo "Running preliminary checks..."
 	# Check if apt, dnf, or yum is running
+	echo "Ensure no package manager is running"
 	while pgrep -x "apt" >/dev/null || pgrep -x "dnf" >/dev/null || pgrep -x "yum" >/dev/null; do
 		echo "Waiting for package manager to finish"
 		sleep 5
 	done
+	if [[ ! ${LABELS} =~ "no-docker" ]]; then
+		echo "Ensure docker is running"
+		while ! docker info >/dev/null 2>&1; do
+			echo "Waiting for docker to start"
+			sleep 5
+		done
+	fi
+	echo "Done"
 }
 
 function job_completed {
