@@ -19,19 +19,19 @@ SCRIPT_FILE=$(readlink -f "$0")
 
 function setup_runner_hook {
 	mkdir -p /opt/runner
-	# setup the content of the function job_started in the file /opt/runner/started
+	# setup the content of the function job_started in the file /opt/runner/started.sh
 	echo "#!/usr/bin/env bash
-${SCRIPT_FILE} --job-started" | sudo tee /opt/runner/started
-	chmod +x /opt/runner/started
+${SCRIPT_FILE} --job-started" | sudo tee /opt/runner/started.sh
+	chmod +x /opt/runner/started.sh
 	# same for job_completed
 	echo "#!/usr/bin/env bash
-${SCRIPT_FILE} --job-completed" | sudo tee /opt/runner/completed
-	chmod +x /opt/runner/completed
+${SCRIPT_FILE} --job-completed" | sudo tee /opt/runner/completed.sh
+	chmod +x /opt/runner/completed.sh
 	# Ensure the user actions can execute the hooks
 	sudo chown -R actions:actions /opt/runner
 	touch /home/actions/actions-runner/.env
-	echo "ACTIONS_RUNNER_HOOK_JOB_STARTED=/opt/runner/started" >>/home/actions/actions-runner/.env
-	echo "ACTIONS_RUNNER_HOOK_JOB_COMPLETED=/opt/runner/completed" >>/home/actions/actions-runner/.env
+	echo "ACTIONS_RUNNER_HOOK_JOB_STARTED=/opt/runner/started.sh" >>/home/actions/actions-runner/.env
+	echo "ACTIONS_RUNNER_HOOK_JOB_COMPLETED=/opt/runner/completed.sh" >>/home/actions/actions-runner/.env
 	chown actions:actions /home/actions/actions-runner/.env
 
 }
