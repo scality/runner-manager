@@ -20,7 +20,7 @@ SCRIPT_FILE=$(readlink -f "$0")
 function setup_runner_hook {
 	mkdir -p /opt/runner
 	# Ensure this script exists even after cloud-init
-	cp ${SCRIPT_FILE} /opt/runner/startup.sh
+	cp "${SCRIPT_FILE}" /opt/runner/startup.sh
 	# setup the content of the function job_started in the file /opt/runner/started.sh
 	echo "#!/usr/bin/env bash
 /opt/runner/startup.sh --job-started" | sudo tee /opt/runner/started.sh
