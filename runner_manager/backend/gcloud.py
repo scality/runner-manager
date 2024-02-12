@@ -281,4 +281,4 @@ class GCPBackend(BaseBackend):
         except Exception as e:
             super().update(runner)
             raise e
-        return super().update(runner)
+        return super().update(runner, webhook)

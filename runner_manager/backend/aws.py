@@ -102,4 +102,4 @@ class AWSBackend(BaseBackend):
             except Exception as e:
                 log.error(e)
                 raise e
-        return super().update(runner)
+        return super().update(runner, webhook)
