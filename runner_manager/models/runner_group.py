@@ -28,40 +28,50 @@ log = logging.getLogger(__name__)
 
 regex = re.compile(r"[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}")
 
-
+# We must duplicate the config due to our inability to pickle a Basemodel
+# class
 class BaseRunnerGroup(PydanticBaseModel):
-    name: str
-    organization: str
-    repository: Optional[str] = None
     allows_public_repositories: Optional[bool] = True
-    default: Optional[bool] = False
-    runners_url: Optional[str] = None
-    restricted_to_workflows: Optional[bool] = None
-    selected_workflows: Optional[List[str]] = None
-    workflow_restrictions_read_only: Optional[bool] = None
-    selected_repository_ids: Optional[List[int]] = None
-    runners: Optional[List[int]] = None
-    max: Optional[int] = Field(ge=1, default=20)
-    min: Optional[int] = Field(ge=0, default=0)
-    labels: List[str]
-
     backend: Annotated[
         Union[BaseBackend, DockerBackend, GCPBackend, AWSBackend],
         PydanticField(..., discriminator="name"),
     ]
+    default: Optional[bool] = False
+    labels: List[str]
+    max: Optional[int] = Field(ge=1, default=20)
+    min: Optional[int] = Field(ge=0, default=0)
+    name: str
+    organization: str
+    repository: Optional[str] = None
+    restricted_to_workflows: Optional[bool] = None
+    selected_repository_ids: Optional[List[int]] = None
+    selected_workflows: Optional[List[str]] = None
+    workflow_restrictions_read_only: Optional[bool] = None
 
 
-class RunnerGroup(BaseRunnerGroup, BaseModel):
+class RunnerGroup(BaseModel):
+
+    allows_public_repositories: Optional[bool] = True
+    backend: Annotated[
+        Union[BaseBackend, DockerBackend, GCPBackend, AWSBackend],
+        PydanticField(..., discriminator="name"),
+    ]
+    arch: str = Field(default="x64")
+    default: Optional[bool] = False
     id: Optional[int] = Field(index=True, default=None)
-    name: str = Field(index=True, full_text_search=True, max_length=39)
-    organization: str = Field(index=True, full_text_search=True)
-    repository: Optional[str] = Field(index=True, full_text_search=True)
+    labels: List[str] = Field(index=True)
     max: int = Field(index=True, ge=1, default=20)
     min: int = Field(index=True, ge=0, default=0)
-    labels: List[str] = Field(index=True)
-    queued: int = Field(default=0, ge=0)
+    name: str = Field(index=True, full_text_search=True, max_length=39)
+    organization: str = Field(index=True, full_text_search=True)
     os: str = Field(default="linux")
-    arch: str = Field(default="x64")
+    queued: int = Field(default=0, ge=0)
+    repository: Optional[str] = Field(index=True, full_text_search=True)
+    restricted_to_workflows: Optional[bool] = None
+    selected_repository_ids: Optional[List[int]] = None
+    selected_workflows: Optional[List[str]] = None
+    workflow_restrictions_read_only: Optional[bool] = None
+
 
     def __str__(self) -> str:
         return (

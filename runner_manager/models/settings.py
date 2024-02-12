@@ -4,8 +4,9 @@ from typing import Any, Dict, List, Literal, Optional
 
 import yaml
 from githubkit import AppInstallationAuthStrategy, TokenAuthStrategy
-from pydantic import AnyHttpUrl, BaseSettings, ConfigError, Field, RedisDsn, SecretStr
+from pydantic import AnyHttpUrl, ConfigError, Field, RedisDsn, SecretStr
 
+from pydantic_settings import BaseSettings
 from runner_manager.models.runner_group import BaseRunnerGroup
 
 
