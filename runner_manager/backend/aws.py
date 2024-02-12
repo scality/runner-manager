@@ -1,9 +1,8 @@
 from typing import List, Literal, Optional
 
-from githubkit.webhooks.types import WorkflowJobEvent
-
 from boto3 import client
 from botocore.exceptions import ClientError
+from githubkit.webhooks.types import WorkflowJobEvent
 from mypy_boto3_ec2 import EC2Client
 from pydantic import Field
 from redis_om import NotFoundError
@@ -90,7 +89,9 @@ class AWSBackend(BaseBackend):
                 runners.append(runner)
         return runners
 
-    def update(self, runner: Runner, webhook: Optional[WorkflowJobEvent] = None) -> Runner:
+    def update(
+        self, runner: Runner, webhook: Optional[WorkflowJobEvent] = None
+    ) -> Runner:
         """Update a runner."""
         if runner.instance_id:
             try:

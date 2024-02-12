@@ -3,11 +3,10 @@ from importlib.resources import files
 from pathlib import Path
 from typing import Dict, List, Literal, Optional
 
-from githubkit.webhooks.types import WorkflowJobEvent
-
 from docker import DockerClient
 from docker.errors import APIError, NotFound
 from docker.models.containers import Container
+from githubkit.webhooks.types import WorkflowJobEvent
 from pydantic import Field
 from redis_om import NotFoundError
 
