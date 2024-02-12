@@ -7,6 +7,13 @@ plugins:
       ref: v1.4.2
       uri: https://github.com/trunk-io/plugins
 lint:
+  definitions:
+    # Configure pyright to identify the project root to read the configuration
+    # and use the project's virtual environment
+    - name: pyright
+      commands:
+        - name: lint
+          run: pyright --project ${workspace} --outputjson ${target}
   ignore:
     - linters:
         - pyright
