@@ -6,7 +6,7 @@ on:
 
 jobs:
   docker:
-    uses: scality/workflows/.github/workflows/docker-build.yaml@v1
+    uses: scality/workflows/.github/workflows/docker-build.yaml@v2
     with:
       name: runner-manager
       namespace: scality
