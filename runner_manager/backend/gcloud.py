@@ -174,7 +174,6 @@ class GCPBackend(BaseBackend):
             labels["job"] = self._sanitize_label_value(webhook.workflow_job.name)
             labels["run_id"] = self._sanitize_label_value(str(webhook.workflow_job.run_id))
             labels["run_attempt"] = self._sanitize_label_value(str(webhook.workflow_job.run_attempt))
-            labels["actor"] = self._sanitize_label_value(webhook.workflow_job.sender.login)
         return labels
 
     def create(self, runner: Runner):
