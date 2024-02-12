@@ -1,7 +1,9 @@
 import logging
 import re
 import time
-from typing import List, Literal, MutableMapping
+from typing import List, Literal, MutableMapping, Optional
+
+from githubkit.webhooks.types import WorkflowJobEvent
 
 from google.api_core.exceptions import BadRequest, NotFound
 from google.api_core.extended_operation import ExtendedOperation
@@ -152,18 +154,27 @@ class GCPBackend(BaseBackend):
             ],
         )
 
-    def _sanitize_label_value(self, value: str) -> str:
+    def _sanitize_label_value(self, value: str | None) -> str:
+        if value is None:
+            return ""
         value = value[:63]
         value = value.lower()
         value = re.sub(r"[^a-z0-9_-]", "-", value)
         return value
 
-    def setup_labels(self, runner: Runner) -> MutableMapping[str, str]:
+    def setup_labels(self, runner: Runner, webhook: Optional[WorkflowJobEvent] = None) -> MutableMapping[str, str]:
         labels: MutableMapping[str, str] = self.instance_config.labels.copy()
         if self.manager:
             labels["runner-manager"] = self.manager
         labels["status"] = self._sanitize_label_value(runner.status)
         labels["busy"] = self._sanitize_label_value(str(runner.busy))
+        if webhook:
+            labels["repository"] = self._sanitize_label_value(webhook.repository.full_name)
+            labels["workflow"] = self._sanitize_label_value(webhook.workflow_job.workflow_name)
+            labels["job"] = self._sanitize_label_value(webhook.workflow_job.name)
+            labels["run_id"] = self._sanitize_label_value(str(webhook.workflow_job.run_id))
+            labels["run_attempt"] = self._sanitize_label_value(str(webhook.workflow_job.run_attempt))
+            labels["actor"] = self._sanitize_label_value(webhook.workflow_job.sender.login)
         return labels
 
     def create(self, runner: Runner):
@@ -240,7 +251,7 @@ class GCPBackend(BaseBackend):
             raise e
         return runners
 
-    def update(self, runner: Runner) -> Runner:
+    def update(self, runner: Runner, webhook: Optional[WorkflowJobEvent] = None) -> Runner:
         try:
             instance: Instance = self.client.get(
                 project=self.config.project_id,

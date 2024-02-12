@@ -1,7 +1,9 @@
 import logging
 from importlib.resources import files
 from pathlib import Path
-from typing import Dict, List, Literal
+from typing import Dict, List, Literal, Optional
+
+from githubkit.webhooks.types import WorkflowJobEvent
 
 from docker import DockerClient
 from docker.errors import APIError, NotFound
@@ -73,7 +75,7 @@ class DockerBackend(BaseBackend):
 
         return super().create(runner)
 
-    def update(self, runner: Runner):
+    def update(self, runner: Runner, webhook: Optional[WorkflowJobEvent] = None):
         """Update a runner instance.
 
         We cannot update a container, so we just gonna ensure the runner
@@ -82,7 +84,7 @@ class DockerBackend(BaseBackend):
         container: Container = self.client.containers.get(runner.instance_id)
         if container.status != "running":
             raise Exception(f"Container {container.id} is not running.")
-        return super().update(runner)
+        return super().update(runner, webhook)
 
     def delete(self, runner: Runner):
         try:
