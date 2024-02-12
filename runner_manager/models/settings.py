@@ -34,6 +34,7 @@ class Settings(BaseSettings):
     timeout_runner: timedelta = timedelta(minutes=15)
     time_to_live: Optional[timedelta] = timedelta(hours=12)
     healthcheck_interval: timedelta = timedelta(minutes=15)
+    indexing_interval: timedelta = timedelta(hours=1)
     github_base_url: Optional[AnyHttpUrl] = Field(default="https://api.github.com")
     github_webhook_secret: Optional[SecretStr] = None
     github_token: Optional[SecretStr] = None

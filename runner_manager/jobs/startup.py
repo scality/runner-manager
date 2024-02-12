@@ -43,7 +43,7 @@ def sync_runner_groups(settings: Settings):
         runner_group.delete(pk=runner_group.pk, github=github)
 
 
-def bootstrap_healthchecks(
+def bootstrap_scheduler(
     settings: Settings,
 ):
     scheduler: Scheduler = get_scheduler()
@@ -51,12 +51,20 @@ def bootstrap_healthchecks(
     groups: List[RunnerGroup] = RunnerGroup.find().all()
     for job in jobs:
         # Cancel any existing healthcheck jobs
-        if job.meta.get("type") == "healthcheck":
-            log.info(
-                f"Canceling healthcheck job {job.id} for group {job.meta['group']}"
-            )
+        job_type = job.meta.get("type")
+        if job_type == "healthcheck" or job_type == "migrator":
+            log.info(f"Canceling {job_type} job: {job.id}")
             scheduler.cancel(job)
 
+    # Scheduling indexing job
+    scheduler.schedule(
+        scheduled_time=datetime.utcnow(),
+        func=indexing,
+        interval=settings.indexing_interval.total_seconds(),
+        meta={"type": "indexing"},
+        result_ttl=settings.indexing_interval.total_seconds() * 10,
+        repeat=None,
+    )
     for group in groups:
         log.info(f"Scheduling healthcheck for group {group.name}")
         scheduler.schedule(
@@ -81,14 +89,18 @@ def bootstrap_healthchecks(
         )
 
 
+def indexing():
+    Migrator().run()
+
+
 def startup(settings: Settings = get_settings()):
     """Bootstrap the application."""
     log.info("Startup initiated.")
-    Migrator().run()
+    indexing()
     log.info("Creating runner groups...")
     sync_runner_groups(settings)
     log.info("Runner groups created.")
     log.info("Bootstrapping healthchecks...")
-    bootstrap_healthchecks(settings)
+    bootstrap_scheduler(settings)
     log.info("Healthchecks bootstrapped.")
     log.info("Startup complete.")
