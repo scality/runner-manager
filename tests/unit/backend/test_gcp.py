@@ -163,7 +163,7 @@ def test_sanitize_label(gcp_group: RunnerGroup):
     assert "42" == gcp_group.backend._sanitize_label_value(42.0)
     assert "" == gcp_group.backend._sanitize_label_value(None)
     assert "test" == gcp_group.backend._sanitize_label_value("-test-")
-    assert "" == gcp_group.backend._sanitize_label_value(float('nan'))
+    assert "" == gcp_group.backend._sanitize_label_value(float("nan"))
 
 
 @mark.skipif(
