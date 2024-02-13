@@ -157,6 +157,14 @@ def test_gcp_instance(runner: Runner, gcp_group: RunnerGroup):
     assert instance.name == runner.name
 
 
+def test_sanitize_label(gcp_group: RunnerGroup):
+    assert "test" == gcp_group.backend._sanitize_label_value("test")
+    assert "42" == gcp_group.backend._sanitize_label_value(42)
+    assert "42" == gcp_group.backend._sanitize_label_value(42.0)
+    assert "" == gcp_group.backend._sanitize_label_value(None)
+    assert "test" == gcp_group.backend._sanitize_label_value("-test-")
+
+
 @mark.skipif(
     not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"), reason="GCP credentials not found"
 )
