@@ -268,7 +268,7 @@ class GCPBackend(BaseBackend):
                 zone=self.config.zone,
                 instance=runner.instance_id or runner.name,
             )
-            instance.labels = self.setup_labels(runner)
+            instance.labels = self.setup_labels(runner, webhook)
 
             log.info(f"Updating {runner.name} labels to {instance.labels}")
             self.client.update(
