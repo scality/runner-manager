@@ -155,9 +155,11 @@ class GCPBackend(BaseBackend):
         )
 
     def _sanitize_label_value(self, value: str | int | float | None) -> str:
-        if value is None or math.isnan(value):
+        if value is None:
             return ""
         if isinstance(value, (int, float)):
+            if math.isnan(value):
+                return ""
             value = str(int(value))
         value = value[:63].lower()
         value = re.sub(r"[^a-z0-9_-]+", "-", value)

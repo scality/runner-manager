@@ -3,7 +3,7 @@ from typing import List
 
 from githubkit.webhooks.types import WorkflowJobEvent
 from google.cloud.compute import Image, NetworkInterface
-from hypothesis import given, reproduce_failure
+from hypothesis import given
 from pytest import fixture, mark, raises
 from redis_om import NotFoundError
 
