@@ -1,4 +1,5 @@
 import logging
+import math
 import re
 import time
 from typing import List, Literal, MutableMapping, Optional
@@ -154,7 +155,7 @@ class GCPBackend(BaseBackend):
         )
 
     def _sanitize_label_value(self, value: str | int | float | None) -> str:
-        if value is None:
+        if value is None or math.isnan(value):
             return ""
         if isinstance(value, (int, float)):
             value = str(int(value))

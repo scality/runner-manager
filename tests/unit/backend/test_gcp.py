@@ -3,7 +3,7 @@ from typing import List
 
 from githubkit.webhooks.types import WorkflowJobEvent
 from google.cloud.compute import Image, NetworkInterface
-from hypothesis import given
+from hypothesis import given, reproduce_failure
 from pytest import fixture, mark, raises
 from redis_om import NotFoundError
 
@@ -163,6 +163,7 @@ def test_sanitize_label(gcp_group: RunnerGroup):
     assert "42" == gcp_group.backend._sanitize_label_value(42.0)
     assert "" == gcp_group.backend._sanitize_label_value(None)
     assert "test" == gcp_group.backend._sanitize_label_value("-test-")
+    assert "" == gcp_group.backend._sanitize_label_value(float('nan'))
 
 
 @mark.skipif(
