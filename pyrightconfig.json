@@ -3,6 +3,7 @@
   "exclude": ["**/__pycache__", "**/node_modules"],
   "typeCheckingMode": "basic",
   "stubPath": "./typings",
+  "extraPaths": ["./.venv/lib/*/site-packages"],
   "reportMissingTypeStubs": true,
   "venvPath": ".",
   "venv": ".venv"

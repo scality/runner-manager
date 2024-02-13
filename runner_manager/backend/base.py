@@ -1,5 +1,6 @@
 from typing import List, Literal, Optional
 
+from githubkit.webhooks.types import WorkflowJobEvent
 from pydantic import BaseModel, Field
 from redis_om import NotFoundError
 
@@ -47,7 +48,9 @@ class BaseBackend(BaseModel):
         """
         return Runner.delete(runner.pk)
 
-    def update(self, runner: Runner) -> Runner:
+    def update(
+        self, runner: Runner, webhook: Optional[WorkflowJobEvent] = None
+    ) -> Runner:
         """Update a runner instance.
 
         Args:

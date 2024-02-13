@@ -1,7 +1,9 @@
 import os
 from typing import List
 
+from githubkit.webhooks.types import WorkflowJobEvent
 from google.cloud.compute import Image, NetworkInterface
+from hypothesis import given
 from pytest import fixture, mark, raises
 from redis_om import NotFoundError
 
@@ -9,6 +11,8 @@ from runner_manager.backend.gcloud import GCPBackend
 from runner_manager.models.backend import Backends, GCPConfig, GCPInstanceConfig
 from runner_manager.models.runner import Runner
 from runner_manager.models.runner_group import RunnerGroup
+
+from ...strategies import WorkflowJobInProgressStrategy
 
 
 @fixture()
@@ -95,6 +99,32 @@ def test_gcp_setup_labels(runner: Runner, gcp_group: RunnerGroup):
     assert labels["key"] == "value"
 
 
+@given(webhook=WorkflowJobInProgressStrategy)
+def test_gcp_setup_labels_with_webhook(webhook: WorkflowJobEvent):
+    runner: Runner = Runner(
+        name=webhook.workflow_job.runner_name,
+        id=webhook.workflow_job.runner_id,
+        busy=True,
+        runner_group_name=webhook.workflow_job.runner_group_name,
+        runner_group_id=webhook.workflow_job.runner_group_id,
+        status="online",
+    )
+    backend = GCPBackend(
+        config=GCPConfig(
+            zone="europe-west1-a",
+            project_id="project",
+        ),
+        instance_config=GCPInstanceConfig(),
+    )
+    labels = backend.setup_labels(runner, webhook)
+    assert "workflow" in labels.keys()
+    assert "repository" in labels.keys()
+
+    # Test with no webhook
+    labels = backend.setup_labels(runner)
+    assert "workflow" not in labels.keys()
+
+
 def test_gcp_spot_config(runner: Runner, gcp_group: RunnerGroup):
     gcp_group.backend.instance_config.spot = True
     scheduling = gcp_group.backend.scheduling
@@ -125,6 +155,15 @@ def test_gcp_disks(runner: Runner, gcp_group: RunnerGroup):
 def test_gcp_instance(runner: Runner, gcp_group: RunnerGroup):
     instance = gcp_group.backend.configure_instance(runner)
     assert instance.name == runner.name
+
+
+def test_sanitize_label(gcp_group: RunnerGroup):
+    assert "test" == gcp_group.backend._sanitize_label_value("test")
+    assert "42" == gcp_group.backend._sanitize_label_value(42)
+    assert "42" == gcp_group.backend._sanitize_label_value(42.0)
+    assert "" == gcp_group.backend._sanitize_label_value(None)
+    assert "test" == gcp_group.backend._sanitize_label_value("-test-")
+    assert "" == gcp_group.backend._sanitize_label_value(float("nan"))
 
 
 @mark.skipif(

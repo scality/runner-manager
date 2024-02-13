@@ -174,7 +174,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         runner.started_at = webhook.workflow_job.started_at
         runner.busy = True
         runner.save()
-        return self.backend.update(runner)
+        return self.backend.update(runner, webhook)
 
     def delete_runner(self, runner: Runner, github: GitHub) -> int:
         """Delete a runner instance.

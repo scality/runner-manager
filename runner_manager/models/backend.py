@@ -46,8 +46,8 @@ class InstanceConfig(BaseSettings):
     """Base class for backend instance configuration."""
 
     startup_script: str = startup_sh.as_posix()
-    redhat_username: Optional[str]
-    redhat_password: Optional[str]
+    redhat_username: Optional[str] = None
+    redhat_password: Optional[str] = None
 
     def runner_env(self, runner: Runner) -> RunnerEnv:
         return RunnerEnv(
@@ -58,9 +58,9 @@ class InstanceConfig(BaseSettings):
             RUNNER_GROUP=runner.runner_group_name,
             RUNNER_DOWNLOAD_URL=runner.download_url,
             RUNNER_REDHAT_USERNAME=self.redhat_username,
-            RUNNER_REDHAT_PASSWORD=self.redhat_password
-            if self.redhat_password
-            else None,
+            RUNNER_REDHAT_PASSWORD=(
+                self.redhat_password if self.redhat_password else None
+            ),
         )
 
     def template_startup(self, runner: Runner) -> str:
