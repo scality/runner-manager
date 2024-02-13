@@ -172,19 +172,17 @@ class GCPBackend(BaseBackend):
         labels["status"] = self._sanitize_label_value(runner.status)
         labels["busy"] = self._sanitize_label_value(str(runner.busy))
         if webhook:
-            labels["repository"] = self._sanitize_label_value(
-                webhook.repository.name
-            )
+            labels["repository"] = self._sanitize_label_value(webhook.repository.name)
             labels["organization"] = self._sanitize_label_value(
-                webhook.repository.organization if webhook.repository.organization else ""
+                webhook.repository.organization
+                if webhook.repository.organization
+                else ""
             )
             labels["workflow"] = self._sanitize_label_value(
                 webhook.workflow_job.workflow_name
             )
             labels["job"] = self._sanitize_label_value(webhook.workflow_job.name)
-            labels["run_id"] = self._sanitize_label_value(
-                webhook.workflow_job.run_id
-            )
+            labels["run_id"] = self._sanitize_label_value(webhook.workflow_job.run_id)
             labels["run_attempt"] = self._sanitize_label_value(
                 webhook.workflow_job.run_attempt
             )
