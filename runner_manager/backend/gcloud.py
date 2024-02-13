@@ -153,12 +153,14 @@ class GCPBackend(BaseBackend):
             ],
         )
 
-    def _sanitize_label_value(self, value: str | None) -> str:
+    def _sanitize_label_value(self, value: str | int | float | None) -> str:
         if value is None:
             return ""
-        value = value[:63]
-        value = value.lower()
-        value = re.sub(r"[^a-z0-9_-]", "-", value)
+        if isinstance(value, (int, float)):
+            value = str(int(value))
+        value = value[:63].lower()
+        value = re.sub(r"[^a-z0-9_-]+", "-", value)
+        value = re.sub(r"(^-+)|(-+$)", "", value)
         return value
 
     def setup_labels(
@@ -171,17 +173,20 @@ class GCPBackend(BaseBackend):
         labels["busy"] = self._sanitize_label_value(str(runner.busy))
         if webhook:
             labels["repository"] = self._sanitize_label_value(
-                webhook.repository.full_name
+                webhook.repository.name
+            )
+            labels["organization"] = self._sanitize_label_value(
+                webhook.repository.organization if webhook.repository.organization else ""
             )
             labels["workflow"] = self._sanitize_label_value(
                 webhook.workflow_job.workflow_name
             )
             labels["job"] = self._sanitize_label_value(webhook.workflow_job.name)
             labels["run_id"] = self._sanitize_label_value(
-                str(webhook.workflow_job.run_id)
+                webhook.workflow_job.run_id
             )
             labels["run_attempt"] = self._sanitize_label_value(
-                str(webhook.workflow_job.run_attempt)
+                webhook.workflow_job.run_attempt
             )
         return labels
 
