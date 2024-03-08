@@ -9,14 +9,16 @@ Bindings data classes
 """
 __author__ = ...
 __copyright__ = ...
+
 class Enum(six.text_type):
     """
     Representation of IDL Enum in python language bindings
     """
+
     _binding_type = ...
     _values = ...
     @classmethod
-    def get_binding_type(cls): # -> None:
+    def get_binding_type(cls):  # -> None:
         """
         Returns the corresponding BindingType for the VapiStruct class
 
@@ -24,9 +26,9 @@ class Enum(six.text_type):
         :return: BindingType for this VapiStruct
         """
         ...
-    
+
     @classmethod
-    def get_values(cls): # -> list[Any]:
+    def get_values(cls):  # -> list[Any]:
         """
         Returns the list of all the possible enum values
 
@@ -34,8 +36,8 @@ class Enum(six.text_type):
         :return: List of all possible enum values
         """
         ...
-    
-    def is_unknown(self): # -> bool:
+
+    def is_unknown(self):  # -> bool:
         """
         Returns whether the enum value stored is one of the known values or not
 
@@ -43,9 +45,6 @@ class Enum(six.text_type):
         :return: True if the enum value is not known
         """
         ...
-    
-    def __repr__(self): # -> str:
+
+    def __repr__(self):  # -> str:
         ...
-    
-
-

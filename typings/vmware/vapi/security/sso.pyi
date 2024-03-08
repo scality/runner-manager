@@ -30,7 +30,8 @@ PRIVATE_KEY_PROP = ...
 CERT_NS = ...
 SECTION = ...
 algorithm_map = ...
-def create_saml_bearer_security_context(token): # -> SecurityContext:
+
+def create_saml_bearer_security_context(token):  # -> SecurityContext:
     """
     Create a security context for SAML bearer token based
     authentication scheme
@@ -40,7 +41,7 @@ def create_saml_bearer_security_context(token): # -> SecurityContext:
     """
     ...
 
-def create_saml_security_context(token, private_key): # -> SecurityContext:
+def create_saml_security_context(token, private_key):  # -> SecurityContext:
     """
     Create a security context for SAML token based
     authentication scheme
@@ -59,7 +60,8 @@ class JSONCanonicalEncoder(json.JSONEncoder):
     Custom JSON Encoder class to canonicalize dictionary
     and list objects
     """
-    def encode(self, o): # -> str | LiteralString:
+
+    def encode(self, o):  # -> str | LiteralString:
         """
         Encode a given python object
 
@@ -69,8 +71,6 @@ class JSONCanonicalEncoder(json.JSONEncoder):
         :return: JSON string in canonicalized form
         """
         ...
-    
-
 
 class JSONCanonicalizer:
     """
@@ -87,8 +87,9 @@ class JSONCanonicalizer:
     Link to the IEFT proposal:
     https://datatracker.ietf.org/doc/draft-staykov-hu-json-canonical-form/
     """
+
     @staticmethod
-    def canonicalize(input_message): # -> str | LiteralString:
+    def canonicalize(input_message):  # -> str | LiteralString:
         """
         Canonicalize the input message
 
@@ -98,9 +99,9 @@ class JSONCanonicalizer:
         :return: Canonicalized message
         """
         ...
-    
+
     @staticmethod
-    def canonicalize_py_obj(py_obj): # -> str | LiteralString:
+    def canonicalize_py_obj(py_obj):  # -> str | LiteralString:
         """
         Canonicalize the input python object
 
@@ -110,14 +111,13 @@ class JSONCanonicalizer:
         :return: Canonicalized message
         """
         ...
-    
-
 
 class JSONSSOSigner(RequestProcessor):
     """
     This class is used for signing JSON request messages
     """
-    def process(self, input_message): # -> binary_type | str | None:
+
+    def process(self, input_message):  # -> binary_type | str | None:
         """
         Sign the input JSON request message.
 
@@ -158,8 +158,6 @@ class JSONSSOSigner(RequestProcessor):
         }
         """
         ...
-    
-
 
 class JSONSSOVerifier(RequestProcessor):
     """
@@ -167,7 +165,8 @@ class JSONSSOVerifier(RequestProcessor):
     message by verifying the digest present in the security context
     block.
     """
-    def process(self, input_message): # -> binary_type | str | None:
+
+    def process(self, input_message):  # -> binary_type | str | None:
         """
         Verify the input JSON message.
 
@@ -200,9 +199,5 @@ class JSONSSOVerifier(RequestProcessor):
         :return: JSON request message after signature verification
         """
         ...
-    
 
-
-def parse_xml(xml):
-    ...
-
+def parse_xml(xml): ...

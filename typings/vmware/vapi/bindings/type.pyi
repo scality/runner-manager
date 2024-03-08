@@ -11,6 +11,7 @@ __author__ = ...
 __copyright__ = ...
 MAP_KEY_FIELD = ...
 MAP_VALUE_FIELD = ...
+
 class BindingType:
     """
     Representation of an IDL type for the use of the Python language bindings
@@ -18,10 +19,9 @@ class BindingType:
     :type  definition: :class:`vmware.vapi.data.definition.DataDefinition`
     :param definition: Data definition corresponding to this binding type
     """
-    def __init__(self) -> None:
-        ...
-    
-    def accept(self, visitor): # -> None:
+
+    def __init__(self) -> None: ...
+    def accept(self, visitor):  # -> None:
         """
         Applies a visitor to this BindingType
 
@@ -29,79 +29,65 @@ class BindingType:
         :param visitor: visitor operating on the BindingType
         """
         ...
-    
+
     @property
-    def definition(self): # -> VoidDefinition | IntegerDefinition | DoubleDefinition | StringDefinition | BooleanDefinition | BlobDefinition | OptionalDefinition | ListDefinition | StructRefDefinition | StructDefinition | DynamicStructDefinition | AnyErrorDefinition | OpaqueDefinition | SecretDefinition | ErrorDefinition | None:
+    def definition(
+        self,
+    ):  # -> VoidDefinition | IntegerDefinition | DoubleDefinition | StringDefinition | BooleanDefinition | BlobDefinition | OptionalDefinition | ListDefinition | StructRefDefinition | StructDefinition | DynamicStructDefinition | AnyErrorDefinition | OpaqueDefinition | SecretDefinition | ErrorDefinition | None:
         """
         Generate the data defintion corresponding to this binding type
         """
         ...
-    
-
 
 class VoidType(BindingType):
     """
     Representation of void IDL type in Python Binding
     """
-    def __init__(self) -> None:
-        ...
-    
 
+    def __init__(self) -> None: ...
 
 class IntegerType(BindingType):
     """
     Representation of integer IDL Type in Python Binding
     """
-    def __init__(self) -> None:
-        ...
-    
 
+    def __init__(self) -> None: ...
 
 class DoubleType(BindingType):
     """
     Representation of float IDL Type in Python Binding
     """
-    def __init__(self) -> None:
-        ...
-    
 
+    def __init__(self) -> None: ...
 
 class StringType(BindingType):
     """
     Representation of string IDL Type in Python Binding
     """
-    def __init__(self) -> None:
-        ...
-    
 
+    def __init__(self) -> None: ...
 
 class SecretType(BindingType):
     """
     Representation of @secret IDL annotation in Python Binding. @secret
     annotation can only be applied to strings.
     """
-    def __init__(self) -> None:
-        ...
-    
 
+    def __init__(self) -> None: ...
 
 class BooleanType(BindingType):
     """
     Representation of boolean IDL Type in Python Binding
     """
-    def __init__(self) -> None:
-        ...
-    
 
+    def __init__(self) -> None: ...
 
 class BlobType(BindingType):
     """
     Representation of binary IDL Type in Python Binding
     """
-    def __init__(self) -> None:
-        ...
-    
 
+    def __init__(self) -> None: ...
 
 class OptionalType(BindingType):
     """
@@ -110,11 +96,10 @@ class OptionalType(BindingType):
     :type element_type: :class:`BindingType`
     :ivar element_type: element type
     """
-    def __init__(self, element_type) -> None:
-        ...
-    
+
+    def __init__(self, element_type) -> None: ...
     @property
-    def element_type(self): # -> BindingType:
+    def element_type(self):  # -> BindingType:
         """
         Return the element type of this ListType
 
@@ -122,8 +107,6 @@ class OptionalType(BindingType):
         :return: element type
         """
         ...
-    
-
 
 class ListType(BindingType):
     """
@@ -132,11 +115,10 @@ class ListType(BindingType):
     :type element_type: :class:`BindingType`
     :ivar element_type: element type
     """
-    def __init__(self, element_type) -> None:
-        ...
-    
+
+    def __init__(self, element_type) -> None: ...
     @property
-    def element_type(self): # -> BindingType:
+    def element_type(self):  # -> BindingType:
         """
         Return the element type of this ListType
 
@@ -144,8 +126,6 @@ class ListType(BindingType):
         :return: element type
         """
         ...
-    
-
 
 class SetType(BindingType):
     """
@@ -154,11 +134,10 @@ class SetType(BindingType):
     :type element_type: :class:`BindingType`
     :ivar element_type: element type
     """
-    def __init__(self, element_type) -> None:
-        ...
-    
+
+    def __init__(self, element_type) -> None: ...
     @property
-    def element_type(self): # -> BindingType:
+    def element_type(self):  # -> BindingType:
         """
         Return the element type of this SetType
 
@@ -166,8 +145,6 @@ class SetType(BindingType):
         :return: element type
         """
         ...
-    
-
 
 class MapType(BindingType):
     """
@@ -178,11 +155,10 @@ class MapType(BindingType):
     :type value_type: :class:`BindingType`
     :ivar value_type: map value type
     """
-    def __init__(self, key_type, value_type) -> None:
-        ...
-    
+
+    def __init__(self, key_type, value_type) -> None: ...
     @property
-    def key_type(self): # -> BindingType:
+    def key_type(self):  # -> BindingType:
         """
         Return the key type of this MapType
 
@@ -190,9 +166,9 @@ class MapType(BindingType):
         :return: key type
         """
         ...
-    
+
     @property
-    def value_type(self): # -> BindingType:
+    def value_type(self):  # -> BindingType:
         """
         Return the value type of this MapType
 
@@ -200,8 +176,6 @@ class MapType(BindingType):
         :return: value type
         """
         ...
-    
-
 
 class StructType(BindingType):
     """
@@ -218,11 +192,12 @@ class StructType(BindingType):
     :ivar model_keys: List of model keys for the structure if it is marked as
         Model
     """
-    def __init__(self, name, fields, binding_class=..., is_model=..., model_keys=...) -> None:
-        ...
-    
+
+    def __init__(
+        self, name, fields, binding_class=..., is_model=..., model_keys=...
+    ) -> None: ...
     @property
-    def name(self): # -> str:
+    def name(self):  # -> str:
         """
         Returns the name of the StructType
 
@@ -230,9 +205,9 @@ class StructType(BindingType):
         :return: Name of the StructType
         """
         ...
-    
+
     @property
-    def binding_class(self): # -> None:
+    def binding_class(self):  # -> None:
         """
         Returns the reference to the Python native class
         corresponding to this structure
@@ -241,9 +216,9 @@ class StructType(BindingType):
         :return: Reference to the python native class
         """
         ...
-    
+
     @property
-    def is_model(self): # -> bool:
+    def is_model(self):  # -> bool:
         """
         Check if the Struct is marked as model
 
@@ -251,9 +226,9 @@ class StructType(BindingType):
         :return: True if the Struct is marked as model, False otherwise
         """
         ...
-    
+
     @property
-    def model_keys(self): # -> None:
+    def model_keys(self):  # -> None:
         """
         Returns list of model keys for the Struct if it is marked as model
 
@@ -261,8 +236,8 @@ class StructType(BindingType):
         :return: List of model keys for the Struct if it is marked as model
         """
         ...
-    
-    def get_field_names(self): # -> list[Any]:
+
+    def get_field_names(self):  # -> list[Any]:
         """
         Returns the list of field names present in this StructType
 
@@ -270,8 +245,8 @@ class StructType(BindingType):
         :return: List of field names
         """
         ...
-    
-    def get_field(self, field_name): # -> None:
+
+    def get_field(self, field_name):  # -> None:
         """
         Returns the BindingType of the argument
 
@@ -281,8 +256,6 @@ class StructType(BindingType):
         :return: BindingType of the field specified
         """
         ...
-    
-
 
 class ErrorType(StructType):
     """
@@ -296,10 +269,8 @@ class ErrorType(StructType):
     :ivar binding_class: Reference to the Python native class corresponding
                          to this error
     """
-    def __init__(self, name, fields, binding_class=...) -> None:
-        ...
-    
 
+    def __init__(self, name, fields, binding_class=...) -> None: ...
 
 class ReferenceType(BindingType):
     """
@@ -308,6 +279,7 @@ class ReferenceType(BindingType):
     :type resolved_type: :class:`StructType` or :class:`EnumType`
     :ivar resolved_type: Resolved reference type
     """
+
     def __init__(self, context_name, type_name) -> None:
         """
         Initialize ReferenceType
@@ -319,9 +291,9 @@ class ReferenceType(BindingType):
             if the type Bar is nested inside type Foo, it would be Foo.Bar
         """
         ...
-    
+
     @property
-    def resolved_type(self): # -> Any | None:
+    def resolved_type(self):  # -> Any | None:
         """
         Returns the resolved struct type or enum type
 
@@ -330,17 +302,13 @@ class ReferenceType(BindingType):
         :return: Resolved struct type or enum type
         """
         ...
-    
-
 
 class OpaqueType(BindingType):
     """
     Representation of Opaque IDL annotation in Python Binding
     """
-    def __init__(self) -> None:
-        ...
-    
 
+    def __init__(self) -> None: ...
 
 class DynamicStructType(StructType):
     """
@@ -350,6 +318,7 @@ class DynamicStructType(StructType):
     :ivar has_fields_of_type: List of reference types whose fields need to be
         present in the StructValue for this DynamicStruct type
     """
+
     def __init__(self, name, fields, binding_class=..., has_fields_of_type=...) -> None:
         """
         Initialize DynamicStructType
@@ -366,9 +335,9 @@ class DynamicStructType(StructType):
             be present in the StructValue for this DynamicStruct type
         """
         ...
-    
+
     @property
-    def has_fields_of_type(self): # -> None:
+    def has_fields_of_type(self):  # -> None:
         """
         Returns the has_fields_of_type
 
@@ -377,38 +346,31 @@ class DynamicStructType(StructType):
             StructValue for this DynamicStruct type
         """
         ...
-    
-
 
 class AnyErrorType(BindingType):
     """
     Representation of Exception type in Python Binding
     """
+
     def __init__(self) -> None:
         """
         Initialize AnyErrorType
         """
         ...
-    
-
 
 class DateTimeType(BindingType):
     """
     Representation of datetime IDL Type in Python Binding
     """
-    def __init__(self) -> None:
-        ...
-    
 
+    def __init__(self) -> None: ...
 
 class URIType(BindingType):
     """
     Representation of URI IDL Type in Python Binding
     """
-    def __init__(self) -> None:
-        ...
-    
 
+    def __init__(self) -> None: ...
 
 class EnumType(BindingType):
     """
@@ -420,11 +382,10 @@ class EnumType(BindingType):
     :ivar binding_class: Reference to the Python native class corresponding
                          to this structure
     """
-    def __init__(self, name, binding_class) -> None:
-        ...
-    
+
+    def __init__(self, name, binding_class) -> None: ...
     @property
-    def name(self): # -> Any:
+    def name(self):  # -> Any:
         """
         Returns the name of the EnumType
 
@@ -432,16 +393,14 @@ class EnumType(BindingType):
         :return: Name of the EnumType
         """
         ...
-    
+
     @property
-    def binding_class(self): # -> Any:
+    def binding_class(self):  # -> Any:
         """
         Returns the reference to the Python native class
         corresponding to this structure
         """
         ...
-    
-
 
 class IdType(BindingType):
     """
@@ -454,11 +413,10 @@ class IdType(BindingType):
     :ivar resource_type_field_name: Name of the field specifying the resource
         type
     """
-    def __init__(self, resource_types=..., resource_type_field_name=...) -> None:
-        ...
-    
+
+    def __init__(self, resource_types=..., resource_type_field_name=...) -> None: ...
     @property
-    def resource_types(self): # -> None:
+    def resource_types(self):  # -> None:
         """
         Returns the Resource type(s) for the ID field
 
@@ -466,9 +424,9 @@ class IdType(BindingType):
         :return: Resource type(s) for the ID
         """
         ...
-    
+
     @property
-    def resource_type_field_name(self): # -> None:
+    def resource_type_field_name(self):  # -> None:
         """
         Returns the name of the field specifying the resource type
 
@@ -476,19 +434,18 @@ class IdType(BindingType):
         :return: Name of the field specifying the resource type
         """
         ...
-    
-
 
 class BindingTypeVisitor(VapiVisitor):
     """
     Base no-op implementation of a BindingType visitor
     """
+
     def __init__(self) -> None:
         """
         Initialize BindingTypeVisitor
         """
         ...
-    
+
     def visit_void(self, typ):
         """
         Visit a void value (i.e. None)
@@ -497,7 +454,7 @@ class BindingTypeVisitor(VapiVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
+
     def visit_integer(self, typ):
         """
         Visit an integer value
@@ -506,7 +463,7 @@ class BindingTypeVisitor(VapiVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
+
     def visit_double(self, typ):
         """
         Visit a double value
@@ -515,7 +472,7 @@ class BindingTypeVisitor(VapiVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
+
     def visit_string(self, typ):
         """
         Visit a string value
@@ -524,7 +481,7 @@ class BindingTypeVisitor(VapiVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
+
     def visit_boolean(self, typ):
         """
         Visit a boolean value
@@ -533,7 +490,7 @@ class BindingTypeVisitor(VapiVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
+
     def visit_blob(self, typ):
         """
         Visit a blob value
@@ -542,7 +499,7 @@ class BindingTypeVisitor(VapiVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
+
     def visit_optional(self, typ):
         """
         Visit an optional value
@@ -551,7 +508,7 @@ class BindingTypeVisitor(VapiVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
+
     def visit_list(self, typ):
         """
         Visit a list value
@@ -560,7 +517,7 @@ class BindingTypeVisitor(VapiVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
+
     def visit_struct(self, typ):
         """
         Visit a struct value
@@ -569,7 +526,7 @@ class BindingTypeVisitor(VapiVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
+
     def visit_dynamic_struct(self, typ):
         """
         Visit a struct value
@@ -578,7 +535,7 @@ class BindingTypeVisitor(VapiVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
+
     def visit_any_error(self, typ):
         """
         Visit an error value
@@ -587,7 +544,7 @@ class BindingTypeVisitor(VapiVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
+
     def visit_opaque(self, typ):
         """
         Visit an opaque value.
@@ -596,7 +553,7 @@ class BindingTypeVisitor(VapiVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
+
     def visit_secret(self, typ):
         """
         Visit a secret value
@@ -605,7 +562,7 @@ class BindingTypeVisitor(VapiVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
+
     def visit_date_time(self, typ):
         """
         Visit a datetime value
@@ -614,7 +571,7 @@ class BindingTypeVisitor(VapiVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
+
     def visit_uri(self, typ):
         """
         Visit an URI value
@@ -623,7 +580,7 @@ class BindingTypeVisitor(VapiVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
+
     def visit_enum(self, typ):
         """
         Visit a enum value
@@ -632,7 +589,7 @@ class BindingTypeVisitor(VapiVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
+
     def visit_error(self, typ):
         """
         Visit an error type
@@ -641,7 +598,7 @@ class BindingTypeVisitor(VapiVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
+
     def visit_reference(self, typ):
         """
         Visit a reference type
@@ -650,7 +607,7 @@ class BindingTypeVisitor(VapiVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
+
     def visit_id(self, typ):
         """
         Visit a ID value
@@ -659,13 +616,12 @@ class BindingTypeVisitor(VapiVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-
 
 class DataDefinitionBuilder(BindingTypeVisitor):
     """
     Builds DataDefinition by visiting a BindingType
     """
+
     def __init__(self, ctx, seen_structures) -> None:
         """
         Initialize DataDefinitionBuilder
@@ -676,8 +632,10 @@ class DataDefinitionBuilder(BindingTypeVisitor):
         :param seen_structures: List of structures seen
         """
         ...
-    
-    def get_out_value(self): # -> VoidDefinition | IntegerDefinition | DoubleDefinition | StringDefinition | BooleanDefinition | BlobDefinition | OptionalDefinition | ListDefinition | StructRefDefinition | StructDefinition | DynamicStructDefinition | AnyErrorDefinition | OpaqueDefinition | SecretDefinition | ErrorDefinition | None:
+
+    def get_out_value(
+        self,
+    ):  # -> VoidDefinition | IntegerDefinition | DoubleDefinition | StringDefinition | BooleanDefinition | BlobDefinition | OptionalDefinition | ListDefinition | StructRefDefinition | StructDefinition | DynamicStructDefinition | AnyErrorDefinition | OpaqueDefinition | SecretDefinition | ErrorDefinition | None:
         """
         Returns the data definition
 
@@ -685,8 +643,8 @@ class DataDefinitionBuilder(BindingTypeVisitor):
         :return: Data definition
         """
         ...
-    
-    def visit_void(self, typ): # -> None:
+
+    def visit_void(self, typ):  # -> None:
         """
         Visit a void value (i.e. None)
 
@@ -694,8 +652,8 @@ class DataDefinitionBuilder(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_integer(self, typ): # -> None:
+
+    def visit_integer(self, typ):  # -> None:
         """
         Visit an integer value
 
@@ -703,8 +661,8 @@ class DataDefinitionBuilder(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_double(self, typ): # -> None:
+
+    def visit_double(self, typ):  # -> None:
         """
         Visit a double value
 
@@ -712,8 +670,8 @@ class DataDefinitionBuilder(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_string(self, typ): # -> None:
+
+    def visit_string(self, typ):  # -> None:
         """
         Visit a string value
 
@@ -721,8 +679,8 @@ class DataDefinitionBuilder(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_boolean(self, typ): # -> None:
+
+    def visit_boolean(self, typ):  # -> None:
         """
         Visit a boolean value
 
@@ -730,8 +688,8 @@ class DataDefinitionBuilder(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_blob(self, typ): # -> None:
+
+    def visit_blob(self, typ):  # -> None:
         """
         Visit a blob value
 
@@ -739,8 +697,8 @@ class DataDefinitionBuilder(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_optional(self, typ): # -> None:
+
+    def visit_optional(self, typ):  # -> None:
         """
         Visit an optional value
 
@@ -748,8 +706,8 @@ class DataDefinitionBuilder(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_list(self, typ): # -> None:
+
+    def visit_list(self, typ):  # -> None:
         """
         Visit a list value
 
@@ -757,8 +715,8 @@ class DataDefinitionBuilder(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_set(self, typ): # -> None:
+
+    def visit_set(self, typ):  # -> None:
         """
         Visit a set value
 
@@ -766,8 +724,8 @@ class DataDefinitionBuilder(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_map(self, typ): # -> None:
+
+    def visit_map(self, typ):  # -> None:
         """
         Visit a map value
 
@@ -775,8 +733,8 @@ class DataDefinitionBuilder(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_struct(self, typ): # -> None:
+
+    def visit_struct(self, typ):  # -> None:
         """
         Visit a struct value
 
@@ -784,8 +742,8 @@ class DataDefinitionBuilder(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_dynamic_struct(self, typ): # -> None:
+
+    def visit_dynamic_struct(self, typ):  # -> None:
         """
         Visit a struct value
 
@@ -793,8 +751,8 @@ class DataDefinitionBuilder(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_any_error(self, typ): # -> None:
+
+    def visit_any_error(self, typ):  # -> None:
         """
         Visit an error value
 
@@ -802,8 +760,8 @@ class DataDefinitionBuilder(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_opaque(self, typ): # -> None:
+
+    def visit_opaque(self, typ):  # -> None:
         """
         Visit an opaque value.
 
@@ -811,8 +769,8 @@ class DataDefinitionBuilder(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_secret(self, typ): # -> None:
+
+    def visit_secret(self, typ):  # -> None:
         """
         Visit a secret value
 
@@ -820,8 +778,8 @@ class DataDefinitionBuilder(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_date_time(self, typ): # -> None:
+
+    def visit_date_time(self, typ):  # -> None:
         """
         Visit a datetime value
 
@@ -829,8 +787,8 @@ class DataDefinitionBuilder(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_uri(self, typ): # -> None:
+
+    def visit_uri(self, typ):  # -> None:
         """
         Visit an URI value
 
@@ -838,8 +796,8 @@ class DataDefinitionBuilder(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_enum(self, typ): # -> None:
+
+    def visit_enum(self, typ):  # -> None:
         """
         Visit a enum value
 
@@ -847,8 +805,8 @@ class DataDefinitionBuilder(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_reference(self, typ): # -> None:
+
+    def visit_reference(self, typ):  # -> None:
         """
         Visit a reference type
 
@@ -856,8 +814,8 @@ class DataDefinitionBuilder(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_error(self, typ): # -> None:
+
+    def visit_error(self, typ):  # -> None:
         """
         Visit an error type
 
@@ -865,8 +823,8 @@ class DataDefinitionBuilder(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_id(self, typ): # -> None:
+
+    def visit_id(self, typ):  # -> None:
         """
         Visit a ID value
 
@@ -874,15 +832,16 @@ class DataDefinitionBuilder(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-
 
 class TypeUtil:
     """
     Converts a BindingType object to DataDefinition object
     """
+
     @staticmethod
-    def convert_to_data_definition(binding_type): # -> VoidDefinition | IntegerDefinition | DoubleDefinition | StringDefinition | BooleanDefinition | BlobDefinition | OptionalDefinition | ListDefinition | StructRefDefinition | StructDefinition | DynamicStructDefinition | AnyErrorDefinition | OpaqueDefinition | SecretDefinition | ErrorDefinition | None:
+    def convert_to_data_definition(
+        binding_type,
+    ):  # -> VoidDefinition | IntegerDefinition | DoubleDefinition | StringDefinition | BooleanDefinition | BlobDefinition | OptionalDefinition | ListDefinition | StructRefDefinition | StructDefinition | DynamicStructDefinition | AnyErrorDefinition | OpaqueDefinition | SecretDefinition | ErrorDefinition | None:
         """
         Converts a BindingType object to DataDefinition object
 
@@ -892,6 +851,3 @@ class TypeUtil:
         :return: DataDefinition
         """
         ...
-    
-
-

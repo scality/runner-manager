@@ -7,6 +7,7 @@ vAPI CoreException Class
 """
 __author__ = ...
 __copyright__ = ...
+
 class CoreException(Exception):
     """
     This exception is raised by various components of the vAPI runtime
@@ -27,6 +28,7 @@ class CoreException(Exception):
     :ivar messages: Generator of error messages describing why the Exception
                     was raised
     """
+
     def __init__(self, message, cause=...) -> None:
         """
         Initialize CoreException
@@ -37,27 +39,17 @@ class CoreException(Exception):
         :type  cause: Exception that led to this Exception
         """
         ...
-    
+
     @property
-    def messages(self): # -> Generator[Any, Any, None]:
+    def messages(self):  # -> Generator[Any, Any, None]:
         """
         :rtype: generator of :class:`vmware.vapi.message.Message`
         :return: Generator of error messages describing why the Exception
                  was raised
         """
         ...
-    
-    def __eq__(self, other) -> bool:
-        ...
-    
-    def __ne__(self, other) -> bool:
-        ...
-    
-    def __str__(self) -> str:
-        ...
-    
-    def __hash__(self) -> int:
-        ...
-    
 
-
+    def __eq__(self, other) -> bool: ...
+    def __ne__(self, other) -> bool: ...
+    def __str__(self) -> str: ...
+    def __hash__(self) -> int: ...

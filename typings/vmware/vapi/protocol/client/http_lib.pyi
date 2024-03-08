@@ -9,6 +9,7 @@ Various http lib classes
 """
 __author__ = ...
 __copyright__ = ...
+
 class HTTPRequest:
     """
     This class represents an HTTP Request
@@ -28,7 +29,10 @@ class HTTPRequest:
     :ivar timeout: Timeout in seconds for the client to wait for the
                    response from the server
     """
-    def __init__(self, method, body=..., url_path=..., headers=..., cookies=..., timeout=...) -> None:
+
+    def __init__(
+        self, method, body=..., url_path=..., headers=..., cookies=..., timeout=...
+    ) -> None:
         """
         Initialize HTTPRequest
 
@@ -48,8 +52,6 @@ class HTTPRequest:
                         response from the server
         """
         ...
-    
-
 
 class HTTPResponse:
     """
@@ -64,6 +66,7 @@ class HTTPResponse:
     :type data: :class:`object`
     :ivar data: Extra data depending on the HTTP library used
     """
+
     def __init__(self, status, headers, body=..., data=...) -> None:
         """
         Initialize HTTPResponse
@@ -78,13 +81,12 @@ class HTTPResponse:
         :param body: Extra data depending on the HTTP library used
         """
         ...
-    
-
 
 class HTTPMethod(six.text_type):
     """
     Enum representing the HTTP method
     """
+
     DELETE = ...
     GET = ...
     HEAD = ...
@@ -92,5 +94,3 @@ class HTTPMethod(six.text_type):
     PATCH = ...
     POST = ...
     PUT = ...
-
-

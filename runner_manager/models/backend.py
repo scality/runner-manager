@@ -11,10 +11,12 @@ from mypy_boto3_ec2.type_defs import (
     TagTypeDef,
 )
 from pydantic import BaseModel, BaseSettings
-from runner_manager.bin import startup_sh
-from runner_manager.models.runner import Runner
 from pyVmomi import vim
 from pyVmomi.vim.vm import ConfigSpec as VsphereConfigSpec
+
+from runner_manager.bin import startup_sh
+from runner_manager.models.runner import Runner
+
 
 class Backends(str, Enum):
     """Enum for backend types."""
@@ -192,15 +194,20 @@ class AWSInstanceConfig(InstanceConfig):
             MinCount=self.min_count,
             BlockDeviceMappings=block_device_mappings,
         )
+
+
 from vmware.vapi.vsphere.client import create_vsphere_client
+
 
 class VsphereConfig(BackendConfig):
     """Configuration for vSphere backend."""
+
     server: str
     username: str
     password: str
     bearer_token: Optional[str] = None
     verify_ssl: bool = False
+
 
 class VsphereInstanceConfig(InstanceConfig):
     """Configuration for vSphere backend instance."""

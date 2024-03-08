@@ -17,7 +17,8 @@ else:
 _py_to_data_def_map = ...
 if six.PY2:
     ...
-def build_data_value(py_value, data_def): # -> StructValue:
+
+def build_data_value(py_value, data_def):  # -> StructValue:
     """
     Converts a native python value to data value
     using the provided data definition
@@ -31,8 +32,10 @@ def build_data_value(py_value, data_def): # -> StructValue:
     """
     ...
 
-def build_py_value(data_value, data_def=..., impl=...): # -> Any | list[Any] | dict[Any, Any] | None:
-    """"
+def build_py_value(
+    data_value, data_def=..., impl=...
+):  # -> Any | list[Any] | dict[Any, Any] | None:
+    """ "
     Converts a data value to python native value
     impl input is required to create Struct class instances
 
@@ -48,4 +51,3 @@ def build_py_value(data_value, data_def=..., impl=...): # -> Any | list[Any] | d
     :return: Native python value
     """
     ...
-

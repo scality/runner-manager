@@ -7,6 +7,7 @@ vAPI Message class
 """
 __author__ = ...
 __copyright__ = ...
+
 class Message:
     """
     This class encapsulates the concept of a localizable message.
@@ -18,6 +19,7 @@ class Message:
     :type args: :class:`list` of :class:`string`
     :ivar args: The arguments to be used for the messsage
     """
+
     def __init__(self, id_, def_msg, *args) -> None:
         """
         Initializes the message object
@@ -30,25 +32,19 @@ class Message:
         :param args: The arguments to be used for the messsage
         """
         ...
-    
-    def __eq__(self, other) -> bool:
-        ...
-    
-    def __ne__(self, other) -> bool:
-        ...
-    
-    def __repr__(self): # -> str:
-        ...
-    
-    def __str__(self) -> str:
-        ...
-    
 
+    def __eq__(self, other) -> bool: ...
+    def __ne__(self, other) -> bool: ...
+    def __repr__(self):  # -> str:
+        ...
+
+    def __str__(self) -> str: ...
 
 class MessageFormatter:
     """
     Base class for all message formatter classes
     """
+
     @classmethod
     def format_msg(cls, msg, args):
         """
@@ -62,13 +58,12 @@ class MessageFormatter:
         :return: Localized message
         """
         ...
-    
-
 
 class MessageBundle:
     """
     Base class for all message bundle classes.
     """
+
     def __init__(self, messages) -> None:
         """
         Initialize MessageBundle.
@@ -78,7 +73,7 @@ class MessageBundle:
             message templates as values.
         """
         ...
-    
+
     def get(self, msg_id):
         """
         Returns the message template for the given message identifier
@@ -90,13 +85,12 @@ class MessageBundle:
         :raise KeyError: If the message identifier is not found
         """
         ...
-    
-
 
 class MessageFactory:
     """
     A factory class to generate localizable messages
     """
+
     def __init__(self, msg_bundle, formatter) -> None:
         """
         Initializes the message object
@@ -107,8 +101,8 @@ class MessageFactory:
         :param formatter: Formatter for the message
         """
         ...
-    
-    def get_message(self, id_, *args): # -> Message:
+
+    def get_message(self, id_, *args):  # -> Message:
         """
         Return a message object for the given id with the given args.
         If the message is not found, a default unknown message is returned.
@@ -121,6 +115,3 @@ class MessageFactory:
         :return: The message object constructed using the given arguments
         """
         ...
-    
-
-

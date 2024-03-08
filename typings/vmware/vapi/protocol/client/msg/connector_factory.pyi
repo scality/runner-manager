@@ -8,13 +8,15 @@ Protocol connector factory
 __author__ = ...
 __copyright__ = ...
 logger = ...
+
 class ProtocolConnectorFactory:
-    """ Protocol connector factory """
+    """Protocol connector factory"""
+
     def __init__(self) -> None:
-        """ Protocol connector factory init """
+        """Protocol connector factory init"""
         ...
-    
-    def get_connector(self, protocol, *args, **kwargs): # -> Any | None:
+
+    def get_connector(self, protocol, *args, **kwargs):  # -> Any | None:
         """
         Create protocol connector
 
@@ -28,6 +30,3 @@ class ProtocolConnectorFactory:
         :return: Connector object
         """
         ...
-    
-
-

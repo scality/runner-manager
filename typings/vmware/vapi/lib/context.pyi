@@ -7,7 +7,8 @@ Factory methods for creating application context
 """
 __author__ = ...
 __copyright__ = ...
-def create_operation_id(): # -> str:
+
+def create_operation_id():  # -> str:
     """
     Create a new operation id. It is a randomly generated uuid
 
@@ -16,7 +17,7 @@ def create_operation_id(): # -> str:
     """
     ...
 
-def create_default_application_context(): # -> ApplicationContext:
+def create_default_application_context():  # -> ApplicationContext:
     """
     Create a default application context. The
     created context will only have opId.
@@ -26,7 +27,7 @@ def create_default_application_context(): # -> ApplicationContext:
     """
     ...
 
-def insert_operation_id(app_ctx): # -> None:
+def insert_operation_id(app_ctx):  # -> None:
     """
     Add an operation id to the application context if there is none present.
     If an operation id is present, then this is a no op.
@@ -36,7 +37,7 @@ def insert_operation_id(app_ctx): # -> None:
     """
     ...
 
-def insert_task_id(app_ctx, task_id): # -> None:
+def insert_task_id(app_ctx, task_id):  # -> None:
     """
     Add a task id to the application context.
 
@@ -47,7 +48,7 @@ def insert_task_id(app_ctx, task_id): # -> None:
     """
     ...
 
-def remove_task_id(app_ctx): # -> None:
+def remove_task_id(app_ctx):  # -> None:
     """
     Remove a task id from the application context.
 
@@ -56,7 +57,7 @@ def remove_task_id(app_ctx): # -> None:
     """
     ...
 
-def get_task_id(): # -> Any | None:
+def get_task_id():  # -> Any | None:
     """
     Return task id stored in application context.
     Return None if there's no task id present.
@@ -66,7 +67,7 @@ def get_task_id(): # -> Any | None:
     """
     ...
 
-def insert_header(app_ctx, key, value): # -> None:
+def insert_header(app_ctx, key, value):  # -> None:
     """
     Add a key, value pair in application context.
     If the key exists override the value.
@@ -79,4 +80,3 @@ def insert_header(app_ctx, key, value): # -> None:
     :param value: Application context key value
     """
     ...
-

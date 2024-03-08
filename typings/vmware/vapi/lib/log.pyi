@@ -10,7 +10,8 @@ Helper functions for configuring logging in vapi runtime
 __author__ = ...
 __copyright__ = ...
 NO_OP_ID_MSG = ...
-def get_raw_request_logger(): # -> Logger:
+
+def get_raw_request_logger():  # -> Logger:
     """
     Return the raw request logger that is not propagated to root logger and
     disabled by default.
@@ -19,7 +20,7 @@ def get_raw_request_logger(): # -> Logger:
     """
     ...
 
-def get_client_wire_logger(): # -> Logger:
+def get_client_wire_logger():  # -> Logger:
     """
     Return the client wire logger that is not propagated to root logger and
     disabled by default. It is used to log raw wire request/responses
@@ -28,7 +29,7 @@ def get_client_wire_logger(): # -> Logger:
     """
     ...
 
-def get_provider_wire_logger(): # -> Logger:
+def get_provider_wire_logger():  # -> Logger:
     """
     Return the provider wire logger that is not propagated to root logger and
     disabled by default. It is used to log raw wire request/responses
@@ -41,13 +42,13 @@ class VapiFilter(logging.Filter):
     """
     This is a filter that injects operation id into the log record
     """
-    def filter(self, record): # -> Literal[True]:
-        ...
-    
 
+    def filter(self, record):  # -> Literal[True]:
+        ...
 
 _vapi_filter = ...
-def get_vapi_logger(logger_name): # -> Logger:
+
+def get_vapi_logger(logger_name):  # -> Logger:
     """
     Return a logger that is compatible with the VAPI provider log formats.
     Currently, it only adds the VapiFilter

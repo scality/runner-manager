@@ -7,7 +7,10 @@ Utility library for Provider modules
 """
 __author__ = ...
 __copyright__ = ...
-def augment_method_result_with_errors(service_id, operation_id, method_result, errors_to_augment): # -> MethodResult:
+
+def augment_method_result_with_errors(
+    service_id, operation_id, method_result, errors_to_augment
+):  # -> MethodResult:
     """
     Returns a new method result that is identical to `method_result` except that
     the `errors_definition` field in the `output` (which is of type
@@ -33,7 +36,7 @@ def augment_method_result_with_errors(service_id, operation_id, method_result, e
     """
     ...
 
-def augment_method_def_with_errors(method_def, errors): # -> MethodDefinition:
+def augment_method_def_with_errors(method_def, errors):  # -> MethodDefinition:
     """
     Add errors reported by this ApiProviderFilter to a method definition.
     This method clones the input method definition and appends errors. It
@@ -48,4 +51,3 @@ def augment_method_def_with_errors(method_def, errors): # -> MethodDefinition:
     :return: Method definition after augmenting the errors
     """
     ...
-

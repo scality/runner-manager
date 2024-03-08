@@ -10,19 +10,21 @@ vSphere Client
 __author__ = ...
 __copyright__ = ...
 JSON_RPC_ENDPOINT = ...
-class StubFactory(StubFactoryBase):
-    def __init__(self, stub_config) -> None:
-        ...
-    
-    _attrs = ...
 
+class StubFactory(StubFactoryBase):
+    def __init__(self, stub_config) -> None: ...
+
+    _attrs = ...
 
 class VsphereClient(ApiClient):
     """
     vSphere Client class that provides access to stubs for all services in the
     vSphere API
     """
-    def __init__(self, session, server, username, password, bearer_token, hok_token, private_key) -> None:
+
+    def __init__(
+        self, session, server, username, password, bearer_token, hok_token, private_key
+    ) -> None:
         """
         Initialize VsphereClient by creating a parent stub factory instance
         of all vSphere components.
@@ -44,19 +46,25 @@ class VsphereClient(ApiClient):
         :param private_key: Absolute file path of the private key of the user
         """
         ...
-    
-    def __enter__(self): # -> Self:
-        ...
-    
-    def __exit__(self, exc_type, exc_val, exc_tb): # -> None:
-        ...
-    
-    def __del__(self): # -> None:
-        ...
-    
 
+    def __enter__(self):  # -> Self:
+        ...
 
-def create_vsphere_client(server, username=..., password=..., bearer_token=..., hok_token=..., private_key=..., session=...): # -> VsphereClient:
+    def __exit__(self, exc_type, exc_val, exc_tb):  # -> None:
+        ...
+
+    def __del__(self):  # -> None:
+        ...
+
+def create_vsphere_client(
+    server,
+    username=...,
+    password=...,
+    bearer_token=...,
+    hok_token=...,
+    private_key=...,
+    session=...,
+):  # -> VsphereClient:
     """
     Helper method to create an instance of the vSphere API client.
     Please provide one of the following options to authenticate:
@@ -83,4 +91,3 @@ def create_vsphere_client(server, username=..., password=..., bearer_token=..., 
     :return: Vsphere Client instance
     """
     ...
-

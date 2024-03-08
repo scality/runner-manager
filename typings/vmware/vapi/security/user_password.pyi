@@ -14,7 +14,8 @@ USER_KEY = ...
 PASSWORD_KEY = ...
 HTTP_AUTH_HEADER_NAME = ...
 HTTP_BASIC_AUTH_HEADER_PARAM = ...
-def create_user_password_security_context(user_name, password): # -> SecurityContext:
+
+def create_user_password_security_context(user_name, password):  # -> SecurityContext:
     """
     Create a security context for Username-Password based authentication
     scheme
@@ -34,13 +35,14 @@ class UserPasswordSecurityContextParser(SecurityContextParser):
     that builds a security context if the REST request has
     username/password credentials in the HTTP header.
     """
+
     def __init__(self) -> None:
         """
         Initialize UserPasswordSecurityContextParser
         """
         ...
-    
-    def build(self, request): # -> SecurityContext | None:
+
+    def build(self, request):  # -> SecurityContext | None:
         """
         Build the security context if the request has authorization
         header that contains base64 encoded string of username/password.
@@ -54,6 +56,3 @@ class UserPasswordSecurityContextParser(SecurityContextParser):
         :return: Security context object
         """
         ...
-    
-
-

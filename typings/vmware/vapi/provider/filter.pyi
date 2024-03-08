@@ -12,6 +12,7 @@ API Provider filter
 __author__ = ...
 __copyright__ = ...
 logger = ...
+
 @six.add_metaclass(abc.ABCMeta)
 class ApiProviderFilter(ApiProvider):
     """
@@ -22,6 +23,7 @@ class ApiProviderFilter(ApiProvider):
     :type next_provider: :class:`vmware.vapi.core.ApiProvider`
     :ivar next_provider: Next API Provider in the chain
     """
+
     def __init__(self, next_provider=..., errors_to_augment=..., name=...) -> None:
         """
         Initialize ApiProviderFilter
@@ -36,9 +38,9 @@ class ApiProviderFilter(ApiProvider):
         :param name: The name of the filter
         """
         ...
-    
+
     @abc.abstractmethod
-    def invoke(self, service_id, operation_id, input_value, ctx): # -> MethodResult:
+    def invoke(self, service_id, operation_id, input_value, ctx):  # -> MethodResult:
         """
         Invoke an API request. Derived classes of ApiProviderFilter
         should call this method to invoke the request. This can be done
@@ -61,8 +63,8 @@ class ApiProviderFilter(ApiProvider):
         :return: Result of the method invocation
         """
         ...
-    
-    def get_api_provider(self): # -> None:
+
+    def get_api_provider(self):  # -> None:
         """
         Get the last provider in the chain.
 
@@ -70,8 +72,8 @@ class ApiProviderFilter(ApiProvider):
         :return: Last provider in the provider chain which is not a filter
         """
         ...
-    
-    def find_first_api_filter(self, name): # -> Self | None:
+
+    def find_first_api_filter(self, name):  # -> Self | None:
         """
         Get the first filter with the specified name in the provider chain
 
@@ -81,6 +83,3 @@ class ApiProviderFilter(ApiProvider):
         :return: First filter that matches the name
         """
         ...
-    
-
-

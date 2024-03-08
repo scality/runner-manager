@@ -1,18 +1,32 @@
+import logging
+from typing import Literal
+
+from com.vmware.vcenter.vm.hardware.boot_client import Device as BootDevice
+from com.vmware.vcenter.vm.hardware_client import (
+    Cpu,
+    Disk,
+    Ethernet,
+    Memory,
+    ScsiAddressSpec,
+)
+from com.vmware.vcenter_client import (
+    VM,
+    Datacenter,
+    Datastore,
+    Folder,
+    Network,
+    ResourcePool,
+)
+from pydantic import Field
+from requests import Session
+from vmware.vapi.vsphere.client import VsphereClient, create_vsphere_client
 
 from runner_manager.backend.base import BaseBackend
 from runner_manager.models.backend import Backends, VsphereConfig, VsphereInstanceConfig
 from runner_manager.models.runner import Runner
-from pydantic import Field
-from typing import Literal
-from vmware.vapi.vsphere.client import create_vsphere_client, VsphereClient
-from com.vmware.vcenter_client import VM, Datacenter, Datastore, ResourcePool, Folder, Network
-from com.vmware.vcenter.vm.hardware.boot_client import Device as BootDevice
-from com.vmware.vcenter.vm.hardware_client import Cpu, Memory, Disk, ScsiAddressSpec, Ethernet
-from requests import Session
-
-import logging
 
 log = logging.getLogger(__name__)
+
 
 class VsphereBackend(BaseBackend):
     name: Literal[Backends.vsphere] = Field(default=Backends.vsphere)
@@ -42,9 +56,11 @@ class VsphereBackend(BaseBackend):
             print("Datacenter '{}' not found".format(datacenter_name))
             return None
 
-        filter_spec = Folder.FilterSpec(type=Folder.Type.VIRTUAL_MACHINE,
-                                        names=set([folder_name]),
-                                        datacenters=set([datacenter]))
+        filter_spec = Folder.FilterSpec(
+            type=Folder.Type.VIRTUAL_MACHINE,
+            names=set([folder_name]),
+            datacenters=set([datacenter]),
+        )
 
         folder_summaries = self.client.vcenter.Folder.list(filter_spec)
         if len(folder_summaries) > 0:
@@ -81,8 +97,9 @@ class VsphereBackend(BaseBackend):
             print("Datacenter '{}' not found".format(datacenter_name))
             return None
 
-        filter_spec = Datastore.FilterSpec(names=set([datastore_name]),
-                                        datacenters=set([datacenter]))
+        filter_spec = Datastore.FilterSpec(
+            names=set([datastore_name]), datacenters=set([datacenter])
+        )
 
         datastore_summaries = self.client.vcenter.Datastore.list(filter_spec)
         if len(datastore_summaries) > 0:
@@ -102,8 +119,9 @@ class VsphereBackend(BaseBackend):
             return None
 
         names = set([resource_pool_name]) if resource_pool_name else None
-        filter_spec = ResourcePool.FilterSpec(datacenters=set([datacenter]),
-                                            names=names)
+        filter_spec = ResourcePool.FilterSpec(
+            datacenters=set([datacenter]), names=names
+        )
 
         resource_pool_summaries = self.client.vcenter.ResourcePool.list(filter_spec)
         if len(resource_pool_summaries) > 0:
@@ -111,8 +129,7 @@ class VsphereBackend(BaseBackend):
             print("Selecting ResourcePool '{}'".format(resource_pool))
             return resource_pool
         else:
-            print("ResourcePool not found in Datacenter '{}'".
-                format(datacenter_name))
+            print("ResourcePool not found in Datacenter '{}'".format(datacenter_name))
             return None
 
     def placement_spec(self):
@@ -123,22 +140,25 @@ class VsphereBackend(BaseBackend):
         resource_pool = self.get_resource_pool(self.instance_config.datacenter)
 
         folder = self.get_folder(
-            self.instance_config.datacenter,
-            self.instance_config.folder
+            self.instance_config.datacenter, self.instance_config.folder
         )
 
-        datastore = self.get_datastore(self.instance_config.datacenter, self.instance_config.datastore)
+        datastore = self.get_datastore(
+            self.instance_config.datacenter, self.instance_config.datastore
+        )
 
         # Create the vm placement spec with the datastore, resource pool and vm
         # folder
-        placement_spec = VM.PlacementSpec(folder=folder,
-                                        resource_pool=resource_pool,
-                                        datastore=datastore)
+        placement_spec = VM.PlacementSpec(
+            folder=folder, resource_pool=resource_pool, datastore=datastore
+        )
 
-        print("get_placement_spec_for_resource_pool: Result is '{}'".
-            format(placement_spec))
+        print(
+            "get_placement_spec_for_resource_pool: Result is '{}'".format(
+                placement_spec
+            )
+        )
         return placement_spec
-
 
     def get_vm(self, name):
         """
@@ -153,10 +173,7 @@ class VsphereBackend(BaseBackend):
         else:
             return None
 
-    def get_network_backing(self,
-                            portgroup_name,
-                            datacenter_name,
-                            portgroup_type):
+    def get_network_backing(self, portgroup_name, datacenter_name, portgroup_type):
         """
         Gets a standard portgroup network backing for a given Datacenter
         Note: The method assumes that there is only one standard portgroup
@@ -167,19 +184,25 @@ class VsphereBackend(BaseBackend):
             print("Datacenter '{}' not found".format(datacenter_name))
             return None
 
-        filter = Network.FilterSpec(datacenters=set([datacenter]),
-                                    names=set([portgroup_name]),
-                                    types=set([portgroup_type]))
+        filter = Network.FilterSpec(
+            datacenters=set([datacenter]),
+            names=set([portgroup_name]),
+            types=set([portgroup_type]),
+        )
         network_summaries = self.client.vcenter.Network.list(filter=filter)
 
         if len(network_summaries) > 0:
             network = network_summaries[0].network
-            print("Selecting {} Portgroup Network '{}' ({})".
-                format(portgroup_type, portgroup_name, network))
+            print(
+                "Selecting {} Portgroup Network '{}' ({})".format(
+                    portgroup_type, portgroup_name, network
+                )
+            )
             return network
         else:
-            print("Portgroup Network not found in Datacenter '{}'".
-                format(datacenter_name))
+            print(
+                "Portgroup Network not found in Datacenter '{}'".format(datacenter_name)
+            )
             return None
 
     def create(self, runner: Runner) -> Runner:
@@ -188,16 +211,18 @@ class VsphereBackend(BaseBackend):
         standard_network = self.get_network_backing(
             self.instance_config.portgroup,
             self.instance_config.datacenter,
-            Network.Type.STANDARD_PORTGROUP
+            Network.Type.STANDARD_PORTGROUP,
         )
         nic = Ethernet.CreateSpec(
             start_connected=True,
             backing=Ethernet.BackingSpec(
-                type=Ethernet.BackingType.STANDARD_PORTGROUP,
-                network=standard_network))
+                type=Ethernet.BackingType.STANDARD_PORTGROUP, network=standard_network
+            ),
+        )
         boot_device_order = [
             BootDevice.EntryCreateSpec(BootDevice.Type.ETHERNET),
-            BootDevice.EntryCreateSpec(BootDevice.Type.DISK)]
+            BootDevice.EntryCreateSpec(BootDevice.Type.DISK),
+        ]
         vm_create_spec = VM.CreateSpec(
             guest_os=self.instance_config.guest_os,
             name=runner.name,
@@ -208,11 +233,13 @@ class VsphereBackend(BaseBackend):
                 Disk.CreateSpec(
                     type=Disk.HostBusAdapterType.SCSI,
                     scsi=ScsiAddressSpec(bus=0, unit=0),
-                    new_vmdk=Disk.VmdkCreateSpec(name='boot',
-                    capacity=self.instance_config.disk_size_gb * GiB)),
+                    new_vmdk=Disk.VmdkCreateSpec(
+                        name="boot", capacity=self.instance_config.disk_size_gb * GiB
+                    ),
+                ),
             ],
             nics=[nic],
-            boot_devices=boot_device_order
+            boot_devices=boot_device_order,
         )
         vm = self.client.vcenter.VM.create(vm_create_spec)
         vm_info = self.client.vcenter.VM.get(vm)

@@ -7,10 +7,12 @@ Bindings data classes
 """
 __author__ = ...
 __copyright__ = ...
+
 class VapiStruct:
     """
     Representation of IDL Structure in python language bindings
     """
+
     _validator_list = ...
     _canonical_to_pep_names = ...
     def __init__(self, struct_value=..., rest_converter_mode=...) -> None:
@@ -29,8 +31,8 @@ class VapiStruct:
             or :class:`None`
         """
         ...
-    
-    def get_field(self, attr): # -> Any:
+
+    def get_field(self, attr):  # -> Any:
         """
         Returns the struct field value
 
@@ -40,9 +42,9 @@ class VapiStruct:
         :return: Field value
         """
         ...
-    
+
     @classmethod
-    def validate_struct_value(cls, struct_value): # -> None:
+    def validate_struct_value(cls, struct_value):  # -> None:
         """
         Validate if the given struct value satisfies all
         the constraints of this VapiStruct.
@@ -56,8 +58,8 @@ class VapiStruct:
             not satisfied
         """
         ...
-    
-    def validate_constraints(self): # -> None:
+
+    def validate_constraints(self):  # -> None:
         """
         Validate if the current VapiStruct instance satisfies all the
         constraints of this VapiStruct type.
@@ -66,9 +68,9 @@ class VapiStruct:
             not satisfied
         """
         ...
-    
+
     @classmethod
-    def get_binding_type(cls): # -> Any | None:
+    def get_binding_type(cls):  # -> Any | None:
         """
         Returns the corresponding BindingType for the VapiStruct class
 
@@ -76,8 +78,8 @@ class VapiStruct:
         :return: BindingType for this VapiStruct
         """
         ...
-    
-    def get_struct_value(self): # -> StructValue:
+
+    def get_struct_value(self):  # -> StructValue:
         """
         Returns the corresponding StructValue for the VapiStruct class
 
@@ -85,8 +87,10 @@ class VapiStruct:
         :return: StructValue for this VapiStruct
         """
         ...
-    
-    def convert_to(self, cls): # -> str | Any | StructValue | list[Any] | set[Any] | VapiStruct | UnresolvedError | datetime | Enum | dict[Any, Any] | None:
+
+    def convert_to(
+        self, cls
+    ):  # -> str | Any | StructValue | list[Any] | set[Any] | VapiStruct | UnresolvedError | datetime | Enum | dict[Any, Any] | None:
         """
         Convert the underlying StructValue to an instance of the provided class
         if possible.  Conversion will be possible if the StructValue contains
@@ -100,8 +104,8 @@ class VapiStruct:
         :return: The converted value
         """
         ...
-    
-    def to_json(self): # -> str:
+
+    def to_json(self):  # -> str:
         """
         Convert the object into a json string.
 
@@ -109,8 +113,8 @@ class VapiStruct:
         :return: JSON string representation of this object
         """
         ...
-    
-    def to_dict(self): # -> Any:
+
+    def to_dict(self):  # -> Any:
         """
         Convert the object into a python dictionary. Even the nested types
         are converted to dictionaries.
@@ -119,29 +123,21 @@ class VapiStruct:
         :return: Dictionary representation of this object
         """
         ...
-    
-    def __eq__(self, other) -> bool:
-        ...
-    
-    def __ne__(self, other) -> bool:
-        ...
-    
-    def __repr__(self): # -> str:
-        ...
-    
-    def __str__(self) -> str:
-        ...
-    
-    def __hash__(self) -> int:
-        ...
-    
 
+    def __eq__(self, other) -> bool: ...
+    def __ne__(self, other) -> bool: ...
+    def __repr__(self):  # -> str:
+        ...
+
+    def __str__(self) -> str: ...
+    def __hash__(self) -> int: ...
 
 class PrettyPrinter:
     """
     Helper class to pretty print Python native values (with special support
     for VapiStruct objects).
     """
+
     def __init__(self, stream=..., indent=...) -> None:
         """
         Initialize PrettyPrinter
@@ -153,8 +149,8 @@ class PrettyPrinter:
         :param indent: Indentation to be used for new lines
         """
         ...
-    
-    def pprint(self, value, level=...): # -> None:
+
+    def pprint(self, value, level=...):  # -> None:
         """
         Print a Python native value
 
@@ -164,6 +160,3 @@ class PrettyPrinter:
         :param level: Indentation level
         """
         ...
-    
-
-

@@ -10,6 +10,7 @@ DataDefinition classes
 __author__ = ...
 __copyright__ = ...
 logger = ...
+
 class DataDefinition:
     """
     Base class for all types in the vAPI run-time type system
@@ -17,6 +18,7 @@ class DataDefinition:
     :type type: :class:`str`
     :ivar type: String representation of the type
     """
+
     def __init__(self, data_type=...) -> None:
         """
         Initialize the data definition instance
@@ -25,8 +27,8 @@ class DataDefinition:
         :param data_type: String representation of the type
         """
         ...
-    
-    def valid_instance_of(self, value): # -> bool:
+
+    def valid_instance_of(self, value):  # -> bool:
         """
         Validates that the specified :class:`vmware.vapi.data.value.DataValue`
         is an instance of this data-definition
@@ -39,8 +41,8 @@ class DataDefinition:
                  false, otherwise
         """
         ...
-    
-    def validate(self, value): # -> list[Message] | None:
+
+    def validate(self, value):  # -> list[Message] | None:
         """
         Validates that the specified :class:`vmware.vapi.data.value.DataValue`
         is an instance of this data-definition
@@ -55,8 +57,8 @@ class DataDefinition:
                  this data-definition
         """
         ...
-    
-    def complete_value(self, value): # -> None:
+
+    def complete_value(self, value):  # -> None:
         """
         Fill the optional fields of StructValues. Also
         includes the StructValues present in other generic types: List
@@ -66,8 +68,8 @@ class DataDefinition:
         :param value: DataValue
         """
         ...
-    
-    def accept(self, visitor): # -> None:
+
+    def accept(self, visitor):  # -> None:
         """
         Applies a visitor to this data-definition.
 
@@ -75,26 +77,19 @@ class DataDefinition:
         :param visitor: the visitor operating on this data-definition
         """
         ...
-    
-    def __eq__(self, other) -> bool:
-        ...
-    
-    def __ne__(self, other) -> bool:
-        ...
-    
-    def __hash__(self) -> int:
-        ...
-    
-    def __repr__(self): # -> str:
-        ...
-    
 
+    def __eq__(self, other) -> bool: ...
+    def __ne__(self, other) -> bool: ...
+    def __hash__(self) -> int: ...
+    def __repr__(self):  # -> str:
+        ...
 
 class SingletonDefinition(DataDefinition):
     """
     Base class for all the primitive data definition classes. All the derived
     classes of this class will have only one instance.
     """
+
     _instance = ...
     def __init__(self, data_type) -> None:
         """
@@ -104,22 +99,21 @@ class SingletonDefinition(DataDefinition):
         :param data_type: Type of the DataDefinition
         """
         ...
-    
-    def __new__(cls, *args, **kwargs): # -> Self:
-        ...
-    
 
+    def __new__(cls, *args, **kwargs):  # -> Self:
+        ...
 
 class VoidDefinition(SingletonDefinition):
     """
     DataDefinition class for void
     """
+
     def __init__(self) -> None:
         """
         Initialize VoidDefinition
         """
         ...
-    
+
     def new_value(self):
         """
         Create a new VoidValue
@@ -128,19 +122,18 @@ class VoidDefinition(SingletonDefinition):
         :return: Newly created VoidValue
         """
         ...
-    
-
 
 class IntegerDefinition(SingletonDefinition):
     """
     DataDefinition for long values
     """
+
     def __init__(self) -> None:
         """
         Initialize IntegerDefinition
         """
         ...
-    
+
     def new_value(self, value=...):
         """
         Create a new IntegerValue
@@ -149,19 +142,18 @@ class IntegerDefinition(SingletonDefinition):
         :return: Newly created IntegerValue
         """
         ...
-    
-
 
 class DoubleDefinition(SingletonDefinition):
     """
     DataDefinition for floats
     """
+
     def __init__(self) -> None:
         """
         Initialize DoubleDefinition
         """
         ...
-    
+
     def new_value(self, value=...):
         """
         Create a new DoubleValue
@@ -170,19 +162,18 @@ class DoubleDefinition(SingletonDefinition):
         :return: Newly created DoubleValue
         """
         ...
-    
-
 
 class StringDefinition(SingletonDefinition):
     """
     DataDefinition for strings
     """
+
     def __init__(self) -> None:
         """
         Initialize StringDefinition
         """
         ...
-    
+
     def new_value(self, value=...):
         """
         Create a new StringValue
@@ -191,20 +182,19 @@ class StringDefinition(SingletonDefinition):
         :return: Newly created StringValue
         """
         ...
-    
-
 
 class OpaqueDefinition(SingletonDefinition):
     """
     DataDefinition for opaque
     """
+
     def __init__(self) -> None:
         """
         Initialize OpaqueDefinition
         """
         ...
-    
-    def validate(self, value): # -> list[Message] | None:
+
+    def validate(self, value):  # -> list[Message] | None:
         """
         The validation for OpaqueDefinition will succeed against
         any DataValue. Only validates that supplied value is not None
@@ -218,21 +208,20 @@ class OpaqueDefinition(SingletonDefinition):
                  this data-definition
         """
         ...
-    
-
 
 class DynamicStructDefinition(SingletonDefinition):
     """
     DataDefinition for dynamic structs
     """
+
     _valid_types = ...
     def __init__(self) -> None:
         """
         Initialize DynamicStructDefinition
         """
         ...
-    
-    def validate(self, value): # -> list[Message] | None:
+
+    def validate(self, value):  # -> list[Message] | None:
         """
         The validation for DynamicStructDefinition will succeed against
         any StructValue.
@@ -247,20 +236,19 @@ class DynamicStructDefinition(SingletonDefinition):
                  this data-definition
         """
         ...
-    
-
 
 class AnyErrorDefinition(SingletonDefinition):
     """
     DataDefinition for 'Exception' type in IDL
     """
+
     def __init__(self) -> None:
         """
         Initialize AnyErrorDefinition
         """
         ...
-    
-    def validate(self, value): # -> list[Message] | None:
+
+    def validate(self, value):  # -> list[Message] | None:
         """
         The validation for AnyErrorDefinition will succeed against
         any ErrorValue.
@@ -275,19 +263,18 @@ class AnyErrorDefinition(SingletonDefinition):
                  this data-definition
         """
         ...
-    
-
 
 class BlobDefinition(SingletonDefinition):
     """
     DataDefinition for binary values
     """
+
     def __init__(self) -> None:
         """
         Initialize BlobDefinition
         """
         ...
-    
+
     def new_value(self, value=...):
         """
         Create a new BlobValue
@@ -296,19 +283,18 @@ class BlobDefinition(SingletonDefinition):
         :return: Newly created BlobValue
         """
         ...
-    
-
 
 class BooleanDefinition(SingletonDefinition):
     """
     DataDefinition for bool values
     """
+
     def __init__(self) -> None:
         """
         Initialize BooleanDefinition
         """
         ...
-    
+
     def new_value(self, value=...):
         """
         Create a new BooleanValue
@@ -317,13 +303,12 @@ class BooleanDefinition(SingletonDefinition):
         :return: Newly created BooleanValue
         """
         ...
-    
-
 
 class ListDefinition(DataDefinition):
     """
     DataDefinition for lists
     """
+
     def __init__(self, element_type) -> None:
         """
         Initialize ListDefinition
@@ -333,7 +318,7 @@ class ListDefinition(DataDefinition):
                 ListDefinition
         """
         ...
-    
+
     def new_value(self, values=...):
         """
         Create a new ListValue
@@ -345,8 +330,8 @@ class ListDefinition(DataDefinition):
         :return: Newly created ListValue
         """
         ...
-    
-    def validate(self, list_value): # -> list[Message] | None:
+
+    def validate(self, list_value):  # -> list[Message] | None:
         """
         Apart from the validation checks specified in the validate
         method of DataDefinition class, this method does some additional checks
@@ -363,8 +348,8 @@ class ListDefinition(DataDefinition):
                  this data-definition
         """
         ...
-    
-    def complete_value(self, value): # -> None:
+
+    def complete_value(self, value):  # -> None:
         """
         Fill the optional values inside StructValues
 
@@ -372,22 +357,17 @@ class ListDefinition(DataDefinition):
         :param value: DataValue
         """
         ...
-    
-    def __eq__(self, other) -> bool:
-        ...
-    
-    def __hash__(self) -> int:
-        ...
-    
-    def __repr__(self): # -> str:
-        ...
-    
 
+    def __eq__(self, other) -> bool: ...
+    def __hash__(self) -> int: ...
+    def __repr__(self):  # -> str:
+        ...
 
 class StructDefinition(DataDefinition):
     """
     DataDefinition for structures
     """
+
     def __init__(self, name, fields, data_type=...) -> None:
         """
         Initialize StructDefinition
@@ -400,7 +380,7 @@ class StructDefinition(DataDefinition):
                        StructDefinition
         """
         ...
-    
+
     def new_value(self):
         """
         Create a new StructValue
@@ -409,8 +389,8 @@ class StructDefinition(DataDefinition):
         :return: Newly created StructValue
         """
         ...
-    
-    def get_field_names(self): # -> list[Any]:
+
+    def get_field_names(self):  # -> list[Any]:
         """
         Returns the list of field names in this struct definition. The ordering
         of fields is not preserved.
@@ -419,8 +399,8 @@ class StructDefinition(DataDefinition):
         :return: List of field names in this struct definition
         """
         ...
-    
-    def get_field(self, field): # -> None:
+
+    def get_field(self, field):  # -> None:
         """
         Returns the field definition of the specified field
 
@@ -428,8 +408,8 @@ class StructDefinition(DataDefinition):
         :return: field definition of the specified field
         """
         ...
-    
-    def validate(self, other): # -> list[Message] | None:
+
+    def validate(self, other):  # -> list[Message] | None:
         """
         Apart from the validation checks specified in the validate
         method of DataDefinition class, this method does some additional checks
@@ -455,8 +435,8 @@ class StructDefinition(DataDefinition):
                  this data-definition
         """
         ...
-    
-    def complete_value(self, value): # -> None:
+
+    def complete_value(self, value):  # -> None:
         """
         Fill out all the unset optional fields in a structure
         based on the StructDefinition
@@ -465,17 +445,11 @@ class StructDefinition(DataDefinition):
         :param value: Input Struct Value
         """
         ...
-    
-    def __eq__(self, other) -> bool:
-        ...
-    
-    def __hash__(self) -> int:
-        ...
-    
-    def __repr__(self): # -> str:
-        ...
-    
 
+    def __eq__(self, other) -> bool: ...
+    def __hash__(self) -> int: ...
+    def __repr__(self):  # -> str:
+        ...
 
 class StructRefDefinition(DataDefinition):
     """
@@ -486,6 +460,7 @@ class StructRefDefinition(DataDefinition):
     :type name: :class:`str`
     :ivar name: Structure name
     """
+
     def __init__(self, name, definition=...) -> None:
         """
         Initialize StructRefDefinition
@@ -497,9 +472,9 @@ class StructRefDefinition(DataDefinition):
                            reference
         """
         ...
-    
+
     @property
-    def target(self): # -> None:
+    def target(self):  # -> None:
         """
         Returns the target structure definition of this reference.
 
@@ -508,9 +483,9 @@ class StructRefDefinition(DataDefinition):
                  unresolved reference
         """
         ...
-    
+
     @target.setter
-    def target(self, definition): # -> None:
+    def target(self, definition):  # -> None:
         """
         Resolves the reference. An unresolved reference can be resolved exactly
         once. A resolved reference cannot be re-resolved.
@@ -522,14 +497,14 @@ class StructRefDefinition(DataDefinition):
             reference does not match the name of the definition
         """
         ...
-    
-    def check_resolved(self): # -> None:
+
+    def check_resolved(self):  # -> None:
         """
         Check if the reference is resolved or not
         """
         ...
-    
-    def complete_value(self, value): # -> None:
+
+    def complete_value(self, value):  # -> None:
         """
         Fill out all the unset optional fields in a structure
         based on the resolved StructDefinition for this
@@ -539,8 +514,8 @@ class StructRefDefinition(DataDefinition):
         :param value: Input StructValue
         """
         ...
-    
-    def validate(self, other): # -> Generator[Any, Any, None]:
+
+    def validate(self, other):  # -> Generator[Any, Any, None]:
         """
         Validate using the target if the reference is resolved
 
@@ -554,22 +529,17 @@ class StructRefDefinition(DataDefinition):
                  this data-definition
         """
         ...
-    
-    def __eq__(self, other) -> bool:
-        ...
-    
-    def __hash__(self) -> int:
-        ...
-    
-    def __repr__(self): # -> LiteralString:
-        ...
-    
 
+    def __eq__(self, other) -> bool: ...
+    def __hash__(self) -> int: ...
+    def __repr__(self):  # -> LiteralString:
+        ...
 
 class ErrorDefinition(StructDefinition):
     """
     DataDefinition for errors
     """
+
     def __init__(self, name, fields) -> None:
         """
         Initialize ErrorDefinition
@@ -582,7 +552,7 @@ class ErrorDefinition(StructDefinition):
                        StructDefinition
         """
         ...
-    
+
     def new_value(self):
         """
         Create a new ErrorValue
@@ -591,8 +561,6 @@ class ErrorDefinition(StructDefinition):
         :return: Newly created ErrorValue
         """
         ...
-    
-
 
 class OptionalDefinition(DataDefinition):
     """
@@ -604,6 +572,7 @@ class OptionalDefinition(DataDefinition):
     :type element_type: :class:`DataDefinition`
     :ivar element_type: The type of the element that is optional
     """
+
     def __init__(self, element_type) -> None:
         """
         Initialize OptionalDefinition
@@ -612,7 +581,7 @@ class OptionalDefinition(DataDefinition):
         :param element_type: Type of the DataDefinition
         """
         ...
-    
+
     def new_value(self, value=...):
         """
         Create and return a new :class:`OptionalValue` using this
@@ -625,8 +594,8 @@ class OptionalDefinition(DataDefinition):
         :return: A new optional value using the given data-definition
         """
         ...
-    
-    def validate(self, value): # -> list[Message] | None:
+
+    def validate(self, value):  # -> list[Message] | None:
         """
         Apart from the validation checks specified in the validate
         method of DataDefinition class, this method does some additional checks.
@@ -644,8 +613,8 @@ class OptionalDefinition(DataDefinition):
                  this data-definition
         """
         ...
-    
-    def complete_value(self, value): # -> None:
+
+    def complete_value(self, value):  # -> None:
         """
         Fill the optional values inside StructValues
 
@@ -653,28 +622,23 @@ class OptionalDefinition(DataDefinition):
         :param value: DataValue
         """
         ...
-    
-    def __eq__(self, other) -> bool:
-        ...
-    
-    def __hash__(self) -> int:
-        ...
-    
-    def __repr__(self): # -> str:
-        ...
-    
 
+    def __eq__(self, other) -> bool: ...
+    def __hash__(self) -> int: ...
+    def __repr__(self):  # -> str:
+        ...
 
 class SecretDefinition(SingletonDefinition):
     """
     DataDefinition for Secrets. Only strings are allowed to be secrets.
     """
+
     def __init__(self) -> None:
         """
         Initialize SecretDefinition
         """
         ...
-    
+
     def new_value(self, value=...):
         """
         Create a new SecretValue
@@ -683,16 +647,13 @@ class SecretDefinition(SingletonDefinition):
         :return: Newly created SecretValue
         """
         ...
-    
-
 
 class SimpleDefinitionVisitor(VapiVisitor):
     """
     Base no-op implementation of a definition visitor
     """
-    def __init__(self) -> None:
-        ...
-    
+
+    def __init__(self) -> None: ...
     def visit_void(self, defn):
         """
         Visit a VoidDefinition
@@ -701,7 +662,7 @@ class SimpleDefinitionVisitor(VapiVisitor):
         :param defn: Data definition
         """
         ...
-    
+
     def visit_integer(self, defn):
         """
         Visit a IntegerDefinition
@@ -710,7 +671,7 @@ class SimpleDefinitionVisitor(VapiVisitor):
         :param defn: Data definition
         """
         ...
-    
+
     def visit_double(self, defn):
         """
         Visit a DoubleDefinition
@@ -719,7 +680,7 @@ class SimpleDefinitionVisitor(VapiVisitor):
         :param defn: Data definition
         """
         ...
-    
+
     def visit_string(self, defn):
         """
         Visit a StringDefinition
@@ -728,7 +689,7 @@ class SimpleDefinitionVisitor(VapiVisitor):
         :param defn: Data definition
         """
         ...
-    
+
     def visit_opaque(self, defn):
         """
         Visit a OpaqueDefinition
@@ -737,7 +698,7 @@ class SimpleDefinitionVisitor(VapiVisitor):
         :param defn: Data definition
         """
         ...
-    
+
     def visit_blob(self, defn):
         """
         Visit a BlobDefinition
@@ -746,7 +707,7 @@ class SimpleDefinitionVisitor(VapiVisitor):
         :param defn: Data definition
         """
         ...
-    
+
     def visit_boolean(self, defn):
         """
         Visit a BooleanDefinition
@@ -755,7 +716,7 @@ class SimpleDefinitionVisitor(VapiVisitor):
         :param defn: Data definition
         """
         ...
-    
+
     def visit_list(self, defn):
         """
         Visit a ListDefinition
@@ -764,7 +725,7 @@ class SimpleDefinitionVisitor(VapiVisitor):
         :param defn: Data definition
         """
         ...
-    
+
     def visit_struct(self, defn):
         """
         Visit a StructDefinition
@@ -773,7 +734,7 @@ class SimpleDefinitionVisitor(VapiVisitor):
         :param defn: Data definition
         """
         ...
-    
+
     def visit_error(self, defn):
         """
         Visit an ErrorDefinition
@@ -782,7 +743,7 @@ class SimpleDefinitionVisitor(VapiVisitor):
         :param defn: Data definition
         """
         ...
-    
+
     def visit_optional(self, defn):
         """
         Visit a OptionalDefinition
@@ -791,7 +752,7 @@ class SimpleDefinitionVisitor(VapiVisitor):
         :param defn: Data definition
         """
         ...
-    
+
     def visit_secret(self, defn):
         """
         Visit a SecretDefinition
@@ -800,7 +761,7 @@ class SimpleDefinitionVisitor(VapiVisitor):
         :param defn: Data definition
         """
         ...
-    
+
     def visit_struct_ref(self, defn):
         """
         Visit a StructRefDefinition
@@ -809,10 +770,9 @@ class SimpleDefinitionVisitor(VapiVisitor):
         :param defn: StructRefDefinition object
         """
         ...
-    
-
 
 data_type_to_definition_map = ...
+
 def data_definition_factory(data_type, *args, **kwargs):
     """
     data definition factory
@@ -830,13 +790,14 @@ class ReferenceResolver:
     """
     Resolves all the StructRefDefinition objects
     """
+
     def __init__(self) -> None:
         """
         Initialize ReferenceResolver
         """
         ...
-    
-    def add_definition(self, definition): # -> None:
+
+    def add_definition(self, definition):  # -> None:
         """
         Adds a new structure definition to the context
 
@@ -844,8 +805,8 @@ class ReferenceResolver:
         :param definition: StructDefinition
         """
         ...
-    
-    def add_reference(self, reference): # -> None:
+
+    def add_reference(self, reference):  # -> None:
         """
         Adds a new structure refernce to the context
 
@@ -853,8 +814,8 @@ class ReferenceResolver:
         :param refernce: StructRefDefinition
         """
         ...
-    
-    def is_defined(self, name): # -> bool:
+
+    def is_defined(self, name):  # -> bool:
         """
         Determines whether the context contains a definition for the specified
         structure
@@ -863,8 +824,8 @@ class ReferenceResolver:
         :return: True if the structure is already defined, false otherwise
         """
         ...
-    
-    def get_definition(self, name): # -> None:
+
+    def get_definition(self, name):  # -> None:
         """
         Determines whether the context contains a definition for the specified
         structure
@@ -874,12 +835,9 @@ class ReferenceResolver:
                  None otherwise
         """
         ...
-    
-    def resolve(self): # -> None:
+
+    def resolve(self):  # -> None:
         """
         Traverses all references and resolves the unresolved ones.
         """
         ...
-    
-
-

@@ -10,6 +10,7 @@ Stub helper classes
 __author__ = ...
 __copyright__ = ...
 logger = ...
+
 class StubConfiguration:
     """
     Configuration data for vAPI stub classes
@@ -17,6 +18,7 @@ class StubConfiguration:
     :type connector: :class:`vmware.vapi.protocol.client.connector.Connector`
     :ivar connector: Connection to be used to talk to the remote ApiProvider
     """
+
     def __init__(self, connector, *error_types, **kwargs) -> None:
         """
         Initialize the stub configuration
@@ -32,7 +34,7 @@ class StubConfiguration:
         :param kwargs: Extract rest http response status
         """
         ...
-    
+
     @property
     def connector(self):
         """
@@ -40,9 +42,9 @@ class StubConfiguration:
         :return: Connection to be used to talk to the remote ApiProvider
         """
         ...
-    
+
     @property
-    def resolver(self): # -> NameToTypeResolver:
+    def resolver(self):  # -> NameToTypeResolver:
         """
         Type resolver that can resolve canonical names to its binding types
 
@@ -50,9 +52,9 @@ class StubConfiguration:
         :return: Type resolver
         """
         ...
-    
+
     @property
-    def response_extractor(self): # -> ResponseExtractor | None:
+    def response_extractor(self):  # -> ResponseExtractor | None:
         """
         Response extractor that can retrive the raw http response status and body    # pylint: disable=line-too-long
 
@@ -60,14 +62,15 @@ class StubConfiguration:
         :return: Response extractor
         """
         ...
-    
-
 
 class ApiInterfaceStub(ApiInterface):
     """
     Stub class for Api Interface
     """
-    def __init__(self, iface_name, config, operations, rest_metadata=..., is_vapi_rest=...) -> None:
+
+    def __init__(
+        self, iface_name, config, operations, rest_metadata=..., is_vapi_rest=...
+    ) -> None:
         """
         Initialize the ApiMethod skeleton object
 
@@ -86,8 +89,8 @@ class ApiInterfaceStub(ApiInterface):
             for Swagger Rest
         """
         ...
-    
-    def get_identifier(self): # -> InterfaceIdentifier:
+
+    def get_identifier(self):  # -> InterfaceIdentifier:
         """
         Returns interface identifier
 
@@ -95,8 +98,8 @@ class ApiInterfaceStub(ApiInterface):
         :return: Interface identifier
         """
         ...
-    
-    def get_definition(self): # -> InterfaceDefinition:
+
+    def get_definition(self):  # -> InterfaceDefinition:
         """
         Returns interface definition
 
@@ -104,10 +107,10 @@ class ApiInterfaceStub(ApiInterface):
         :return: Interface definition
         """
         ...
-    
-    def get_method_definition(self, method_id): # -> MethodDefinition | None:
+
+    def get_method_definition(self, method_id):  # -> MethodDefinition | None:
         ...
-    
+
     def invoke(self, ctx, method_id, input_value):
         """
         Invokes the specified method using the execution context and
@@ -124,8 +127,10 @@ class ApiInterfaceStub(ApiInterface):
         :return: Result of the method invocation
         """
         ...
-    
-    def native_invoke(self, ctx, method_name, kwargs): # -> str | Any | StructValue | list[Any] | set[Any] | VapiStruct | UnresolvedError | datetime | Enum | dict[Any, Any] | None:
+
+    def native_invoke(
+        self, ctx, method_name, kwargs
+    ):  # -> str | Any | StructValue | list[Any] | set[Any] | VapiStruct | UnresolvedError | datetime | Enum | dict[Any, Any] | None:
         """
         Invokes the method corresponding to the given method name
         with the kwargs.
@@ -144,14 +149,13 @@ class ApiInterfaceStub(ApiInterface):
         :return: Method result
         """
         ...
-    
-
 
 class VapiInterface:
     """
     vAPI Interface class is used by the python client side bindings. This
     encapsulates the ApiInterfaceStub instance
     """
+
     def __init__(self, config, api_interface) -> None:
         """
         Initialize VapiInterface object
@@ -163,13 +167,12 @@ class VapiInterface:
                               execute the ApiMethods
         """
         ...
-    
-
 
 class StubFactory:
     """
     Factory for client-side vAPI stubs
     """
+
     def __init__(self, config) -> None:
         """
         Initialize the stub factory
@@ -178,8 +181,8 @@ class StubFactory:
         :param config: Configuration data for vAPI stubs
         """
         ...
-    
-    def create_stub(self, service_name): # -> Any:
+
+    def create_stub(self, service_name):  # -> Any:
         """
         Create a stub corresponding to the specified service name
 
@@ -190,8 +193,6 @@ class StubFactory:
         :return: The stub correspoding to the specified service name
         """
         ...
-    
-
 
 class StubFactoryBase:
     """
@@ -203,6 +204,7 @@ class StubFactoryBase:
     :cvar _attrs: Dictionary of service name and service stub or sub module name
         and string reprensenting the fully qualified class path
     """
+
     _attrs = ...
     def __init__(self, stub_config) -> None:
         """
@@ -212,17 +214,16 @@ class StubFactoryBase:
         :param stub_config: Stub config instance
         """
         ...
-    
-    def __getattribute__(self, name): # -> Any | StubFactoryBase | VapiInterface:
-        ...
-    
 
+    def __getattribute__(self, name):  # -> Any | StubFactoryBase | VapiInterface:
+        ...
 
 class ApiClient:
     """
     Base Class that represents an api client that client binding users can use
     to access all the service stubs
     """
+
     def __init__(self, stub_factory) -> None:
         """
         Initialize ApiClient
@@ -232,12 +233,9 @@ class ApiClient:
             component or product
         """
         ...
-    
-    def __getattr__(self, name): # -> Any:
-        ...
-    
-    def __dir__(self): # -> list[str]:
-        ...
-    
 
+    def __getattr__(self, name):  # -> Any:
+        ...
 
+    def __dir__(self):  # -> list[str]:
+        ...

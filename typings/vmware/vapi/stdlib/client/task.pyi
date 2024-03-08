@@ -7,10 +7,12 @@ Task Helper for clients
 """
 __author__ = ...
 __copyright__ = ...
+
 class Task:
     """
     Task Helper class for clients
     """
+
     def __init__(self, task_id, task_svc_instance, result_type) -> None:
         """
         Initialize the Task Helper class
@@ -23,8 +25,8 @@ class Task:
         :param result_type: Result type
         """
         ...
-    
-    def get_task_id(self): # -> Any:
+
+    def get_task_id(self):  # -> Any:
         """
         Returns task id
 
@@ -32,7 +34,7 @@ class Task:
         :return: Task Id
         """
         ...
-    
+
     def get_info(self):
         """
         Returns tasks info
@@ -41,8 +43,10 @@ class Task:
         :return: Task Info
         """
         ...
-    
-    def get_result(self): # -> str | Any | StructValue | list[Any] | set[Any] | VapiStruct | UnresolvedError | datetime | Enum | dict[Any, Any] | None:
+
+    def get_result(
+        self,
+    ):  # -> str | Any | StructValue | list[Any] | set[Any] | VapiStruct | UnresolvedError | datetime | Enum | dict[Any, Any] | None:
         """
         Returns task result
 
@@ -50,7 +54,7 @@ class Task:
         :return: Task Result
         """
         ...
-    
+
     def get_error(self):
         """
         Returns task error
@@ -59,6 +63,3 @@ class Task:
         :return: Task Error
         """
         ...
-    
-
-

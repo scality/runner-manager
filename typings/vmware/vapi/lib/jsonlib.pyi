@@ -10,7 +10,8 @@ JSON encoder for double values
 __author__ = ...
 __copyright__ = ...
 logger = ...
-def canonicalize_double(obj): # -> str:
+
+def canonicalize_double(obj):  # -> str:
     """
     Canonicalize double based on XML schema double canonical format
 
@@ -38,8 +39,6 @@ class DecimalEncoder(json.JSONEncoder):
     Class that adds capability of encoding decimal
     in JSON
     """
-    def default(self, obj): # -> Generator[text_type, None, None] | Any:
+
+    def default(self, obj):  # -> Generator[text_type, None, None] | Any:
         ...
-    
-
-

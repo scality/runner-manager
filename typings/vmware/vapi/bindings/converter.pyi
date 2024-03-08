@@ -10,19 +10,21 @@ Type converter to/from vAPI runtime data model to Python native data model
 __author__ = ...
 __copyright__ = ...
 logger = ...
+
 class RestConverter:
     """
     Constants for different REST converter modes
     """
+
     VAPI_REST = ...
     SWAGGER_REST = ...
-
 
 class PythonToVapiJsonRpcDataValueVisitor(BindingTypeVisitor):
     """
     Visitor to convert from Python native value to vAPI JSON-RPC compatible
     DataValue
     """
+
     def __init__(self, value) -> None:
         """
         Initialize PythonToVapiJsonRpcDataValueVisitor
@@ -31,8 +33,8 @@ class PythonToVapiJsonRpcDataValueVisitor(BindingTypeVisitor):
         :param value: Native python value
         """
         ...
-    
-    def get_out_value(self): # -> DataValue | StructValue | None:
+
+    def get_out_value(self):  # -> DataValue | StructValue | None:
         """
         Returns the vAPI DataValue converted from the Python native value
 
@@ -40,8 +42,8 @@ class PythonToVapiJsonRpcDataValueVisitor(BindingTypeVisitor):
         :return: vAPI DataValue
         """
         ...
-    
-    def visit_primitive(self, typ): # -> None:
+
+    def visit_primitive(self, typ):  # -> None:
         """
         Visit a primitive type python value
 
@@ -49,8 +51,8 @@ class PythonToVapiJsonRpcDataValueVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_void(self, typ): # -> None:
+
+    def visit_void(self, typ):  # -> None:
         """
         Visit a void value (i.e. None)
 
@@ -58,8 +60,8 @@ class PythonToVapiJsonRpcDataValueVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_integer(self, typ): # -> None:
+
+    def visit_integer(self, typ):  # -> None:
         """
         Visit an integer value
 
@@ -67,8 +69,8 @@ class PythonToVapiJsonRpcDataValueVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_double(self, typ): # -> None:
+
+    def visit_double(self, typ):  # -> None:
         """
         Visit an double value
 
@@ -76,8 +78,8 @@ class PythonToVapiJsonRpcDataValueVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_string(self, typ): # -> None:
+
+    def visit_string(self, typ):  # -> None:
         """
         Visit an string value
 
@@ -85,8 +87,8 @@ class PythonToVapiJsonRpcDataValueVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_secret(self, typ): # -> None:
+
+    def visit_secret(self, typ):  # -> None:
         """
         Visit an secret value
 
@@ -94,8 +96,8 @@ class PythonToVapiJsonRpcDataValueVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_boolean(self, typ): # -> None:
+
+    def visit_boolean(self, typ):  # -> None:
         """
         Visit an boolean value
 
@@ -103,8 +105,8 @@ class PythonToVapiJsonRpcDataValueVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_id(self, typ): # -> None:
+
+    def visit_id(self, typ):  # -> None:
         """
         Visit an id value
 
@@ -112,8 +114,8 @@ class PythonToVapiJsonRpcDataValueVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_blob(self, typ): # -> None:
+
+    def visit_blob(self, typ):  # -> None:
         """
         Visit an blob value
 
@@ -121,8 +123,8 @@ class PythonToVapiJsonRpcDataValueVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_opaque(self, typ): # -> None:
+
+    def visit_opaque(self, typ):  # -> None:
         """
         Visit an opaque value. Don't do any conversion.
 
@@ -130,8 +132,8 @@ class PythonToVapiJsonRpcDataValueVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_list(self, typ): # -> None:
+
+    def visit_list(self, typ):  # -> None:
         """
         Visit a list value
 
@@ -139,8 +141,8 @@ class PythonToVapiJsonRpcDataValueVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_set(self, typ): # -> None:
+
+    def visit_set(self, typ):  # -> None:
         """
         Visit a python set
 
@@ -148,8 +150,8 @@ class PythonToVapiJsonRpcDataValueVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_map(self, typ): # -> None:
+
+    def visit_map(self, typ):  # -> None:
         """
         Visit a python dict
 
@@ -157,8 +159,8 @@ class PythonToVapiJsonRpcDataValueVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_struct(self, typ): # -> None:
+
+    def visit_struct(self, typ):  # -> None:
         """
         Visit a struct value
 
@@ -166,8 +168,8 @@ class PythonToVapiJsonRpcDataValueVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_error(self, typ): # -> None:
+
+    def visit_error(self, typ):  # -> None:
         """
         Visit an error value
 
@@ -175,8 +177,8 @@ class PythonToVapiJsonRpcDataValueVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_dynamic_struct(self, typ): # -> None:
+
+    def visit_dynamic_struct(self, typ):  # -> None:
         """
         Visit any struct value
 
@@ -184,8 +186,8 @@ class PythonToVapiJsonRpcDataValueVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_any_error(self, typ): # -> None:
+
+    def visit_any_error(self, typ):  # -> None:
         """
         Visit any error value
 
@@ -193,8 +195,8 @@ class PythonToVapiJsonRpcDataValueVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_optional(self, typ): # -> None:
+
+    def visit_optional(self, typ):  # -> None:
         """
         Visit an optional value
 
@@ -202,8 +204,8 @@ class PythonToVapiJsonRpcDataValueVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_date_time(self, typ): # -> None:
+
+    def visit_date_time(self, typ):  # -> None:
         """
         Visit a datetime value
 
@@ -211,8 +213,8 @@ class PythonToVapiJsonRpcDataValueVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_uri(self, typ): # -> None:
+
+    def visit_uri(self, typ):  # -> None:
         """
         Visit an URI value
 
@@ -220,8 +222,8 @@ class PythonToVapiJsonRpcDataValueVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_reference(self, typ): # -> None:
+
+    def visit_reference(self, typ):  # -> None:
         """
         Visit a reference type
 
@@ -229,8 +231,8 @@ class PythonToVapiJsonRpcDataValueVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_enum(self, typ): # -> None:
+
+    def visit_enum(self, typ):  # -> None:
         """
         Visit a enum type python value
 
@@ -238,14 +240,13 @@ class PythonToVapiJsonRpcDataValueVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-
 
 class VapiJsonRpcDataValueToPythonVisitor(BindingTypeVisitor):
     """
     Visitor to convert from vAPI JSON-RPC compatible DataValue to Python native
     value
     """
+
     def __init__(self, value, resolver) -> None:
         """
         Initialize VapiJsonRpcDataValueToPythonVisitor
@@ -257,8 +258,10 @@ class VapiJsonRpcDataValueToPythonVisitor(BindingTypeVisitor):
         :param resolver: Type resolver
         """
         ...
-    
-    def get_out_value(self): # -> str | Any | StructValue | list[Any] | set[Any] | VapiStruct | UnresolvedError | datetime | Enum | dict[Any, Any] | None:
+
+    def get_out_value(
+        self,
+    ):  # -> str | Any | StructValue | list[Any] | set[Any] | VapiStruct | UnresolvedError | datetime | Enum | dict[Any, Any] | None:
         """
         Returns the Python native value converted from the vAPI DataValue
 
@@ -266,8 +269,8 @@ class VapiJsonRpcDataValueToPythonVisitor(BindingTypeVisitor):
         :return: Native python value
         """
         ...
-    
-    def visit_primitive(self, typ): # -> None:
+
+    def visit_primitive(self, typ):  # -> None:
         """
         Visit one of the primitive DataValues
 
@@ -275,8 +278,8 @@ class VapiJsonRpcDataValueToPythonVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_void(self, typ): # -> None:
+
+    def visit_void(self, typ):  # -> None:
         """
         Since VoidValue does not have any value, just return None
 
@@ -284,8 +287,8 @@ class VapiJsonRpcDataValueToPythonVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_string(self, typ): # -> None:
+
+    def visit_string(self, typ):  # -> None:
         """
         Visit StringValue
 
@@ -293,8 +296,8 @@ class VapiJsonRpcDataValueToPythonVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_integer(self, typ): # -> None:
+
+    def visit_integer(self, typ):  # -> None:
         """
         Visit IntegerValue
 
@@ -302,8 +305,8 @@ class VapiJsonRpcDataValueToPythonVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_id(self, typ): # -> None:
+
+    def visit_id(self, typ):  # -> None:
         """
         Visit IdValue
 
@@ -311,8 +314,8 @@ class VapiJsonRpcDataValueToPythonVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_boolean(self, typ): # -> None:
+
+    def visit_boolean(self, typ):  # -> None:
         """
         Visit BooleanValue
 
@@ -320,8 +323,8 @@ class VapiJsonRpcDataValueToPythonVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_double(self, typ): # -> None:
+
+    def visit_double(self, typ):  # -> None:
         """
         Visit DoubleValue
 
@@ -329,8 +332,8 @@ class VapiJsonRpcDataValueToPythonVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_secret(self, typ): # -> None:
+
+    def visit_secret(self, typ):  # -> None:
         """
         Visit SecretValue
 
@@ -338,8 +341,8 @@ class VapiJsonRpcDataValueToPythonVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_blob(self, typ): # -> None:
+
+    def visit_blob(self, typ):  # -> None:
         """
         Visit BlobValue
 
@@ -347,8 +350,8 @@ class VapiJsonRpcDataValueToPythonVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_opaque(self, typ): # -> None:
+
+    def visit_opaque(self, typ):  # -> None:
         """
         Since there is no OpaqueValue, don't do any conversion
 
@@ -356,8 +359,8 @@ class VapiJsonRpcDataValueToPythonVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_list(self, typ): # -> None:
+
+    def visit_list(self, typ):  # -> None:
         """
         Visit a ListValue
 
@@ -365,8 +368,8 @@ class VapiJsonRpcDataValueToPythonVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_set(self, typ): # -> None:
+
+    def visit_set(self, typ):  # -> None:
         """
         Visit a List Value. This ListValue must represent a set
         i.e. there must not be any duplicate elements
@@ -375,8 +378,8 @@ class VapiJsonRpcDataValueToPythonVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_map(self, typ): # -> None:
+
+    def visit_map(self, typ):  # -> None:
         """
         Visit a List Value. This ListValue must represent a map. Each element
         of the ListValue is a StructValue with two fields, namely 'key' and
@@ -388,8 +391,8 @@ class VapiJsonRpcDataValueToPythonVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_struct(self, typ): # -> None:
+
+    def visit_struct(self, typ):  # -> None:
         """
         Visit StructValue
 
@@ -397,8 +400,8 @@ class VapiJsonRpcDataValueToPythonVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_dynamic_struct(self, typ): # -> None:
+
+    def visit_dynamic_struct(self, typ):  # -> None:
         """
         Visit StructValue to convert it into the base VapiStruct
 
@@ -406,8 +409,8 @@ class VapiJsonRpcDataValueToPythonVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_any_error(self, typ): # -> None:
+
+    def visit_any_error(self, typ):  # -> None:
         """
         Visit ErrorValue to convert it into the base VapiError
 
@@ -415,8 +418,8 @@ class VapiJsonRpcDataValueToPythonVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_error(self, typ): # -> None:
+
+    def visit_error(self, typ):  # -> None:
         """
         Visit ErrorValue
 
@@ -424,8 +427,8 @@ class VapiJsonRpcDataValueToPythonVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_optional(self, typ): # -> None:
+
+    def visit_optional(self, typ):  # -> None:
         """
         Visit OptionalValue
 
@@ -433,8 +436,8 @@ class VapiJsonRpcDataValueToPythonVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_date_time(self, typ): # -> None:
+
+    def visit_date_time(self, typ):  # -> None:
         """
         Visit a datetime value
 
@@ -442,8 +445,8 @@ class VapiJsonRpcDataValueToPythonVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_uri(self, typ): # -> None:
+
+    def visit_uri(self, typ):  # -> None:
         """
         Visit an URI value
 
@@ -451,8 +454,8 @@ class VapiJsonRpcDataValueToPythonVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_enum(self, typ): # -> None:
+
+    def visit_enum(self, typ):  # -> None:
         """
         Visit an Enum value
 
@@ -460,8 +463,8 @@ class VapiJsonRpcDataValueToPythonVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_reference(self, typ): # -> None:
+
+    def visit_reference(self, typ):  # -> None:
         """
         Visit a reference type
 
@@ -469,14 +472,13 @@ class VapiJsonRpcDataValueToPythonVisitor(BindingTypeVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-
 
 class PythonToVapiRestDataValueVisitor(PythonToVapiJsonRpcDataValueVisitor):
     """
     Visitor to convert from Python native value to vAPI REST compatible
     DataValue
     """
+
     def __init__(self, value) -> None:
         """
         Initialize PythonToVapiJsonRpcDataValueVisitor
@@ -485,14 +487,13 @@ class PythonToVapiRestDataValueVisitor(PythonToVapiJsonRpcDataValueVisitor):
         :param value: Native python value
         """
         ...
-    
-
 
 class VapiRestDataValueToPythonVisitor(VapiJsonRpcDataValueToPythonVisitor):
     """
     Visitor to convert from vAPI REST compatible DataValue to Python native
     value
     """
+
     def __init__(self, value, resolver) -> None:
         """
         Initialize VapiJsonRpcDataValueToPythonVisitor
@@ -504,8 +505,8 @@ class VapiRestDataValueToPythonVisitor(VapiJsonRpcDataValueToPythonVisitor):
         :param resolver: Type resolver
         """
         ...
-    
-    def visit_optional(self, typ): # -> None:
+
+    def visit_optional(self, typ):  # -> None:
         """
         Visit OptionalValue
 
@@ -513,8 +514,8 @@ class VapiRestDataValueToPythonVisitor(VapiJsonRpcDataValueToPythonVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_dynamic_struct(self, typ): # -> None:
+
+    def visit_dynamic_struct(self, typ):  # -> None:
         """
         Visit StructValue to convert it into the base VapiStruct
 
@@ -522,8 +523,8 @@ class VapiRestDataValueToPythonVisitor(VapiJsonRpcDataValueToPythonVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_blob(self, typ): # -> None:
+
+    def visit_blob(self, typ):  # -> None:
         """
         Visit BlobValue
 
@@ -531,14 +532,13 @@ class VapiRestDataValueToPythonVisitor(VapiJsonRpcDataValueToPythonVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-
 
 class PythonToSwaggerRestDataValueVisitor(PythonToVapiJsonRpcDataValueVisitor):
     """
     Visitor to convert from Python native value to Swagger Rest compatible
     DataValue
     """
+
     def __init__(self, value) -> None:
         """
         Initialize PythonToVapiJsonRpcDataValueVisitor
@@ -547,8 +547,8 @@ class PythonToSwaggerRestDataValueVisitor(PythonToVapiJsonRpcDataValueVisitor):
         :param value: Native python value
         """
         ...
-    
-    def visit_map(self, typ): # -> None:
+
+    def visit_map(self, typ):  # -> None:
         """
         Visit a python dict
 
@@ -556,14 +556,13 @@ class PythonToSwaggerRestDataValueVisitor(PythonToVapiJsonRpcDataValueVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-
 
 class SwaggerRestDataValueToPythonVisitor(VapiJsonRpcDataValueToPythonVisitor):
     """
     Visitor to convert from Swagger Rest compatible DataValue to Python native
     value
     """
+
     def __init__(self, value, resolver) -> None:
         """
         Initialize VapiJsonRpcDataValueToPythonVisitor
@@ -575,8 +574,8 @@ class SwaggerRestDataValueToPythonVisitor(VapiJsonRpcDataValueToPythonVisitor):
         :param resolver: Type resolver
         """
         ...
-    
-    def visit_optional(self, typ): # -> None:
+
+    def visit_optional(self, typ):  # -> None:
         """
         Visit OptionalValue
 
@@ -584,8 +583,8 @@ class SwaggerRestDataValueToPythonVisitor(VapiJsonRpcDataValueToPythonVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_map(self, typ): # -> None:
+
+    def visit_map(self, typ):  # -> None:
         """
         Visit a StructValue. This ListValue must represent a map. Each element
         of the ListValue is a StructValue with two fields, namely 'key' and
@@ -597,8 +596,8 @@ class SwaggerRestDataValueToPythonVisitor(VapiJsonRpcDataValueToPythonVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_dynamic_struct(self, typ): # -> None:
+
+    def visit_dynamic_struct(self, typ):  # -> None:
         """
         Visit StructValue to convert it into the base VapiStruct
 
@@ -606,8 +605,8 @@ class SwaggerRestDataValueToPythonVisitor(VapiJsonRpcDataValueToPythonVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_blob(self, typ): # -> None:
+
+    def visit_blob(self, typ):  # -> None:
         """
         Visit BlobValue
 
@@ -615,8 +614,8 @@ class SwaggerRestDataValueToPythonVisitor(VapiJsonRpcDataValueToPythonVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-    def visit_date_time(self, typ): # -> None:
+
+    def visit_date_time(self, typ):  # -> None:
         """
         Visit a datetime value
 
@@ -624,16 +623,17 @@ class SwaggerRestDataValueToPythonVisitor(VapiJsonRpcDataValueToPythonVisitor):
         :param typ: Binding type of the value
         """
         ...
-    
-
 
 class TypeConverter:
     """
     Converter class that converts values from vAPI data model to Python native
     data model
     """
+
     @staticmethod
-    def convert_to_python(vapi_val, binding_type, resolver=..., rest_converter_mode=...): # -> str | Any | StructValue | list[Any] | set[Any] | VapiStruct | UnresolvedError | datetime | Enum | dict[Any, Any] | None:
+    def convert_to_python(
+        vapi_val, binding_type, resolver=..., rest_converter_mode=...
+    ):  # -> str | Any | StructValue | list[Any] | set[Any] | VapiStruct | UnresolvedError | datetime | Enum | dict[Any, Any] | None:
         """
         Converts vAPI DataValue to Python native value
 
@@ -652,9 +652,11 @@ class TypeConverter:
         :return: Python native value
         """
         ...
-    
+
     @staticmethod
-    def convert_to_vapi(py_val, binding_type, rest_converter_mode=...): # -> DataValue | StructValue | None:
+    def convert_to_vapi(
+        py_val, binding_type, rest_converter_mode=...
+    ):  # -> DataValue | StructValue | None:
         """
         Converts Python native value to vAPI DataValue
 
@@ -670,6 +672,3 @@ class TypeConverter:
         :return: vAPI DataValue
         """
         ...
-    
-
-

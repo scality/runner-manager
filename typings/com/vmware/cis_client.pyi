@@ -12,24 +12,25 @@ classes.
 """
 __author__ = ...
 __docformat__ = ...
+
 class Session(VapiInterface):
     """
     The ``Session`` class allows API clients to manage session tokens including
-    creating, deleting and obtaining information about sessions. 
-    
-     
-    
+    creating, deleting and obtaining information about sessions.
+
+
+
     * The :func:`Session.create` method creates session token in exchange for
       another authentication token.
     * The :func:`Session.delete` method invalidates a session token.
     * The :func:`Session.get` retrieves information about a session token.
-    
-     
-    
+
+
+
     The call to the :func:`Session.create` method is part of the overall
     authentication process for API clients. For example, the sequence of steps
-    for establishing a session with SAML token is: 
-    
+    for establishing a session with SAML token is:
+
     * Connect to lookup service.
     * Discover the secure token service (STS) endpoint URL.
     * Connect to the secure token service to obtain a SAML token.
@@ -37,52 +38,53 @@ class Session(VapiInterface):
     * Discover the API endpoint URL from lookup service.
     * Call the :func:`Session.create` method. The :func:`Session.create` call
       must include the SAML token.
-    
-     
-    
+
+
+
     See the programming guide and samples for additional information about
-    establishing API sessions. 
-    
-     **Execution Context and Security Context** 
-    
+    establishing API sessions.
+
+     **Execution Context and Security Context**
+
     To use session based authentication a client should supply the session
     token obtained through the :func:`Session.create` method. The client should
     add the session token in the security context when using SDK classes.
     Clients using the REST API should supply the session token using the
-    ``vmware-api-session-id`` HTTP header field. 
-    
-     **Session Lifetime** 
-    
+    ``vmware-api-session-id`` HTTP header field.
+
+     **Session Lifetime**
+
     A session begins with call to the :func:`Session.create` method to exchange
     a SAML token for a API session token. A session ends under the following
-    circumstances: 
-    
+    circumstances:
+
     * Call to the :func:`Session.delete` method.
     * The session expires. Session expiration may be caused by one of the
-      following situations: 
-    
+      following situations:
+
     * Client inactivity - For a particular session identified by client
       requests that specify the associated session ID, the lapsed time since the
       last request exceeds the maximum interval between requests.
     * Unconditional or absolute session expiration time: At the beginning of
       the session, the session logic uses the SAML token and the system
       configuration to calculate absolute expiration time.
-    
-     
-    
+
+
+
     When a session ends, the authentication logic will reject any subsequent
     client requests that specify that session. Any operations in progress will
-    continue to completion. 
-    
-     **Error Handling** 
-    
-     The :class:`Session` returns the following exceptions: 
-    
+    continue to completion.
+
+     **Error Handling**
+
+     The :class:`Session` returns the following exceptions:
+
     * :class:`com.vmware.vapi.std.errors_client.Unauthenticated` exception for
       any exceptions related to the request.
     * :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` exception
       for all exceptions caused by internal service failure.
     """
+
     _VAPI_SERVICE_ID = ...
     def __init__(self, config) -> None:
         """
@@ -90,7 +92,7 @@ class Session(VapiInterface):
         :param config: Configuration to be used for creating the stub.
         """
         ...
-    
+
     class Info(VapiStruct):
         """
         Represents data associated with an API session.
@@ -99,6 +101,7 @@ class Session(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, user=..., created_time=..., last_accessed_time=...) -> None:
             """
             :type  user: :class:`str`
@@ -113,15 +116,13 @@ class Session(VapiInterface):
                 invoking an API.
             """
             ...
-        
-    
-    
+
     def create(self):
         """
         Creates a session with the API. This is the equivalent of login. This
         method exchanges user credentials supplied in the security context for
         a session token that is to be used for authenticating subsequent calls.
-        
+
         To authenticate subsequent calls clients are expected to include the
         session token. For REST API calls the HTTP ``vmware-api-session-id``
         header field should be used for this.
@@ -130,20 +131,20 @@ class Session(VapiInterface):
         :rtype: :class:`str`
         :return: Newly created session token to be used for authenticating further
             requests.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the session creation fails due to request specific issues. Due
             to the security nature of the API the details of the error are not
-            disclosed. 
-            
+            disclosed.
+
             Please check the following preconditions if using a SAML token to
-            authenticate: 
-            
+            authenticate:
+
             * the supplied token is delegate-able.
             * the time of client and server system are synchronized.
             * the token supplied is valid.
             * if bearer tokens are used check that system configuration allows
               the API endpoint to accept such tokens.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if session creation fails due to server specific issues, for
             example connection to a back end component is failing. Due to the
             security nature of this API further details will not be disclosed
@@ -152,19 +153,19 @@ class Session(VapiInterface):
             causes.
         """
         ...
-    
+
     def delete(self):
         """
         Terminates the validity of a session token. This is the equivalent of
-        log out. 
-        
-         A session token is expected as part of the request. 
+        log out.
+
+         A session token is expected as part of the request.
 
 
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the session id is missing from the request or the corresponding
             session object cannot be found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if session deletion fails due to server specific issues, for
             example connection to a back end component is failing. Due to the
             security nature of this API further details will not be disclosed
@@ -173,17 +174,17 @@ class Session(VapiInterface):
             causes.
         """
         ...
-    
+
     def get(self):
         """
         Returns information about the current session. This method expects a
-        valid session token to be supplied. 
-        
+        valid session token to be supplied.
+
         A side effect of invoking this method may be a change to the session's
         last accessed time to the current time if this is supported by the
         session implementation. Invoking any other method in the API will also
-        update the session's last accessed time. 
-        
+        update the session's last accessed time.
+
         This API is meant to serve the needs of various front end projects that
         may want to display the name of the user. Examples of this include
         various web based user interfaces and logging facilities.
@@ -191,10 +192,10 @@ class Session(VapiInterface):
 
         :rtype: :class:`Session.Info`
         :return: Information about the session.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the session id is missing from the request or the corresponding
             session object cannot be found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if session retrieval fails due to server specific issues e.g.
             connection to back end component is failing. Due to the security
             nature of this API further details will not be disclosed in the
@@ -202,14 +203,13 @@ class Session(VapiInterface):
             logs and product specific documentation for possible causes.
         """
         ...
-    
-
 
 class Tasks(VapiInterface):
     """
     The ``Tasks`` class provides methods for managing the task related to a
     long running operation. This class was added in vSphere API 6.7.1.
     """
+
     RESOURCE_TYPE = ...
     _VAPI_SERVICE_ID = ...
     def __init__(self, config) -> None:
@@ -218,7 +218,7 @@ class Tasks(VapiInterface):
         :param config: Configuration to be used for creating the stub.
         """
         ...
-    
+
     class GetSpec(VapiStruct):
         """
         The ``Tasks.GetSpec`` class describes what data should be included when
@@ -229,6 +229,7 @@ class Tasks(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, return_all=..., exclude_result=...) -> None:
             """
             :type  return_all: :class:`bool` or ``None``
@@ -246,15 +247,13 @@ class Tasks(VapiInterface):
                 information.
             """
             ...
-        
-    
-    
+
     class FilterSpec(VapiStruct):
         """
         The ``Tasks.FilterSpec`` class contains attributes used to filter the
         results when listing tasks (see :func:`Tasks.list`). If multiple attributes
-        are specified, only tasks matching all of the attributes match the filter. 
-        
+        are specified, only tasks matching all of the attributes match the filter.
+
         Currently at least one of :attr:`Tasks.FilterSpec.tasks` or
         :attr:`Tasks.FilterSpec.services` must be specified and not empty.. This
         class was added in vSphere API 6.7.1.
@@ -263,7 +262,16 @@ class Tasks(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, tasks=..., services=..., operations=..., status=..., targets=..., users=...) -> None:
+
+        def __init__(
+            self,
+            tasks=...,
+            services=...,
+            operations=...,
+            status=...,
+            targets=...,
+            users=...,
+        ) -> None:
             """
             :type  tasks: :class:`set` of :class:`str` or ``None``
             :param tasks: Identifiers of tasks that can match the filter. This attribute was
@@ -292,8 +300,8 @@ class Tasks(VapiInterface):
             :type  operations: :class:`set` of :class:`str` or ``None``
             :param operations: Identifiers of operations. Tasks created by these operations match
                 the filter (see
-                :attr:`com.vmware.cis.task_client.CommonInfo.operation`). 
-                
+                :attr:`com.vmware.cis.task_client.CommonInfo.operation`).
+
                 Note that an operation identifier by itself is not globally unique.
                 To filter on an operation, the identifier of the service interface
                 containing the operation should also be specified in ``services``..
@@ -326,9 +334,7 @@ class Tasks(VapiInterface):
                 user match the filter.
             """
             ...
-        
-    
-    
+
     def get(self, task, spec=...):
         """
         Returns information about a task. This method was added in vSphere API
@@ -346,22 +352,22 @@ class Tasks(VapiInterface):
             result of the operation will be return.
         :rtype: :class:`com.vmware.cis.task_client.Info`
         :return: Information about the specified task.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the task is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the task's state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def list(self, filter_spec=..., result_spec=...):
         """
         Returns information about at most 1000 visible (subject to permission
@@ -383,21 +389,21 @@ class Tasks(VapiInterface):
         :return: Map of task identifier to information about the task.
             The key in the return value :class:`dict` will be an identifier for
             the resource type: ``com.vmware.cis.task``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if any of the specified parameters are invalid.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if a task's state cannot be accessed or over 1000 tasks matching
             the :class:`Tasks.FilterSpec`.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def cancel(self, task):
         """
         Cancel a running operation associated with the task. This is the best
@@ -408,41 +414,31 @@ class Tasks(VapiInterface):
         :param task: Task identifier.
             The parameter must be an identifier for the resource type:
             ``com.vmware.cis.task``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if the task is already canceled or completed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the task is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the task's state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unsupported` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unsupported`
             if the task is not cancelable.
         """
         ...
-    
-
 
 class _SessionStub(ApiInterfaceStub):
-    def __init__(self, config) -> None:
-        ...
-    
-
+    def __init__(self, config) -> None: ...
 
 class _TasksStub(ApiInterfaceStub):
-    def __init__(self, config) -> None:
-        ...
-    
-
+    def __init__(self, config) -> None: ...
 
 class StubFactory(StubFactoryBase):
     _attrs = ...
-
-

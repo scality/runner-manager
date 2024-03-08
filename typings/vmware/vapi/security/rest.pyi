@@ -7,11 +7,13 @@ Security context parser interface for REST presentation layer
 """
 __author__ = ...
 __copyright__ = ...
+
 class SecurityContextParser:
     """
     Base class for all security context builders
     """
-    def build(self, request): # -> None:
+
+    def build(self, request):  # -> None:
         """
         Build the security context based on the authentication
         information in the request.
@@ -22,6 +24,3 @@ class SecurityContextParser:
         :return: Security context object
         """
         ...
-    
-
-

@@ -10,8 +10,10 @@ Generic client connector
 __author__ = ...
 __copyright__ = ...
 logger = ...
+
 class GenericConnector(Connector):
-    """ A generic protocol connector """
+    """A generic protocol connector"""
+
     def __init__(self, rpc_provider, api_provider, provider_filter_chain) -> None:
         """
         Generic protocol connector init
@@ -27,14 +29,11 @@ class GenericConnector(Connector):
             be chained
         """
         ...
-    
-    def connect(self): # -> None:
-        """ rpc provider connect """
-        ...
-    
-    def disconnect(self): # -> None:
-        """ rpc provider disconnect """
-        ...
-    
 
+    def connect(self):  # -> None:
+        """rpc provider connect"""
+        ...
 
+    def disconnect(self):  # -> None:
+        """rpc provider disconnect"""
+        ...

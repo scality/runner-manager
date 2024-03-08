@@ -10,14 +10,14 @@ Serializer vAPI data values to clean (human readable/writable) json documents
 __author__ = ...
 __copyright__ = ...
 logger = ...
+
 class DataValueToJSONEncoder(json.JSONEncoder):
     """
     Custom JSON encoder that converts vAPI runtime values directly
     into JSON string representation.
     """
-    def __init__(self, *args, **kwargs) -> None:
-        ...
-    
+
+    def __init__(self, *args, **kwargs) -> None: ...
     def encode(self, value):
         """
         Encode a given vAPI runtime object
@@ -28,8 +28,8 @@ class DataValueToJSONEncoder(json.JSONEncoder):
         :return: JSON string
         """
         ...
-    
-    def visit_struct_value(self, value): # -> str:
+
+    def visit_struct_value(self, value):  # -> str:
         """
         Visit a StructValue object
 
@@ -39,8 +39,8 @@ class DataValueToJSONEncoder(json.JSONEncoder):
         :return: JSON string
         """
         ...
-    
-    def visit_list(self, value): # -> LiteralString:
+
+    def visit_list(self, value):  # -> LiteralString:
         """
         Visit a ListValue object
 
@@ -50,8 +50,8 @@ class DataValueToJSONEncoder(json.JSONEncoder):
         :return: JSON string
         """
         ...
-    
-    def visit_optional_value(self, value): # -> Literal['null']:
+
+    def visit_optional_value(self, value):  # -> Literal['null']:
         """
         Visit a OptionalValue object
 
@@ -61,9 +61,9 @@ class DataValueToJSONEncoder(json.JSONEncoder):
         :return: JSON string
         """
         ...
-    
+
     @staticmethod
-    def visit_double_value(value): # -> str:
+    def visit_double_value(value):  # -> str:
         """
         Visit a DoubleValue object
 
@@ -73,8 +73,8 @@ class DataValueToJSONEncoder(json.JSONEncoder):
         :return: JSON string
         """
         ...
-    
-    def visit_primitive_value(self, value): # -> str:
+
+    def visit_primitive_value(self, value):  # -> str:
         """
         Visit one of StringValue, IntegerValue, BooleanValue or VoidValue
 
@@ -88,8 +88,8 @@ class DataValueToJSONEncoder(json.JSONEncoder):
         :return: JSON string
         """
         ...
-    
-    def visit_blob_value(self, value): # -> str:
+
+    def visit_blob_value(self, value):  # -> str:
         """
         Visit BlobValue
 
@@ -99,8 +99,8 @@ class DataValueToJSONEncoder(json.JSONEncoder):
         :return: JSON string
         """
         ...
-    
-    def visit_default(self, value): # -> str:
+
+    def visit_default(self, value):  # -> str:
         """
         This is the default visit method if the type of the input value
         does not match any type in the keys present in dispatch map.
@@ -111,18 +111,15 @@ class DataValueToJSONEncoder(json.JSONEncoder):
         :return: JSON string
         """
         ...
-    
-
 
 class DataValueToRestJSONEncoder(DataValueToJSONEncoder):
     """
     Custom JSON encoder that converts vAPI runtime values directly
     into REST 2018 JSON string representation.
     """
-    def __init__(self, *args, **kwargs) -> None:
-        ...
-    
-    def visit_list(self, value): # -> LiteralString:
+
+    def __init__(self, *args, **kwargs) -> None: ...
+    def visit_list(self, value):  # -> LiteralString:
         """
         Visit a ListValue object
 
@@ -132,8 +129,8 @@ class DataValueToRestJSONEncoder(DataValueToJSONEncoder):
         :return: JSON string
         """
         ...
-    
-    def map_entry(self, value): # -> LiteralString:
+
+    def map_entry(self, value):  # -> LiteralString:
         """
         Visit a StructValue object
 
@@ -143,14 +140,11 @@ class DataValueToRestJSONEncoder(DataValueToJSONEncoder):
         :return: JSON string
         """
         ...
-    
-
 
 class JsonDictToVapi:
-    """ Clean Json dict to vapi data value """
-    def __init__(self) -> None:
-        ...
-    
+    """Clean Json dict to vapi data value"""
+
+    def __init__(self) -> None: ...
     def data_value(self, obj):
         """
         Convert json object to data value
@@ -161,16 +155,15 @@ class JsonDictToVapi:
         :return: Data value
         """
         ...
-    
-
 
 class DataValueConverter:
     """
     Converter class that converts values from vAPI DataValue to clean
     JSON objects and back.
     """
+
     @staticmethod
-    def convert_to_json(data_value, new_rest=...): # -> str:
+    def convert_to_json(data_value, new_rest=...):  # -> str:
         """
         Convert the given data value to a JSON string representation
 
@@ -182,7 +175,7 @@ class DataValueConverter:
         :return: JSON representation of the data value
         """
         ...
-    
+
     @staticmethod
     def convert_to_data_value(json_string):
         """
@@ -194,6 +187,3 @@ class DataValueConverter:
         :return: Data value
         """
         ...
-    
-
-

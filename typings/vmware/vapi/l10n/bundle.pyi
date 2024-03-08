@@ -9,11 +9,13 @@ Helper classes for creation of resource bundles
 """
 __author__ = ...
 __copyright__ = ...
+
 class PropertiesResourceBundle(MessageBundle):
     """
     Class for creating resource bundles using property files in the
     distributable. i.e. egg or zip file.
     """
+
     def __init__(self, property_files) -> None:
         """
         Initialize PropertiesResourceBundle
@@ -25,14 +27,13 @@ class PropertiesResourceBundle(MessageBundle):
             tuple to be passed is ('vmware.vapi', 'runtime.properties')
         """
         ...
-    
-
 
 class FileMessageBundle(MessageBundle):
     """
     Class for creating resource bundles using list of files
     that contain messages
     """
+
     def __init__(self, message_files) -> None:
         """
         Initialize FileMessageBundle
@@ -42,13 +43,12 @@ class FileMessageBundle(MessageBundle):
             element in the list should be a fully qualified file path.
         """
         ...
-    
-
 
 class DictionaryResourceBundle(MessageBundle):
     """
     Class for creating resource bundles using dictionary of messages
     """
+
     def __init__(self, msgs) -> None:
         """
         Initialize DictionaryResourceBundle
@@ -57,6 +57,3 @@ class DictionaryResourceBundle(MessageBundle):
         :param msgs: Message bundle
         """
         ...
-    
-
-

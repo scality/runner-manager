@@ -7,25 +7,26 @@ Helper module to build value passed in UserAgent header
 """
 __author__ = ...
 __copyright__ = ...
-class UserAgentBuilder:
-    """ Builder for the value to be passed in UserAgent header """
-    VSHPERE_SDK_DIST_NAME = ...
-    def __init__(self) -> None:
-        ...
-    
-    def build(self): # -> str:
-        ...
-    
-    def load_sdk_version(self): # -> None:
-        ...
-    
-    def set_product_info(self, name, version, product_comment=..., vapi_version=...): # -> None:
-        ...
-    
 
+class UserAgentBuilder:
+    """Builder for the value to be passed in UserAgent header"""
+
+    VSHPERE_SDK_DIST_NAME = ...
+    def __init__(self) -> None: ...
+    def build(self):  # -> str:
+        ...
+
+    def load_sdk_version(self):  # -> None:
+        ...
+
+    def set_product_info(
+        self, name, version, product_comment=..., vapi_version=...
+    ):  # -> None:
+        ...
 
 _user_agent_builder = ...
-def init_product_info(name, version, product_comment=..., vapi_version=...): # -> None:
+
+def init_product_info(name, version, product_comment=..., vapi_version=...):  # -> None:
     """
     Initializes details of the application layer that need to be passed
     as part of the user agent header
@@ -46,7 +47,7 @@ def init_product_info(name, version, product_comment=..., vapi_version=...): # -
     """
     ...
 
-def get_user_agent(): # -> str:
+def get_user_agent():  # -> str:
     """
     Gets the string that needs to be passed in the UserAgent header
 
@@ -54,4 +55,3 @@ def get_user_agent(): # -> str:
     :return: UserAgent value
     """
     ...
-

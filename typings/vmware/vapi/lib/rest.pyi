@@ -7,6 +7,7 @@ Common REST classes/lib
 """
 __author__ = ...
 __copyright__ = ...
+
 class OperationRestMetadata:
     """
     This class holds the metadata for making a REST request
@@ -17,7 +18,19 @@ class OperationRestMetadata:
     :ivar request_body_parameter: Python runtime name of the parameter that
                                   forms the HTTP request body
     """
-    def __init__(self, http_method, url_template=..., request_body_parameter=..., path_variables=..., query_parameters=..., dispatch_parameters=..., header_parameters=..., dispatch_header_parameters=..., content_type=...) -> None:
+
+    def __init__(
+        self,
+        http_method,
+        url_template=...,
+        request_body_parameter=...,
+        path_variables=...,
+        query_parameters=...,
+        dispatch_parameters=...,
+        header_parameters=...,
+        dispatch_header_parameters=...,
+        content_type=...,
+    ) -> None:
         """
         Initialze the rest metadata class
 
@@ -44,8 +57,8 @@ class OperationRestMetadata:
                                            defined in interface Verb annotation
         """
         ...
-    
-    def get_url_path(self, path_variable_fields, query_parameter_fields): # -> str:
+
+    def get_url_path(self, path_variable_fields, query_parameter_fields):  # -> str:
         """
         Get the final URL path by substituting the actual values in the template
         and adding the query parameters
@@ -62,8 +75,8 @@ class OperationRestMetadata:
         :return: URL path
         """
         ...
-    
-    def get_path_variable_field_names(self): # -> list[Any]:
+
+    def get_path_variable_field_names(self):  # -> list[Any]:
         """
         Get the list of field names used in the URL path template
 
@@ -71,8 +84,8 @@ class OperationRestMetadata:
         :return: List of fields used in the URL path template
         """
         ...
-    
-    def get_query_parameter_field_names(self): # -> list[Any]:
+
+    def get_query_parameter_field_names(self):  # -> list[Any]:
         """
         Get the list of field names used as query parameters
 
@@ -80,8 +93,8 @@ class OperationRestMetadata:
         :return: List of fields used as query parameters
         """
         ...
-    
-    def get_header_field_names(self): # -> dict[Any, Any]:
+
+    def get_header_field_names(self):  # -> dict[Any, Any]:
         """
         Get the list of field names used as headers
 
@@ -89,8 +102,8 @@ class OperationRestMetadata:
         :return: List of fields used as header
         """
         ...
-    
-    def get_dispatch_header(self): # -> dict[Any, Any]:
+
+    def get_dispatch_header(self):  # -> dict[Any, Any]:
         """
         Get the map of field names and value as dispatch headers
 
@@ -98,6 +111,3 @@ class OperationRestMetadata:
         :return: Map of name and value as dispatch header
         """
         ...
-    
-
-

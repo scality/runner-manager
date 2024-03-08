@@ -7,7 +7,8 @@ Helper class for internationalization of the runtime messages
 """
 __author__ = ...
 __copyright__ = ...
-def get_runtime_message_factory(): # -> MessageFactory:
+
+def get_runtime_message_factory():  # -> MessageFactory:
     """
     Default message factory. Load the runtime message bundle from
     the egg file

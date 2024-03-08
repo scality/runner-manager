@@ -8,17 +8,19 @@ Rest http helper methods
 __author__ = ...
 __copyright__ = ...
 logger = ...
+
 class ResponseExtractor:
     """
     Http response extractor utility classes
     """
+
     def __init__(self) -> None:
         """
         Initialize the response extractor
         """
         ...
-    
-    def set_http_status(self, status): # -> None:
+
+    def set_http_status(self, status):  # -> None:
         """
         Set http response status
 
@@ -26,8 +28,8 @@ class ResponseExtractor:
         :param status: Http status
         """
         ...
-    
-    def get_http_status(self): # -> None:
+
+    def get_http_status(self):  # -> None:
         """
         Get http response status
 
@@ -35,8 +37,8 @@ class ResponseExtractor:
         :return: Http response status
         """
         ...
-    
-    def set_http_headers(self, headers): # -> None:
+
+    def set_http_headers(self, headers):  # -> None:
         """
         Set http response headers
 
@@ -44,8 +46,8 @@ class ResponseExtractor:
         :param headers: Http response headers
         """
         ...
-    
-    def get_http_headers(self): # -> None:
+
+    def get_http_headers(self):  # -> None:
         """
         Get http response headers
 
@@ -53,8 +55,8 @@ class ResponseExtractor:
         :return: Http response headers
         """
         ...
-    
-    def set_http_body(self, body): # -> None:
+
+    def set_http_body(self, body):  # -> None:
         """
         Set http response body
 
@@ -62,8 +64,8 @@ class ResponseExtractor:
         :param body: Http body object
         """
         ...
-    
-    def get_http_body(self): # -> None:
+
+    def get_http_body(self):  # -> None:
         """
         Get http response body
 
@@ -71,8 +73,8 @@ class ResponseExtractor:
         :return: Http response body
         """
         ...
-    
-    def set_http_method(self, method): # -> None:
+
+    def set_http_method(self, method):  # -> None:
         """
         Set http request method
 
@@ -80,8 +82,8 @@ class ResponseExtractor:
         :param method: Http request method
         """
         ...
-    
-    def get_http_method(self): # -> None:
+
+    def get_http_method(self):  # -> None:
         """
         Get http request method
 
@@ -89,8 +91,8 @@ class ResponseExtractor:
         :return: Http request method
         """
         ...
-    
-    def set_http_url(self, url): # -> None:
+
+    def set_http_url(self, url):  # -> None:
         """
         Set http request URL
 
@@ -98,8 +100,8 @@ class ResponseExtractor:
         :param url: Http request url
         """
         ...
-    
-    def get_http_url(self): # -> None:
+
+    def get_http_url(self):  # -> None:
         """
         Get http request url
 
@@ -107,6 +109,3 @@ class ResponseExtractor:
         :return: Http request url
         """
         ...
-    
-
-

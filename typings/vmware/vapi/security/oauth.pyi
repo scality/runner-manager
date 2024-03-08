@@ -13,7 +13,8 @@ OAUTH_SCHEME_ID = ...
 ACCESS_TOKEN = ...
 AUTHORIZATION = ...
 BEARER = ...
-def create_oauth_security_context(access_token): # -> SecurityContext:
+
+def create_oauth_security_context(access_token):  # -> SecurityContext:
     """
     Create a security context for Oauth2 based authentication
     scheme
@@ -31,13 +32,14 @@ class OAuthSecurityContextParser(SecurityContextParser):
     that builds a security context if the REST request has OAuth2
     access token in the header.
     """
+
     def __init__(self) -> None:
         """
         Initialize OAuthSecurityContextParser
         """
         ...
-    
-    def build(self, request): # -> SecurityContext | None:
+
+    def build(self, request):  # -> SecurityContext | None:
         """
         Build the security context if the request has authorization
         header that contains OAuth2 access token.
@@ -51,6 +53,3 @@ class OAuthSecurityContextParser(SecurityContextParser):
         :return: Security context object
         """
         ...
-    
-
-

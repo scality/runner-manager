@@ -7,7 +7,8 @@ Bindings common module that contains common code for skeletons and stubs
 """
 __author__ = ...
 __copyright__ = ...
-def raise_core_exception(msg_list): # -> None:
+
+def raise_core_exception(msg_list):  # -> None:
     """
     Create and raise a CoreException from a list of messages
 
@@ -23,6 +24,7 @@ class NameToTypeResolver:
     Helper class that resolves a fully qualified canonical type name to a type
     descriptor. The type name can be a structure name or an error name.
     """
+
     def __init__(self, type_map) -> None:
         """
         Initialize NameToTypeResolver
@@ -32,12 +34,9 @@ class NameToTypeResolver:
             references to the binding classes for these types.
         """
         ...
-    
+
     def resolve(self, name):
         """
         Type name to be resolved
         """
         ...
-    
-
-

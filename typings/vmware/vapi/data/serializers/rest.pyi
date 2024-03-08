@@ -8,10 +8,14 @@ REST de/serializer
 __author__ = ...
 __copyright__ = ...
 logger = ...
+
 class RequestSerializer:
-    """ REST request serializer """
+    """REST request serializer"""
+
     @staticmethod
-    def serialize_request(input_value, ctx, rest_metadata, is_vapi_rest): # -> tuple[Any | None, dict[Any, Any], str, None]:
+    def serialize_request(
+        input_value, ctx, rest_metadata, is_vapi_rest
+    ):  # -> tuple[Any | None, dict[Any, Any], str, None]:
         """
         Serialize the request as a REST request
 
@@ -29,9 +33,11 @@ class RequestSerializer:
         :return: Tuple of URL path, HTTP headers, request body and cookies
         """
         ...
-    
+
     @staticmethod
-    def serialize_input(input_value, rest_metadata): # -> tuple[Any | None, dict[Any, Any], str]:
+    def serialize_input(
+        input_value, rest_metadata
+    ):  # -> tuple[Any | None, dict[Any, Any], str]:
         """
         Serialize the input value
 
@@ -44,9 +50,11 @@ class RequestSerializer:
         :return: Tuple of URL path, HTTP headers and request body
         """
         ...
-    
+
     @staticmethod
-    def get_authorization_headers(security_context, is_vapi_rest): # -> tuple[dict[Any, Any], None] | tuple[dict[str, Any | bytes], None] | tuple[dict[str, Any], None] | tuple[dict[str, str], None]:
+    def get_authorization_headers(
+        security_context, is_vapi_rest
+    ):  # -> tuple[dict[Any, Any], None] | tuple[dict[str, Any | bytes], None] | tuple[dict[str, Any], None] | tuple[dict[str, str], None]:
         """
         Get the authorization headers for the corresponding security context
 
@@ -59,13 +67,12 @@ class RequestSerializer:
         :return: Tuple of HTTP headers and cookies
         """
         ...
-    
-
 
 class ResponseDeserializer:
-    """ REST response deserializer """
+    """REST response deserializer"""
+
     @staticmethod
-    def deserialize_response(status, response_str, is_vapi_rest): # -> MethodResult:
+    def deserialize_response(status, response_str, is_vapi_rest):  # -> MethodResult:
         """
         Deserialize the REST response
 
@@ -80,15 +87,16 @@ class ResponseDeserializer:
         :return: VAPI MethodResult
         """
         ...
-    
-
 
 class RestSerializer:
     """
     Rest request de/serializer
     """
+
     @staticmethod
-    def serialize_request(input_value, ctx, rest_metadata, is_vapi_rest): # -> tuple[Any | None, dict[Any, Any], str, None]:
+    def serialize_request(
+        input_value, ctx, rest_metadata, is_vapi_rest
+    ):  # -> tuple[Any | None, dict[Any, Any], str, None]:
         """
         Serialize the request as a REST request
 
@@ -106,9 +114,9 @@ class RestSerializer:
         :return: Tuple of URL path, HTTP headers, request body and cookies
         """
         ...
-    
+
     @staticmethod
-    def deserialize_response(status, response_str, is_vapi_rest): # -> MethodResult:
+    def deserialize_response(status, response_str, is_vapi_rest):  # -> MethodResult:
         """
         Deserialize the REST response
 
@@ -123,6 +131,3 @@ class RestSerializer:
         :return: VAPI MethodResult
         """
         ...
-    
-
-

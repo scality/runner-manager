@@ -10,9 +10,11 @@ Connecter interface
 """
 __author__ = ...
 __copyright__ = ...
+
 @six.add_metaclass(abc.ABCMeta)
 class Connector:
-    """ Connector interface """
+    """Connector interface"""
+
     def __init__(self, api_provider, provider_filter_chain) -> None:
         """
         Connector constructor
@@ -25,18 +27,18 @@ class Connector:
             be chained
         """
         ...
-    
+
     @abc.abstractmethod
-    def connect(self): # -> None:
-        """ rpc provider connect """
+    def connect(self):  # -> None:
+        """rpc provider connect"""
         ...
-    
+
     @abc.abstractmethod
-    def disconnect(self): # -> None:
-        """ rpc provider disconnect """
+    def disconnect(self):  # -> None:
+        """rpc provider disconnect"""
         ...
-    
-    def set_application_context(self, ctx): # -> None:
+
+    def set_application_context(self, ctx):  # -> None:
         """
         Set the application context
 
@@ -48,8 +50,8 @@ class Connector:
         :param ctx: New application context
         """
         ...
-    
-    def set_security_context(self, ctx): # -> None:
+
+    def set_security_context(self, ctx):  # -> None:
         """
         Set the security context
 
@@ -61,8 +63,8 @@ class Connector:
         :param ctx: New security context
         """
         ...
-    
-    def new_context(self, runtime_data=...): # -> ExecutionContext:
+
+    def new_context(self, runtime_data=...):  # -> ExecutionContext:
         """
         create new execution context object
 
@@ -72,7 +74,7 @@ class Connector:
         :return: execution context
         """
         ...
-    
+
     def get_api_provider(self):
         """
         get api provider
@@ -81,6 +83,3 @@ class Connector:
         :return: api provider
         """
         ...
-    
-
-

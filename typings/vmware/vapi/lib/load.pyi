@@ -8,7 +8,8 @@ Convenience methods for dynamic loading
 __author__ = ...
 __copyright__ = ...
 logger = ...
-def dynamic_import(constructor): # -> Any | None:
+
+def dynamic_import(constructor):  # -> Any | None:
     """
     Dynamically import a module and get the specified module attribute
 
@@ -19,7 +20,7 @@ def dynamic_import(constructor): # -> Any | None:
     """
     ...
 
-def dynamic_import_list(constructors): # -> list[Any | None]:
+def dynamic_import_list(constructors):  # -> list[Any | None]:
     """
     Dynamically import a list of modules
 
@@ -29,4 +30,3 @@ def dynamic_import_list(constructors): # -> list[Any | None]:
     :return: List of imported python objects
     """
     ...
-

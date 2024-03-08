@@ -12,12 +12,14 @@ SecurityContext API Provider filter
 __author__ = ...
 __copyright__ = ...
 logger = ...
+
 @six.add_metaclass(abc.ABCMeta)
 class SecurityContextFilter(ApiProviderFilter):
     """
     SecurityContextFilter in API Provider chain adds the security
     context to the execution context passed in.
     """
+
     def __init__(self, next_provider=...) -> None:
         """
         Initialize SecurityContextFilter
@@ -26,9 +28,9 @@ class SecurityContextFilter(ApiProviderFilter):
         :param next_provider: API Provider to invoke the requests
         """
         ...
-    
+
     @abc.abstractmethod
-    def get_max_retries(self): # -> None:
+    def get_max_retries(self):  # -> None:
         """
         Get the max number of retries
 
@@ -36,9 +38,9 @@ class SecurityContextFilter(ApiProviderFilter):
         :return: Number of retries
         """
         ...
-    
+
     @abc.abstractmethod
-    def get_security_context(self, on_error): # -> None:
+    def get_security_context(self, on_error):  # -> None:
         """
         Retrieve security context. If this method is called after an error
         occured and the request needs to be retried, then a new security context
@@ -50,9 +52,9 @@ class SecurityContextFilter(ApiProviderFilter):
         :return: Security context
         """
         ...
-    
+
     @abc.abstractmethod
-    def should_retry(self, error_value): # -> None:
+    def should_retry(self, error_value):  # -> None:
         """
         Returns whether the request should be retried or not based on the error.
 
@@ -63,8 +65,10 @@ class SecurityContextFilter(ApiProviderFilter):
             value provided else False
         """
         ...
-    
-    def invoke(self, service_id, operation_id, input_value, ctx): # -> MethodResult | None:
+
+    def invoke(
+        self, service_id, operation_id, input_value, ctx
+    ):  # -> MethodResult | None:
         """
         Invoke an API request
 
@@ -81,14 +85,13 @@ class SecurityContextFilter(ApiProviderFilter):
         :return: Result of the method invocation
         """
         ...
-    
-
 
 class LegacySecurityContextFilter(SecurityContextFilter):
     """
     SecurityContextFilter in API Provider chain adds the security
     context to the execution context passed in.
     """
+
     def __init__(self, next_provider=..., security_context=...) -> None:
         """
         Initialize SecurityContextFilter
@@ -99,8 +102,8 @@ class LegacySecurityContextFilter(SecurityContextFilter):
         :param security_context: Security context
         """
         ...
-    
-    def get_max_retries(self): # -> Literal[0]:
+
+    def get_max_retries(self):  # -> Literal[0]:
         """
         Get the max number of retries
 
@@ -108,8 +111,8 @@ class LegacySecurityContextFilter(SecurityContextFilter):
         :return: Number of retries
         """
         ...
-    
-    def set_security_context(self, security_context): # -> None:
+
+    def set_security_context(self, security_context):  # -> None:
         """
         Set security context
 
@@ -117,8 +120,8 @@ class LegacySecurityContextFilter(SecurityContextFilter):
         :param security_context: Security context
         """
         ...
-    
-    def get_security_context(self, on_error): # -> None:
+
+    def get_security_context(self, on_error):  # -> None:
         """
         Retrieve the stored security context.
 
@@ -128,8 +131,8 @@ class LegacySecurityContextFilter(SecurityContextFilter):
         :return: Security context or None
         """
         ...
-    
-    def should_retry(self, error_value): # -> Literal[False]:
+
+    def should_retry(self, error_value):  # -> Literal[False]:
         """
         Returns whether the request should be retried or not based on the error.
 
@@ -140,6 +143,3 @@ class LegacySecurityContextFilter(SecurityContextFilter):
             value provided else False
         """
         ...
-    
-
-

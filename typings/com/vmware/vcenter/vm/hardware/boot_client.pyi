@@ -13,14 +13,15 @@ managing the virtual devices used to boot a virtual machine.
 """
 __author__ = ...
 __docformat__ = ...
+
 class Device(VapiInterface):
     """
     The ``Device`` class provides methods for configuring the device order used
-    when booting a virtual machine. 
-    
+    when booting a virtual machine.
+
     The boot order may be specified using a mixture of device classes and
-    device instances, chosen from among the following: 
-    
+    device instances, chosen from among the following:
+
     * :attr:`Device.Type.CDROM`: Boot from a virtual CD-ROM drive; the device
       instance(s) will be chosen by the BIOS subsystem.
     * :attr:`Device.Type.FLOPPY`: Boot from a virtual floppy drive; the device
@@ -32,6 +33,7 @@ class Device(VapiInterface):
       device instance is specified explicitly as :attr:`Device.Entry.nic`, and
       multiple adapters may be specified in the boot order list.
     """
+
     _VAPI_SERVICE_ID = ...
     def __init__(self, config) -> None:
         """
@@ -39,7 +41,7 @@ class Device(VapiInterface):
         :param config: Configuration to be used for creating the stub.
         """
         ...
-    
+
     class Type(Enum):
         """
         The ``Device.Type`` class defines the valid device types that may be used
@@ -54,6 +56,7 @@ class Device(VapiInterface):
             version of the API, you instantiate this class. See :ref:`enumerated
             type description page <enumeration_description>`.
         """
+
         CDROM = ...
         DISK = ...
         ETHERNET = ...
@@ -64,9 +67,7 @@ class Device(VapiInterface):
             :param string: String value for the :class:`Type` instance.
             """
             ...
-        
-    
-    
+
     class EntryCreateSpec(VapiStruct):
         """
         The class ``Device.EntryCreateSpec`` specifies a list of bootable virtual
@@ -80,15 +81,14 @@ class Device(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, type=...) -> None:
             """
             :type  type: :class:`Device.Type`
             :param type: Virtual Boot device type.
             """
             ...
-        
-    
-    
+
     class Entry(VapiStruct):
         """
         The ``Device.Entry`` class specifies a bootable virtual device class or
@@ -98,6 +98,7 @@ class Device(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _validator_list = ...
         def __init__(self, type=..., nic=..., disks=...) -> None:
             """
@@ -126,9 +127,7 @@ class Device(VapiInterface):
                 of ``type`` is :attr:`Device.Type.DISK`.
             """
             ...
-        
-    
-    
+
     def get(self, vm):
         """
         Returns an ordered list of boot devices for the virtual machine. If the
@@ -141,22 +140,22 @@ class Device(VapiInterface):
             ``VirtualMachine``.
         :rtype: :class:`list` of :class:`Device.Entry`
         :return: Ordered list of configured boot devices.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def set(self, vm, devices):
         """
         Sets the virtual devices that will be used to boot the virtual machine.
@@ -173,40 +172,33 @@ class Device(VapiInterface):
             ``VirtualMachine``.
         :type  devices: :class:`list` of :class:`Device.Entry`
         :param devices: Ordered list of boot devices.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine is not found, or if any of the specified
             virtual devices is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if a any of the CDROM, DISK, ETHERNET, FLOPPY values appears in
             more than one ``Device.Entry`` with the exception of
             :attr:`Device.Type.ETHERNET`, which may appear multiple times if
             the virtual machine has been configured with multiple Ethernet
             adapters.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
-
 
 class _DeviceStub(ApiInterfaceStub):
-    def __init__(self, config) -> None:
-        ...
-    
-
+    def __init__(self, config) -> None: ...
 
 class StubFactory(StubFactoryBase):
     _attrs = ...
-
-

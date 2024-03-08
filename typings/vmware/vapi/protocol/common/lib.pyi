@@ -7,6 +7,7 @@ Common libraries
 """
 __author__ = ...
 __copyright__ = ...
+
 class RequestProcessor:
     """
     Implementations of this interface might be attached to client
@@ -14,6 +15,7 @@ class RequestProcessor:
     post-processors or to the server :class:`vmware.vapi.core.ApiProvider`
     implementations as pre-processors
     """
+
     def process(self, message):
         """
         Processes and possibly modifies the provided request byte array
@@ -26,6 +28,3 @@ class RequestProcessor:
                  MUST be UTF-8 encoded.
         """
         ...
-    
-
-

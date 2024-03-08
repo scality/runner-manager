@@ -10,6 +10,7 @@ vAPI DataValues
 __author__ = ...
 __copyright__ = ...
 logger = ...
+
 class DataValue:
     """
     A piece of introspectable value in vAPI infrastructure
@@ -17,6 +18,7 @@ class DataValue:
     :type type: :class:`vmware.vapi.data.type.Type`
     :ivar type: Type of DataValue
     """
+
     def __init__(self, data_type=...) -> None:
         """
         Initialize DataValue
@@ -25,8 +27,8 @@ class DataValue:
         :param data_type: Type of DataValue
         """
         ...
-    
-    def accept(self, visitor): # -> None:
+
+    def accept(self, visitor):  # -> None:
         """
         Applies a visitor to this DataValue
 
@@ -34,8 +36,6 @@ class DataValue:
         :param visitor: visitor operating on this DataValue
         """
         ...
-    
-
 
 class PrimitiveDataValue(DataValue):
     """
@@ -44,40 +44,23 @@ class PrimitiveDataValue(DataValue):
     :type value: :class:`object`
     :ivar value: Primitive value
     """
-    def __init__(self, *args, **kwargs) -> None:
-        ...
-    
-    def __repr__(self): # -> str:
-        ...
-    
 
+    def __init__(self, *args, **kwargs) -> None: ...
+    def __repr__(self):  # -> str:
+        ...
 
 class ComparableValueMixin:
     """
     Helper class to implement the rich comparator operations.
     """
-    def __eq__(self, other) -> bool:
-        ...
-    
-    def __ne__(self, other) -> bool:
-        ...
-    
-    def __lt__(self, other) -> bool:
-        ...
-    
-    def __gt__(self, other) -> bool:
-        ...
-    
-    def __le__(self, other) -> bool:
-        ...
-    
-    def __ge__(self, other) -> bool:
-        ...
-    
-    def __hash__(self) -> int:
-        ...
-    
 
+    def __eq__(self, other) -> bool: ...
+    def __ne__(self, other) -> bool: ...
+    def __lt__(self, other) -> bool: ...
+    def __gt__(self, other) -> bool: ...
+    def __le__(self, other) -> bool: ...
+    def __ge__(self, other) -> bool: ...
+    def __hash__(self) -> int: ...
 
 class IntegerValue(PrimitiveDataValue, ComparableValueMixin):
     """
@@ -86,6 +69,7 @@ class IntegerValue(PrimitiveDataValue, ComparableValueMixin):
     :type value: :class:`int`
     :ivar value: 64 bit signed int present in IntegerValue
     """
+
     def __init__(self, value=...) -> None:
         """
         Initialize IntegerValue
@@ -94,8 +78,6 @@ class IntegerValue(PrimitiveDataValue, ComparableValueMixin):
         :kwarg value: Integer value to be initialized
         """
         ...
-    
-
 
 class DoubleValue(PrimitiveDataValue, ComparableValueMixin):
     """
@@ -104,6 +86,7 @@ class DoubleValue(PrimitiveDataValue, ComparableValueMixin):
     :type value: :class:`float` or :class:`decimal.Decimal`
     :ivar value: 64 bit signed float present in DoubleValue
     """
+
     def __init__(self, value=...) -> None:
         """
         Initialize DoubleValue
@@ -112,8 +95,6 @@ class DoubleValue(PrimitiveDataValue, ComparableValueMixin):
         :kwarg value: Float or decimal.Decimal value to be initialized
         """
         ...
-    
-
 
 class StringValue(PrimitiveDataValue, ComparableValueMixin):
     """
@@ -122,6 +103,7 @@ class StringValue(PrimitiveDataValue, ComparableValueMixin):
     :type value: :class:`str`
     :ivar value: String present in StringValue
     """
+
     def __init__(self, value=...) -> None:
         """
         Initialize StringValue
@@ -131,8 +113,6 @@ class StringValue(PrimitiveDataValue, ComparableValueMixin):
         :kwarg value: String value to be initialized
         """
         ...
-    
-
 
 class BooleanValue(PrimitiveDataValue, ComparableValueMixin):
     """
@@ -141,6 +121,7 @@ class BooleanValue(PrimitiveDataValue, ComparableValueMixin):
     :type value: :class:`bool`
     :ivar value: Bool present in BooleanValue
     """
+
     def __init__(self, value=...) -> None:
         """
         Initialize BooleanValue
@@ -149,8 +130,6 @@ class BooleanValue(PrimitiveDataValue, ComparableValueMixin):
         :kwarg value: Bool value to be initialized
         """
         ...
-    
-
 
 class BlobValue(PrimitiveDataValue, ComparableValueMixin):
     """
@@ -159,6 +138,7 @@ class BlobValue(PrimitiveDataValue, ComparableValueMixin):
     :type value: :class:`str` for Python 2 and :class:`bytes` for Python 3
     :ivar value: Binary present in BlobValue
     """
+
     def __init__(self, value=...) -> None:
         """
         Initialize BooleanValue
@@ -167,44 +147,36 @@ class BlobValue(PrimitiveDataValue, ComparableValueMixin):
         :kwarg value: Binary value to be initialized
         """
         ...
-    
-
 
 class VoidValue(PrimitiveDataValue):
     """
     DataValue class for None
     """
+
     def __init__(self) -> None:
         """
         Initialize VoidValue
         """
         ...
-    
-    def __eq__(self, other) -> bool:
-        ...
-    
-    def __ne__(self, other) -> bool:
-        ...
-    
-    def __hash__(self) -> int:
-        ...
-    
-    def __repr__(self): # -> Literal['VoidValue()']:
-        ...
-    
 
+    def __eq__(self, other) -> bool: ...
+    def __ne__(self, other) -> bool: ...
+    def __hash__(self) -> int: ...
+    def __repr__(self):  # -> Literal['VoidValue()']:
+        ...
 
 class ListValue(DataValue):
     """
     DataValue class for lists
     """
+
     def __init__(self, values=..., is_map=...) -> None:
         """
         Initialize ListValue
         """
         ...
-    
-    def add(self, value): # -> None:
+
+    def add(self, value):  # -> None:
         """
         Add an element to ListValue
 
@@ -212,8 +184,8 @@ class ListValue(DataValue):
         :param value: DataValue to be added
         """
         ...
-    
-    def add_all(self, values): # -> None:
+
+    def add_all(self, values):  # -> None:
         """
         Add all the elements from input list to ListValue
 
@@ -221,8 +193,8 @@ class ListValue(DataValue):
         :param values: List of DataValues to be added
         """
         ...
-    
-    def is_empty(self): # -> bool:
+
+    def is_empty(self):  # -> bool:
         """
         Returns true if the list is empty
 
@@ -230,8 +202,8 @@ class ListValue(DataValue):
         :return: True if the list is empty, false otherwise
         """
         ...
-    
-    def size(self): # -> int:
+
+    def size(self):  # -> int:
         """
         Returns the size of the list
 
@@ -239,8 +211,8 @@ class ListValue(DataValue):
         :return: Size of the list value
         """
         ...
-    
-    def is_map(self): # -> bool:
+
+    def is_map(self):  # -> bool:
         """
         Returns true if the list is representing a VMODL2 map type
 
@@ -248,29 +220,23 @@ class ListValue(DataValue):
         :return: True if the list is representing a map, false otherwise
         """
         ...
-    
-    def set_map(self, is_map): # -> None:
+
+    def set_map(self, is_map):  # -> None:
         """
         Sets if this List Value is used to represent a map
         """
         ...
-    
-    def __eq__(self, other) -> bool:
-        ...
-    
-    def __ne__(self, other) -> bool:
-        ...
-    
-    def __iter__(self): # -> Iterator[Any]:
-        ...
-    
-    def __len__(self): # -> int:
-        ...
-    
-    def __repr__(self): # -> str:
-        ...
-    
 
+    def __eq__(self, other) -> bool: ...
+    def __ne__(self, other) -> bool: ...
+    def __iter__(self):  # -> Iterator[Any]:
+        ...
+
+    def __len__(self):  # -> int:
+        ...
+
+    def __repr__(self):  # -> str:
+        ...
 
 class OptionalValue(DataValue, ComparableValueMixin):
     """
@@ -279,6 +245,7 @@ class OptionalValue(DataValue, ComparableValueMixin):
     :type value: :class:`DataValue`
     :ivar value: DataValue present in this OptionalValue
     """
+
     def __init__(self, value=...) -> None:
         """
         Initialize OptionalValue
@@ -287,8 +254,8 @@ class OptionalValue(DataValue, ComparableValueMixin):
         :kwarg value: DataValue to be used in OptionalValue
         """
         ...
-    
-    def is_set(self): # -> bool:
+
+    def is_set(self):  # -> bool:
         """
         Returns true if OptionalValue has a DataValue present in it
 
@@ -297,11 +264,9 @@ class OptionalValue(DataValue, ComparableValueMixin):
                  DataValue, false otherwise
         """
         ...
-    
-    def __repr__(self): # -> str:
-        ...
-    
 
+    def __repr__(self):  # -> str:
+        ...
 
 class StructValue(DataValue):
     """
@@ -310,6 +275,7 @@ class StructValue(DataValue):
     :type name: :class:`str`
     :ivar name: Name of the structure
     """
+
     def __init__(self, name=..., data_type=..., values=...) -> None:
         """
         Initialize StructValue
@@ -325,8 +291,8 @@ class StructValue(DataValue):
         :kwarg values: Dict of field names and field values
         """
         ...
-    
-    def get_fields(self): # -> Iterator[tuple[Any, Any]]:
+
+    def get_fields(self):  # -> Iterator[tuple[Any, Any]]:
         """
         Returns the map of field names and values present in this
         StructValue.
@@ -336,8 +302,8 @@ class StructValue(DataValue):
         :return: Fields in this struct value
         """
         ...
-    
-    def get_field_names(self): # -> list[Any]:
+
+    def get_field_names(self):  # -> list[Any]:
         """
         Returns the list of field names present in this StructValue.
         The ordering of fields is not preserved.
@@ -346,8 +312,8 @@ class StructValue(DataValue):
         :return: List of field names present in this StructValue
         """
         ...
-    
-    def has_field(self, field): # -> bool:
+
+    def has_field(self, field):  # -> bool:
         """
         Returns true if the field is present in the StructValue, false otherwise
 
@@ -358,7 +324,7 @@ class StructValue(DataValue):
                  false otherwise
         """
         ...
-    
+
     def get_field(self, field):
         """
         Returns the field value of the field present in the StructValue
@@ -369,8 +335,8 @@ class StructValue(DataValue):
         :return: Returns the field value of the field present in the StructValue
         """
         ...
-    
-    def set_field(self, field, value): # -> None:
+
+    def set_field(self, field, value):  # -> None:
         """
         Set the field value for the field name passed in the argument
 
@@ -382,17 +348,13 @@ class StructValue(DataValue):
         :param value: DataValue to be used for the field
         """
         ...
-    
-    def __eq__(self, other) -> bool:
+
+    def __eq__(self, other) -> bool: ...
+    def __ne__(self, other) -> bool: ...
+    def __repr__(self):  # -> str:
         ...
-    
-    def __ne__(self, other) -> bool:
-        ...
-    
-    def __repr__(self): # -> str:
-        ...
-    
-    def keys(self): # -> Iterator[Any]:
+
+    def keys(self):  # -> Iterator[Any]:
         """
         Returns the list of field names
 
@@ -400,13 +362,12 @@ class StructValue(DataValue):
         :return: List of field names
         """
         ...
-    
-
 
 class ErrorValue(StructValue):
     """
     DataValue class for Errors
     """
+
     def __init__(self, name=..., values=...) -> None:
         """
         Initialize ErrorValue
@@ -415,14 +376,9 @@ class ErrorValue(StructValue):
         :kwarg name: Name of the ErrorValue
         """
         ...
-    
-    def __eq__(self, other) -> bool:
-        ...
-    
-    def __ne__(self, other) -> bool:
-        ...
-    
 
+    def __eq__(self, other) -> bool: ...
+    def __ne__(self, other) -> bool: ...
 
 class SecretValue(PrimitiveDataValue, ComparableValueMixin):
     """
@@ -432,6 +388,7 @@ class SecretValue(PrimitiveDataValue, ComparableValueMixin):
     :type value: :class:`str`
     :ivar value: String present in SecretValue
     """
+
     def __init__(self, value=...) -> None:
         """
         Initialize StringValue
@@ -440,26 +397,24 @@ class SecretValue(PrimitiveDataValue, ComparableValueMixin):
         :kwarg value: String value to be initialized
         """
         ...
-    
-    def __repr__(self): # -> Literal['SecretValue(<secret>)']:
-        ...
-    
-    def __str__(self) -> str:
-        ...
-    
 
+    def __repr__(self):  # -> Literal['SecretValue(<secret>)']:
+        ...
+
+    def __str__(self) -> str: ...
 
 class SimpleValueVisitor(VapiVisitor):
     """
     Base no-op implementation of a DataValue visitor
     """
+
     def __init__(self) -> None:
         """
         Initialize SimpleValueVisitor
         """
         ...
-    
-    def visit_void(self, value): # -> None:
+
+    def visit_void(self, value):  # -> None:
         """
         Visit a VoidValue
 
@@ -467,8 +422,8 @@ class SimpleValueVisitor(VapiVisitor):
         :param value: Data value
         """
         ...
-    
-    def visit_integer(self, value): # -> None:
+
+    def visit_integer(self, value):  # -> None:
         """
         Visit a IntegerValue
 
@@ -476,8 +431,8 @@ class SimpleValueVisitor(VapiVisitor):
         :param value: Data value
         """
         ...
-    
-    def visit_double(self, value): # -> None:
+
+    def visit_double(self, value):  # -> None:
         """
         Visit a DoubleValue
 
@@ -485,8 +440,8 @@ class SimpleValueVisitor(VapiVisitor):
         :param value: Data value
         """
         ...
-    
-    def visit_string(self, value): # -> None:
+
+    def visit_string(self, value):  # -> None:
         """
         Visit a StringValue
 
@@ -494,8 +449,8 @@ class SimpleValueVisitor(VapiVisitor):
         :param value: Data value
         """
         ...
-    
-    def visit_boolean(self, value): # -> None:
+
+    def visit_boolean(self, value):  # -> None:
         """
         Visit a BooleanValue
 
@@ -503,8 +458,8 @@ class SimpleValueVisitor(VapiVisitor):
         :param value: Data value
         """
         ...
-    
-    def visit_blob(self, value): # -> None:
+
+    def visit_blob(self, value):  # -> None:
         """
         Visit a BlobValue
 
@@ -512,8 +467,8 @@ class SimpleValueVisitor(VapiVisitor):
         :param value: Data value
         """
         ...
-    
-    def visit_list(self, value): # -> None:
+
+    def visit_list(self, value):  # -> None:
         """
         Visit a ListValue
 
@@ -521,8 +476,8 @@ class SimpleValueVisitor(VapiVisitor):
         :param value: Data value
         """
         ...
-    
-    def visit_optional(self, value): # -> None:
+
+    def visit_optional(self, value):  # -> None:
         """
         Visit a OptionalValue
 
@@ -530,8 +485,8 @@ class SimpleValueVisitor(VapiVisitor):
         :param value: Data value
         """
         ...
-    
-    def visit_struct(self, value): # -> None:
+
+    def visit_struct(self, value):  # -> None:
         """
         Visit a StructValue
 
@@ -539,8 +494,8 @@ class SimpleValueVisitor(VapiVisitor):
         :param value: Data value
         """
         ...
-    
-    def visit_error(self, value): # -> None:
+
+    def visit_error(self, value):  # -> None:
         """
         Visit an ErrorValue
 
@@ -548,8 +503,8 @@ class SimpleValueVisitor(VapiVisitor):
         :param value: Data value
         """
         ...
-    
-    def visit_secret(self, value): # -> None:
+
+    def visit_secret(self, value):  # -> None:
         """
         Visit a SecretValue
 
@@ -557,10 +512,9 @@ class SimpleValueVisitor(VapiVisitor):
         :param value: Data value
         """
         ...
-    
-
 
 type_map = ...
+
 def data_value_factory(data_type, *args):
     """
     Convenience method to create datavalues
@@ -570,4 +524,3 @@ def data_value_factory(data_type, *args):
     :param args: The argument list to be passed to the data value constructor
     """
     ...
-

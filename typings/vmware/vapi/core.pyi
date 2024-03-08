@@ -10,13 +10,15 @@ Core Protocol Definition classes
 """
 __author__ = ...
 __copyright__ = ...
+
 @six.add_metaclass(abc.ABCMeta)
 class ApiProvider:
     """
     The ApiProvider interface is used for invocation of operations
     """
+
     @abc.abstractmethod
-    def invoke(self, service_id, operation_id, input_value, ctx): # -> None:
+    def invoke(self, service_id, operation_id, input_value, ctx):  # -> None:
         """
         Invokes the specified method using the input value and the
         the execution context provided
@@ -34,23 +36,21 @@ class ApiProvider:
         :return: Result of the method invocation
         """
         ...
-    
-    def __hash__(self) -> int:
-        ...
-    
 
+    def __hash__(self) -> int: ...
 
 class ApiInterface:
     """
     The ApiInterface interface provides introspection APIs for a
     vAPI interface; it is implemented by API providers.
     """
+
     def __init__(self) -> None:
         """
         Initialize the Api Interface instance
         """
         ...
-    
+
     def get_identifier(self):
         """
         Returns interface identifier
@@ -59,7 +59,7 @@ class ApiInterface:
         :return: Interface identifier
         """
         ...
-    
+
     def get_definition(self):
         """
         Returns interface definition
@@ -68,7 +68,7 @@ class ApiInterface:
         :return: Interface definition
         """
         ...
-    
+
     def get_method_definition(self, method_id):
         """
         Returns the method definition
@@ -77,7 +77,7 @@ class ApiInterface:
         :return: Method definition
         """
         ...
-    
+
     def invoke(self, ctx, method_id, input_value):
         """
         Invokes the specified method using the execution context and
@@ -94,17 +94,15 @@ class ApiInterface:
         :return: Result of the method invocation
         """
         ...
-    
-    def __hash__(self) -> int:
-        ...
-    
 
+    def __hash__(self) -> int: ...
 
 class InterfaceIdentifier:
     """
     InterfaceIdentifier has the information required to uniquely
     address a vAPI interface
     """
+
     def __init__(self, iface) -> None:
         """
         Initialize an InterfaceIdentifier
@@ -113,8 +111,8 @@ class InterfaceIdentifier:
         :param iface: String identifier of the interface
         """
         ...
-    
-    def get_name(self): # -> str:
+
+    def get_name(self):  # -> str:
         """
         Returns the string identifier of the interface
 
@@ -122,25 +120,19 @@ class InterfaceIdentifier:
         :return: String identifier of the interface
         """
         ...
-    
-    def __eq__(self, other) -> bool:
-        ...
-    
-    def __ne__(self, other) -> bool:
-        ...
-    
-    def __repr__(self): # -> str:
-        ...
-    
-    def __hash__(self) -> int:
-        ...
-    
 
+    def __eq__(self, other) -> bool: ...
+    def __ne__(self, other) -> bool: ...
+    def __repr__(self):  # -> str:
+        ...
+
+    def __hash__(self) -> int: ...
 
 class MethodIdentifier:
     """
     This class identifies a :class:`ApiMethod` instance
     """
+
     def __init__(self, iface, method) -> None:
         """
         Initialize the MethodIdentifier
@@ -151,8 +143,8 @@ class MethodIdentifier:
         :param method: String identifier of this method
         """
         ...
-    
-    def get_interface_identifier(self): # -> InterfaceIdentifier:
+
+    def get_interface_identifier(self):  # -> InterfaceIdentifier:
         """
         Returns the interface identifier of the method
 
@@ -160,8 +152,8 @@ class MethodIdentifier:
         :return: InterfaceIdentifier of this method
         """
         ...
-    
-    def get_name(self): # -> str:
+
+    def get_name(self):  # -> str:
         """
         Returns the string identifier of the method
 
@@ -169,26 +161,20 @@ class MethodIdentifier:
         :return: String identifier of the method
         """
         ...
-    
-    def __eq__(self, other) -> bool:
-        ...
-    
-    def __ne__(self, other) -> bool:
-        ...
-    
-    def __repr__(self): # -> str:
-        ...
-    
-    def __hash__(self) -> int:
-        ...
-    
 
+    def __eq__(self, other) -> bool: ...
+    def __ne__(self, other) -> bool: ...
+    def __repr__(self):  # -> str:
+        ...
+
+    def __hash__(self) -> int: ...
 
 class ProviderDefinition:
     """
     The ProviderDefinition class contains details information about a
     vAPI provider
     """
+
     def __init__(self, name) -> None:
         """
         Initialize the ProviderDefinition
@@ -197,8 +183,8 @@ class ProviderDefinition:
         :param name: Name of the provider
         """
         ...
-    
-    def get_identifier(self): # -> Any:
+
+    def get_identifier(self):  # -> Any:
         """
         Returns the provider identifier.
 
@@ -206,20 +192,13 @@ class ProviderDefinition:
         :return: Provider identifier
         """
         ...
-    
-    def __eq__(self, other) -> bool:
-        ...
-    
-    def __ne__(self, other) -> bool:
-        ...
-    
-    def __repr__(self): # -> str:
-        ...
-    
-    def __hash__(self) -> int:
-        ...
-    
 
+    def __eq__(self, other) -> bool: ...
+    def __ne__(self, other) -> bool: ...
+    def __repr__(self):  # -> str:
+        ...
+
+    def __hash__(self) -> int: ...
 
 class InterfaceDefinition:
     """
@@ -227,6 +206,7 @@ class InterfaceDefinition:
     vAPI interface. This should contain all the information required
     to address an interface in the vAPI runtime.
     """
+
     def __init__(self, id_, method_ids) -> None:
         """
         Initialize the InterfaceDefinition
@@ -238,8 +218,8 @@ class InterfaceDefinition:
                            this interface
         """
         ...
-    
-    def get_identifier(self): # -> Any:
+
+    def get_identifier(self):  # -> Any:
         """
         Returns the interface identifier
 
@@ -247,8 +227,8 @@ class InterfaceDefinition:
         :return: Returns the interface identifer of this interface
         """
         ...
-    
-    def get_method_identifiers(self): # -> Any:
+
+    def get_method_identifiers(self):  # -> Any:
         """
         Returns the list of method identifiers of the methods exposed by this
         interface. Each method identifier is unique within an interface. The
@@ -259,20 +239,12 @@ class InterfaceDefinition:
                  interface
         """
         ...
-    
-    def __eq__(self, other) -> bool:
-        ...
-    
-    def __ne__(self, other) -> bool:
-        ...
-    
-    def __hash__(self) -> int:
-        ...
-    
-    def __repr__(self): # -> str:
-        ...
-    
 
+    def __eq__(self, other) -> bool: ...
+    def __ne__(self, other) -> bool: ...
+    def __hash__(self) -> int: ...
+    def __repr__(self):  # -> str:
+        ...
 
 class MethodDefinition:
     """
@@ -280,6 +252,7 @@ class MethodDefinition:
     contain all the information required to address a method in the vAPI
     runtime.
     """
+
     def __init__(self, id_, input_, output, errors) -> None:
         """
         Initialize MethodDefinition
@@ -297,8 +270,8 @@ class MethodDefinition:
                        can report
         """
         ...
-    
-    def get_identifier(self): # -> Any:
+
+    def get_identifier(self):  # -> Any:
         """
         Returns the method identifier
 
@@ -306,8 +279,8 @@ class MethodDefinition:
         :return: MethodIdentifier of this method
         """
         ...
-    
-    def get_input_definition(self): # -> Any:
+
+    def get_input_definition(self):  # -> Any:
         """
         Returns the struct definition corresponding to the method's input
         parameters. The field names in the struct definition are the parameter
@@ -318,8 +291,8 @@ class MethodDefinition:
         :return: StructDefinition correspoding to the method's input
         """
         ...
-    
-    def get_output_definition(self): # -> Any:
+
+    def get_output_definition(self):  # -> Any:
         """
         Returns the data definition of the method's output
 
@@ -327,8 +300,8 @@ class MethodDefinition:
         :return: Data definition of the method's output
         """
         ...
-    
-    def get_error_definitions(self): # -> frozenset[Any]:
+
+    def get_error_definitions(self):  # -> frozenset[Any]:
         """
         Returns a set of error definitions describing the errors that this
         method can report
@@ -339,8 +312,8 @@ class MethodDefinition:
             method can report
         """
         ...
-    
-    def get_error_definition(self, error_name): # -> None:
+
+    def get_error_definition(self, error_name):  # -> None:
         """
         Returns the error definition with the specified name reported by this
         method or None if this method doesn't report an error with the specified
@@ -354,20 +327,12 @@ class MethodDefinition:
                  specified name.
         """
         ...
-    
-    def __eq__(self, other) -> bool:
-        ...
-    
-    def __ne__(self, other) -> bool:
-        ...
-    
-    def __hash__(self) -> int:
-        ...
-    
-    def __repr__(self): # -> str:
-        ...
-    
 
+    def __eq__(self, other) -> bool: ...
+    def __ne__(self, other) -> bool: ...
+    def __hash__(self) -> int: ...
+    def __repr__(self):  # -> str:
+        ...
 
 class MethodResult:
     """
@@ -381,6 +346,7 @@ class MethodResult:
     :type error: :class:`vmware.vapi.data.value.ErrorValue`
     :ivar error: Method error
     """
+
     def __init__(self, output=..., error=...) -> None:
         """
         Initialize MethodResult
@@ -391,24 +357,24 @@ class MethodResult:
         :param error: Method error
         """
         ...
-    
+
     @property
-    def output(self): # -> None:
+    def output(self):  # -> None:
         """
         :rtype: :class:`vmware.vapi.data.value.DataValue`
         :return: Method output
         """
         ...
-    
+
     @property
-    def error(self): # -> None:
+    def error(self):  # -> None:
         """
         :rtype: :class:`vmware.vapi.data.value.ErrorValue`
         :return: Method error
         """
         ...
-    
-    def success(self): # -> bool:
+
+    def success(self):  # -> bool:
         """
         Check if the method completed successfully.
 
@@ -416,14 +382,10 @@ class MethodResult:
         :return: False if the method reported an error, True otherwise
         """
         ...
-    
-    def __hash__(self) -> int:
-        ...
-    
-    def __repr__(self): # -> str:
-        ...
-    
 
+    def __hash__(self) -> int: ...
+    def __repr__(self):  # -> str:
+        ...
 
 class CustomDict(dict):
     """
@@ -433,13 +395,12 @@ class CustomDict(dict):
     key/value pairs of dictionaries. We also have to override update and
     setdefault, so that even they use __setitem__.
     """
-    def update(self, *args, **kwargs): # -> None:
-        ...
-    
-    def setdefault(self, key, val=...): # -> None:
-        ...
-    
 
+    def update(self, *args, **kwargs):  # -> None:
+        ...
+
+    def setdefault(self, key, val=...):  # -> None:
+        ...
 
 class ApplicationContext(CustomDict):
     """
@@ -454,70 +415,57 @@ class ApplicationContext(CustomDict):
     words it is a contract between the client and the service implementation
     only.
     """
-    def __init__(self, *args, **kwargs) -> None:
-        ...
-    
-    def __setitem__(self, key, value): # -> None:
-        ...
-    
-    def __repr__(self): # -> str:
-        ...
-    
 
+    def __init__(self, *args, **kwargs) -> None: ...
+    def __setitem__(self, key, value):  # -> None:
+        ...
+
+    def __repr__(self):  # -> str:
+        ...
 
 class SecurityContext(CustomDict):
     """
     Implementations of this interface will provide all needed data for
     authentication for the given invocation.
     """
-    def __init__(self, *args, **kwargs) -> None:
-        ...
-    
-    def __setitem__(self, key, value): # -> None:
-        ...
-    
-    def __repr__(self): # -> Literal['SecurityContext(<hidden>)']:
-        ...
-    
-    def __str__(self) -> str:
-        ...
-    
 
+    def __init__(self, *args, **kwargs) -> None: ...
+    def __setitem__(self, key, value):  # -> None:
+        ...
+
+    def __repr__(self):  # -> Literal['SecurityContext(<hidden>)']:
+        ...
+
+    def __str__(self) -> str: ...
 
 class RuntimeData(CustomDict):
     """
     Implementations of this interface will provide custom runtime data.
     """
-    def __init__(self, *args, **kwargs) -> None:
-        ...
-    
-    def __setitem__(self, key, value): # -> None:
-        ...
-    
-    def __repr__(self): # -> Literal['RuntimeData(<hidden>)']:
-        ...
-    
-    def __str__(self) -> str:
-        ...
-    
 
+    def __init__(self, *args, **kwargs) -> None: ...
+    def __setitem__(self, key, value):  # -> None:
+        ...
+
+    def __repr__(self):  # -> Literal['RuntimeData(<hidden>)']:
+        ...
+
+    def __str__(self) -> str: ...
 
 class ExecutionContext:
     """
     This class provides out-of-band context information that is passed along
     with a method invocation
     """
-    def __init__(self, application_context=..., security_context=..., runtime_data=...) -> None:
+
+    def __init__(
+        self, application_context=..., security_context=..., runtime_data=...
+    ) -> None:
         """
         Initialize Execution Context
         """
         ...
-    
-    def __hash__(self) -> int:
-        ...
-    
-    def __repr__(self): # -> str:
-        ...
-    
 
-
+    def __hash__(self) -> int: ...
+    def __repr__(self):  # -> str:
+        ...

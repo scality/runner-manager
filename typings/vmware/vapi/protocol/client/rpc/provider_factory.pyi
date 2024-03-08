@@ -8,13 +8,15 @@ rpc provider factory
 __author__ = ...
 __copyright__ = ...
 logger = ...
+
 class RpcProviderFactory:
-    """ Rpc provider factory """
+    """Rpc provider factory"""
+
     def __init__(self) -> None:
-        """ Rpc provider factory init """
+        """Rpc provider factory init"""
         ...
-    
-    def get_rpc_provider(self, rpc_provider_name, *args, **kwargs): # -> Any | None:
+
+    def get_rpc_provider(self, rpc_provider_name, *args, **kwargs):  # -> Any | None:
         """
         Create rpc provider
 
@@ -28,6 +30,3 @@ class RpcProviderFactory:
         :return: Rpc provider object
         """
         ...
-    
-
-

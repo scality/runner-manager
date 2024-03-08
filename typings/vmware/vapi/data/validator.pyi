@@ -11,14 +11,16 @@ Data Validator classes
 __author__ = ...
 __copyright__ = ...
 logger = ...
+
 @six.add_metaclass(abc.ABCMeta)
 class Validator:
     """
     vAPI Data object validator class
     This is an abstract class.
     """
+
     @abc.abstractmethod
-    def validate(self, data_value, data_type=...): # -> None:
+    def validate(self, data_value, data_type=...):  # -> None:
         """
         This method validates a data value
 
@@ -33,13 +35,12 @@ class Validator:
         :return List of error messages if validation fails or None
         """
         ...
-    
-
 
 class UnionValidator(Validator):
     """
     Union Validator class that validates a struct value for union consistency
     """
+
     def __init__(self, discriminant_name, case_map) -> None:
         """
         Initialize the union validator class
@@ -54,8 +55,8 @@ class UnionValidator(Validator):
                         it is rqeuired as dictionary value
         """
         ...
-    
-    def validate(self, data_value, data_type=...): # -> list[Message] | None:
+
+    def validate(self, data_value, data_type=...):  # -> list[Message] | None:
         """
         Validates a struct value for union consistency
 
@@ -70,18 +71,15 @@ class UnionValidator(Validator):
         :return List of error messages if validation fails or None
         """
         ...
-    
-
 
 class HasFieldsOfValidator(Validator):
     """
     HasFieldsOfValidator validator class that validates the data_value has
     required fields of the class specified
     """
-    def __init__(self) -> None:
-        ...
-    
-    def validate(self, data_value, data_type=...): # -> list[Message] | Any | None:
+
+    def __init__(self) -> None: ...
+    def validate(self, data_value, data_type=...):  # -> list[Message] | Any | None:
         """
         Validates whether a StructValue satisfies the HasFieldsOf constraint
 
@@ -96,6 +94,3 @@ class HasFieldsOfValidator(Validator):
         :return List of error messages if validation fails or None
         """
         ...
-    
-
-

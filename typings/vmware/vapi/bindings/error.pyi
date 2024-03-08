@@ -9,10 +9,12 @@ Error classes and factory
 """
 __author__ = ...
 __copyright__ = ...
+
 class VapiError(VapiStruct, Exception):
     """
     Representation of VMODL Error in python language bindings
     """
+
     def __init__(self, error_value=...) -> None:
         """
         Initialize VapiError
@@ -22,8 +24,8 @@ class VapiError(VapiStruct, Exception):
         :param error_value: ErrorValue to be used for VapiError
         """
         ...
-    
-    def get_error_value(self): # -> StructValue:
+
+    def get_error_value(self):  # -> StructValue:
         """
         Returns the corresponding ErrorValue for the VapiError class
 
@@ -31,14 +33,11 @@ class VapiError(VapiStruct, Exception):
         :return: ErrorValue for this VapiError
         """
         ...
-    
-
 
 class UnresolvedError(VapiError):
     """
     VapiError which represents a VMODL2 error that was reported but couldn't
     be resolved
     """
+
     ...
-
-

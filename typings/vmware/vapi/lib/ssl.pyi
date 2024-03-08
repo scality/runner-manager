@@ -8,18 +8,18 @@ SSL Context factories
 __author__ = ...
 __copyright__ = ...
 logger = ...
+
 class ClientContextFactory:
     """
     Context factory base class. This class should be used to set the
     SSL options
     """
+
     def get_context(self):
         """
         Returns the SSL context
         """
         ...
-    
-
 
 class DefaultClientContextFactory(ClientContextFactory):
     """
@@ -35,7 +35,10 @@ class DefaultClientContextFactory(ClientContextFactory):
             # modify ctx
             return ctx
     """
-    def __init__(self, certificate=..., private_key=..., ca_certs=..., ca_certs_dir=...) -> None:
+
+    def __init__(
+        self, certificate=..., private_key=..., ca_certs=..., ca_certs_dir=...
+    ) -> None:
         """
         Initialize DefaultClientContextFactory
 
@@ -50,8 +53,8 @@ class DefaultClientContextFactory(ClientContextFactory):
             included with OpenSSL
         """
         ...
-    
-    def get_context(self): # -> Context:
+
+    def get_context(self):  # -> Context:
         """
         Returns the SSL context
 
@@ -59,16 +62,11 @@ class DefaultClientContextFactory(ClientContextFactory):
         :return: SSL context
         """
         ...
-    
-
 
 class UnverifiedClientContextFactory(DefaultClientContextFactory):
     """
     Unverified SSL context class. This class retrieves an unverified SSL Context
     with other options from the DefaultClientContext
     """
-    def __init__(self) -> None:
-        ...
-    
 
-
+    def __init__(self) -> None: ...

@@ -7,12 +7,14 @@ StubConfiguration factory
 """
 __author__ = ...
 __copyright__ = ...
+
 class StubConfigurationFactory:
     """
     Factory class for creating stub configuration objects
     """
+
     @staticmethod
-    def new_configuration(connector, *errorTypes): # -> StubConfiguration:
+    def new_configuration(connector, *errorTypes):  # -> StubConfiguration:
         """
         Return a stub configuration using the specified connection, with no
         registered errors.
@@ -26,9 +28,11 @@ class StubConfigurationFactory:
         :param error_types: error types to be registered in the configuration
         """
         ...
-    
+
     @staticmethod
-    def new_runtime_configuration(connector, *errorTypes, **kwargs): # -> StubConfiguration:
+    def new_runtime_configuration(
+        connector, *errorTypes, **kwargs
+    ):  # -> StubConfiguration:
         """
         Return a stub configuration using the specified connection, with the
         errors reported by the vAPI runtime registered.
@@ -45,9 +49,9 @@ class StubConfigurationFactory:
                             configuration
         """
         ...
-    
+
     @staticmethod
-    def new_std_configuration(connector, *errorTypes): # -> StubConfiguration:
+    def new_std_configuration(connector, *errorTypes):  # -> StubConfiguration:
         """
         Return a stub configuration using the specified connection, with all the
         standard errors registered.
@@ -62,6 +66,3 @@ class StubConfigurationFactory:
                             configuration
         """
         ...
-    
-
-

@@ -7,10 +7,12 @@ Convenience methods for converting variable names
 """
 __author__ = ...
 __copyright__ = ...
+
 class Converter:
     """
     Convenience methods for converting variable names
     """
+
     _mixedcase_to_underscore = ...
     _underscore_to_mixedcase = ...
     @staticmethod
@@ -25,7 +27,7 @@ class Converter:
         :return: name with first letter capitalized
         """
         ...
-    
+
     @staticmethod
     def uncapitalize(name):
         """
@@ -38,9 +40,9 @@ class Converter:
         :return: name with first letter uncapitalized
         """
         ...
-    
+
     @staticmethod
-    def mixedcase_to_underscore(name): # -> str:
+    def mixedcase_to_underscore(name):  # -> str:
         """
         Convert from mixedCase to lower_case_with_underscore format
 
@@ -51,9 +53,9 @@ class Converter:
         :return: name in lower_case_with_underscore format
         """
         ...
-    
+
     @staticmethod
-    def underscore_to_mixedcase(name): # -> str:
+    def underscore_to_mixedcase(name):  # -> str:
         """
         Convert from lower_case_with_underscore to mixedCase format
 
@@ -64,9 +66,9 @@ class Converter:
         :return: name in mixedCase
         """
         ...
-    
+
     @staticmethod
-    def capwords_to_underscore(name): # -> str:
+    def capwords_to_underscore(name):  # -> str:
         """
         Convert from CapWords to lower_case_with_underscore format
 
@@ -77,7 +79,7 @@ class Converter:
         :return: name in lower_case_with_underscore format
         """
         ...
-    
+
     @staticmethod
     def underscore_to_capwords(name):
         """
@@ -90,7 +92,7 @@ class Converter:
         :return: name in CapWords
         """
         ...
-    
+
     @staticmethod
     def unreserve_name(name):
         """
@@ -105,7 +107,7 @@ class Converter:
         :return: The converted string
         """
         ...
-    
+
     @staticmethod
     def pepify(name):
         """
@@ -119,7 +121,7 @@ class Converter:
         :return: The converted string
         """
         ...
-    
+
     @staticmethod
     def canonical_to_pep(name):
         """
@@ -132,6 +134,3 @@ class Converter:
         :return: The converted string
         """
         ...
-    
-
-

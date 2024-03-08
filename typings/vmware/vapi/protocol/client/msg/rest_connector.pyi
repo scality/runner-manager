@@ -11,9 +11,13 @@ __author__ = ...
 __copyright__ = ...
 logger = ...
 request_logger = ...
+
 class RestClientProvider(ApiProvider):
-    """ Rest rpc client provider """
-    def __init__(self, http_provider, post_processors, rest_metadata_map=..., is_vapi_rest=...) -> None:
+    """Rest rpc client provider"""
+
+    def __init__(
+        self, http_provider, post_processors, rest_metadata_map=..., is_vapi_rest=...
+    ) -> None:
         """
         Rest rpc client provider init
 
@@ -30,8 +34,8 @@ class RestClientProvider(ApiProvider):
             or not
         """
         ...
-    
-    def add_rest_metadata(self, service_id, operation_id, rest_metadata): # -> None:
+
+    def add_rest_metadata(self, service_id, operation_id, rest_metadata):  # -> None:
         """
         Add rest metadata for an operation
 
@@ -44,8 +48,8 @@ class RestClientProvider(ApiProvider):
         :param rest_metadata: Rest metadata for the operation
         """
         ...
-    
-    def set_rest_format(self, is_vapi_rest): # -> None:
+
+    def set_rest_format(self, is_vapi_rest):  # -> None:
         """
         Set whether the rest format is VAPI or Swagger REST
 
@@ -53,8 +57,8 @@ class RestClientProvider(ApiProvider):
         :param is_vapi_rest: Whether the rest format is VAPI REST or not
         """
         ...
-    
-    def invoke(self, service_id, operation_id, input_value, ctx): # -> MethodResult:
+
+    def invoke(self, service_id, operation_id, input_value, ctx):  # -> MethodResult:
         """
         Invokes the specified method using the input value and the
         the execution context provided
@@ -71,10 +75,10 @@ class RestClientProvider(ApiProvider):
         :return: method result object
         """
         ...
-    
 
-
-def get_protocol_connector(http_provider, post_processors=..., provider_filter_chain=...): # -> GenericConnector:
+def get_protocol_connector(
+    http_provider, post_processors=..., provider_filter_chain=...
+):  # -> GenericConnector:
     """
     Get protocol connector
 
@@ -91,4 +95,3 @@ def get_protocol_connector(http_provider, post_processors=..., provider_filter_c
     :return: json rpc connector object
     """
     ...
-

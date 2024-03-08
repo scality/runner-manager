@@ -9,14 +9,16 @@ Helper classes for formatting the message for localization
 """
 __author__ = ...
 __copyright__ = ...
+
 class StringFormatter(MessageFormatter):
     """
     Format the string
     """
+
     string_template = ...
     format_specifier = ...
     @classmethod
-    def format_msg(cls, msg, args): # -> LiteralString:
+    def format_msg(cls, msg, args):  # -> LiteralString:
         """
         Format the string
 
@@ -28,6 +30,3 @@ class StringFormatter(MessageFormatter):
         :return: Localized message
         """
         ...
-    
-
-

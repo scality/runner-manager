@@ -8,14 +8,16 @@ Utility library for validating IRI that conform to RFC 3987
 __author__ = ...
 __copyright__ = ...
 logger = ...
+
 class URIValidator:
     """
     Helper class for validation of IRI's
     """
+
     _rules = ...
     compiled_regex = ...
     @staticmethod
-    def validate(iri): # -> None:
+    def validate(iri):  # -> None:
         """
         Validate the given IRI string
 
@@ -23,6 +25,3 @@ class URIValidator:
         :param iri: IRI string to be validated
         """
         ...
-    
-
-

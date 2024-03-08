@@ -8,7 +8,8 @@ vAPI Connection factory
 __author__ = ...
 __copyright__ = ...
 REQUESTS_RPC_PROVIDER_NAME = ...
-def check_file_exists(filename): # -> None:
+
+def check_file_exists(filename):  # -> None:
     """
     Check if name is a file and exists
 
@@ -17,7 +18,9 @@ def check_file_exists(filename): # -> None:
     """
     ...
 
-def get_connector(rpc_provider_name, msg_protocol, ssl_context=..., **kwargs): # -> Any | None:
+def get_connector(
+    rpc_provider_name, msg_protocol, ssl_context=..., **kwargs
+):  # -> Any | None:
     """
     Create a connection to the vAPI Provider using the specified arguments
 
@@ -36,7 +39,9 @@ def get_connector(rpc_provider_name, msg_protocol, ssl_context=..., **kwargs): #
     """
     ...
 
-def get_saml_hok_connector(rpc_provider_name, msg_protocol=..., ssl_context=..., **kwargs): # -> Any | None:
+def get_saml_hok_connector(
+    rpc_provider_name, msg_protocol=..., ssl_context=..., **kwargs
+):  # -> Any | None:
     """
     Create a connection that uses SAML Hok based authentication
     to connect to a vAPI Provider
@@ -57,7 +62,14 @@ def get_saml_hok_connector(rpc_provider_name, msg_protocol=..., ssl_context=...,
     """
     ...
 
-def get_requests_connector(session, msg_protocol=..., url=..., timeout=..., pool_size=..., provider_filter_chain=...): # -> Any | None:
+def get_requests_connector(
+    session,
+    msg_protocol=...,
+    url=...,
+    timeout=...,
+    pool_size=...,
+    provider_filter_chain=...,
+):  # -> Any | None:
     """
     Create a connection that uses 'requests' library for http(s) connections to
     a vAPI Provider.
@@ -82,7 +94,9 @@ def get_requests_connector(session, msg_protocol=..., url=..., timeout=..., pool
     """
     ...
 
-def get_requests_hok_connector(session, msg_protocol=..., url=..., timeout=..., pool_size=...): # -> Any | None:
+def get_requests_hok_connector(
+    session, msg_protocol=..., url=..., timeout=..., pool_size=...
+):  # -> Any | None:
     """
     Create a connection that uses SAML Hok based authentication using 'requests'
     library to connect to a vAPI Provider.
@@ -102,4 +116,3 @@ def get_requests_hok_connector(session, msg_protocol=..., url=..., timeout=..., 
     :return: Connection to the vAPI provider
     """
     ...
-

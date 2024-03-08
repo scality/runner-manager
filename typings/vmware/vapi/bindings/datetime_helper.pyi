@@ -11,6 +11,7 @@ Utility library for converting to/from datetime objects in Python Bindings
 __author__ = ...
 __copyright__ = ...
 logger = ...
+
 class DateTimeConverter:
     """
     Helper class to convert to/from Python datetime strings to
@@ -53,10 +54,11 @@ class DateTimeConverter:
     group(14) = time-hour
     group(15) = time-minute
     """
+
     _rfc3339_dt_pattern = ...
     _rfc3339_dt_expr = ...
     @staticmethod
-    def convert_to_datetime(datetime_str): # -> datetime:
+    def convert_to_datetime(datetime_str):  # -> datetime:
         """
         Parse RFC 3339 date time from string.
 
@@ -67,9 +69,9 @@ class DateTimeConverter:
         :return: Datetime object
         """
         ...
-    
+
     @staticmethod
-    def convert_from_rfc3339_to_datetime(datetime_str): # -> datetime:
+    def convert_from_rfc3339_to_datetime(datetime_str):  # -> datetime:
         """
         Parse RFC 3339 date time from string.
 
@@ -80,7 +82,7 @@ class DateTimeConverter:
         :return: Datetime object
         """
         ...
-    
+
     @staticmethod
     def convert_from_datetime(datetime_obj):
         """
@@ -101,8 +103,6 @@ class DateTimeConverter:
         :return: String representation of the input datetime object
         """
         ...
-    
-
 
 utc_tzinfo = ...
 if six.PY2:
@@ -110,23 +110,22 @@ if six.PY2:
         """
         tzinfo class for UTC timezone
         """
-        def utcoffset(self, dt): # -> timedelta:
+
+        def utcoffset(self, dt):  # -> timedelta:
             ...
-        
-        def tzname(self, dt): # -> Literal['UTC']:
+
+        def tzname(self, dt):  # -> Literal['UTC']:
             ...
-        
-        def dst(self, dt): # -> timedelta:
+
+        def dst(self, dt):  # -> timedelta:
             ...
-        
-    
-    
+
     utc_tzinfo = ...
 else:
     utc_tzinfo = ...
-def convert_to_utc(date_time): # -> None:
+
+def convert_to_utc(date_time):  # -> None:
     """
     Convert a given datetime object to UTC timezone
     """
     ...
-

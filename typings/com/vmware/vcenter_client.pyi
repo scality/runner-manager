@@ -13,11 +13,13 @@ vSphere environments. The module is available starting in vSphere 6.5.
 """
 __author__ = ...
 __docformat__ = ...
+
 class Cluster(VapiInterface):
     """
     The ``Cluster`` class provides methods to manage clusters in the vCenter
     Server.
     """
+
     RESOURCE_TYPE = ...
     _VAPI_SERVICE_ID = ...
     def __init__(self, config) -> None:
@@ -26,7 +28,7 @@ class Cluster(VapiInterface):
         :param config: Configuration to be used for creating the stub.
         """
         ...
-    
+
     class FilterSpec(VapiStruct):
         """
         The ``Cluster.FilterSpec`` class contains attributes used to filter the
@@ -38,7 +40,10 @@ class Cluster(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, clusters=..., names=..., folders=..., datacenters=...) -> None:
+
+        def __init__(
+            self, clusters=..., names=..., folders=..., datacenters=...
+        ) -> None:
             """
             :type  clusters: :class:`set` of :class:`str` or ``None``
             :param clusters: Identifiers of clusters that can match the filter.
@@ -72,9 +77,7 @@ class Cluster(VapiInterface):
                 If None or empty, clusters in any datacenter match the filter.
             """
             ...
-        
-    
-    
+
     class Summary(VapiStruct):
         """
         The ``Cluster.Summary`` class contains commonly used information about a
@@ -84,7 +87,10 @@ class Cluster(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, cluster=..., name=..., ha_enabled=..., drs_enabled=...) -> None:
+
+        def __init__(
+            self, cluster=..., name=..., ha_enabled=..., drs_enabled=...
+        ) -> None:
             """
             :type  cluster: :class:`str`
             :param cluster: Identifier of the cluster.
@@ -103,9 +109,7 @@ class Cluster(VapiInterface):
                 cluster.
             """
             ...
-        
-    
-    
+
     class Info(VapiStruct):
         """
         The ``Cluster.Info`` class contains information about a cluster in vCenter
@@ -115,6 +119,7 @@ class Cluster(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, name=..., resource_pool=...) -> None:
             """
             :type  name: :class:`str`
@@ -128,9 +133,7 @@ class Cluster(VapiInterface):
                 type: ``ResourcePool``.
             """
             ...
-        
-    
-    
+
     def list(self, filter=...):
         """
         Returns information about at most 1000 visible (subject to permission
@@ -145,18 +148,18 @@ class Cluster(VapiInterface):
         :rtype: :class:`list` of :class:`Cluster.Summary`
         :return: Commonly used information about the clusters matching the
             :class:`Cluster.FilterSpec`.
-        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource`
             if more than 1000 clusters match the :class:`Cluster.FilterSpec`.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def get(self, cluster):
         """
         Retrieves information about the cluster corresponding to ``cluster``.
@@ -167,31 +170,30 @@ class Cluster(VapiInterface):
             ``ClusterComputeResource``.
         :rtype: :class:`Cluster.Info`
         :return: Information about the cluster associated with ``cluster``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if there is no cluster associated with ``cluster`` in the system.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the session id is missing from the request or the corresponding
             session object cannot be found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't not have the required privileges.
         :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
-            if you do not have all of the privileges described as follows: 
-            
+            if you do not have all of the privileges described as follows:
+
             * The resource ``ClusterComputeResource`` referenced by the
               parameter ``cluster`` requires ``System.Read``.
         """
         ...
-    
-
 
 class Datacenter(VapiInterface):
     """
     The ``Datacenter`` class provides methods to manage datacenters in the
     vCenter Server.
     """
+
     RESOURCE_TYPE = ...
     _VAPI_SERVICE_ID = ...
     def __init__(self, config) -> None:
@@ -200,7 +202,7 @@ class Datacenter(VapiInterface):
         :param config: Configuration to be used for creating the stub.
         """
         ...
-    
+
     class CreateSpec(VapiStruct):
         """
         The ``Datacenter.CreateSpec`` class defines the information used to create
@@ -210,6 +212,7 @@ class Datacenter(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, name=..., folder=...) -> None:
             """
             :type  name: :class:`str`
@@ -226,9 +229,7 @@ class Datacenter(VapiInterface):
                 datacenter creation operation will fail.
             """
             ...
-        
-    
-    
+
     class FilterSpec(VapiStruct):
         """
         The ``Datacenter.FilterSpec`` class contains attributes used to filter the
@@ -240,6 +241,7 @@ class Datacenter(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, datacenters=..., names=..., folders=...) -> None:
             """
             :type  datacenters: :class:`set` of :class:`str` or ``None``
@@ -265,9 +267,7 @@ class Datacenter(VapiInterface):
                 If None or empty, datacenters in any folder match the filter.
             """
             ...
-        
-    
-    
+
     class Summary(VapiStruct):
         """
         The ``Datacenter.Summary`` class contains commonly used information about a
@@ -277,6 +277,7 @@ class Datacenter(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, datacenter=..., name=...) -> None:
             """
             :type  datacenter: :class:`str`
@@ -290,9 +291,7 @@ class Datacenter(VapiInterface):
             :param name: Name of the datacenter.
             """
             ...
-        
-    
-    
+
     class Info(VapiStruct):
         """
         The ``Datacenter.Info`` class contains information about a datacenter in
@@ -302,7 +301,15 @@ class Datacenter(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, name=..., datastore_folder=..., host_folder=..., network_folder=..., vm_folder=...) -> None:
+
+        def __init__(
+            self,
+            name=...,
+            datastore_folder=...,
+            host_folder=...,
+            network_folder=...,
+            vm_folder=...,
+        ) -> None:
             """
             :type  name: :class:`str`
             :param name: The name of the datacenter.
@@ -332,9 +339,7 @@ class Datacenter(VapiInterface):
                 attribute will be an identifier for the resource type: ``Folder``.
             """
             ...
-        
-    
-    
+
     def create(self, spec):
         """
         Create a new datacenter in the vCenter inventory
@@ -345,28 +350,28 @@ class Datacenter(VapiInterface):
         :return: The identifier of the newly created datacenter
             The return value will be an identifier for the resource type:
             ``Datacenter``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyExists` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyExists`
             if a datacenter with the same name is already present.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if the datacenter name is empty or invalid as per the underlying
             implementation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if the folder is not specified and the system cannot choose a
             suitable one.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the datacenter folder cannot be found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def delete(self, datacenter, force=...):
         """
         Delete an empty datacenter from the vCenter Server
@@ -380,23 +385,23 @@ class Datacenter(VapiInterface):
             If None a :class:`com.vmware.vapi.std.errors_client.ResourceInUse`
             exception will be reported if the datacenter is not empty. This is
             the equivalent of passing the value false.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if there is no datacenter associated with ``datacenter`` in the
             system.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInUse` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInUse`
             if the datacenter associated with ``datacenter`` is not empty.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def list(self, filter=...):
         """
         Returns information about at most 1000 visible (subject to permission
@@ -412,19 +417,19 @@ class Datacenter(VapiInterface):
         :rtype: :class:`list` of :class:`Datacenter.Summary`
         :return: Commonly used information about the datacenters matching the
             :class:`Datacenter.FilterSpec`.
-        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource`
             if more than 1000 datacenters match the
             :class:`Datacenter.FilterSpec`.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def get(self, datacenter):
         """
         Retrieves information about the datacenter corresponding to
@@ -436,27 +441,26 @@ class Datacenter(VapiInterface):
             ``Datacenter``.
         :rtype: :class:`Datacenter.Info`
         :return: Information about the datacenter associated with ``datacenter``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if there is no datacenter associated with ``datacenter`` in the
             system.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
-
 
 class Datastore(VapiInterface):
     """
     The Datastore class provides methods for manipulating a datastore.
     """
+
     RESOURCE_TYPE = ...
     _VAPI_SERVICE_ID = ...
     def __init__(self, config) -> None:
@@ -465,7 +469,7 @@ class Datastore(VapiInterface):
         :param config: Configuration to be used for creating the stub.
         """
         ...
-    
+
     class Type(Enum):
         """
         The ``Datastore.Type`` class defines the supported types of vCenter
@@ -480,6 +484,7 @@ class Datastore(VapiInterface):
             version of the API, you instantiate this class. See :ref:`enumerated
             type description page <enumeration_description>`.
         """
+
         VMFS = ...
         NFS = ...
         NFS41 = ...
@@ -493,9 +498,7 @@ class Datastore(VapiInterface):
             :param string: String value for the :class:`Type` instance.
             """
             ...
-        
-    
-    
+
     class Info(VapiStruct):
         """
         The ``Datastore.Info`` class contains information about a datastore.
@@ -504,7 +507,16 @@ class Datastore(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, name=..., type=..., accessible=..., free_space=..., multiple_host_access=..., thin_provisioning_supported=...) -> None:
+
+        def __init__(
+            self,
+            name=...,
+            type=...,
+            accessible=...,
+            free_space=...,
+            multiple_host_access=...,
+            thin_provisioning_supported=...,
+        ) -> None:
             """
             :type  name: :class:`str`
             :param name: Name of the datastore.
@@ -513,8 +525,8 @@ class Datastore(VapiInterface):
             :type  accessible: :class:`bool`
             :param accessible: Whether or not this datastore is accessible.
             :type  free_space: :class:`long` or ``None``
-            :param free_space: Available space of this datastore, in bytes. 
-                
+            :param free_space: Available space of this datastore, in bytes.
+
                  The server periodically updates this value.
                 This attribute will be None if the available space of this
                 datastore is not known.
@@ -527,9 +539,7 @@ class Datastore(VapiInterface):
                 lazily allocated.
             """
             ...
-        
-    
-    
+
     class FilterSpec(VapiStruct):
         """
         The ``Datastore.FilterSpec`` class contains attributes used to filter the
@@ -541,7 +551,10 @@ class Datastore(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, datastores=..., names=..., types=..., folders=..., datacenters=...) -> None:
+
+        def __init__(
+            self, datastores=..., names=..., types=..., folders=..., datacenters=...
+        ) -> None:
             """
             :type  datastores: :class:`set` of :class:`str` or ``None``
             :param datastores: Identifiers of datastores that can match the filter.
@@ -579,9 +592,7 @@ class Datastore(VapiInterface):
                 If None or empty, datastores in any datacenter match the filter.
             """
             ...
-        
-    
-    
+
     class Summary(VapiStruct):
         """
         The ``Datastore.Summary`` class contains commonly used information about a
@@ -591,7 +602,10 @@ class Datastore(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, datastore=..., name=..., type=..., free_space=..., capacity=...) -> None:
+
+        def __init__(
+            self, datastore=..., name=..., type=..., free_space=..., capacity=...
+        ) -> None:
             """
             :type  datastore: :class:`str`
             :param datastore: Identifier of the datastore.
@@ -605,22 +619,20 @@ class Datastore(VapiInterface):
             :type  type: :class:`Datastore.Type`
             :param type: Type (VMFS, NFS, NFS41, CIFS, VSAN, VFFS, VVOL) of the datatore.
             :type  free_space: :class:`long` or ``None``
-            :param free_space: Available space of this datastore, in bytes. 
-                
+            :param free_space: Available space of this datastore, in bytes.
+
                  The server periodically updates this value.
                 This attribute will be None if the available space of this
                 datastore is not known.
             :type  capacity: :class:`long` or ``None``
-            :param capacity: Capacity of this datastore, in bytes. 
-                
+            :param capacity: Capacity of this datastore, in bytes.
+
                  The server periodically updates this value.
                 This attribute will be None if the capacity of this datastore is
                 not known.
             """
             ...
-        
-    
-    
+
     def get(self, datastore):
         """
         Retrieves information about the datastore indicated by ``datastore``.
@@ -632,18 +644,18 @@ class Datastore(VapiInterface):
             ``Datastore``.
         :rtype: :class:`Datastore.Info`
         :return: Information about the datastore associated with ``datastore``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the datastore indicated by ``datastore`` does not exist.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def list(self, filter=...):
         """
         Returns information about at most 2500 visible (subject to permission
@@ -659,31 +671,30 @@ class Datastore(VapiInterface):
         :rtype: :class:`list` of :class:`Datastore.Summary`
         :return: Commonly used information about the datastores matching the
             :class:`Datastore.FilterSpec`.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if the :attr:`Datastore.FilterSpec.types` attribute contains a
             value that is not supported by the server.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if the :attr:`Datastore.FilterSpec.types` attribute contains a
             value that is not supported by the server.
-        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource`
             if more than 2500 datastores match the
             :class:`Datastore.FilterSpec`.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
-
 
 class Folder(VapiInterface):
     """
     The Folder class provides methods for manipulating a vCenter Server folder.
     """
+
     RESOURCE_TYPE = ...
     _VAPI_SERVICE_ID = ...
     def __init__(self, config) -> None:
@@ -692,7 +703,7 @@ class Folder(VapiInterface):
         :param config: Configuration to be used for creating the stub.
         """
         ...
-    
+
     class Type(Enum):
         """
         The ``Folder.Type`` class defines the type of a vCenter Server folder. The
@@ -708,6 +719,7 @@ class Folder(VapiInterface):
             version of the API, you instantiate this class. See :ref:`enumerated
             type description page <enumeration_description>`.
         """
+
         DATACENTER = ...
         DATASTORE = ...
         HOST = ...
@@ -719,9 +731,7 @@ class Folder(VapiInterface):
             :param string: String value for the :class:`Type` instance.
             """
             ...
-        
-    
-    
+
     class FilterSpec(VapiStruct):
         """
         The ``Folder.FilterSpec`` class contains attributes used to filter the
@@ -733,7 +743,10 @@ class Folder(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, folders=..., names=..., type=..., parent_folders=..., datacenters=...) -> None:
+
+        def __init__(
+            self, folders=..., names=..., type=..., parent_folders=..., datacenters=...
+        ) -> None:
             """
             :type  folders: :class:`set` of :class:`str` or ``None``
             :param folders: Identifiers of folders that can match the filter.
@@ -771,9 +784,7 @@ class Folder(VapiInterface):
                 If None or empty, folder in any datacenter match the filter.
             """
             ...
-        
-    
-    
+
     class Summary(VapiStruct):
         """
         The ``Folder.Summary`` class contains commonly used information about a
@@ -783,6 +794,7 @@ class Folder(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, folder=..., name=..., type=...) -> None:
             """
             :type  folder: :class:`str`
@@ -798,9 +810,7 @@ class Folder(VapiInterface):
                 vCenter Server folder.
             """
             ...
-        
-    
-    
+
     def list(self, filter=...):
         """
         Returns information about at most 1000 visible (subject to permission
@@ -814,27 +824,26 @@ class Folder(VapiInterface):
         :rtype: :class:`list` of :class:`Folder.Summary`
         :return: Commonly used information about the folders matching the
             :class:`Folder.FilterSpec`.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if the :attr:`Folder.FilterSpec.type` attribute contains a value
             that is not supported by the server.
-        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource`
             if more than 1000 folders match the :class:`Folder.FilterSpec`.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
-
 
 class Host(VapiInterface):
     """
     The ``Host`` class provides methods to manage hosts in the vCenter Server.
     """
+
     RESOURCE_TYPE = ...
     _VAPI_SERVICE_ID = ...
     def __init__(self, config) -> None:
@@ -843,7 +852,7 @@ class Host(VapiInterface):
         :param config: Configuration to be used for creating the stub.
         """
         ...
-    
+
     class ConnectionState(Enum):
         """
         The ``Host.ConnectionState`` class defines the connection status of a host.
@@ -857,6 +866,7 @@ class Host(VapiInterface):
             version of the API, you instantiate this class. See :ref:`enumerated
             type description page <enumeration_description>`.
         """
+
         CONNECTED = ...
         DISCONNECTED = ...
         NOT_RESPONDING = ...
@@ -866,9 +876,7 @@ class Host(VapiInterface):
             :param string: String value for the :class:`ConnectionState` instance.
             """
             ...
-        
-    
-    
+
     class PowerState(Enum):
         """
         The ``Host.PowerState`` class defines the power states of a host.
@@ -882,6 +890,7 @@ class Host(VapiInterface):
             version of the API, you instantiate this class. See :ref:`enumerated
             type description page <enumeration_description>`.
         """
+
         POWERED_ON = ...
         POWERED_OFF = ...
         STANDBY = ...
@@ -891,9 +900,7 @@ class Host(VapiInterface):
             :param string: String value for the :class:`PowerState` instance.
             """
             ...
-        
-    
-    
+
     class CreateSpec(VapiStruct):
         """
         The ``Host.CreateSpec`` class defines the information used to create a
@@ -903,8 +910,19 @@ class Host(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _validator_list = ...
-        def __init__(self, hostname=..., port=..., user_name=..., password=..., folder=..., thumbprint_verification=..., thumbprint=..., force_add=...) -> None:
+        def __init__(
+            self,
+            hostname=...,
+            port=...,
+            user_name=...,
+            password=...,
+            folder=...,
+            thumbprint_verification=...,
+            thumbprint=...,
+            force_add=...,
+        ) -> None:
             """
             :type  hostname: :class:`str`
             :param hostname: The IP address or DNS resolvable name of the host.
@@ -944,7 +962,7 @@ class Host(VapiInterface):
                 If None, forceAdd is default to false.
             """
             ...
-        
+
         class ThumbprintVerification(Enum):
             """
             The ``Host.CreateSpec.ThumbprintVerification`` class defines the thumbprint
@@ -959,6 +977,7 @@ class Host(VapiInterface):
                 version of the API, you instantiate this class. See :ref:`enumerated
                 type description page <enumeration_description>`.
             """
+
             NONE = ...
             THUMBPRINT = ...
             def __init__(self, string) -> None:
@@ -967,11 +986,7 @@ class Host(VapiInterface):
                 :param string: String value for the :class:`ThumbprintVerification` instance.
                 """
                 ...
-            
-        
-        
-    
-    
+
     class FilterSpec(VapiStruct):
         """
         The ``Host.FilterSpec`` class contains attributes used to filter the
@@ -982,7 +997,17 @@ class Host(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, hosts=..., names=..., folders=..., datacenters=..., standalone=..., clusters=..., connection_states=...) -> None:
+
+        def __init__(
+            self,
+            hosts=...,
+            names=...,
+            folders=...,
+            datacenters=...,
+            standalone=...,
+            clusters=...,
+            connection_states=...,
+        ) -> None:
             """
             :type  hosts: :class:`set` of :class:`str` or ``None``
             :param hosts: Identifiers of hosts that can match the filter.
@@ -1040,9 +1065,7 @@ class Host(VapiInterface):
                 If None or empty, hosts in any connection state match the filter.
             """
             ...
-        
-    
-    
+
     class Summary(VapiStruct):
         """
         The ``Host.Summary`` class contains commonly used information about a host
@@ -1052,8 +1075,11 @@ class Host(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _validator_list = ...
-        def __init__(self, host=..., name=..., connection_state=..., power_state=...) -> None:
+        def __init__(
+            self, host=..., name=..., connection_state=..., power_state=...
+        ) -> None:
             """
             :type  host: :class:`str`
             :param host: Identifier of the host.
@@ -1072,9 +1098,7 @@ class Host(VapiInterface):
                 of ``connectionState`` is :attr:`Host.ConnectionState.CONNECTED`.
             """
             ...
-        
-    
-    
+
     def create(self, spec):
         """
         Add a new standalone host in the vCenter inventory. The newly connected
@@ -1091,53 +1115,53 @@ class Host(VapiInterface):
         :return: The newly created identifier of the host in vCenter.
             The return value will be an identifier for the resource type:
             ``HostSystem``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyExists` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyExists`
             if the host with the same name is already present.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if installation of VirtualCenter agent on a host fails.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if the host name is invalid.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if the host folder is invalid.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if the SSL thumbprint specified is invalid.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if the PEM SSL certificate in CreateSpec.sslCertificate is invalid.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if both CreateSpec.thumbprint and CreateSpec.sslCertificate are
             :class:`set`.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if the CreateSpec.sslCertificate argument is not set, and the
             CreateSpec.thumbprint argument is set, but the SHA-1 hashing
             algorithm is currently disabled for computing certificate
             thumbprints.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidElementType` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidElementType`
             if the host folder id does not support vSphere compute resource as
             its children type.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if there is no folder associated with the ``folder`` attribute in
             the system.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInUse` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInUse`
             if the host is already being managed by another vCenter Server
-        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource`
             if there are not enough licenses to add the host.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user name or password for the administration account on the
             host are invalid.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unsupported` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unsupported`
             if the software version on the host is not supported.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def delete(self, host):
         """
         Remove a standalone host from the vCenter Server.
@@ -1146,22 +1170,22 @@ class Host(VapiInterface):
         :param host: Identifier of the host to be deleted.
             The parameter must be an identifier for the resource type:
             ``HostSystem``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if there is no host associated with ``host`` in the system.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInUse` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInUse`
             if the host associated with ``host`` is in a vCenter cluster
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def list(self, filter=...):
         """
         Returns information about at most 2500 visible (subject to permission
@@ -1175,21 +1199,21 @@ class Host(VapiInterface):
         :rtype: :class:`list` of :class:`Host.Summary`
         :return: Commonly used information about the hosts matching the
             :class:`Host.FilterSpec`.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if the :attr:`Host.FilterSpec.connection_states` attribute contains
             a value that is not supported by the server.
-        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource`
             if more than 2500 hosts match the :class:`Host.FilterSpec`.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def connect(self, host):
         """
         Connect to the host corresponding to ``host`` previously added to the
@@ -1199,22 +1223,22 @@ class Host(VapiInterface):
         :param host: Identifier of the host to be reconnected.
             The parameter must be an identifier for the resource type:
             ``HostSystem``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyInDesiredState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyInDesiredState`
             if the host associated with ``host`` is already connected.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if there is no host associated with ``host`` in the system.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def disconnect(self, host):
         """
         Disconnect the host corresponding to ``host`` from the vCenter server
@@ -1223,29 +1247,28 @@ class Host(VapiInterface):
         :param host: Identifier of the host to be disconnected.
             The parameter must be an identifier for the resource type:
             ``HostSystem``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyInDesiredState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyInDesiredState`
             if the host associated with ``host`` is already disconnected.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if there is no host associated with ``host`` in the system.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
-
 
 class Network(VapiInterface):
     """
     The Network class provides methods for manipulating a vCenter Server
     network.
     """
+
     RESOURCE_TYPE = ...
     _VAPI_SERVICE_ID = ...
     def __init__(self, config) -> None:
@@ -1254,7 +1277,7 @@ class Network(VapiInterface):
         :param config: Configuration to be used for creating the stub.
         """
         ...
-    
+
     class Type(Enum):
         """
         The ``Network.Type`` class defines the type of a vCenter Server network.
@@ -1271,6 +1294,7 @@ class Network(VapiInterface):
             version of the API, you instantiate this class. See :ref:`enumerated
             type description page <enumeration_description>`.
         """
+
         STANDARD_PORTGROUP = ...
         DISTRIBUTED_PORTGROUP = ...
         OPAQUE_NETWORK = ...
@@ -1280,9 +1304,7 @@ class Network(VapiInterface):
             :param string: String value for the :class:`Type` instance.
             """
             ...
-        
-    
-    
+
     class FilterSpec(VapiStruct):
         """
         The ``Network.FilterSpec`` class contains attributes used to filter the
@@ -1294,7 +1316,10 @@ class Network(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, networks=..., names=..., types=..., folders=..., datacenters=...) -> None:
+
+        def __init__(
+            self, networks=..., names=..., types=..., folders=..., datacenters=...
+        ) -> None:
             """
             :type  networks: :class:`set` of :class:`str` or ``None``
             :param networks: Identifiers of networks that can match the filter.
@@ -1332,9 +1357,7 @@ class Network(VapiInterface):
                 If None or empty, networks in any datacenter match the filter.
             """
             ...
-        
-    
-    
+
     class Summary(VapiStruct):
         """
         The ``Network.Summary`` class contains commonly used information about a
@@ -1344,6 +1367,7 @@ class Network(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, network=..., name=..., type=...) -> None:
             """
             :type  network: :class:`str`
@@ -1359,9 +1383,7 @@ class Network(VapiInterface):
                 the vCenter Server network.
             """
             ...
-        
-    
-    
+
     def list(self, filter=...):
         """
         Returns information about at most 1000 visible (subject to permission
@@ -1376,32 +1398,31 @@ class Network(VapiInterface):
         :rtype: :class:`list` of :class:`Network.Summary`
         :return: Commonly used information about the networks matching the
             :class:`Network.FilterSpec`.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if the :attr:`Network.FilterSpec.types` attribute contains a value
             that is not supported by the server.
-        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource`
             if more than 1000 networks match the :class:`Network.FilterSpec`.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
-
 
 class ResourcePool(VapiInterface):
     """
     The ResourcePool class provides methods for manipulating a vCenter Server
-    resource pool. 
-    
+    resource pool.
+
     This class does not include virtual appliances in the inventory of resource
     pools even though part of the behavior of a virtual appliance is to act
     like a resource pool.
     """
+
     RESOURCE_TYPE = ...
     _VAPI_SERVICE_ID = ...
     def __init__(self, config) -> None:
@@ -1410,11 +1431,11 @@ class ResourcePool(VapiInterface):
         :param config: Configuration to be used for creating the stub.
         """
         ...
-    
+
     class SharesInfo(VapiStruct):
         """
-        The ``ResourcePool.SharesInfo`` class provides specification of shares. 
-        
+        The ``ResourcePool.SharesInfo`` class provides specification of shares.
+
         Shares are used to determine relative allocation between resource
         consumers. In general, a consumer with more shares gets proportionally more
         of the resource, subject to certain other constraints.. This class was
@@ -1424,6 +1445,7 @@ class ResourcePool(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _validator_list = ...
         def __init__(self, level=..., shares=...) -> None:
             """
@@ -1434,8 +1456,8 @@ class ResourcePool(VapiInterface):
                 vSphere API 7.0.0.0.
             :type  shares: :class:`long`
             :param shares: When :attr:`ResourcePool.SharesInfo.level` is set to CUSTOM, it is
-                the number of shares allocated. Otherwise, this value is ignored. 
-                
+                the number of shares allocated. Otherwise, this value is ignored.
+
                 There is no unit for this value. It is a relative measure based on
                 the settings for other resource pools.. This attribute was added in
                 vSphere API 7.0.0.0.
@@ -1443,7 +1465,7 @@ class ResourcePool(VapiInterface):
                 of ``level`` is :attr:`ResourcePool.SharesInfo.Level.CUSTOM`.
             """
             ...
-        
+
         class Level(Enum):
             """
             The ``ResourcePool.SharesInfo.Level`` class defines the possible values for
@@ -1458,6 +1480,7 @@ class ResourcePool(VapiInterface):
                 version of the API, you instantiate this class. See :ref:`enumerated
                 type description page <enumeration_description>`.
             """
+
             LOW = ...
             NORMAL = ...
             HIGH = ...
@@ -1468,11 +1491,7 @@ class ResourcePool(VapiInterface):
                 :param string: String value for the :class:`Level` instance.
                 """
                 ...
-            
-        
-        
-    
-    
+
     class ResourceAllocationInfo(VapiStruct):
         """
         The ``ResourcePool.ResourceAllocationInfo`` class contains resource
@@ -1483,7 +1502,10 @@ class ResourcePool(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, reservation=..., expandable_reservation=..., limit=..., shares=...) -> None:
+
+        def __init__(
+            self, reservation=..., expandable_reservation=..., limit=..., shares=...
+        ) -> None:
             """
             :type  reservation: :class:`long`
             :param reservation: Amount of resource that is guaranteed available to a resource pool.
@@ -1509,9 +1531,7 @@ class ResourcePool(VapiInterface):
                 added in vSphere API 7.0.0.0.
             """
             ...
-        
-    
-    
+
     class Info(VapiStruct):
         """
         The ``ResourcePool.Info`` class contains information about a resource pool.
@@ -1520,7 +1540,14 @@ class ResourcePool(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, name=..., resource_pools=..., cpu_allocation=..., memory_allocation=...) -> None:
+
+        def __init__(
+            self,
+            name=...,
+            resource_pools=...,
+            cpu_allocation=...,
+            memory_allocation=...,
+        ) -> None:
             """
             :type  name: :class:`str`
             :param name: Name of the vCenter Server resource pool.
@@ -1544,9 +1571,7 @@ class ResourcePool(VapiInterface):
                 than its parent node.
             """
             ...
-        
-    
-    
+
     class FilterSpec(VapiStruct):
         """
         The ``ResourcePool.FilterSpec`` class contains attributes used to filter
@@ -1558,7 +1583,16 @@ class ResourcePool(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, resource_pools=..., names=..., parent_resource_pools=..., datacenters=..., hosts=..., clusters=...) -> None:
+
+        def __init__(
+            self,
+            resource_pools=...,
+            names=...,
+            parent_resource_pools=...,
+            datacenters=...,
+            hosts=...,
+            clusters=...,
+        ) -> None:
             """
             :type  resource_pools: :class:`set` of :class:`str` or ``None``
             :param resource_pools: Identifiers of resource pools that can match the filter.
@@ -1613,9 +1647,7 @@ class ResourcePool(VapiInterface):
                 If None or empty, resource pools in any cluster match the filter.
             """
             ...
-        
-    
-    
+
     class Summary(VapiStruct):
         """
         The ``ResourcePool.Summary`` class contains commonly used information about
@@ -1625,6 +1657,7 @@ class ResourcePool(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, resource_pool=..., name=...) -> None:
             """
             :type  resource_pool: :class:`str`
@@ -1638,9 +1671,7 @@ class ResourcePool(VapiInterface):
             :param name: Name of the resource pool.
             """
             ...
-        
-    
-    
+
     class ResourceAllocationCreateSpec(VapiStruct):
         """
         The ``ResourcePool.ResourceAllocationCreateSpec`` class contains resource
@@ -1651,7 +1682,10 @@ class ResourcePool(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, reservation=..., expandable_reservation=..., limit=..., shares=...) -> None:
+
+        def __init__(
+            self, reservation=..., expandable_reservation=..., limit=..., shares=...
+        ) -> None:
             """
             :type  reservation: :class:`long` or ``None``
             :param reservation: Amount of resource that is guaranteed available to a resource pool.
@@ -1689,9 +1723,7 @@ class ResourcePool(VapiInterface):
                 set to ':attr:`ResourcePool.SharesInfo.Level.NORMAL`'.
             """
             ...
-        
-    
-    
+
     class CreateSpec(VapiStruct):
         """
         The  class contains information used to create a resource pool, see
@@ -1701,7 +1733,10 @@ class ResourcePool(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, name=..., parent=..., cpu_allocation=..., memory_allocation=...) -> None:
+
+        def __init__(
+            self, name=..., parent=..., cpu_allocation=..., memory_allocation=...
+        ) -> None:
             """
             :type  name: :class:`str`
             :param name: Name of the resource pool. This attribute was added in vSphere API
@@ -1724,9 +1759,7 @@ class ResourcePool(VapiInterface):
                 if None or empty, use the default memory allocation specification.
             """
             ...
-        
-    
-    
+
     class ResourceAllocationUpdateSpec(VapiStruct):
         """
         The ``ResourceAllocationUpdateSpec`` class descrives the updates to be made
@@ -1737,7 +1770,10 @@ class ResourcePool(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, reservation=..., expandable_reservation=..., limit=..., shares=...) -> None:
+
+        def __init__(
+            self, reservation=..., expandable_reservation=..., limit=..., shares=...
+        ) -> None:
             """
             :type  reservation: :class:`long` or ``None``
             :param reservation: Amount of resource that is guaranteed available to a resource pool.
@@ -1768,9 +1804,7 @@ class ResourcePool(VapiInterface):
                 ':attr:`ResourcePool.SharesInfo.Level.NORMAL`'.
             """
             ...
-        
-    
-    
+
     class UpdateSpec(VapiStruct):
         """
         The  class contains specification for updating the configuration of a
@@ -1780,6 +1814,7 @@ class ResourcePool(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, name=..., cpu_allocation=..., memory_allocation=...) -> None:
             """
             :type  name: :class:`str` or ``None``
@@ -1799,9 +1834,7 @@ class ResourcePool(VapiInterface):
                 not be changed.
             """
             ...
-        
-    
-    
+
     def get(self, resource_pool):
         """
         Retrieves information about the resource pool indicated by
@@ -1814,23 +1847,23 @@ class ResourcePool(VapiInterface):
             ``ResourcePool``.
         :rtype: :class:`ResourcePool.Info`
         :return: Information about the resource pool.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             If the resource pool indicated by ``resource_pool`` does not exist.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             If the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             If the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             If the user doesn't have the required privileges.
         :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
-            if you do not have all of the privileges described as follows: 
-            
+            if you do not have all of the privileges described as follows:
+
             * The resource ``ResourcePool`` referenced by the parameter
               ``resource_pool`` requires ``System.Read``.
         """
         ...
-    
+
     def list(self, filter=...):
         """
         Returns information about at most 1000 visible (subject to permission
@@ -1846,19 +1879,19 @@ class ResourcePool(VapiInterface):
         :rtype: :class:`list` of :class:`ResourcePool.Summary`
         :return: Commonly used information about the resource pools matching the
             :class:`ResourcePool.FilterSpec`.
-        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource`
             If more than 1000 resource pools match the
             :class:`ResourcePool.FilterSpec`.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             If the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             If the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             If the user doesn't have the required privileges.
         """
         ...
-    
+
     def create(self, spec):
         """
         Creates a resource pool. This method was added in vSphere API 7.0.0.0.
@@ -1870,33 +1903,33 @@ class ResourcePool(VapiInterface):
         :return: The identifier of the newly created resource pool.
             The return value will be an identifier for the resource type:
             ``ResourcePool``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             If the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             If a parameter passed in the spec is invalid.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             If the resource specified in parent could not be found
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             If the specified resource in parent is not accessible.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             If the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource`
             if any of the resources needed to create the resource pool could
             not be allocated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             If the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             If the user doesn't have the required privileges.
         :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
-            if you do not have all of the privileges described as follows: 
-            
+            if you do not have all of the privileges described as follows:
+
             * The resource ``ResourcePool`` referenced by the attribute
               :attr:`ResourcePool.CreateSpec.parent` requires
               ``Resource.CreatePool``.
         """
         ...
-    
+
     def delete(self, resource_pool):
         """
         Deletes a resource pool. This method was added in vSphere API 7.0.0.0.
@@ -1905,22 +1938,22 @@ class ResourcePool(VapiInterface):
         :param resource_pool: Identifier of the resource pool to be deleted.
             The parameter must be an identifier for the resource type:
             ``ResourcePool``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             If the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             If the resource pool is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             If the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             If the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             If the user doesn't have the required privileges.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unsupported` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unsupported`
             If the resource pool is a root resource pool.
         """
         ...
-    
+
     def update(self, resource_pool, spec):
         """
         Updates the configuration of a resource pool. This method was added in
@@ -1932,37 +1965,36 @@ class ResourcePool(VapiInterface):
             ``ResourcePool``.
         :type  spec: :class:`ResourcePool.UpdateSpec`
         :param spec: Specification for updating the configuration of the resource pool.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             If the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             If any of the specified parameters is invalid.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             If the resource pool is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             If the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource`
             If any of the resources needed to reconfigure the resource pool
             could not be allocated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             If the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             If the user doesn't have the required privileges.
         :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
-            if you do not have all of the privileges described as follows: 
-            
+            if you do not have all of the privileges described as follows:
+
             * The resource ``ResourcePool`` referenced by the parameter
               ``resource_pool`` requires ``Resource.EditPool``.
         """
         ...
-    
-
 
 class VM(VapiInterface):
     """
     The ``VM`` class provides methods for managing the lifecycle of a virtual
     machine.
     """
+
     RESOURCE_TYPE = ...
     _VAPI_SERVICE_ID = ...
     def __init__(self, config) -> None:
@@ -1971,7 +2003,7 @@ class VM(VapiInterface):
         :param config: Configuration to be used for creating the stub.
         """
         ...
-    
+
     class InventoryPlacementSpec(VapiStruct):
         """
         The ``VM.InventoryPlacementSpec`` class contains information used to place
@@ -1981,6 +2013,7 @@ class VM(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, folder=...) -> None:
             """
             :type  folder: :class:`str` or ``None``
@@ -1996,9 +2029,7 @@ class VM(VapiInterface):
                 virtual machine creation operation will fail.
             """
             ...
-        
-    
-    
+
     class ComputePlacementSpec(VapiStruct):
         """
         The ``VM.ComputePlacementSpec`` class contains information used to place a
@@ -2008,6 +2039,7 @@ class VM(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, resource_pool=..., host=..., cluster=...) -> None:
             """
             :type  resource_pool: :class:`str` or ``None``
@@ -2023,11 +2055,11 @@ class VM(VapiInterface):
                 virtual machine; if a resource pool cannot be chosen, the virtual
                 machine creation operation will fail.
             :type  host: :class:`str` or ``None``
-            :param host: Host onto which the virtual machine should be placed. 
-                
+            :param host: Host onto which the virtual machine should be placed.
+
                 If ``host`` and ``resourcePool`` are both specified,
-                ``resourcePool`` must belong to ``host``. 
-                
+                ``resourcePool`` must belong to ``host``.
+
                 If ``host`` and ``cluster`` are both specified, ``host`` must be a
                 member of ``cluster``.
                 When clients pass a value of this class as a parameter, the
@@ -2040,11 +2072,11 @@ class VM(VapiInterface):
                 host for the virtual machine; if a host cannot be chosen, the
                 virtual machine creation operation will fail.
             :type  cluster: :class:`str` or ``None``
-            :param cluster: Cluster into which the virtual machine should be placed. 
-                
+            :param cluster: Cluster into which the virtual machine should be placed.
+
                 If ``cluster`` and ``resourcePool`` are both specified,
-                ``resourcePool`` must belong to ``cluster``. 
-                
+                ``resourcePool`` must belong to ``cluster``.
+
                 If ``cluster`` and ``host`` are both specified, ``host`` must be a
                 member of ``cluster``.
                 When clients pass a value of this class as a parameter, the
@@ -2056,9 +2088,7 @@ class VM(VapiInterface):
                 that this attribute be None.
             """
             ...
-        
-    
-    
+
     class StoragePlacementSpec(VapiStruct):
         """
         The ``VM.StoragePlacementSpec`` class contains information used to store a
@@ -2068,6 +2098,7 @@ class VM(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, datastore=...) -> None:
             """
             :type  datastore: :class:`str` or ``None``
@@ -2085,9 +2116,7 @@ class VM(VapiInterface):
                 virtual machine creation operation will fail.
             """
             ...
-        
-    
-    
+
     class PlacementSpec(VapiStruct):
         """
         The ``VM.PlacementSpec`` class contains information used to place a virtual
@@ -2097,7 +2126,10 @@ class VM(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, folder=..., resource_pool=..., host=..., cluster=..., datastore=...) -> None:
+
+        def __init__(
+            self, folder=..., resource_pool=..., host=..., cluster=..., datastore=...
+        ) -> None:
             """
             :type  folder: :class:`str` or ``None``
             :param folder: Virtual machine folder into which the virtual machine should be
@@ -2123,11 +2155,11 @@ class VM(VapiInterface):
                 virtual machine; if a resource pool cannot be chosen, the virtual
                 machine creation operation will fail.
             :type  host: :class:`str` or ``None``
-            :param host: Host onto which the virtual machine should be placed. 
-                
+            :param host: Host onto which the virtual machine should be placed.
+
                 If ``host`` and ``resourcePool`` are both specified,
-                ``resourcePool`` must belong to ``host``. 
-                
+                ``resourcePool`` must belong to ``host``.
+
                 If ``host`` and ``cluster`` are both specified, ``host`` must be a
                 member of ``cluster``.
                 When clients pass a value of this class as a parameter, the
@@ -2140,11 +2172,11 @@ class VM(VapiInterface):
                 host for the virtual machine; if a host cannot be chosen, the
                 virtual machine creation operation will fail.
             :type  cluster: :class:`str` or ``None``
-            :param cluster: Cluster into which the virtual machine should be placed. 
-                
+            :param cluster: Cluster into which the virtual machine should be placed.
+
                 If ``cluster`` and ``resourcePool`` are both specified,
-                ``resourcePool`` must belong to ``cluster``. 
-                
+                ``resourcePool`` must belong to ``cluster``.
+
                 If ``cluster`` and ``host`` are both specified, ``host`` must be a
                 member of ``cluster``.
                 When clients pass a value of this class as a parameter, the
@@ -2169,9 +2201,7 @@ class VM(VapiInterface):
                 virtual machine creation operation will fail.
             """
             ...
-        
-    
-    
+
     class StoragePolicySpec(VapiStruct):
         """
         The ``VM.StoragePolicySpec`` class contains information about the storage
@@ -2182,6 +2212,7 @@ class VM(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, policy=...) -> None:
             """
             :type  policy: :class:`str`
@@ -2195,9 +2226,7 @@ class VM(VapiInterface):
                 ``com.vmware.vcenter.StoragePolicy``.
             """
             ...
-        
-    
-    
+
     class CreateSpec(VapiStruct):
         """
         Document-based creation spec.
@@ -2206,8 +2235,29 @@ class VM(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _canonical_to_pep_names = ...
-        def __init__(self, guest_os=..., name=..., placement=..., hardware_version=..., boot=..., boot_devices=..., cpu=..., memory=..., disks=..., nics=..., cdroms=..., floppies=..., parallel_ports=..., serial_ports=..., sata_adapters=..., scsi_adapters=..., nvme_adapters=..., storage_policy=...) -> None:
+        def __init__(
+            self,
+            guest_os=...,
+            name=...,
+            placement=...,
+            hardware_version=...,
+            boot=...,
+            boot_devices=...,
+            cpu=...,
+            memory=...,
+            disks=...,
+            nics=...,
+            cdroms=...,
+            floppies=...,
+            parallel_ports=...,
+            serial_ports=...,
+            sata_adapters=...,
+            scsi_adapters=...,
+            nvme_adapters=...,
+            storage_policy=...,
+        ) -> None:
             """
             :type  guest_os: :class:`com.vmware.vcenter.vm_client.GuestOS`
             :param guest_os: Guest OS.
@@ -2291,9 +2341,7 @@ class VM(VapiInterface):
                 machine home.
             """
             ...
-        
-    
-    
+
     class Info(VapiStruct):
         """
         Document-based info.
@@ -2302,8 +2350,30 @@ class VM(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _canonical_to_pep_names = ...
-        def __init__(self, guest_os=..., name=..., identity=..., power_state=..., instant_clone_frozen=..., hardware=..., boot=..., boot_devices=..., cpu=..., memory=..., disks=..., nics=..., cdroms=..., floppies=..., parallel_ports=..., serial_ports=..., sata_adapters=..., scsi_adapters=..., nvme_adapters=...) -> None:
+        def __init__(
+            self,
+            guest_os=...,
+            name=...,
+            identity=...,
+            power_state=...,
+            instant_clone_frozen=...,
+            hardware=...,
+            boot=...,
+            boot_devices=...,
+            cpu=...,
+            memory=...,
+            disks=...,
+            nics=...,
+            cdroms=...,
+            floppies=...,
+            parallel_ports=...,
+            serial_ports=...,
+            sata_adapters=...,
+            scsi_adapters=...,
+            nvme_adapters=...,
+        ) -> None:
             """
             :type  guest_os: :class:`com.vmware.vcenter.vm_client.GuestOS`
             :param guest_os: Guest OS.
@@ -2409,9 +2479,7 @@ class VM(VapiInterface):
                 than its parent node.
             """
             ...
-        
-    
-    
+
     class GuestCustomizationSpec(VapiStruct):
         """
         The ``VM.GuestCustomizationSpec`` class contains information required to
@@ -2422,6 +2490,7 @@ class VM(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, name=...) -> None:
             """
             :type  name: :class:`str` or ``None``
@@ -2430,9 +2499,7 @@ class VM(VapiInterface):
                 If None, no guest customization is performed.
             """
             ...
-        
-    
-    
+
     class DiskCloneSpec(VapiStruct):
         """
         Document-based disk clone spec. This class was added in vSphere API
@@ -2442,6 +2509,7 @@ class VM(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, datastore=...) -> None:
             """
             :type  datastore: :class:`str` or ``None``
@@ -2458,9 +2526,7 @@ class VM(VapiInterface):
                 :attr:`VM.CloneSpec.placement`.
             """
             ...
-        
-    
-    
+
     class ClonePlacementSpec(VapiStruct):
         """
         The ``VM.ClonePlacementSpec`` class contains information used to place a
@@ -2471,7 +2537,10 @@ class VM(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, folder=..., resource_pool=..., host=..., cluster=..., datastore=...) -> None:
+
+        def __init__(
+            self, folder=..., resource_pool=..., host=..., cluster=..., datastore=...
+        ) -> None:
             """
             :type  folder: :class:`str` or ``None``
             :param folder: Virtual machine folder into which the cloned virtual machine should
@@ -2497,11 +2566,11 @@ class VM(VapiInterface):
                 placement parameters, the virtual machine clone operation will
                 fail.
             :type  host: :class:`str` or ``None``
-            :param host: Host onto which the cloned virtual machine should be placed. 
-                
+            :param host: Host onto which the cloned virtual machine should be placed.
+
                 If ``host`` and ``resourcePool`` are both specified,
-                ``resourcePool`` must belong to ``host``. 
-                
+                ``resourcePool`` must belong to ``host``.
+
                 If ``host`` and ``cluster`` are both specified, ``host`` must be a
                 member of ``cluster``.. This attribute was added in vSphere API
                 7.0.0.0.
@@ -2518,11 +2587,11 @@ class VM(VapiInterface):
                 is set, and the target is a cluster without DRS, InvalidArgument
                 will be thrown.
             :type  cluster: :class:`str` or ``None``
-            :param cluster: Cluster into which the cloned virtual machine should be placed. 
-                
+            :param cluster: Cluster into which the cloned virtual machine should be placed.
+
                 If ``cluster`` and ``resourcePool`` are both specified,
-                ``resourcePool`` must belong to ``cluster``. 
-                
+                ``resourcePool`` must belong to ``cluster``.
+
                 If ``cluster`` and ``host`` are both specified, ``host`` must be a
                 member of ``cluster``.. This attribute was added in vSphere API
                 7.0.0.0.
@@ -2548,9 +2617,7 @@ class VM(VapiInterface):
                 source virtual machine.
             """
             ...
-        
-    
-    
+
     class CloneSpec(VapiStruct):
         """
         Document-based clone spec. This class was added in vSphere API 7.0.0.0.
@@ -2559,7 +2626,17 @@ class VM(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, source=..., name=..., placement=..., disks_to_remove=..., disks_to_update=..., power_on=..., guest_customization_spec=...) -> None:
+
+        def __init__(
+            self,
+            source=...,
+            name=...,
+            placement=...,
+            disks_to_remove=...,
+            disks_to_update=...,
+            power_on=...,
+            guest_customization_spec=...,
+        ) -> None:
             """
             :type  source: :class:`str`
             :param source: Virtual machine to clone from. This attribute was added in vSphere
@@ -2618,9 +2695,7 @@ class VM(VapiInterface):
                 If None, the guest operating system is not customized after clone.
             """
             ...
-        
-    
-    
+
     class DiskRelocateSpec(VapiStruct):
         """
         Document-based disk relocate spec. This class was added in vSphere API
@@ -2630,6 +2705,7 @@ class VM(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, datastore=...) -> None:
             """
             :type  datastore: :class:`str` or ``None``
@@ -2646,9 +2722,7 @@ class VM(VapiInterface):
                 :attr:`VM.RelocateSpec.placement`.
             """
             ...
-        
-    
-    
+
     class RelocatePlacementSpec(VapiStruct):
         """
         The ``VM.RelocatePlacementSpec`` class contains information used to change
@@ -2659,7 +2733,10 @@ class VM(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, folder=..., resource_pool=..., host=..., cluster=..., datastore=...) -> None:
+
+        def __init__(
+            self, folder=..., resource_pool=..., host=..., cluster=..., datastore=...
+        ) -> None:
             """
             :type  folder: :class:`str` or ``None``
             :param folder: Virtual machine folder into which the virtual machine should be
@@ -2681,11 +2758,11 @@ class VM(VapiInterface):
                 If this attribute is None, the virtual machine will stay in the
                 current resource pool.
             :type  host: :class:`str` or ``None``
-            :param host: Host onto which the virtual machine should be placed. 
-                
+            :param host: Host onto which the virtual machine should be placed.
+
                 If ``host`` and ``resourcePool`` are both specified,
-                ``resourcePool`` must belong to ``host``. 
-                
+                ``resourcePool`` must belong to ``host``.
+
                 If ``host`` and ``cluster`` are both specified, ``host`` must be a
                 member of ``cluster``.. This attribute was added in vSphere API
                 7.0.0.0.
@@ -2702,11 +2779,11 @@ class VM(VapiInterface):
                 and the target is a cluster without DRS, InvalidArgument will be
                 thrown.
             :type  cluster: :class:`str` or ``None``
-            :param cluster: Cluster into which the virtual machine should be placed. 
-                
+            :param cluster: Cluster into which the virtual machine should be placed.
+
                 If ``cluster`` and ``resourcePool`` are both specified,
-                ``resourcePool`` must belong to ``cluster``. 
-                
+                ``resourcePool`` must belong to ``cluster``.
+
                 If ``cluster`` and ``host`` are both specified, ``host`` must be a
                 member of ``cluster``.. This attribute was added in vSphere API
                 7.0.0.0.
@@ -2731,9 +2808,7 @@ class VM(VapiInterface):
                 current datastore.
             """
             ...
-        
-    
-    
+
     class RelocateSpec(VapiStruct):
         """
         Document-based relocate spec. This class was added in vSphere API 7.0.0.0.
@@ -2742,6 +2817,7 @@ class VM(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, placement=..., disks=...) -> None:
             """
             :type  placement: :class:`VM.RelocatePlacementSpec` or ``None``
@@ -2767,9 +2843,7 @@ class VM(VapiInterface):
                 :attr:`VM.RelocateSpec.placement`.
             """
             ...
-        
-    
-    
+
     class InstantClonePlacementSpec(VapiStruct):
         """
         The ``VM.InstantClonePlacementSpec`` class contains information used to
@@ -2780,6 +2854,7 @@ class VM(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, folder=..., resource_pool=..., datastore=...) -> None:
             """
             :type  folder: :class:`str` or ``None``
@@ -2816,9 +2891,7 @@ class VM(VapiInterface):
                 source virtual machine.
             """
             ...
-        
-    
-    
+
     class InstantCloneSpec(VapiStruct):
         """
         Document-based InstantClone spec. This class was added in vSphere API
@@ -2828,7 +2901,18 @@ class VM(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, source=..., name=..., placement=..., nics_to_update=..., disconnect_all_nics=..., parallel_ports_to_update=..., serial_ports_to_update=..., bios_uuid=...) -> None:
+
+        def __init__(
+            self,
+            source=...,
+            name=...,
+            placement=...,
+            nics_to_update=...,
+            disconnect_all_nics=...,
+            parallel_ports_to_update=...,
+            serial_ports_to_update=...,
+            bios_uuid=...,
+        ) -> None:
             """
             :type  source: :class:`str`
             :param source: Virtual machine to InstantClone from. This attribute was added in
@@ -2893,9 +2977,7 @@ class VM(VapiInterface):
                 If None, will be generated.
             """
             ...
-        
-    
-    
+
     class FilterSpec(VapiStruct):
         """
         The ``VM.FilterSpec`` class contains attributes used to filter the results
@@ -2907,7 +2989,18 @@ class VM(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, vms=..., names=..., folders=..., datacenters=..., hosts=..., clusters=..., resource_pools=..., power_states=...) -> None:
+
+        def __init__(
+            self,
+            vms=...,
+            names=...,
+            folders=...,
+            datacenters=...,
+            hosts=...,
+            clusters=...,
+            resource_pools=...,
+            power_states=...,
+        ) -> None:
             """
             :type  vms: :class:`set` of :class:`str` or ``None``
             :param vms: Identifiers of virtual machines that can match the filter.
@@ -2976,9 +3069,7 @@ class VM(VapiInterface):
                 filter.
             """
             ...
-        
-    
-    
+
     class Summary(VapiStruct):
         """
         The ``VM.Summary`` class contains commonly used information about a virtual
@@ -2988,8 +3079,11 @@ class VM(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _canonical_to_pep_names = ...
-        def __init__(self, vm=..., name=..., power_state=..., cpu_count=..., memory_size_mib=...) -> None:
+        def __init__(
+            self, vm=..., name=..., power_state=..., cpu_count=..., memory_size_mib=...
+        ) -> None:
             """
             :type  vm: :class:`str`
             :param vm: Identifier of the virtual machine.
@@ -3018,9 +3112,7 @@ class VM(VapiInterface):
                 phases of virtual machine creation.
             """
             ...
-        
-    
-    
+
     class RegisterPlacementSpec(VapiStruct):
         """
         The ``VM.RegisterPlacementSpec`` class contains information used to place a
@@ -3032,7 +3124,10 @@ class VM(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, folder=..., resource_pool=..., host=..., cluster=...) -> None:
+
+        def __init__(
+            self, folder=..., resource_pool=..., host=..., cluster=...
+        ) -> None:
             """
             :type  folder: :class:`str` or ``None``
             :param folder: Virtual machine folder into which the virtual machine should be
@@ -3058,11 +3153,11 @@ class VM(VapiInterface):
                 virtual machine; if a resource pool cannot be chosen, the virtual
                 machine creation operation will fail.
             :type  host: :class:`str` or ``None``
-            :param host: Host onto which the virtual machine should be placed. 
-                
+            :param host: Host onto which the virtual machine should be placed.
+
                 If ``host`` and ``resourcePool`` are both specified,
-                ``resourcePool`` must belong to ``host``. 
-                
+                ``resourcePool`` must belong to ``host``.
+
                 If ``host`` and ``cluster`` are both specified, ``host`` must be a
                 member of ``cluster``.
                 When clients pass a value of this class as a parameter, the
@@ -3075,11 +3170,11 @@ class VM(VapiInterface):
                 host for the virtual machine; if a host cannot be chosen, the
                 virtual machine creation operation will fail.
             :type  cluster: :class:`str` or ``None``
-            :param cluster: Cluster into which the virtual machine should be placed. 
-                
+            :param cluster: Cluster into which the virtual machine should be placed.
+
                 If ``cluster`` and ``resourcePool`` are both specified,
-                ``resourcePool`` must belong to ``cluster``. 
-                
+                ``resourcePool`` must belong to ``cluster``.
+
                 If ``cluster`` and ``host`` are both specified, ``host`` must be a
                 member of ``cluster``.
                 When clients pass a value of this class as a parameter, the
@@ -3091,14 +3186,12 @@ class VM(VapiInterface):
                 that this attribute be None.
             """
             ...
-        
-    
-    
+
     class RegisterSpec(VapiStruct):
         """
         The ``VM.RegisterSpec`` class contains information used to create a virtual
-        machine from existing virtual machine files on storage. 
-        
+        machine from existing virtual machine files on storage.
+
         The location of the virtual machine files on storage must be specified by
         providing either :attr:`VM.RegisterSpec.datastore` and
         :attr:`VM.RegisterSpec.path` or by providing
@@ -3113,7 +3206,10 @@ class VM(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, datastore=..., path=..., datastore_path=..., name=..., placement=...) -> None:
+
+        def __init__(
+            self, datastore=..., path=..., datastore_path=..., name=..., placement=...
+        ) -> None:
             """
             :type  datastore: :class:`str` or ``None``
             :param datastore: Identifier of the datastore on which the virtual machine's
@@ -3152,9 +3248,7 @@ class VM(VapiInterface):
                 resources on which to place the virtual machine.
             """
             ...
-        
-    
-    
+
     def create(self, spec):
         """
         Creates a virtual machine.
@@ -3165,36 +3259,36 @@ class VM(VapiInterface):
         :return: ID of newly-created virtual machine.
             The return value will be an identifier for the resource type:
             ``VirtualMachine``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyExists` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyExists`
             if a virtual machine with the specified name already exists.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if any of the specified parameters are invalid.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if any of the resources specified in spec could not be found
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if a specified resource (eg. host) is not accessible.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInUse` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInUse`
             if any of the specified storage addresses (eg. IDE, SATA, SCSI,
             NVMe) result in a storage address conflict.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource`
             if any of the resources needed to create the virtual machine could
             not be allocated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unsupported` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unsupported`
             if ``guestOS`` is not supported for the requested virtual hardware
             version and spec includes None attributes that default to
             guest-specific values.
         :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
-            if you do not have all of the privileges described as follows: 
-            
+            if you do not have all of the privileges described as follows:
+
             * The resource ``Folder`` referenced by the attribute
               :attr:`VM.InventoryPlacementSpec.folder` requires
               ``VirtualMachine.Inventory.Create``.
@@ -3209,11 +3303,11 @@ class VM(VapiInterface):
               requires ``Network.Assign``.
         """
         ...
-    
+
     def clone(self, spec):
         """
-        Creates a virtual machine from an existing virtual machine. 
-        
+        Creates a virtual machine from an existing virtual machine.
+
         . This method was added in vSphere API 7.0.0.0.
 
         :type  spec: :class:`VM.CloneSpec`
@@ -3222,29 +3316,29 @@ class VM(VapiInterface):
         :return: ID of newly-created virtual machine.
             The return value will be an identifier for the resource type:
             ``VirtualMachine``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyExists` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyExists`
             if a virtual machine with the specified name already exists.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if any of the specified parameters are invalid.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if any of the resources specified in spec could not be found
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if a specified resource (eg. host) is not accessible.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource`
             if any of the resources needed to clone the virtual machine could
             not be allocated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
-            if you do not have all of the privileges described as follows: 
-            
+            if you do not have all of the privileges described as follows:
+
             * The resource ``Datastore`` referenced by the attribute
               :attr:`VM.DiskCloneSpec.datastore` requires
               ``Datastore.AllocateSpace``.
@@ -3262,40 +3356,40 @@ class VM(VapiInterface):
               ``VirtualMachine.Provisioning.Clone``.
         """
         ...
-    
-    def clone_task(self, spec): # -> Task:
+
+    def clone_task(self, spec):  # -> Task:
         """
-        Creates a virtual machine from an existing virtual machine. 
-        
+        Creates a virtual machine from an existing virtual machine.
+
         . This method was added in vSphere API 7.0.0.0.
 
         :type  spec: :class:`VM.CloneSpec`
         :param spec: Virtual machine clone specification.
         :rtype: :class:  `vmware.vapi.stdlib.client.task.Task`
         :return: Task instance
-        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyExists` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyExists`
             if a virtual machine with the specified name already exists.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if any of the specified parameters are invalid.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if any of the resources specified in spec could not be found
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if a specified resource (eg. host) is not accessible.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource`
             if any of the resources needed to clone the virtual machine could
             not be allocated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
-            if you do not have all of the privileges described as follows: 
-            
+            if you do not have all of the privileges described as follows:
+
             * The resource ``Datastore`` referenced by the attribute
               :attr:`VM.DiskCloneSpec.datastore` requires
               ``Datastore.AllocateSpace``.
@@ -3313,13 +3407,13 @@ class VM(VapiInterface):
               ``VirtualMachine.Provisioning.Clone``.
         """
         ...
-    
+
     def relocate(self, vm, spec):
         """
         Relocates a virtual machine based on the specification. The parts of
         the virtual machine that can move are: FOLDER, RESOURCE_POOL, HOST,
-        CLUSTER and DATASTORE of home of the virtual machine and disks. 
-        
+        CLUSTER and DATASTORE of home of the virtual machine and disks.
+
         . This method was added in vSphere API 7.0.0.0.
 
         :type  vm: :class:`str`
@@ -3328,25 +3422,25 @@ class VM(VapiInterface):
             ``VirtualMachine``.
         :type  spec: :class:`VM.RelocateSpec`
         :param spec: Relocate specification.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if any of the specified parameters are invalid.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if any of the resources specified in spec or the given "vm" could
             not be found
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if a specified resource (eg. host) is not accessible.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
-            if you do not have all of the privileges described as follows: 
-            
+            if you do not have all of the privileges described as follows:
+
             * The resource ``VirtualMachine`` referenced by the parameter
               ``vm`` requires ``Resource.ColdMigrate``.
             * The resource ``ResourcePool`` referenced by the attribute
@@ -3354,13 +3448,13 @@ class VM(VapiInterface):
               ``Resource.AssignVMToPool``.
         """
         ...
-    
-    def relocate_task(self, vm, spec): # -> Task:
+
+    def relocate_task(self, vm, spec):  # -> Task:
         """
         Relocates a virtual machine based on the specification. The parts of
         the virtual machine that can move are: FOLDER, RESOURCE_POOL, HOST,
-        CLUSTER and DATASTORE of home of the virtual machine and disks. 
-        
+        CLUSTER and DATASTORE of home of the virtual machine and disks.
+
         . This method was added in vSphere API 7.0.0.0.
 
         :type  vm: :class:`str`
@@ -3369,25 +3463,25 @@ class VM(VapiInterface):
             ``VirtualMachine``.
         :type  spec: :class:`VM.RelocateSpec`
         :param spec: Relocate specification.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if any of the specified parameters are invalid.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if any of the resources specified in spec or the given "vm" could
             not be found
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if a specified resource (eg. host) is not accessible.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
-            if you do not have all of the privileges described as follows: 
-            
+            if you do not have all of the privileges described as follows:
+
             * The resource ``VirtualMachine`` referenced by the parameter
               ``vm`` requires ``Resource.ColdMigrate``.
             * The resource ``ResourcePool`` referenced by the attribute
@@ -3395,7 +3489,7 @@ class VM(VapiInterface):
               ``Resource.AssignVMToPool``.
         """
         ...
-    
+
     def instant_clone(self, spec):
         """
         Create an instant clone of an existing virtual machine. This method was
@@ -3407,29 +3501,29 @@ class VM(VapiInterface):
         :return: ID of newly-created virtual machine.
             The return value will be an identifier for the resource type:
             ``VirtualMachine``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyExists` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyExists`
             if a virtual machine with the specified name already exists.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if any of the specified parameters are invalid.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if any of the resources specified in spec could not be found
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if a specified resource (eg. host) is not accessible.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource`
             if any of the resources needed to create an instant clone could not
             be allocated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
-            if you do not have all of the privileges described as follows: 
-            
+            if you do not have all of the privileges described as follows:
+
             * The resource ``VirtualMachine`` referenced by the attribute
               :attr:`VM.InstantCloneSpec.source` requires
               ``VirtualMachine.Provisioning.Clone`` and
@@ -3448,7 +3542,7 @@ class VM(VapiInterface):
               requires ``Network.Assign``.
         """
         ...
-    
+
     def get(self, vm):
         """
         Returns information about a virtual machine.
@@ -3459,27 +3553,27 @@ class VM(VapiInterface):
             ``VirtualMachine``.
         :rtype: :class:`VM.Info`
         :return: Information about the specified virtual machine.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
-            if you do not have all of the privileges described as follows: 
-            
+            if you do not have all of the privileges described as follows:
+
             * The resource ``VirtualMachine`` referenced by the parameter
               ``vm`` requires ``System.Read``.
         """
         ...
-    
+
     def delete(self, vm):
         """
         Deletes a virtual machine.
@@ -3488,31 +3582,31 @@ class VM(VapiInterface):
         :param vm: Virtual machine identifier.
             The parameter must be an identifier for the resource type:
             ``VirtualMachine``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if the virtual machine is running (powered on).
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
-            if you do not have all of the privileges described as follows: 
-            
+            if you do not have all of the privileges described as follows:
+
             * The resource ``VirtualMachine`` referenced by the parameter
               ``vm`` requires ``VirtualMachine.Inventory.Delete``.
         """
         ...
-    
+
     def list(self, filter=...):
         """
         Returns information about at most 4000 visible (subject to permission
@@ -3528,22 +3622,22 @@ class VM(VapiInterface):
         :rtype: :class:`list` of :class:`VM.Summary`
         :return: Commonly used information about the virtual machines matching the
             :class:`VM.FilterSpec`.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if the :attr:`VM.FilterSpec.power_states` attribute contains a
             value that is not supported by the server.
-        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource`
             if more than 4000 virtual machines match the
             :class:`VM.FilterSpec`.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def register(self, spec):
         """
         Creates a virtual machine from existing virtual machine files on
@@ -3556,31 +3650,31 @@ class VM(VapiInterface):
         :return: Identifier of the newly-created virtual machine.
             The return value will be an identifier for the resource type:
             ``VirtualMachine``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyExists` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyExists`
             if a virtual machine with the specified name already exists or if a
             virtual machine using the specified virtual machine files already
             exists.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if any of the specified parameters are invalid.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if any of the resources specified in spec could not be found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if a specified resource (eg. host) is not accessible.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource`
             if any of the resources needed to register the virtual machine
             could not be allocated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user cannot be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
-            if you do not have all of the privileges described as follows: 
-            
+            if you do not have all of the privileges described as follows:
+
             * The resource ``Datastore`` referenced by the attribute
               :attr:`VM.RegisterSpec.datastore` requires ``System.Read``.
             * The resource ``Folder`` referenced by the attribute
@@ -3591,7 +3685,7 @@ class VM(VapiInterface):
               ``Resource.AssignVMToPool``.
         """
         ...
-    
+
     def unregister(self, vm):
         """
         Removes the virtual machine corresponding to ``vm`` from the vCenter
@@ -3605,35 +3699,34 @@ class VM(VapiInterface):
         :param vm: Identifier of the virtual machine to be unregistered.
             The parameter must be an identifier for the resource type:
             ``VirtualMachine``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if the virtual machine is running (powered on).
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if there is no virtual machine associated with ``vm`` in the
             system.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
-            if you do not have all of the privileges described as follows: 
-            
+            if you do not have all of the privileges described as follows:
+
             * The resource ``VirtualMachine`` referenced by the parameter
               ``vm`` requires ``VirtualMachine.Inventory.Unregister``.
         """
         ...
-    
-
 
 class Deployment(VapiInterface):
     """
     The ``Deployment`` class provides methods to get the status of the vCenter
     appliance deployment. This class was added in vSphere API 6.7.
     """
+
     _VAPI_SERVICE_ID = ...
     def __init__(self, config) -> None:
         """
@@ -3641,7 +3734,7 @@ class Deployment(VapiInterface):
         :param config: Configuration to be used for creating the stub.
         """
         ...
-    
+
     class Task(VapiStruct):
         """
         The ``Deployment.Task`` class contains attributes to describe a particular
@@ -3651,8 +3744,24 @@ class Deployment(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _validator_list = ...
-        def __init__(self, progress=..., result=..., description=..., service=..., operation=..., parent=..., target=..., status=..., cancelable=..., error=..., start_time=..., end_time=..., user=...) -> None:
+        def __init__(
+            self,
+            progress=...,
+            result=...,
+            description=...,
+            service=...,
+            operation=...,
+            parent=...,
+            target=...,
+            status=...,
+            cancelable=...,
+            error=...,
+            start_time=...,
+            end_time=...,
+            user=...,
+        ) -> None:
             """
             :type  progress: :class:`com.vmware.cis.task_client.Progress`
             :param progress: The progress info of this deployment task. This attribute was added
@@ -3726,9 +3835,7 @@ class Deployment(VapiInterface):
                 system.
             """
             ...
-        
-    
-    
+
     class Info(VapiStruct):
         """
         The ``Deployment.Info`` class contains attributes to describe the state of
@@ -3738,8 +3845,26 @@ class Deployment(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _validator_list = ...
-        def __init__(self, state=..., progress=..., subtask_order=..., subtasks=..., description=..., service=..., operation=..., parent=..., target=..., status=..., cancelable=..., error=..., start_time=..., end_time=..., user=...) -> None:
+        def __init__(
+            self,
+            state=...,
+            progress=...,
+            subtask_order=...,
+            subtasks=...,
+            description=...,
+            service=...,
+            operation=...,
+            parent=...,
+            target=...,
+            status=...,
+            cancelable=...,
+            error=...,
+            start_time=...,
+            end_time=...,
+            user=...,
+        ) -> None:
             """
             :type  state: :class:`com.vmware.vcenter.deployment_client.ApplianceState`
             :param state: State of the vCenter Server Appliance. This attribute was added in
@@ -3822,9 +3947,7 @@ class Deployment(VapiInterface):
                 system.
             """
             ...
-        
-    
-    
+
     def get(self):
         """
         Get the current status of the appliance deployment. This method was
@@ -3834,83 +3957,52 @@ class Deployment(VapiInterface):
         :rtype: :class:`Deployment.Info`
         :return: Info structure containing the status information about the
             appliance.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the caller is not authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if appliance state cannot be determined.
         """
         ...
-    
+
     def rollback(self):
         """
         Rollback a failed appliance so it can be configured once again. This
         method was added in vSphere API 6.7.
 
 
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unsupported` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unsupported`
             if the appliance is not in FAILED state.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the caller is not authenticated.
         """
         ...
-    
-
 
 class _ClusterStub(ApiInterfaceStub):
-    def __init__(self, config) -> None:
-        ...
-    
-
+    def __init__(self, config) -> None: ...
 
 class _DatacenterStub(ApiInterfaceStub):
-    def __init__(self, config) -> None:
-        ...
-    
-
+    def __init__(self, config) -> None: ...
 
 class _DatastoreStub(ApiInterfaceStub):
-    def __init__(self, config) -> None:
-        ...
-    
-
+    def __init__(self, config) -> None: ...
 
 class _FolderStub(ApiInterfaceStub):
-    def __init__(self, config) -> None:
-        ...
-    
-
+    def __init__(self, config) -> None: ...
 
 class _HostStub(ApiInterfaceStub):
-    def __init__(self, config) -> None:
-        ...
-    
-
+    def __init__(self, config) -> None: ...
 
 class _NetworkStub(ApiInterfaceStub):
-    def __init__(self, config) -> None:
-        ...
-    
-
+    def __init__(self, config) -> None: ...
 
 class _ResourcePoolStub(ApiInterfaceStub):
-    def __init__(self, config) -> None:
-        ...
-    
-
+    def __init__(self, config) -> None: ...
 
 class _VMStub(ApiInterfaceStub):
-    def __init__(self, config) -> None:
-        ...
-    
-
+    def __init__(self, config) -> None: ...
 
 class _DeploymentStub(ApiInterfaceStub):
-    def __init__(self, config) -> None:
-        ...
-    
-
+    def __init__(self, config) -> None: ...
 
 class StubFactory(StubFactoryBase):
     _attrs = ...
-
-

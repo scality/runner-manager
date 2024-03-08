@@ -10,7 +10,8 @@ Utility functions for managing execution context for an operation
 __author__ = ...
 __copyright__ = ...
 TLS = threading.local()
-def set_context(ctx): # -> None:
+
+def set_context(ctx):  # -> None:
     """
     Set the execution context in thread local storage
 
@@ -19,13 +20,13 @@ def set_context(ctx): # -> None:
     """
     ...
 
-def clear_context(): # -> None:
+def clear_context():  # -> None:
     """
     Clear the execution context from thread local storage
     """
     ...
 
-def get_context(): # -> Any | None:
+def get_context():  # -> Any | None:
     """
     Get the execution context from thread local storage
 
@@ -34,7 +35,7 @@ def get_context(): # -> Any | None:
     """
     ...
 
-def set_event(event): # -> None:
+def set_event(event):  # -> None:
     """
     Set the event in thread local storage
 
@@ -43,13 +44,13 @@ def set_event(event): # -> None:
     """
     ...
 
-def clear_event(): # -> None:
+def clear_event():  # -> None:
     """
     Clear the event from thread local storage
     """
     ...
 
-def get_event(): # -> Any | None:
+def get_event():  # -> Any | None:
     """
     Get the event from thread local storage
 
@@ -57,4 +58,3 @@ def get_event(): # -> Any | None:
     :return: Event if present
     """
     ...
-

@@ -13,7 +13,8 @@ SESSION_SCHEME_ID = ...
 SESSION_ID = ...
 REST_SESSION_ID_KEY = ...
 REQUIRE_HEADER_AUTHN = ...
-def create_session_security_context(session_id): # -> SecurityContext:
+
+def create_session_security_context(session_id):  # -> SecurityContext:
     """
     Create a security context for Session Id based authentication
     scheme
@@ -31,13 +32,14 @@ class SessionSecurityContextParser(SecurityContextParser):
     that builds a security context if the REST request has session
     identifier either in the header or in the cookie.
     """
+
     def __init__(self) -> None:
         """
         Initialize SessionSecurityContextParser
         """
         ...
-    
-    def build(self, request): # -> SecurityContext | None:
+
+    def build(self, request):  # -> SecurityContext | None:
         """
         Build the security context if the request has the header
         that contains the session identifier or a cookie that has
@@ -54,6 +56,3 @@ class SessionSecurityContextParser(SecurityContextParser):
         :return: Security context object
         """
         ...
-    
-
-
