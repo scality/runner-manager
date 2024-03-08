@@ -1,7 +1,7 @@
 from enum import Enum
 from pathlib import Path
 from string import Template
-from typing import Dict, List, Literal, Optional, Sequence, TypedDict
+from typing import Annotated, Dict, List, Literal, Optional, Sequence, TypedDict, Union
 
 from mypy_boto3_ec2.literals import InstanceTypeType, VolumeTypeType
 from mypy_boto3_ec2.type_defs import (
@@ -11,10 +11,10 @@ from mypy_boto3_ec2.type_defs import (
     TagTypeDef,
 )
 from pydantic import BaseModel, BaseSettings
-
 from runner_manager.bin import startup_sh
 from runner_manager.models.runner import Runner
-
+from pyVmomi import vim
+from pyVmomi.vim.vm import ConfigSpec as VsphereConfigSpec
 
 class Backends(str, Enum):
     """Enum for backend types."""
@@ -23,6 +23,7 @@ class Backends(str, Enum):
     docker = "docker"
     gcloud = "gcloud"
     aws = "aws"
+    vsphere = "vsphere"
 
 
 class BackendConfig(BaseModel):
@@ -191,3 +192,23 @@ class AWSInstanceConfig(InstanceConfig):
             MinCount=self.min_count,
             BlockDeviceMappings=block_device_mappings,
         )
+from vmware.vapi.vsphere.client import create_vsphere_client
+
+class VsphereConfig(BackendConfig):
+    """Configuration for vSphere backend."""
+    server: str
+    username: str
+    password: str
+    bearer_token: Optional[str] = None
+    verify_ssl: bool = False
+
+class VsphereInstanceConfig(InstanceConfig):
+    """Configuration for vSphere backend instance."""
+
+    cpu: int = 1
+    memory: int = 1024
+    guest_os: str = "ubuntu64Guest"
+    datacenter: str
+    folder: str
+    datastore: str
+
