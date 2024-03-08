@@ -211,4 +211,5 @@ class VsphereInstanceConfig(InstanceConfig):
     datacenter: str
     folder: str
     datastore: str
-
+    disk_size_gb: int = 20
+    portgroup: str

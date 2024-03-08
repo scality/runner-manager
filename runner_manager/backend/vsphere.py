@@ -3,11 +3,11 @@ from runner_manager.backend.base import BaseBackend
 from runner_manager.models.backend import Backends, VsphereConfig, VsphereInstanceConfig
 from runner_manager.models.runner import Runner
 from pydantic import Field
-from typing import Literal, Optional
-from githubkit.webhooks.types import WorkflowJobEvent
+from typing import Literal
 from vmware.vapi.vsphere.client import create_vsphere_client, VsphereClient
-from com.vmware.vcenter_client import VM, Datacenter, Datastore, ResourcePool, Folder
-from com.vmware.vcenter.vm.hardware_client import Cpu, Memory, Boot
+from com.vmware.vcenter_client import VM, Datacenter, Datastore, ResourcePool, Folder, Network
+from com.vmware.vcenter.vm.hardware.boot_client import Device as BootDevice
+from com.vmware.vcenter.vm.hardware_client import Cpu, Memory, Disk, ScsiAddressSpec, Ethernet
 from requests import Session
 
 import logging
@@ -153,18 +153,70 @@ class VsphereBackend(BaseBackend):
         else:
             return None
 
+    def get_network_backing(self,
+                            portgroup_name,
+                            datacenter_name,
+                            portgroup_type):
+        """
+        Gets a standard portgroup network backing for a given Datacenter
+        Note: The method assumes that there is only one standard portgroup
+        and datacenter with the mentioned names.
+        """
+        datacenter = self.get_datacenter(datacenter_name)
+        if not datacenter:
+            print("Datacenter '{}' not found".format(datacenter_name))
+            return None
+
+        filter = Network.FilterSpec(datacenters=set([datacenter]),
+                                    names=set([portgroup_name]),
+                                    types=set([portgroup_type]))
+        network_summaries = self.client.vcenter.Network.list(filter=filter)
+
+        if len(network_summaries) > 0:
+            network = network_summaries[0].network
+            print("Selecting {} Portgroup Network '{}' ({})".
+                format(portgroup_type, portgroup_name, network))
+            return network
+        else:
+            print("Portgroup Network not found in Datacenter '{}'".
+                format(datacenter_name))
+            return None
+
     def create(self, runner: Runner) -> Runner:
         placement_spec = self.placement_spec()
+        GiB = 1024 * 1024 * 1024
+        standard_network = self.get_network_backing(
+            self.instance_config.portgroup,
+            self.instance_config.datacenter,
+            Network.Type.STANDARD_PORTGROUP
+        )
+        nic = Ethernet.CreateSpec(
+            start_connected=True,
+            backing=Ethernet.BackingSpec(
+                type=Ethernet.BackingType.STANDARD_PORTGROUP,
+                network=standard_network))
+        boot_device_order = [
+            BootDevice.EntryCreateSpec(BootDevice.Type.ETHERNET),
+            BootDevice.EntryCreateSpec(BootDevice.Type.DISK)]
         vm_create_spec = VM.CreateSpec(
             guest_os=self.instance_config.guest_os,
             name=runner.name,
             placement=placement_spec,
             cpu=Cpu.UpdateSpec(count=self.instance_config.cpu),
             memory=Memory.UpdateSpec(size_mib=self.instance_config.memory),
-            boot=Boot.CreateSpec(
+            disks=[
+                Disk.CreateSpec(
+                    type=Disk.HostBusAdapterType.SCSI,
+                    scsi=ScsiAddressSpec(bus=0, unit=0),
+                    new_vmdk=Disk.VmdkCreateSpec(name='boot',
+                    capacity=self.instance_config.disk_size_gb * GiB)),
+            ],
+            nics=[nic],
+            boot_devices=boot_device_order
         )
         vm = self.client.vcenter.VM.create(vm_create_spec)
         vm_info = self.client.vcenter.VM.get(vm)
+
         runner.instance_id = vm_info.vm
 
         return super().create(runner)
