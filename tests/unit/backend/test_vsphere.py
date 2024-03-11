@@ -10,16 +10,12 @@ from runner_manager.models.runner_group import RunnerGroup
 
 @fixture()
 def vsphere_group(settings) -> RunnerGroup:
-    config = VsphereConfig(
-        server=os.environ.get("GOVC_URL", ""),
-        username=os.environ.get("GOVC_USERNAME", ""),
-        password=os.environ.get("GOVC_PASSWORD", ""),
-    )
+    config = VsphereConfig(server=os.environ.get("GOVC_URL", ""),username=os.environ.get("GOVC_USERNAME", ""),password=os.environ.get("GOVC_PASSWORD", ""))
     runner_group: RunnerGroup = RunnerGroup(
         id=2,
         name="test",
         organization="octo-org",
-        manager=settings.name,
+        manager="runner-manager",
         backend=VsphereBackend(
             name=Backends.vsphere,
             config=config,
