@@ -1,7 +1,7 @@
 from enum import Enum
 from pathlib import Path
 from string import Template
-from typing import Annotated, Dict, List, Literal, Optional, Sequence, TypedDict, Union
+from typing import Dict, List, Literal, Optional, Sequence, TypedDict
 
 from mypy_boto3_ec2.literals import InstanceTypeType, VolumeTypeType
 from mypy_boto3_ec2.type_defs import (
@@ -11,8 +11,6 @@ from mypy_boto3_ec2.type_defs import (
     TagTypeDef,
 )
 from pydantic import BaseModel, BaseSettings
-from pyVmomi import vim
-from pyVmomi.vim.vm import ConfigSpec as VsphereConfigSpec
 
 from runner_manager.bin import startup_sh
 from runner_manager.models.runner import Runner
@@ -196,9 +194,6 @@ class AWSInstanceConfig(InstanceConfig):
         )
 
 
-from vmware.vapi.vsphere.client import create_vsphere_client
-
-
 class VsphereConfig(BackendConfig):
     """Configuration for vSphere backend."""
 
@@ -215,8 +210,8 @@ class VsphereInstanceConfig(InstanceConfig):
     cpu: int = 1
     memory: int = 1024
     guest_os: str = "ubuntu64Guest"
+    disk_size_gb: int = 20
     datacenter: str
     folder: str
     datastore: str
-    disk_size_gb: int = 20
     portgroup: str
