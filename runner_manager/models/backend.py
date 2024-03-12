@@ -208,9 +208,11 @@ class VsphereInstanceConfig(InstanceConfig):
 
     cpu: int = 1
     memory: int = 1024
-    guest_os: str = "ubuntu64Guest"
+    guest_os: str = "OTHER_LINUX_64"
     disk_size_gb: int = 20
     datacenter: str
     folder: str
     datastore: str
     portgroup: str
+
+    vmdk_file: str
