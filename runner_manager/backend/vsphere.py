@@ -37,12 +37,13 @@ class VsphereBackend(BaseBackend):
     def client(self) -> VsphereClient:
         session = Session()
         session.verify = self.config.verify_ssl
-        return create_vsphere_client(
+        client = create_vsphere_client(
             server=self.config.server,
             username=self.config.username,
             password=self.config.password,
             session=session,
         )
+        return client
 
     def get_folder(self, datacenter_name, folder_name):
         """
