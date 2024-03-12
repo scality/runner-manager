@@ -200,7 +200,6 @@ class VsphereConfig(BackendConfig):
     server: str
     username: str
     password: str
-    bearer_token: Optional[str] = None
     verify_ssl: bool = False
 
 

@@ -35,15 +35,21 @@ class VsphereBackend(BaseBackend):
 
     @property
     def client(self) -> VsphereClient:
+        # Create the vSphere client if it wasn't already
+        # created in the class instance
+        if not hasattr(self, "_client"):
+            self._create_client()
+        return self._client
+
+    def _create_client(self):
         session = Session()
         session.verify = self.config.verify_ssl
-        client = create_vsphere_client(
+        self._client = create_vsphere_client(
             server=self.config.server,
             username=self.config.username,
             password=self.config.password,
             session=session,
         )
-        return client
 
     def get_folder(self, datacenter_name, folder_name):
         """
