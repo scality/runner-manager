@@ -22,7 +22,9 @@ google-cloud-compute = "^1.17.0"
 boto3 = "^1.28.85"
 botocore = "^1.31.85"
 boto3-stubs = { extras = ["ec2"], version = "^1.34.54" }
-githubkit = { extras = ["auth-app"], git = "https://github.com/yanyongyu/githubkit", rev = "a4275ac3d3babd64061f3693353db740e6a8e892" }
+githubkit = { extras = [
+  "auth-app",
+], git = "https://github.com/yanyongyu/githubkit", rev = "a4275ac3d3babd64061f3693353db740e6a8e892" }
 rq-scheduler = "^0.13.1"
 
 
