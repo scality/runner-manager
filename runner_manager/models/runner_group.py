@@ -19,6 +19,7 @@ from runner_manager.backend.aws import AWSBackend
 from runner_manager.backend.base import BaseBackend
 from runner_manager.backend.docker import DockerBackend
 from runner_manager.backend.gcloud import GCPBackend
+from runner_manager.backend.vsphere import VsphereBackend
 from runner_manager.clients.github import GitHub
 from runner_manager.clients.github import RunnerGroup as GitHubRunnerGroup
 from runner_manager.models.base import BaseModel
@@ -46,7 +47,7 @@ class BaseRunnerGroup(PydanticBaseModel):
     labels: List[str]
 
     backend: Annotated[
-        Union[BaseBackend, DockerBackend, GCPBackend, AWSBackend],
+        Union[BaseBackend, DockerBackend, GCPBackend, AWSBackend, VsphereBackend],
         PydanticField(..., discriminator="name"),
     ]
 
