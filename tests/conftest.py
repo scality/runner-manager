@@ -56,6 +56,8 @@ def github(settings, monkeypatch) -> GitHub:
         user_agent="runner-manager",
         follow_redirects=True,
         timeout=httpx.Timeout(5.0),
+        auto_retry=None,
+        http_cache=False,
     )
 
     monkeypatch.setattr(Paginator, "_get_next_page", get_next_monkeypatch)

@@ -1,7 +1,9 @@
 from functools import lru_cache
 
+from githubkit.versions.latest.models import (
+    WebhookWorkflowJobCompleted as WorkflowJobCompleted,
+)
 from githubkit.webhooks import sign
-from githubkit.webhooks.models import WorkflowJobCompleted
 from hypothesis import given
 from pytest import fixture
 

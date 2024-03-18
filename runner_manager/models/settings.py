@@ -43,6 +43,7 @@ class Settings(BaseSettings):
     github_installation_id: int = 0
     github_client_id: Optional[str] = None
     github_client_secret: SecretStr = SecretStr("")
+    github_auto_retry: bool = True
 
     @property
     def app_install(self) -> bool:

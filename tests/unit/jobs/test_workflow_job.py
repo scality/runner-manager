@@ -1,12 +1,14 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 from time import sleep
 from uuid import uuid4
 
-from githubkit.webhooks.models import (
-    WorkflowJobCompleted,
-    WorkflowJobInProgress,
-    WorkflowJobQueued,
+from githubkit.versions.latest.models import (
+    WebhookWorkflowJobCompleted as WorkflowJobCompleted,
 )
+from githubkit.versions.latest.models import (
+    WebhookWorkflowJobQueued as WorkflowJobQueued,
+)
+from githubkit.versions.latest.webhooks import WorkflowJobEvent
 from hypothesis import assume, given, settings
 from redis import Redis
 from redis_om import JsonModel, Migrator
@@ -102,13 +104,15 @@ def test_workflow_job_completed(
     redis=RedisStrategy,
 )
 def test_workflow_job_in_progress(
-    webhook: WorkflowJobInProgress, queue: Queue, settings: Settings, redis: Redis
+    webhook: WorkflowJobEvent, queue: Queue, settings: Settings, redis: Redis
 ):
     # flush all keys that start with settings.name in redis
 
     init_model(Runner, redis, settings)
     init_model(RunnerGroup, redis, settings)
     assert webhook.organization
+    webhook.workflow_job.created_at = datetime.now()
+    webhook.workflow_job.started_at = datetime.now()
     runner_group: RunnerGroup = RunnerGroup(
         organization=webhook.organization.login,
         name=webhook.workflow_job.runner_group_name,
@@ -207,7 +211,7 @@ def test_workflow_job_queued(
     redis=RedisStrategy,
 )
 def test_workflow_job_time_to_start(
-    webhook: WorkflowJobInProgress, queue: Queue, settings: Settings, redis: Redis
+    webhook: WorkflowJobEvent, queue: Queue, settings: Settings, redis: Redis
 ):
     """
     This test will ensure that an extra runner is created when the time to start
@@ -241,15 +245,16 @@ def test_workflow_job_time_to_start(
 
     assert len(runner_group.get_runners()) == 1
     # ensure we have only one runner if the time to start is less than timeout_runners
-    webhook.workflow_job.started_at = webhook.workflow_job.created_at + (
-        settings.timeout_runner - timedelta(minutes=15)
-    )
+
+    created_at = datetime.now()
+    started_at = created_at + (settings.timeout_runner - timedelta(minutes=15))
+    webhook.workflow_job.created_at = created_at
+    webhook.workflow_job.started_at = started_at
     queue.enqueue(workflow_job.in_progress, webhook)
     assert len(runner_group.get_runners()) == 1
     # ensure we have two runners if the time to start is greater than timeout_runners
-    webhook.workflow_job.started_at = webhook.workflow_job.created_at + (
-        settings.timeout_runner + timedelta(minutes=15)
-    )
+    started_at = created_at + (settings.timeout_runner + timedelta(minutes=15))
+    webhook.workflow_job.started_at = started_at
     queue.enqueue(workflow_job.in_progress, webhook)
     assert len(runner_group.get_runners()) == 2
     # ensure we remain with two runners given that the max for the runner group is 2

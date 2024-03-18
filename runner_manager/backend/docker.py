@@ -6,7 +6,7 @@ from typing import Dict, List, Literal, Optional
 from docker import DockerClient
 from docker.errors import APIError, NotFound
 from docker.models.containers import Container
-from githubkit.webhooks.types import WorkflowJobEvent
+from githubkit.versions.latest.webhooks import WorkflowJobEvent
 from pydantic import Field
 from redis_om import NotFoundError
 
