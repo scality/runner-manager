@@ -25,7 +25,7 @@ def vsphere_group(settings) -> RunnerGroup:
                 datastore=os.environ.get("GOVC_DATASTORE"),
                 folder="vm",
                 portgroup="VM Network",
-                vmdk_file="[datastore2] vmdk/jammy-server-cloudimg-amd64.vmdk",
+                vmdk_file="[datastore2] vmdk/jammy-server-cloudimg-amd64-gen2.vmdk",
             ),
         ),
         labels=[

@@ -174,6 +174,17 @@ class VsphereBackend(BaseBackend):
         else:
             return None
 
+    def get_boot_disk(self, client, vm):
+        """Find the backing type disks that was used as the image for the VM."""
+
+        client = self._create_client()
+        disks = client.vcenter.vm.hardware.Disk.list(vm)
+        for disk in disks:
+            disk_info = client.vcenter.vm.hardware.Disk.get(vm, disk.disk)
+            if disk_info.backing.vmdk_file == self.instance_config.vmdk_file:
+                return disk.disk
+        return None
+
     def get_network_backing(self, client, portgroup_name, datacenter_name, portgroup_type):
         """
         Gets a standard portgroup network backing for a given Datacenter
@@ -238,7 +249,7 @@ class VsphereBackend(BaseBackend):
                     backing=Disk.BackingSpec(
                         type=Disk.BackingType.VMDK_FILE,
                         vmdk_file=self.instance_config.vmdk_file
-                    )
+                    ),
                 ),
                 Disk.CreateSpec(
                     type=Disk.HostBusAdapterType.SCSI,
@@ -257,11 +268,13 @@ class VsphereBackend(BaseBackend):
             boot_devices=boot_device_order,
 
         )
+        log.info("Creating vm...")
         vm = client.vcenter.VM.create(vm_create_spec)
-
         vm_info = client.vcenter.VM.get(vm)
-
         runner.instance_id = vm_info.name
+
+        log.info("Powering on vm...")
+        client.vcenter.vm.Power.start(vm)
 
         return super().create(runner)
 
@@ -275,6 +288,9 @@ class VsphereBackend(BaseBackend):
             elif state == Power.Info(state=Power.State.SUSPENDED):
                 client.vcenter.vm.Power.start(vm)
                 client.vcenter.vm.Power.stop(vm)
+            boot_disk = self.get_boot_disk(client, vm)
+            log.info(f"Delete boot disk {boot_disk}...")
+            client.vcenter.vm.hardware.Disk.delete(vm, boot_disk)
             log.info(f"Deleting {vm}...")
             client.vcenter.VM.delete(vm)
         return super().delete(runner)
