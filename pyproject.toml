@@ -11,17 +11,17 @@ include = ["pyproject.toml", "README.md", "LICENSE", "images/**/*"]
 [tool.poetry.dependencies]
 python = "^3.11"
 fastapi = "^0.110.0"
-uvicorn = { extras = ["standard"], version = "^0.27.1" }
+uvicorn = { extras = ["standard"], version = "^0.29.0" }
 pydantic = ">=1.10.2,<2.0"
 redis-om = "^0.2.1"
-rq = "^1.16.0"
+rq = "^1.16.1"
 pyyaml = "^6.0.1"
 redis = "^4.6.0"
 docker = "^7.0.0"
-google-cloud-compute = "^1.17.0"
+google-cloud-compute = "^1.18.0"
 boto3 = "^1.28.85"
 botocore = "^1.31.85"
-boto3-stubs = { extras = ["ec2"], version = "^1.34.54" }
+boto3-stubs = { extras = ["ec2"], version = "^1.34.66" }
 githubkit = { extras = ["auth-app"], version = "^0.11.2" }
 rq-scheduler = "^0.13.1"
 
@@ -30,18 +30,18 @@ rq-scheduler = "^0.13.1"
 optional = true
 
 [tool.poetry.group.docs.dependencies]
-mkdocs-material = "^9.5.12"
+mkdocs-material = "^9.5.14"
 mkdocs = "^1.5.3"
 
 [tool.poetry.group.dev.dependencies]
 connexion = "^3.0.5"
-pytest = "^8.0.2"
+pytest = "^8.1.1"
 pytest-cov = "^4.0.0"
-hypothesis = "^6.98.17"
-pyright = "^1.1.352"
-black = "^24.2.0"
+hypothesis = "^6.99.9"
+pyright = "^1.1.355"
+black = "^24.3.0"
 isort = "^5.13.2"
-ruff = "^0.3.0"
+ruff = "^0.3.3"
 yamllint = "^1.35.1"
 types-redis = "^4.6.0.20240218"
 
