@@ -2,6 +2,7 @@ from functools import lru_cache
 
 import httpx
 from githubkit.config import Config
+from githubkit.retry import RetryRateLimit
 from redis import Redis
 from redis_om import get_redis_connection
 from rq import Queue
@@ -37,11 +38,14 @@ def get_scheduler() -> Scheduler:
 @lru_cache()
 def get_github() -> GitHub:
     settings: Settings = get_settings()
+    auto_retry = RetryRateLimit(max_retry=3) if settings.github_auto_retry else None
     config: Config = Config(
         base_url=httpx.URL(str(settings.github_base_url)),
         follow_redirects=True,
         accept="*/*",
         user_agent="runner-manager",
         timeout=httpx.Timeout(30.0),
+        http_cache=True,
+        auto_retry=auto_retry,
     )
     return GitHub(settings.github_auth_strategy(), config=config)

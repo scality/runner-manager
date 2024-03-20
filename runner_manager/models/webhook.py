@@ -1,6 +1,7 @@
 from typing import Union
 
-from githubkit.webhooks.types import PingEvent, WorkflowJobEvent
+from githubkit.versions.latest.models import WebhookPing
+from githubkit.versions.latest.webhooks import WorkflowJobEvent
 from pydantic import BaseModel
 
 
@@ -10,4 +11,4 @@ class WebhookResponse(BaseModel):
     job_id: str | None = None
 
 
-AcceptedWebhookEvents = Union[WorkflowJobEvent, PingEvent]
+AcceptedWebhookEvents = Union[WorkflowJobEvent, WebhookPing]

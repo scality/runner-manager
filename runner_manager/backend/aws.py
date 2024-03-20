@@ -2,7 +2,7 @@ from typing import List, Literal, Optional
 
 from boto3 import client
 from botocore.exceptions import ClientError
-from githubkit.webhooks.types import WorkflowJobEvent
+from githubkit.versions.latest.webhooks import WorkflowJobEvent
 from mypy_boto3_ec2 import EC2Client
 from pydantic import Field
 from redis_om import NotFoundError

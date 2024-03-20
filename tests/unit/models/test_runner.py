@@ -1,7 +1,9 @@
 from datetime import datetime, timezone
 
 import pytest
-from githubkit.webhooks.models import WorkflowJobCompleted
+from githubkit.versions.latest.models import (
+    WebhookWorkflowJobCompleted as WorkflowJobCompleted,
+)
 from hypothesis import given
 from hypothesis import strategies as st
 from redis_om import Migrator, NotFoundError

@@ -1,21 +1,35 @@
+from __future__ import annotations
+
 from string import ascii_lowercase
 from typing import Optional
 
-from githubkit.rest.models import Runner as GitHubRunner
-from githubkit.webhooks.models import (
+from githubkit.versions.latest.models import JobPropStepsItems as WorkflowStepCompleted
+from githubkit.versions.latest.models import (
     License,
     Organization,
-    PingEvent,
-    PingEventPropHook,
     Repository,
-    User,
-    WorkflowJobCompleted,
-    WorkflowJobCompletedPropWorkflowJob,
-    WorkflowJobInProgress,
-    WorkflowJobInProgressPropWorkflowJob,
-    WorkflowJobQueued,
-    WorkflowJobQueuedPropWorkflowJob,
-    WorkflowStepCompleted,
+    RepositoryPropPermissions,
+)
+from githubkit.versions.latest.models import Runner as GitHubRunner
+from githubkit.versions.latest.models import SimpleUser as User
+from githubkit.versions.latest.models import WebhookPing, WebhookPingPropHook
+from githubkit.versions.latest.models import (
+    WebhookWorkflowJobCompleted as WorkflowJobCompleted,
+)
+from githubkit.versions.latest.models import (
+    WebhookWorkflowJobCompletedPropWorkflowJob as WorkflowJobCompletedPropWorkflowJob,
+)
+from githubkit.versions.latest.models import (
+    WebhookWorkflowJobInProgress as WorkflowJobInProgress,
+)
+from githubkit.versions.latest.models import (
+    WebhookWorkflowJobInProgressPropWorkflowJob as WorkflowJobInProgressPropWorkflowJob,
+)
+from githubkit.versions.latest.models import (
+    WebhookWorkflowJobQueued as WorkflowJobQueued,
+)
+from githubkit.versions.latest.models import (
+    WebhookWorkflowJobQueuedPropWorkflowJob as WorkflowJobQueuedPropWorkflowJob,
 )
 from hypothesis import strategies as st
 from redis import Redis
@@ -45,10 +59,36 @@ UserStrategy = st.builds(
     name=st.just("test"),
     email=st.just("test@email.com"),
 )
+RepoPermission = st.builds(
+    RepositoryPropPermissions,
+    admin=st.just(True),
+    push=st.just(True),
+    pull=st.just(True),
+    maintain=st.just(True),
+    triage=st.just(True),
+)
 RepositoryStrategy = st.builds(
     Repo,
     license=st.just(None),
     owner=UserStrategy,
+    merge_commit_title=st.just("PR_TITLE"),
+    squash_merge_commit_message=st.just("PR_BODY"),
+    use_squash_pr_title_as_default=st.just(True),
+    allow_update_branch=st.just(True),
+    delete_branch_on_merge=st.just(True),
+    allow_auto_merge=st.just(True),
+    allow_rebase_merge=st.just(True),
+    allow_squash_merge=st.just(True),
+    topics=st.just(["topic"]),
+    is_template=st.just(False),
+    has_discussions=st.just(True),
+    squash_merge_commit_title=st.just("PR_TITLE"),
+    merge_commit_message=st.just("PR_BODY"),
+    allow_merge_commit=st.just(True),
+    allow_forking=st.just(False),
+    web_commit_signoff_required=st.just(False),
+    anonymous_access_enabled=st.just(False),
+    permissions=RepoPermission,
 )
 
 OrgStrategy = st.builds(
@@ -56,7 +96,15 @@ OrgStrategy = st.builds(
     login=st.just("octo-org"),
 )
 
-StepStrategy = st.builds(WorkflowStepCompleted)
+StepStrategy = st.builds(
+    WorkflowStepCompleted,
+    status=st.just("completed"),
+    conclusion=st.just("success"),
+    name=st.just("step"),
+    number=st.just(42),
+    started_at=st.just(None),
+    completed_at=st.just(None),
+)
 
 JobPropCompletedStrategy = st.builds(
     WorkflowJobCompletedPropWorkflowJob,
@@ -67,7 +115,6 @@ JobPropCompletedStrategy = st.builds(
     runner_group_name=Text,
     runner_group_id=Int,
     labels=st.lists(Text, min_size=1, max_size=5),
-    started_at=st.datetimes(),
 )
 
 JobPropInProgressStrategy = st.builds(
@@ -79,8 +126,6 @@ JobPropInProgressStrategy = st.builds(
     runner_group_name=Text,
     runner_group_id=Int,
     labels=st.lists(Text, min_size=1, max_size=5),
-    started_at=st.datetimes(),
-    created_at=st.datetimes(),
 )
 
 JobPropQueuedStrategy = st.builds(
@@ -121,6 +166,7 @@ WorkflowJobInProgressStrategy = st.builds(
     workflow_job=JobPropInProgressStrategy,
 )
 
+
 SettingsStrategy = st.builds(
     Settings,
     name=Text,
@@ -146,7 +192,7 @@ QueueStrategy = st.builds(
 )
 
 PingHookStrategy = st.builds(
-    PingEventPropHook,
+    WebhookPingPropHook,
     events=st.just(["*"]),
 )
 
@@ -157,4 +203,4 @@ GithubRunnerStrategy = st.builds(
     busy=st.booleans(),
     name=Text,
 )
-PingStrategy = st.builds(PingEvent, hook=PingHookStrategy)
+PingStrategy = st.builds(WebhookPing, hook=PingHookStrategy)

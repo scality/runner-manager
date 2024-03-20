@@ -1,14 +1,18 @@
 from __future__ import annotations
 
 import logging
-from datetime import timedelta
+from datetime import datetime, timedelta
 
-from githubkit.webhooks.models import (
-    WorkflowJobCompleted,
-    WorkflowJobInProgress,
-    WorkflowJobQueued,
+from githubkit.versions.latest.models import (
+    WebhookWorkflowJobCompleted as WorkflowJobCompleted,
 )
-from githubkit.webhooks.types import WorkflowJobEvent
+from githubkit.versions.latest.models import (
+    WebhookWorkflowJobInProgress as WorkflowJobInProgress,
+)
+from githubkit.versions.latest.models import (
+    WebhookWorkflowJobQueued as WorkflowJobQueued,
+)
+from githubkit.versions.latest.webhooks import WorkflowJobEvent
 
 from runner_manager import Settings
 from runner_manager.clients.github import GitHub
@@ -27,8 +31,11 @@ def log_workflow_job(webhook: WorkflowJobEvent) -> None:
     )
 
 
-def time_to_start(webhook: WorkflowJobInProgress | WorkflowJobCompleted) -> timedelta:
+def time_to_start(webhook: WorkflowJobEvent) -> timedelta:
     """From a given webhook, calculate the time it took to start the job"""
+
+    assert isinstance(webhook.workflow_job.started_at, datetime)
+    assert isinstance(webhook.workflow_job.created_at, datetime)
     return webhook.workflow_job.started_at - webhook.workflow_job.created_at
 
 

@@ -1,6 +1,6 @@
 from typing import List, Literal, Optional
 
-from githubkit.webhooks.types import WorkflowJobEvent
+from githubkit.versions.latest.webhooks import WorkflowJobEvent
 from pydantic import BaseModel, Field
 from redis_om import NotFoundError
 
