@@ -1,25 +1,18 @@
 import logging
-from typing import Literal
+from base64 import b64encode
+from typing import List, Literal
 
-from com.vmware.vcenter.vm.hardware.boot_client import Device as BootDevice
-from com.vmware.vcenter.vm_client import (Hardware, Power)
-from com.vmware.vcenter.vm.hardware_client import (
-    Cpu,
-    Disk,
-    Ethernet,
-    Memory,
-    ScsiAddressSpec,
-    Cdrom,
-    Boot,
+from com.vmware.content.library_client import Item
+from com.vmware.content_client import Library
+from com.vmware.vcenter.ovf_client import (
+    IpAllocationParams,
+    LibraryItem,
+    Property,
+    PropertyParams,
+    SizeParams,
 )
-from com.vmware.vcenter_client import (
-    VM,
-    Datacenter,
-    Datastore,
-    Folder,
-    Network,
-    ResourcePool,
-)
+from com.vmware.vcenter.vm_client import Power
+from com.vmware.vcenter_client import VM, Datacenter, Datastore, ResourcePool
 from pydantic import Field
 from requests import Session
 from vmware.vapi.vsphere.client import VsphereClient, create_vsphere_client
@@ -36,7 +29,7 @@ class VsphereBackend(BaseBackend):
     config: VsphereConfig
     instance_config: VsphereInstanceConfig
 
-    def _create_client(self):
+    def _create_client(self) -> VsphereClient:
         session = Session()
         session.verify = self.config.verify_ssl
         return create_vsphere_client(
@@ -46,31 +39,28 @@ class VsphereBackend(BaseBackend):
             session=session,
         )
 
-    def get_folder(self, client, datacenter_name, folder_name):
-        """
-        Returns the identifier of a folder
-        Note: The method assumes that there is only one folder and datacenter
-        with the mentioned names.
-        """
-        datacenter = self.get_datacenter(client, datacenter_name)
-        if not datacenter:
-            print("Datacenter '{}' not found".format(datacenter_name))
-            return None
+    def get_library_id(self, client: VsphereClient, library: str) -> str:
+        find_spec = Library.FindSpec(name=library)
+        library_ids: List[str] = client.content.Library.find(find_spec)
+        if len(library_ids) == 0:
+            raise Exception("Library with name '{0}' not found".format(library))
+        library_id: str = library_ids[0]
+        return library_id
 
-        filter_spec = Folder.FilterSpec(
-            type=Folder.Type.VIRTUAL_MACHINE,
-            names=set([folder_name]),
-            datacenters=set([datacenter]),
+    def get_library_item_id(
+        self, client: VsphereClient, template: str, library_id: str
+    ):
+        find_spec = Item.FindSpec(
+            name=template,
+            library_id=library_id,
         )
-
-        folder_summaries = client.vcenter.Folder.list(filter_spec)
-        if len(folder_summaries) > 0:
-            folder = folder_summaries[0].folder
-            print("Detected folder '{}' as {}".format(folder_name, folder))
-            return folder
+        item_ids = client.content.library.Item.find(find_spec)
+        item_id = item_ids[0] if item_ids else None
+        if item_id:
+            log.debug("Library item ID: {0}".format(item_id))
         else:
-            print("Folder '{}' not found".format(folder_name))
-            return None
+            raise Exception("Library item with name '{0}' not found".format(template))
+        return item_id
 
     def get_datacenter(self, client, datacenter_name):
         """
@@ -95,7 +85,7 @@ class VsphereBackend(BaseBackend):
         """
         datacenter = self.get_datacenter(client, datacenter_name)
         if not datacenter:
-            print("Datacenter '{}' not found".format(datacenter_name))
+            log.error("Datacenter '{}' not found".format(datacenter_name))
             return None
 
         filter_spec = Datastore.FilterSpec(
@@ -116,7 +106,7 @@ class VsphereBackend(BaseBackend):
         """
         datacenter = self.get_datacenter(client, datacenter_name)
         if not datacenter:
-            print("Datacenter '{}' not found".format(datacenter_name))
+            log.error("Datacenter '{}' not found".format(datacenter_name))
             return None
 
         names = set([resource_pool_name]) if resource_pool_name else None
@@ -127,39 +117,13 @@ class VsphereBackend(BaseBackend):
         resource_pool_summaries = client.vcenter.ResourcePool.list(filter_spec)
         if len(resource_pool_summaries) > 0:
             resource_pool = resource_pool_summaries[0].resource_pool
-            print("Selecting ResourcePool '{}'".format(resource_pool))
+            log.debug("Selecting ResourcePool '{}'".format(resource_pool))
             return resource_pool
         else:
-            print("ResourcePool not found in Datacenter '{}'".format(datacenter_name))
-            return None
-
-    def placement_spec(self, client):
-        """
-        Returns a VM placement spec for a resourcepool. Ensures that the
-        vm folder and datastore are all in the same datacenter which is specified.
-        """
-        resource_pool = self.get_resource_pool(client, self.instance_config.datacenter)
-
-        folder = self.get_folder(
-            client, self.instance_config.datacenter, self.instance_config.folder
-        )
-
-        datastore = self.get_datastore(
-            client, self.instance_config.datacenter, self.instance_config.datastore
-        )
-
-        # Create the vm placement spec with the datastore, resource pool and vm
-        # folder
-        placement_spec = VM.PlacementSpec(
-            folder=folder, resource_pool=resource_pool, datastore=datastore
-        )
-
-        print(
-            "get_placement_spec_for_resource_pool: Result is '{}'".format(
-                placement_spec
+            log.error(
+                "ResourcePool not found in Datacenter '{}'".format(datacenter_name)
             )
-        )
-        return placement_spec
+            return None
 
     def get_vm(self, client, name):
         """
@@ -174,108 +138,70 @@ class VsphereBackend(BaseBackend):
         else:
             return None
 
-    def get_boot_disk(self, client, vm):
-        """Find the backing type disks that was used as the image for the VM."""
-
-        client = self._create_client()
-        disks = client.vcenter.vm.hardware.Disk.list(vm)
-        for disk in disks:
-            disk_info = client.vcenter.vm.hardware.Disk.get(vm, disk.disk)
-            if disk_info.backing.vmdk_file == self.instance_config.vmdk_file:
-                return disk.disk
-        return None
-
-    def get_network_backing(self, client, portgroup_name, datacenter_name, portgroup_type):
-        """
-        Gets a standard portgroup network backing for a given Datacenter
-        Note: The method assumes that there is only one standard portgroup
-        and datacenter with the mentioned names.
-        """
-        datacenter = self.get_datacenter(client, datacenter_name)
-        if not datacenter:
-            print("Datacenter '{}' not found".format(datacenter_name))
-            return None
-
-        filter = Network.FilterSpec(
-            datacenters=set([datacenter]),
-            names=set([portgroup_name]),
-            types=set([portgroup_type]),
-        )
-        network_summaries = client.vcenter.Network.list(filter=filter)
-
-        if len(network_summaries) > 0:
-            network = network_summaries[0].network
-            print(
-                "Selecting {} Portgroup Network '{}' ({})".format(
-                    portgroup_type, portgroup_name, network
-                )
-            )
-            return network
-        else:
-            print(
-                "Portgroup Network not found in Datacenter '{}'".format(datacenter_name)
-            )
-            return None
-
     def create(self, runner: Runner) -> Runner:
-        client: VsphereClient = self._create_client()
-        placement_spec = self.placement_spec(client)
-        GiB = 1024 * 1024 * 1024
-        standard_network = self.get_network_backing(
-            client,
-            self.instance_config.portgroup,
-            self.instance_config.datacenter,
-            Network.Type.STANDARD_PORTGROUP,
+        client = self._create_client()
+        library_id = self.get_library_id(client, self.instance_config.library)
+        library_item_id = self.get_library_item_id(
+            client, self.instance_config.library_item, library_id
         )
-        nic = Ethernet.CreateSpec(
-            start_connected=True,
-            backing=Ethernet.BackingSpec(
-                type=Ethernet.BackingType.STANDARD_PORTGROUP, network=standard_network
-            ),
+        resource_pool_id = self.get_resource_pool(
+            client, self.instance_config.datacenter
         )
-        boot_device_order = [
-            BootDevice.EntryCreateSpec(BootDevice.Type.DISK),
-            BootDevice.EntryCreateSpec(BootDevice.Type.ETHERNET),
-        ]
-        log.info("Creating vm specs...")
-        vm_create_spec = VM.CreateSpec(
-            guest_os=self.instance_config.guest_os,
-            name=runner.name,
-            placement=placement_spec,
-            cpu=Cpu.UpdateSpec(count=self.instance_config.cpu),
-            memory=Memory.UpdateSpec(size_mib=self.instance_config.memory),
-            disks=[
-                Disk.CreateSpec(
-                    backing=Disk.BackingSpec(
-                        type=Disk.BackingType.VMDK_FILE,
-                        vmdk_file=self.instance_config.vmdk_file
-                    ),
-                ),
-                Disk.CreateSpec(
-                    type=Disk.HostBusAdapterType.SCSI,
-                    scsi=ScsiAddressSpec(bus=0, unit=0),
-                    new_vmdk=Disk.VmdkCreateSpec(
-                        name="boot", capacity=self.instance_config.disk_size_gb * GiB
-                    ),
-                ),
+        deployment_target = LibraryItem.DeploymentTarget(
+            resource_pool_id=resource_pool_id,
+        )
+        ovf = client.vcenter.ovf.LibraryItem.filter(
+            library_item_id,
+            deployment_target,
+        )
+        user_data = b64encode(self.instance_config.template_startup(runner).encode())
+
+        params = PropertyParams(
+            properties=[
+                Property(id="user-data", value=user_data.decode()),
+                Property(id="hostname", value=runner.name),
+                Property(id="instance-id", value=runner.name),
             ],
-            nics=[nic],
-            boot=Boot.CreateSpec(
-                type=Boot.Type.BIOS,
-                delay=0,
-                enter_setup_mode=False
-            ),
-            boot_devices=boot_device_order,
-
+            type="PropertyParams",
         )
-        log.info("Creating vm...")
-        vm = client.vcenter.VM.create(vm_create_spec)
-        vm_info = client.vcenter.VM.get(vm)
-        runner.instance_id = vm_info.name
+        ip_allocation = IpAllocationParams(
+            supported_allocation_scheme=[],
+            supported_ip_allocation_policy=["STATIC_MANUAL"],
+            supported_ip_protocol=["IPv4"],
+            ip_allocation_policy="STATIC_MANUAL",
+            type="IpAllocationParams",
+        )
+        size_param = SizeParams(
+            type="SizeParams",
+            variable_disk_size=False,
+            approximate_sparse_deployment_size=0,
+            approximate_download_size=-1,
+        )
+        deployment_spec = LibraryItem.ResourcePoolDeploymentSpec(
+            name=runner.name,
+            annotation=ovf.annotation,
+            accept_all_eula=True,
+            network_mappings=None,
+            storage_mappings=None,
+            storage_provisioning=None,
+            storage_profile_id=None,
+            locale=None,
+            flags=None,
+            additional_parameters=[params, size_param, ip_allocation],
+            default_datastore_id=None,
+        )
+        deploy = client.vcenter.ovf.LibraryItem.deploy(
+            library_item_id,
+            deployment_target,
+            deployment_spec,
+        )
 
-        log.info("Powering on vm...")
+        log.debug(deploy)
+        if deploy.succeeded:
+            log.info("Deployment of library item succeeded")
+        runner.instance_id = deploy.resource_id.id
+        vm = self.get_vm(client, runner.name)
         client.vcenter.vm.Power.start(vm)
-
         return super().create(runner)
 
     def delete(self, runner: Runner):
@@ -288,9 +214,6 @@ class VsphereBackend(BaseBackend):
             elif state == Power.Info(state=Power.State.SUSPENDED):
                 client.vcenter.vm.Power.start(vm)
                 client.vcenter.vm.Power.stop(vm)
-            boot_disk = self.get_boot_disk(client, vm)
-            log.info(f"Delete boot disk {boot_disk}...")
-            client.vcenter.vm.hardware.Disk.delete(vm, boot_disk)
             log.info(f"Deleting {vm}...")
             client.vcenter.VM.delete(vm)
         return super().delete(runner)
