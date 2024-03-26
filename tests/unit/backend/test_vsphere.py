@@ -1,7 +1,6 @@
 import os
 
 from pytest import fixture, mark
-from vmware.vapi.vsphere.client import VsphereClient
 
 from runner_manager.backend.vsphere import VsphereBackend
 from runner_manager.models.backend import Backends, VsphereConfig, VsphereInstanceConfig
@@ -39,9 +38,7 @@ def vsphere_group(settings) -> RunnerGroup:
     return runner_group
 
 
-@mark.skipif(
-    not os.getenv("GOVC_URL"), reason="GOVC_URL environment variable not set"
-)
+@mark.skipif(not os.getenv("GOVC_URL"), reason="GOVC_URL environment variable not set")
 def test_vsphere_client(vsphere_group: RunnerGroup, runner: Runner):
     runner.instance_id = runner.name
     vsphere_group.backend.delete(runner)

@@ -11,6 +11,7 @@ from com.vmware.vcenter.ovf_client import (
     PropertyParams,
     SizeParams,
 )
+from com.vmware.vcenter.vm.hardware_client import Cpu, Memory
 from com.vmware.vcenter.vm_client import Power
 from com.vmware.vcenter_client import VM, Datacenter, Datastore, ResourcePool
 from pydantic import Field
@@ -155,7 +156,6 @@ class VsphereBackend(BaseBackend):
             deployment_target,
         )
         user_data = b64encode(self.instance_config.template_startup(runner).encode())
-
         params = PropertyParams(
             properties=[
                 Property(id="user-data", value=user_data.decode()),
@@ -201,6 +201,14 @@ class VsphereBackend(BaseBackend):
             log.info("Deployment of library item succeeded")
         runner.instance_id = deploy.resource_id.id
         vm = self.get_vm(client, runner.name)
+        cpu_spec = Cpu.UpdateSpec(count=self.instance_config.cpu)
+        memory = self.instance_config.memory_gb * 1024
+        memory_spec = Memory.UpdateSpec(size_mib=memory)
+
+        log.debug("Updating CPU of VM")
+        client.vcenter.vm.hardware.Cpu.update(vm, cpu_spec)
+        log.debug("Updating memory of VM")
+        client.vcenter.vm.hardware.Memory.update(vm, memory_spec)
         client.vcenter.vm.Power.start(vm)
         return super().create(runner)
 
