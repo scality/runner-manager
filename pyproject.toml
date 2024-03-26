@@ -36,7 +36,7 @@ mkdocs = "^1.5.3"
 [tool.poetry.group.dev.dependencies]
 connexion = "^3.0.5"
 pytest = "^8.1.1"
-pytest-cov = "^4.0.0"
+pytest-cov = "^5.0.0"
 hypothesis = "^6.99.13"
 pyright = "^1.1.355"
 black = "^24.3.0"
