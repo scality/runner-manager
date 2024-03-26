@@ -6,11 +6,9 @@ from com.vmware.content.library_client import Item
 from com.vmware.content_client import Library
 from com.vmware.vcenter.ovf_client import (
     DiskProvisioningType,
-    IpAllocationParams,
     LibraryItem,
     Property,
     PropertyParams,
-    SizeParams,
 )
 from com.vmware.vcenter.vm.hardware_client import Cpu, Memory
 from com.vmware.vcenter.vm_client import Power
