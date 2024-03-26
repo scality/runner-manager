@@ -209,6 +209,7 @@ class VsphereInstanceConfig(InstanceConfig):
     cpu: int = 1
     memory_gb: int = 4
     disk_size_gb: int = 20
+    disk_provisioning: Literal["thin", "thick"] = "thin"
     datacenter: str
     datastore: str
     library: str

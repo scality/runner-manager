@@ -15,6 +15,7 @@ and for querying the runtime state of the devices.
 """
 __author__ = ...
 __docformat__ = ...
+
 class ConnectionState(Enum):
     """
     The ``ConnectionState`` class defines the valid states for a removable
@@ -29,6 +30,7 @@ class ConnectionState(Enum):
         version of the API, you instantiate this class. See :ref:`enumerated
         type description page <enumeration_description>`.
     """
+
     CONNECTED = ...
     RECOVERABLE_ERROR = ...
     UNRECOVERABLE_ERROR = ...
@@ -40,8 +42,6 @@ class ConnectionState(Enum):
         :param string: String value for the :class:`ConnectionState` instance.
         """
         ...
-    
-
 
 class IdeAddressInfo(VapiStruct):
     """
@@ -53,6 +53,7 @@ class IdeAddressInfo(VapiStruct):
         The arguments are used to initialize data attributes with the same
         names.
     """
+
     def __init__(self, primary=..., master=...) -> None:
         """
         :type  primary: :class:`bool`
@@ -63,8 +64,6 @@ class IdeAddressInfo(VapiStruct):
             the IDE adapter.
         """
         ...
-    
-
 
 class ScsiAddressInfo(VapiStruct):
     """
@@ -76,6 +75,7 @@ class ScsiAddressInfo(VapiStruct):
         The arguments are used to initialize data attributes with the same
         names.
     """
+
     def __init__(self, bus=..., unit=...) -> None:
         """
         :type  bus: :class:`long`
@@ -84,8 +84,6 @@ class ScsiAddressInfo(VapiStruct):
         :param unit: Unit number of the device.
         """
         ...
-    
-
 
 class SataAddressInfo(VapiStruct):
     """
@@ -97,6 +95,7 @@ class SataAddressInfo(VapiStruct):
         The arguments are used to initialize data attributes with the same
         names.
     """
+
     def __init__(self, bus=..., unit=...) -> None:
         """
         :type  bus: :class:`long`
@@ -105,8 +104,6 @@ class SataAddressInfo(VapiStruct):
         :param unit: Unit number of the device.
         """
         ...
-    
-
 
 class NvmeAddressInfo(VapiStruct):
     """
@@ -118,6 +115,7 @@ class NvmeAddressInfo(VapiStruct):
         The arguments are used to initialize data attributes with the same
         names.
     """
+
     def __init__(self, bus=..., unit=...) -> None:
         """
         :type  bus: :class:`long`
@@ -128,8 +126,6 @@ class NvmeAddressInfo(VapiStruct):
             7.0.0.1.
         """
         ...
-    
-
 
 class IdeAddressSpec(VapiStruct):
     """
@@ -141,6 +137,7 @@ class IdeAddressSpec(VapiStruct):
         The arguments are used to initialize data attributes with the same
         names.
     """
+
     def __init__(self, primary=..., master=...) -> None:
         """
         :type  primary: :class:`bool` or ``None``
@@ -156,8 +153,6 @@ class IdeAddressSpec(VapiStruct):
             IDE connections are available, the request will be rejected.
         """
         ...
-    
-
 
 class ScsiAddressSpec(VapiStruct):
     """
@@ -169,6 +164,7 @@ class ScsiAddressSpec(VapiStruct):
         The arguments are used to initialize data attributes with the same
         names.
     """
+
     def __init__(self, bus=..., unit=...) -> None:
         """
         :type  bus: :class:`long`
@@ -180,8 +176,6 @@ class ScsiAddressSpec(VapiStruct):
             adapter, the request will be rejected.
         """
         ...
-    
-
 
 class SataAddressSpec(VapiStruct):
     """
@@ -193,6 +187,7 @@ class SataAddressSpec(VapiStruct):
         The arguments are used to initialize data attributes with the same
         names.
     """
+
     def __init__(self, bus=..., unit=...) -> None:
         """
         :type  bus: :class:`long`
@@ -204,8 +199,6 @@ class SataAddressSpec(VapiStruct):
             adapter, the request will be rejected.
         """
         ...
-    
-
 
 class NvmeAddressSpec(VapiStruct):
     """
@@ -217,6 +210,7 @@ class NvmeAddressSpec(VapiStruct):
         The arguments are used to initialize data attributes with the same
         names.
     """
+
     def __init__(self, bus=..., unit=...) -> None:
         """
         :type  bus: :class:`long`
@@ -230,8 +224,6 @@ class NvmeAddressSpec(VapiStruct):
             adapter, the request will be rejected.
         """
         ...
-    
-
 
 class ConnectionInfo(VapiStruct):
     """
@@ -242,6 +234,7 @@ class ConnectionInfo(VapiStruct):
         The arguments are used to initialize data attributes with the same
         names.
     """
+
     def __init__(self, state=..., start_connected=..., allow_guest_control=...) -> None:
         """
         :type  state: :class:`ConnectionState`
@@ -254,8 +247,6 @@ class ConnectionInfo(VapiStruct):
             device.
         """
         ...
-    
-
 
 class ConnectionCreateSpec(VapiStruct):
     """
@@ -266,6 +257,7 @@ class ConnectionCreateSpec(VapiStruct):
         The arguments are used to initialize data attributes with the same
         names.
     """
+
     def __init__(self, start_connected=..., allow_guest_control=...) -> None:
         """
         :type  start_connected: :class:`bool` or ``None``
@@ -278,8 +270,6 @@ class ConnectionCreateSpec(VapiStruct):
             Defaults to false if None.
         """
         ...
-    
-
 
 class ConnectionUpdateSpec(VapiStruct):
     """
@@ -290,6 +280,7 @@ class ConnectionUpdateSpec(VapiStruct):
         The arguments are used to initialize data attributes with the same
         names.
     """
+
     def __init__(self, start_connected=..., allow_guest_control=...) -> None:
         """
         :type  start_connected: :class:`bool` or ``None``
@@ -302,14 +293,13 @@ class ConnectionUpdateSpec(VapiStruct):
             If None, the value is unchanged.
         """
         ...
-    
-
 
 class Boot(VapiInterface):
     """
     The ``Boot`` class provides methods for configuring the settings used when
     booting a virtual machine.
     """
+
     _VAPI_SERVICE_ID = ...
     def __init__(self, config) -> None:
         """
@@ -317,7 +307,7 @@ class Boot(VapiInterface):
         :param config: Configuration to be used for creating the stub.
         """
         ...
-    
+
     class Type(Enum):
         """
         The ``Boot.Type`` class defines the valid firmware types for a virtual
@@ -332,6 +322,7 @@ class Boot(VapiInterface):
             version of the API, you instantiate this class. See :ref:`enumerated
             type description page <enumeration_description>`.
         """
+
         BIOS = ...
         EFI = ...
         def __init__(self, string) -> None:
@@ -340,9 +331,7 @@ class Boot(VapiInterface):
             :param string: String value for the :class:`Type` instance.
             """
             ...
-        
-    
-    
+
     class NetworkProtocol(Enum):
         """
         The ``Boot.NetworkProtocol`` class defines the valid network boot protocols
@@ -358,6 +347,7 @@ class Boot(VapiInterface):
             version of the API, you instantiate this class. See :ref:`enumerated
             type description page <enumeration_description>`.
         """
+
         IPV4 = ...
         IPV6 = ...
         def __init__(self, string) -> None:
@@ -366,9 +356,7 @@ class Boot(VapiInterface):
             :param string: String value for the :class:`NetworkProtocol` instance.
             """
             ...
-        
-    
-    
+
     class Info(VapiStruct):
         """
         The ``Boot.Info`` class contains information about the virtual machine boot
@@ -378,8 +366,18 @@ class Boot(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _validator_list = ...
-        def __init__(self, type=..., efi_legacy_boot=..., network_protocol=..., delay=..., retry=..., retry_delay=..., enter_setup_mode=...) -> None:
+        def __init__(
+            self,
+            type=...,
+            efi_legacy_boot=...,
+            network_protocol=...,
+            delay=...,
+            retry=...,
+            retry_delay=...,
+            enter_setup_mode=...,
+        ) -> None:
             """
             :type  type: :class:`Boot.Type`
             :param type: Firmware type used by the virtual machine.
@@ -410,9 +408,7 @@ class Boot(VapiInterface):
                 once the virtual machine enters setup mode.
             """
             ...
-        
-    
-    
+
     class CreateSpec(VapiStruct):
         """
         The ``Boot.CreateSpec`` class describes settings used when booting a
@@ -422,8 +418,18 @@ class Boot(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _validator_list = ...
-        def __init__(self, type=..., efi_legacy_boot=..., network_protocol=..., delay=..., retry=..., retry_delay=..., enter_setup_mode=...) -> None:
+        def __init__(
+            self,
+            type=...,
+            efi_legacy_boot=...,
+            network_protocol=...,
+            delay=...,
+            retry=...,
+            retry_delay=...,
+            enter_setup_mode=...,
+        ) -> None:
             """
             :type  type: :class:`Boot.Type` or ``None``
             :param type: Firmware type to be used by the virtual machine.
@@ -459,9 +465,7 @@ class Boot(VapiInterface):
                 If None, the value is unchanged.
             """
             ...
-        
-    
-    
+
     class UpdateSpec(VapiStruct):
         """
         The ``Boot.UpdateSpec`` class describes the updates to the settings used
@@ -471,8 +475,18 @@ class Boot(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _validator_list = ...
-        def __init__(self, type=..., efi_legacy_boot=..., network_protocol=..., delay=..., retry=..., retry_delay=..., enter_setup_mode=...) -> None:
+        def __init__(
+            self,
+            type=...,
+            efi_legacy_boot=...,
+            network_protocol=...,
+            delay=...,
+            retry=...,
+            retry_delay=...,
+            enter_setup_mode=...,
+        ) -> None:
             """
             :type  type: :class:`Boot.Type` or ``None``
             :param type: Firmware type to be used by the virtual machine.
@@ -506,9 +520,7 @@ class Boot(VapiInterface):
                 If None, the value is unchanged.
             """
             ...
-        
-    
-    
+
     def get(self, vm):
         """
         Returns the boot-related settings of a virtual machine.
@@ -519,22 +531,22 @@ class Boot(VapiInterface):
             ``VirtualMachine``.
         :rtype: :class:`Boot.Info`
         :return: Boot-related settings of the virtual machine.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def update(self, vm, spec):
         """
         Updates the boot-related settings of a virtual machine.
@@ -546,34 +558,33 @@ class Boot(VapiInterface):
         :type  spec: :class:`Boot.UpdateSpec`
         :param spec: Specification for updating the boot-related settings of the virtual
             machine.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if one of the provided settings is not permitted; for example,
             specifying a negative value for ``delay``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
-
 
 class Cdrom(VapiInterface):
     """
     The ``Cdrom`` class provides methods for configuring the virtual CD-ROM
     devices of a virtual machine.
     """
+
     RESOURCE_TYPE = ...
     _VAPI_SERVICE_ID = ...
     def __init__(self, config) -> None:
@@ -582,7 +593,7 @@ class Cdrom(VapiInterface):
         :param config: Configuration to be used for creating the stub.
         """
         ...
-    
+
     class HostBusAdapterType(Enum):
         """
         The ``Cdrom.HostBusAdapterType`` class defines the valid types of host bus
@@ -597,6 +608,7 @@ class Cdrom(VapiInterface):
             version of the API, you instantiate this class. See :ref:`enumerated
             type description page <enumeration_description>`.
         """
+
         IDE = ...
         SATA = ...
         def __init__(self, string) -> None:
@@ -605,9 +617,7 @@ class Cdrom(VapiInterface):
             :param string: String value for the :class:`HostBusAdapterType` instance.
             """
             ...
-        
-    
-    
+
     class BackingType(Enum):
         """
         The ``Cdrom.BackingType`` class defines the valid backing types for a
@@ -622,6 +632,7 @@ class Cdrom(VapiInterface):
             version of the API, you instantiate this class. See :ref:`enumerated
             type description page <enumeration_description>`.
         """
+
         ISO_FILE = ...
         HOST_DEVICE = ...
         CLIENT_DEVICE = ...
@@ -631,9 +642,7 @@ class Cdrom(VapiInterface):
             :param string: String value for the :class:`BackingType` instance.
             """
             ...
-        
-    
-    
+
     class DeviceAccessType(Enum):
         """
         The ``Cdrom.DeviceAccessType`` class defines the valid device access types
@@ -648,6 +657,7 @@ class Cdrom(VapiInterface):
             version of the API, you instantiate this class. See :ref:`enumerated
             type description page <enumeration_description>`.
         """
+
         EMULATION = ...
         PASSTHRU = ...
         PASSTHRU_EXCLUSIVE = ...
@@ -657,9 +667,7 @@ class Cdrom(VapiInterface):
             :param string: String value for the :class:`DeviceAccessType` instance.
             """
             ...
-        
-    
-    
+
     class BackingInfo(VapiStruct):
         """
         The ``Cdrom.BackingInfo`` class contains information about the physical
@@ -669,8 +677,16 @@ class Cdrom(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _validator_list = ...
-        def __init__(self, type=..., iso_file=..., host_device=..., auto_detect=..., device_access_type=...) -> None:
+        def __init__(
+            self,
+            type=...,
+            iso_file=...,
+            host_device=...,
+            auto_detect=...,
+            device_access_type=...,
+        ) -> None:
             """
             :type  type: :class:`Cdrom.BackingType`
             :param type: Backing type for the virtual CD-ROM device.
@@ -679,7 +695,7 @@ class Cdrom(VapiInterface):
                 This attribute is optional and it is only relevant when the value
                 of ``type`` is :attr:`Cdrom.BackingType.ISO_FILE`.
             :type  host_device: :class:`str` or ``None``
-            :param host_device: Name of the host device backing the virtual CD-ROM device. 
+            :param host_device: Name of the host device backing the virtual CD-ROM device.
                 This attribute will be None if ``autoDetect`` is true and the
                 virtual CD-ROM device is not connected or no suitable device is
                 available on the host.
@@ -695,9 +711,7 @@ class Cdrom(VapiInterface):
                 :attr:`Cdrom.BackingType.CLIENT_DEVICE`.
             """
             ...
-        
-    
-    
+
     class BackingSpec(VapiStruct):
         """
         The ``Cdrom.BackingSpec`` class provides a specification of the physical
@@ -707,8 +721,11 @@ class Cdrom(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _validator_list = ...
-        def __init__(self, type=..., iso_file=..., host_device=..., device_access_type=...) -> None:
+        def __init__(
+            self, type=..., iso_file=..., host_device=..., device_access_type=...
+        ) -> None:
             """
             :type  type: :class:`Cdrom.BackingType`
             :param type: Backing type for the virtual CD-ROM device.
@@ -727,9 +744,7 @@ class Cdrom(VapiInterface):
                 If None, defaults to :attr:`Cdrom.DeviceAccessType.EMULATION`.
             """
             ...
-        
-    
-    
+
     class Info(VapiStruct):
         """
         The ``Cdrom.Info`` class contains information about a virtual CD-ROM
@@ -739,8 +754,19 @@ class Cdrom(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _validator_list = ...
-        def __init__(self, type=..., label=..., ide=..., sata=..., backing=..., state=..., start_connected=..., allow_guest_control=...) -> None:
+        def __init__(
+            self,
+            type=...,
+            label=...,
+            ide=...,
+            sata=...,
+            backing=...,
+            state=...,
+            start_connected=...,
+            allow_guest_control=...,
+        ) -> None:
             """
             :type  type: :class:`Cdrom.HostBusAdapterType`
             :param type: Type of host bus adapter to which the device is attached.
@@ -766,9 +792,7 @@ class Cdrom(VapiInterface):
                 device.
             """
             ...
-        
-    
-    
+
     class CreateSpec(VapiStruct):
         """
         The ``Cdrom.CreateSpec`` class provides a specification for the
@@ -778,8 +802,17 @@ class Cdrom(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _validator_list = ...
-        def __init__(self, type=..., ide=..., sata=..., backing=..., start_connected=..., allow_guest_control=...) -> None:
+        def __init__(
+            self,
+            type=...,
+            ide=...,
+            sata=...,
+            backing=...,
+            start_connected=...,
+            allow_guest_control=...,
+        ) -> None:
             """
             :type  type: :class:`Cdrom.HostBusAdapterType` or ``None``
             :param type: Type of host bus adapter to which the device should be attached.
@@ -805,9 +838,7 @@ class Cdrom(VapiInterface):
                 Defaults to false if None.
             """
             ...
-        
-    
-    
+
     class UpdateSpec(VapiStruct):
         """
         The ``Cdrom.UpdateSpec`` class describes the updates to be made to the
@@ -817,11 +848,14 @@ class Cdrom(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, backing=..., start_connected=..., allow_guest_control=...) -> None:
+
+        def __init__(
+            self, backing=..., start_connected=..., allow_guest_control=...
+        ) -> None:
             """
             :type  backing: :class:`Cdrom.BackingSpec` or ``None``
-            :param backing: Physical resource backing for the virtual CD-ROM device. 
-                
+            :param backing: Physical resource backing for the virtual CD-ROM device.
+
                 This attribute may only be modified if the virtual machine is not
                 powered on or the virtual CD-ROM device is not connected.
                 If None, the value is unchanged.
@@ -835,9 +869,7 @@ class Cdrom(VapiInterface):
                 If None, the value is unchanged.
             """
             ...
-        
-    
-    
+
     class Summary(VapiStruct):
         """
         The ``Cdrom.Summary`` class contains commonly used information about a
@@ -847,6 +879,7 @@ class Cdrom(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, cdrom=...) -> None:
             """
             :type  cdrom: :class:`str`
@@ -859,9 +892,7 @@ class Cdrom(VapiInterface):
                 ``com.vmware.vcenter.vm.hardware.Cdrom``.
             """
             ...
-        
-    
-    
+
     def list(self, vm):
         """
         Returns commonly used information about the virtual CD-ROM devices
@@ -873,22 +904,22 @@ class Cdrom(VapiInterface):
             ``VirtualMachine``.
         :rtype: :class:`list` of :class:`Cdrom.Summary`
         :return: List of commonly used information about virtual CD-ROM devices.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def get(self, vm, cdrom):
         """
         Returns information about a virtual CD-ROM device.
@@ -903,22 +934,22 @@ class Cdrom(VapiInterface):
             ``com.vmware.vcenter.vm.hardware.Cdrom``.
         :rtype: :class:`Cdrom.Info`
         :return: Information about the specified virtual CD-ROM device.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or virtual CD-ROM device is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def create(self, vm, spec):
         """
         Adds a virtual CD-ROM device to the virtual machine.
@@ -933,42 +964,42 @@ class Cdrom(VapiInterface):
         :return: Virtual CD-ROM device identifier.
             The return value will be an identifier for the resource type:
             ``com.vmware.vcenter.vm.hardware.Cdrom``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reported that the CD-ROM device was created but was
             unable to confirm the creation because the identifier of the new
             device could not be determined.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if the virtual machine is suspended or if the virtual machine is
             powered on and virtual CD-ROM type is IDE.
-        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource`
             if the specified storage address is unavailable; for example, if
             the SCSI adapter requested does not exist.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInUse` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInUse`
             if the specified storage address is in use.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if the specified storage address is out of bounds.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unsupported` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unsupported`
             if the guest operating system of the virtual machine is not
             supported and spec includes None attributes that default to
             guest-specific values.
         """
         ...
-    
+
     def update(self, vm, cdrom, spec):
         """
         Updates the configuration of a virtual CD-ROM device.
@@ -983,29 +1014,29 @@ class Cdrom(VapiInterface):
             ``com.vmware.vcenter.vm.hardware.Cdrom``.
         :type  spec: :class:`Cdrom.UpdateSpec`
         :param spec: Specification for updating the virtual CD-ROM device.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or virtual CD-ROM device is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if one or more of the attributes specified in the ``spec``
             parameter cannot be modified due to the current power state of the
             virtual machine or the connection state of the virtual CD-ROM
             device.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def delete(self, vm, cdrom):
         """
         Removes a virtual CD-ROM device from the virtual machine.
@@ -1018,33 +1049,33 @@ class Cdrom(VapiInterface):
         :param cdrom: Virtual CD-ROM device identifier.
             The parameter must be an identifier for the resource type:
             ``com.vmware.vcenter.vm.hardware.Cdrom``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or virtual CD-ROM device is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if the virtual machine is suspended or if the virtual machine is
             powered on and virtual CD-ROM type is IDE.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def connect(self, vm, cdrom):
         """
         Connects a virtual CD-ROM device of a powered-on virtual machine to its
         backing. Connecting the virtual device makes the backing accessible
-        from the perspective of the guest operating system. 
-        
+        from the perspective of the guest operating system.
+
         For a powered-off virtual machine, the :func:`Cdrom.update` method may
         be used to configure the virtual CD-ROM device to start in the
         connected state when the virtual machine is powered on.
@@ -1057,36 +1088,36 @@ class Cdrom(VapiInterface):
         :param cdrom: Virtual CD-ROM device identifier.
             The parameter must be an identifier for the resource type:
             ``com.vmware.vcenter.vm.hardware.Cdrom``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or virtual CD-ROM device is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyInDesiredState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyInDesiredState`
             if the virtual CD-ROM device is already connected.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if the virtual machine is not powered on.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def disconnect(self, vm, cdrom):
         """
         Disconnects a virtual CD-ROM device of a powered-on virtual machine
         from its backing. The virtual device is still present and its backing
         configuration is unchanged, but from the perspective of the guest
         operating system, the CD-ROM device is not connected to its backing
-        resource. 
-        
+        resource.
+
         For a powered-off virtual machine, the :func:`Cdrom.update` method may
         be used to configure the virtual CD-ROM device to start in the
         disconnected state when the virtual machine is powered on.
@@ -1099,35 +1130,34 @@ class Cdrom(VapiInterface):
         :param cdrom: Virtual CD-ROM device identifier.
             The parameter must be an identifier for the resource type:
             ``com.vmware.vcenter.vm.hardware.Cdrom``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or virtual CD-ROM device is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyInDesiredState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyInDesiredState`
             if the virtual CD-ROM device is already disconnected.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if the virtual machine is not powered on.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
-
 
 class Cpu(VapiInterface):
     """
     The ``Cpu`` class provides methods for configuring the CPU settings of a
     virtual machine.
     """
+
     _VAPI_SERVICE_ID = ...
     def __init__(self, config) -> None:
         """
@@ -1135,7 +1165,7 @@ class Cpu(VapiInterface):
         :param config: Configuration to be used for creating the stub.
         """
         ...
-    
+
     class Info(VapiStruct):
         """
         The ``Cpu.Info`` class contains CPU-related information about a virtual
@@ -1145,7 +1175,14 @@ class Cpu(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, count=..., cores_per_socket=..., hot_add_enabled=..., hot_remove_enabled=...) -> None:
+
+        def __init__(
+            self,
+            count=...,
+            cores_per_socket=...,
+            hot_add_enabled=...,
+            hot_remove_enabled=...,
+        ) -> None:
             """
             :type  count: :class:`long`
             :param count: Number of CPU cores.
@@ -1159,9 +1196,7 @@ class Cpu(VapiInterface):
                 running is enabled.
             """
             ...
-        
-    
-    
+
     class UpdateSpec(VapiStruct):
         """
         The ``Cpu.UpdateSpec`` class describes the updates to be made to the
@@ -1171,16 +1206,23 @@ class Cpu(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, count=..., cores_per_socket=..., hot_add_enabled=..., hot_remove_enabled=...) -> None:
+
+        def __init__(
+            self,
+            count=...,
+            cores_per_socket=...,
+            hot_add_enabled=...,
+            hot_remove_enabled=...,
+        ) -> None:
             """
             :type  count: :class:`long` or ``None``
             :param count: New number of CPU cores. The number of CPU cores in the virtual
-                machine must be a multiple of the number of cores per socket. 
-                
+                machine must be a multiple of the number of cores per socket.
+
                 The supported range of CPU counts is constrained by the configured
                 guest operating system and virtual hardware version of the virtual
-                machine. 
-                
+                machine.
+
                 If the virtual machine is running, the number of CPU cores may only
                 be increased if :attr:`Cpu.Info.hot_add_enabled` is true, and may
                 only be decreased if :attr:`Cpu.Info.hot_remove_enabled` is true.
@@ -1192,23 +1234,21 @@ class Cpu(VapiInterface):
                 If None, the value is unchanged.
             :type  hot_add_enabled: :class:`bool` or ``None``
             :param hot_add_enabled: Flag indicating whether adding CPUs while the virtual machine is
-                running is enabled. 
-                
+                running is enabled.
+
                 This attribute may only be modified if the virtual machine is
                 powered off.
                 If None, the value is unchanged.
             :type  hot_remove_enabled: :class:`bool` or ``None``
             :param hot_remove_enabled: Flag indicating whether removing CPUs while the virtual machine is
-                running is enabled. 
-                
+                running is enabled.
+
                 This attribute may only be modified if the virtual machine is
                 powered off.
                 If None, the value is unchanged.
             """
             ...
-        
-    
-    
+
     def get(self, vm):
         """
         Returns the CPU-related settings of a virtual machine.
@@ -1219,22 +1259,22 @@ class Cpu(VapiInterface):
             ``VirtualMachine``.
         :rtype: :class:`Cpu.Info`
         :return: CPU-related settings of the virtual machine.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def update(self, vm, spec):
         """
         Updates the CPU-related settings of a virtual machine.
@@ -1246,39 +1286,37 @@ class Cpu(VapiInterface):
         :type  spec: :class:`Cpu.UpdateSpec`
         :param spec: Specification for updating the CPU-related settings of the virtual
             machine.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if one of the provided settings is not permitted; for example,
             specifying a negative value for ``count``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if ``hotAddEnabled`` or ``hotRemoveEnabled`` is specified and the
             virtual machine is not powered off.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if ``count`` is specified and is greater than ``count``,
             ``hotAddEnabled`` is false, and the virtual machine is not powered
             off.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if ``count`` is specified and is less than ``count``,
             ``hotRemoveEnabled`` is false, and the virtual machine is not
             powered off.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
-
 
 class Disk(VapiInterface):
     """
@@ -1296,6 +1334,7 @@ class Disk(VapiInterface):
     virtual disk. Once detached, the VMDK file will not be destroyed when the
     virtual machine to which it was associated is deleted.
     """
+
     RESOURCE_TYPE = ...
     _VAPI_SERVICE_ID = ...
     def __init__(self, config) -> None:
@@ -1304,7 +1343,7 @@ class Disk(VapiInterface):
         :param config: Configuration to be used for creating the stub.
         """
         ...
-    
+
     class HostBusAdapterType(Enum):
         """
         The ``Disk.HostBusAdapterType`` class defines the valid types of host bus
@@ -1320,6 +1359,7 @@ class Disk(VapiInterface):
             version of the API, you instantiate this class. See :ref:`enumerated
             type description page <enumeration_description>`.
         """
+
         IDE = ...
         SCSI = ...
         SATA = ...
@@ -1330,9 +1370,7 @@ class Disk(VapiInterface):
             :param string: String value for the :class:`HostBusAdapterType` instance.
             """
             ...
-        
-    
-    
+
     class BackingType(Enum):
         """
         The ``Disk.BackingType`` class defines the valid backing types for a
@@ -1347,6 +1385,7 @@ class Disk(VapiInterface):
             version of the API, you instantiate this class. See :ref:`enumerated
             type description page <enumeration_description>`.
         """
+
         VMDK_FILE = ...
         def __init__(self, string) -> None:
             """
@@ -1354,9 +1393,7 @@ class Disk(VapiInterface):
             :param string: String value for the :class:`BackingType` instance.
             """
             ...
-        
-    
-    
+
     class BackingInfo(VapiStruct):
         """
         The ``Disk.BackingInfo`` class contains information about the physical
@@ -1366,6 +1403,7 @@ class Disk(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _validator_list = ...
         def __init__(self, type=..., vmdk_file=...) -> None:
             """
@@ -1377,9 +1415,7 @@ class Disk(VapiInterface):
                 of ``type`` is :attr:`Disk.BackingType.VMDK_FILE`.
             """
             ...
-        
-    
-    
+
     class BackingSpec(VapiStruct):
         """
         The ``Disk.BackingSpec`` class provides a specification of the physical
@@ -1389,6 +1425,7 @@ class Disk(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _validator_list = ...
         def __init__(self, type=..., vmdk_file=...) -> None:
             """
@@ -1400,9 +1437,7 @@ class Disk(VapiInterface):
                 of ``type`` is :attr:`Disk.BackingType.VMDK_FILE`.
             """
             ...
-        
-    
-    
+
     class VmdkCreateSpec(VapiStruct):
         """
         The ``Disk.VmdkCreateSpec`` class provides a specification for creating a
@@ -1414,6 +1449,7 @@ class Disk(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, name=..., capacity=..., storage_policy=...) -> None:
             """
             :type  name: :class:`str` or ``None``
@@ -1435,9 +1471,7 @@ class Disk(VapiInterface):
                 the VMDK file.
             """
             ...
-        
-    
-    
+
     class Info(VapiStruct):
         """
         The ``Disk.Info`` class contains information about a virtual disk.
@@ -1446,8 +1480,19 @@ class Disk(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _validator_list = ...
-        def __init__(self, label=..., type=..., ide=..., scsi=..., sata=..., nvme=..., backing=..., capacity=...) -> None:
+        def __init__(
+            self,
+            label=...,
+            type=...,
+            ide=...,
+            scsi=...,
+            sata=...,
+            nvme=...,
+            backing=...,
+            capacity=...,
+        ) -> None:
             """
             :type  label: :class:`str`
             :param label: Device label.
@@ -1474,9 +1519,7 @@ class Disk(VapiInterface):
                 If None, virtual disk is inaccessible or disk capacity is 0.
             """
             ...
-        
-    
-    
+
     class StoragePolicySpec(VapiStruct):
         """
         The ``Disk.StoragePolicySpec`` class contains information about the storage
@@ -1487,6 +1530,7 @@ class Disk(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, policy=...) -> None:
             """
             :type  policy: :class:`str`
@@ -1500,9 +1544,7 @@ class Disk(VapiInterface):
                 ``com.vmware.vcenter.StoragePolicy``.
             """
             ...
-        
-    
-    
+
     class CreateSpec(VapiStruct):
         """
         The ``Disk.CreateSpec`` class provides a specification for the
@@ -1512,8 +1554,18 @@ class Disk(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _validator_list = ...
-        def __init__(self, type=..., ide=..., scsi=..., sata=..., nvme=..., backing=..., new_vmdk=...) -> None:
+        def __init__(
+            self,
+            type=...,
+            ide=...,
+            scsi=...,
+            sata=...,
+            nvme=...,
+            backing=...,
+            new_vmdk=...,
+        ) -> None:
             """
             :type  type: :class:`Disk.HostBusAdapterType` or ``None``
             :param type: Type of host bus adapter to which the device should be attached.
@@ -1546,9 +1598,7 @@ class Disk(VapiInterface):
                 If None, a new VMDK backing will not be created.
             """
             ...
-        
-    
-    
+
     class UpdateSpec(VapiStruct):
         """
         The ``Disk.UpdateSpec`` class describes the updates to be made to the
@@ -1558,19 +1608,18 @@ class Disk(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, backing=...) -> None:
             """
             :type  backing: :class:`Disk.BackingSpec` or ``None``
-            :param backing: Physical resource backing for the virtual disk. 
-                
+            :param backing: Physical resource backing for the virtual disk.
+
                 This attribute may only be modified if the virtual machine is not
                 powered on.
                 If None, the value is unchanged.
             """
             ...
-        
-    
-    
+
     class Summary(VapiStruct):
         """
         The ``Disk.Summary`` class contains commonly used information about a
@@ -1580,6 +1629,7 @@ class Disk(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, disk=...) -> None:
             """
             :type  disk: :class:`str`
@@ -1592,9 +1642,7 @@ class Disk(VapiInterface):
                 ``com.vmware.vcenter.vm.hardware.Disk``.
             """
             ...
-        
-    
-    
+
     def list(self, vm):
         """
         Returns commonly used information about the virtual disks belonging to
@@ -1606,22 +1654,22 @@ class Disk(VapiInterface):
             ``VirtualMachine``.
         :rtype: :class:`list` of :class:`Disk.Summary`
         :return: List of commonly used information about the virtual disks.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def get(self, vm, disk):
         """
         Returns information about a virtual disk.
@@ -1636,22 +1684,22 @@ class Disk(VapiInterface):
             ``com.vmware.vcenter.vm.hardware.Disk``.
         :rtype: :class:`Disk.Info`
         :return: Information about the specified virtual disk.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or virtual disk is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def create(self, vm, spec):
         """
         Adds a virtual disk to the virtual machine. While adding the virtual
@@ -1668,43 +1716,43 @@ class Disk(VapiInterface):
         :return: Virtual disk identifier.
             The return value will be an identifier for the resource type:
             ``com.vmware.vcenter.vm.hardware.Disk``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if system reported that the disk device was created but was unable
             to confirm the creation because the identifier of the new device
             could not be determined.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if the virtual machine is suspended or if the virtual machine is
             powered on and virtual disk type is IDE.
-        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource`
             if the specified storage address is unavailable; for example, if
             the SCSI adapter requested does not exist.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInUse` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInUse`
             if the specified storage address is in use.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if the specified storage address is out of bounds or if the
             specified storage policy is invalid.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unsupported` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unsupported`
             if the guest operating system of the virtual machine is not
             supported and spec includes None attributes that default to
             guest-specific values.
         """
         ...
-    
+
     def update(self, vm, disk, spec):
         """
         Updates the configuration of a virtual disk. An update method can be
@@ -1721,28 +1769,28 @@ class Disk(VapiInterface):
             ``com.vmware.vcenter.vm.hardware.Disk``.
         :type  spec: :class:`Disk.UpdateSpec`
         :param spec: Specification for updating the virtual disk.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or virtual disk is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if one or more of the attributes specified in the ``spec``
             parameter cannot be modified due to the current power state of the
             virtual machine or the connection state of the virtual disk.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def delete(self, vm, disk):
         """
         Removes a virtual disk from the virtual machine. This method does not
@@ -1759,34 +1807,33 @@ class Disk(VapiInterface):
         :param disk: Virtual disk identifier.
             The parameter must be an identifier for the resource type:
             ``com.vmware.vcenter.vm.hardware.Disk``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or virtual disk is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if the virtual machine is suspended or if the virtual machine is
             powered on and virtual disk type is IDE.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
-
 
 class Ethernet(VapiInterface):
     """
     The ``Ethernet`` class provides methods for configuring the virtual
     Ethernet adapters of a virtual machine.
     """
+
     RESOURCE_TYPE = ...
     _VAPI_SERVICE_ID = ...
     def __init__(self, config) -> None:
@@ -1795,7 +1842,7 @@ class Ethernet(VapiInterface):
         :param config: Configuration to be used for creating the stub.
         """
         ...
-    
+
     class EmulationType(Enum):
         """
         The ``Ethernet.EmulationType`` class defines the valid emulation types for
@@ -1810,6 +1857,7 @@ class Ethernet(VapiInterface):
             version of the API, you instantiate this class. See :ref:`enumerated
             type description page <enumeration_description>`.
         """
+
         E1000 = ...
         E1000E = ...
         PCNET32 = ...
@@ -1822,9 +1870,7 @@ class Ethernet(VapiInterface):
             :param string: String value for the :class:`EmulationType` instance.
             """
             ...
-        
-    
-    
+
     class MacAddressType(Enum):
         """
         The ``Ethernet.MacAddressType`` class defines the valid MAC address origins
@@ -1839,6 +1885,7 @@ class Ethernet(VapiInterface):
             version of the API, you instantiate this class. See :ref:`enumerated
             type description page <enumeration_description>`.
         """
+
         MANUAL = ...
         GENERATED = ...
         ASSIGNED = ...
@@ -1848,9 +1895,7 @@ class Ethernet(VapiInterface):
             :param string: String value for the :class:`MacAddressType` instance.
             """
             ...
-        
-    
-    
+
     class BackingType(Enum):
         """
         The ``Ethernet.BackingType`` class defines the valid backing types for a
@@ -1865,6 +1910,7 @@ class Ethernet(VapiInterface):
             version of the API, you instantiate this class. See :ref:`enumerated
             type description page <enumeration_description>`.
         """
+
         STANDARD_PORTGROUP = ...
         HOST_DEVICE = ...
         DISTRIBUTED_PORTGROUP = ...
@@ -1875,9 +1921,7 @@ class Ethernet(VapiInterface):
             :param string: String value for the :class:`BackingType` instance.
             """
             ...
-        
-    
-    
+
     class BackingInfo(VapiStruct):
         """
         The ``Ethernet.BackingInfo`` class contains information about the physical
@@ -1887,8 +1931,20 @@ class Ethernet(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _validator_list = ...
-        def __init__(self, type=..., network=..., network_name=..., host_device=..., distributed_switch_uuid=..., distributed_port=..., connection_cookie=..., opaque_network_type=..., opaque_network_id=...) -> None:
+        def __init__(
+            self,
+            type=...,
+            network=...,
+            network_name=...,
+            host_device=...,
+            distributed_switch_uuid=...,
+            distributed_port=...,
+            connection_cookie=...,
+            opaque_network_type=...,
+            opaque_network_id=...,
+        ) -> None:
             """
             :type  type: :class:`Ethernet.BackingType`
             :param type: Backing type for the virtual Ethernet adapter.
@@ -1940,9 +1996,7 @@ class Ethernet(VapiInterface):
                 of ``type`` is :attr:`Ethernet.BackingType.OPAQUE_NETWORK`.
             """
             ...
-        
-    
-    
+
     class BackingSpec(VapiStruct):
         """
         The ``Ethernet.BackingSpec`` class provides a specification of the physical
@@ -1952,6 +2006,7 @@ class Ethernet(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _validator_list = ...
         def __init__(self, type=..., network=..., distributed_port=...) -> None:
             """
@@ -1986,9 +2041,7 @@ class Ethernet(VapiInterface):
                 type.
             """
             ...
-        
-    
-    
+
     class Info(VapiStruct):
         """
         The ``Ethernet.Info`` class contains information about a virtual Ethernet
@@ -1998,8 +2051,22 @@ class Ethernet(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _validator_list = ...
-        def __init__(self, label=..., type=..., upt_compatibility_enabled=..., mac_type=..., mac_address=..., pci_slot_number=..., wake_on_lan_enabled=..., backing=..., state=..., start_connected=..., allow_guest_control=...) -> None:
+        def __init__(
+            self,
+            label=...,
+            type=...,
+            upt_compatibility_enabled=...,
+            mac_type=...,
+            mac_address=...,
+            pci_slot_number=...,
+            wake_on_lan_enabled=...,
+            backing=...,
+            state=...,
+            start_connected=...,
+            allow_guest_control=...,
+        ) -> None:
             """
             :type  label: :class:`str`
             :param label: Device label.
@@ -2040,9 +2107,7 @@ class Ethernet(VapiInterface):
                 device.
             """
             ...
-        
-    
-    
+
     class CreateSpec(VapiStruct):
         """
         The ``Ethernet.CreateSpec`` class provides a specification for the
@@ -2052,8 +2117,20 @@ class Ethernet(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _validator_list = ...
-        def __init__(self, type=..., upt_compatibility_enabled=..., mac_type=..., mac_address=..., pci_slot_number=..., wake_on_lan_enabled=..., backing=..., start_connected=..., allow_guest_control=...) -> None:
+        def __init__(
+            self,
+            type=...,
+            upt_compatibility_enabled=...,
+            mac_type=...,
+            mac_address=...,
+            pci_slot_number=...,
+            wake_on_lan_enabled=...,
+            backing=...,
+            start_connected=...,
+            allow_guest_control=...,
+        ) -> None:
             """
             :type  type: :class:`Ethernet.EmulationType` or ``None``
             :param type: Ethernet adapter emulation type.
@@ -2093,9 +2170,7 @@ class Ethernet(VapiInterface):
                 Defaults to false if None.
             """
             ...
-        
-    
-    
+
     class UpdateSpec(VapiStruct):
         """
         The ``Ethernet.UpdateSpec`` class describes the updates to be made to the
@@ -2105,26 +2180,36 @@ class Ethernet(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, upt_compatibility_enabled=..., mac_type=..., mac_address=..., wake_on_lan_enabled=..., backing=..., start_connected=..., allow_guest_control=...) -> None:
+
+        def __init__(
+            self,
+            upt_compatibility_enabled=...,
+            mac_type=...,
+            mac_address=...,
+            wake_on_lan_enabled=...,
+            backing=...,
+            start_connected=...,
+            allow_guest_control=...,
+        ) -> None:
             """
             :type  upt_compatibility_enabled: :class:`bool` or ``None``
             :param upt_compatibility_enabled: Flag indicating whether Universal Pass-Through (UPT) compatibility
-                should be enabled on this virtual Ethernet adapter. 
-                
+                should be enabled on this virtual Ethernet adapter.
+
                 This attribute may be modified at any time, and changes will be
                 applied the next time the virtual machine is powered on.
                 If None, the value is unchanged. Must be None if the emulation type
                 of the virtual Ethernet adapter is not
                 :attr:`Ethernet.EmulationType.VMXNET3`.
             :type  mac_type: :class:`Ethernet.MacAddressType` or ``None``
-            :param mac_type: MAC address type. 
-                
+            :param mac_type: MAC address type.
+
                 This attribute may be modified at any time, and changes will be
                 applied the next time the virtual machine is powered on.
                 If None, the value is unchanged.
             :type  mac_address: :class:`str` or ``None``
-            :param mac_address: MAC address. 
-                
+            :param mac_address: MAC address.
+
                 This attribute may be modified at any time, and changes will be
                 applied the next time the virtual machine is powered on.
                 If None, the value is unchanged. Must be specified if
@@ -2133,14 +2218,14 @@ class Ethernet(VapiInterface):
                 address type is not :attr:`Ethernet.MacAddressType.MANUAL`.
             :type  wake_on_lan_enabled: :class:`bool` or ``None``
             :param wake_on_lan_enabled: Flag indicating whether wake-on-LAN shoud be enabled on this
-                virtual Ethernet adapter. 
-                
+                virtual Ethernet adapter.
+
                 This attribute may be modified at any time, and changes will be
                 applied the next time the virtual machine is powered on.
                 If None, the value is unchanged.
             :type  backing: :class:`Ethernet.BackingSpec` or ``None``
-            :param backing: Physical resource backing for the virtual Ethernet adapter. 
-                
+            :param backing: Physical resource backing for the virtual Ethernet adapter.
+
                 This attribute may be modified at any time, and changes will be
                 applied the next time the virtual machine is powered on.
                 If None, the value is unchanged.
@@ -2154,9 +2239,7 @@ class Ethernet(VapiInterface):
                 If None, the value is unchanged.
             """
             ...
-        
-    
-    
+
     class Summary(VapiStruct):
         """
         The ``Ethernet.Summary`` class contains commonly used information about a
@@ -2166,6 +2249,7 @@ class Ethernet(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, nic=...) -> None:
             """
             :type  nic: :class:`str`
@@ -2178,9 +2262,7 @@ class Ethernet(VapiInterface):
                 ``com.vmware.vcenter.vm.hardware.Ethernet``.
             """
             ...
-        
-    
-    
+
     def list(self, vm):
         """
         Returns commonly used information about the virtual Ethernet adapters
@@ -2192,22 +2274,22 @@ class Ethernet(VapiInterface):
             ``VirtualMachine``.
         :rtype: :class:`list` of :class:`Ethernet.Summary`
         :return: List of commonly used information about virtual Ethernet adapters.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def get(self, vm, nic):
         """
         Returns information about a virtual Ethernet adapter.
@@ -2222,22 +2304,22 @@ class Ethernet(VapiInterface):
             ``com.vmware.vcenter.vm.hardware.Ethernet``.
         :rtype: :class:`Ethernet.Info`
         :return: Information about the specified virtual Ethernet adapter.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or virtual Ethernet adapter is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def create(self, vm, spec):
         """
         Adds a virtual Ethernet adapter to the virtual machine.
@@ -2252,39 +2334,39 @@ class Ethernet(VapiInterface):
         :return: Virtual Ethernet adapter identifier.
             The return value will be an identifier for the resource type:
             ``com.vmware.vcenter.vm.hardware.Ethernet``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reported that the Ethernet adapter was created but
             was unable to confirm the creation because the identifier of the
             new adapter could not be determined.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or network backing is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource`
             if the virtual machine already has the maximum number of supported
             Ethernet adapters.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if the specified PCI address is out of bounds, HOST_DEVICE is
             specified as the type, or a backing cannot be found in the case
             that backing is left None.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unsupported` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unsupported`
             if the guest operating system of the virtual machine is not
             supported and spec includes None attributes that default to
             guest-specific values.
         """
         ...
-    
+
     def update(self, vm, nic, spec):
         """
         Updates the configuration of a virtual Ethernet adapter.
@@ -2299,27 +2381,27 @@ class Ethernet(VapiInterface):
             ``com.vmware.vcenter.vm.hardware.Ethernet``.
         :type  spec: :class:`Ethernet.UpdateSpec`
         :param spec: Specification for updating the virtual Ethernet adapter.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if HOST_DEVICE is specified as the type.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine, virtual Ethernet adapter, or backing
             network is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def delete(self, vm, nic):
         """
         Removes a virtual Ethernet adapter from the virtual machine.
@@ -2332,30 +2414,30 @@ class Ethernet(VapiInterface):
         :param nic: Virtual Ethernet adapter identifier.
             The parameter must be an identifier for the resource type:
             ``com.vmware.vcenter.vm.hardware.Ethernet``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or virtual Ethernet adapter is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def connect(self, vm, nic):
         """
         Connects a virtual Ethernet adapter of a powered-on virtual machine to
         its backing. Connecting the virtual device makes the backing accessible
-        from the perspective of the guest operating system. 
-        
+        from the perspective of the guest operating system.
+
         For a powered-off virtual machine, the :func:`Ethernet.update` method
         may be used to configure the virtual Ethernet adapter to start in the
         connected state when the virtual machine is powered on.
@@ -2368,36 +2450,36 @@ class Ethernet(VapiInterface):
         :param nic: Virtual Ethernet adapter identifier.
             The parameter must be an identifier for the resource type:
             ``com.vmware.vcenter.vm.hardware.Ethernet``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or virtual Ethernet adapter is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyInDesiredState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyInDesiredState`
             if the virtual Ethernet adapter is already connected.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if the virtual machine is not powered on.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def disconnect(self, vm, nic):
         """
         Disconnects a virtual Ethernet adapter of a powered-on virtual machine
         from its backing. The virtual device is still present and its backing
         configuration is unchanged, but from the perspective of the guest
         operating system, the Ethernet adapter is not connected to its backing
-        resource. 
-        
+        resource.
+
         For a powered-off virtual machine, the :func:`Ethernet.update` method
         may be used to configure the virtual Ethernet adapter to start in the
         disconnected state when the virtual machine is powered on.
@@ -2410,35 +2492,34 @@ class Ethernet(VapiInterface):
         :param nic: Virtual Ethernet adapter identifier.
             The parameter must be an identifier for the resource type:
             ``com.vmware.vcenter.vm.hardware.Ethernet``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or virtual Ethernet adapter is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyInDesiredState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyInDesiredState`
             if the virtual Ethernet adapter is already disconnected.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if the virtual machine is not powered on.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
-
 
 class Floppy(VapiInterface):
     """
     The ``Floppy`` class provides methods for configuring the virtual floppy
     drives of a virtual machine.
     """
+
     RESOURCE_TYPE = ...
     _VAPI_SERVICE_ID = ...
     def __init__(self, config) -> None:
@@ -2447,7 +2528,7 @@ class Floppy(VapiInterface):
         :param config: Configuration to be used for creating the stub.
         """
         ...
-    
+
     class BackingType(Enum):
         """
         The ``Floppy.BackingType`` class defines the valid backing types for a
@@ -2462,6 +2543,7 @@ class Floppy(VapiInterface):
             version of the API, you instantiate this class. See :ref:`enumerated
             type description page <enumeration_description>`.
         """
+
         IMAGE_FILE = ...
         HOST_DEVICE = ...
         CLIENT_DEVICE = ...
@@ -2471,9 +2553,7 @@ class Floppy(VapiInterface):
             :param string: String value for the :class:`BackingType` instance.
             """
             ...
-        
-    
-    
+
     class BackingInfo(VapiStruct):
         """
         The ``Floppy.BackingInfo`` class contains information about the physical
@@ -2483,8 +2563,11 @@ class Floppy(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _validator_list = ...
-        def __init__(self, type=..., image_file=..., host_device=..., auto_detect=...) -> None:
+        def __init__(
+            self, type=..., image_file=..., host_device=..., auto_detect=...
+        ) -> None:
             """
             :type  type: :class:`Floppy.BackingType`
             :param type: Backing type for the virtual floppy drive.
@@ -2493,7 +2576,7 @@ class Floppy(VapiInterface):
                 This attribute is optional and it is only relevant when the value
                 of ``type`` is :attr:`Floppy.BackingType.IMAGE_FILE`.
             :type  host_device: :class:`str` or ``None``
-            :param host_device: Name of the host device backing the virtual floppy drive. 
+            :param host_device: Name of the host device backing the virtual floppy drive.
                 This attribute will be None if ``autoDetect`` is true and the
                 virtual floppy drive is not connected or no suitable device is
                 available on the host.
@@ -2504,9 +2587,7 @@ class Floppy(VapiInterface):
                 of ``type`` is :attr:`Floppy.BackingType.HOST_DEVICE`.
             """
             ...
-        
-    
-    
+
     class BackingSpec(VapiStruct):
         """
         The ``Floppy.BackingSpec`` class provides a specification of the physical
@@ -2516,6 +2597,7 @@ class Floppy(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _validator_list = ...
         def __init__(self, type=..., image_file=..., host_device=...) -> None:
             """
@@ -2533,9 +2615,7 @@ class Floppy(VapiInterface):
                 automatically detect a suitable host device.
             """
             ...
-        
-    
-    
+
     class Info(VapiStruct):
         """
         The ``Floppy.Info`` class contains information about a virtual floppy
@@ -2545,7 +2625,15 @@ class Floppy(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, label=..., backing=..., state=..., start_connected=..., allow_guest_control=...) -> None:
+
+        def __init__(
+            self,
+            label=...,
+            backing=...,
+            state=...,
+            start_connected=...,
+            allow_guest_control=...,
+        ) -> None:
             """
             :type  label: :class:`str`
             :param label: Device label.
@@ -2561,9 +2649,7 @@ class Floppy(VapiInterface):
                 device.
             """
             ...
-        
-    
-    
+
     class CreateSpec(VapiStruct):
         """
         The ``Floppy.CreateSpec`` class provides a specification for the
@@ -2573,7 +2659,10 @@ class Floppy(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, backing=..., start_connected=..., allow_guest_control=...) -> None:
+
+        def __init__(
+            self, backing=..., start_connected=..., allow_guest_control=...
+        ) -> None:
             """
             :type  backing: :class:`Floppy.BackingSpec` or ``None``
             :param backing: Physical resource backing for the virtual floppy drive.
@@ -2588,9 +2677,7 @@ class Floppy(VapiInterface):
                 Defaults to false if None.
             """
             ...
-        
-    
-    
+
     class UpdateSpec(VapiStruct):
         """
         The ``Floppy.UpdateSpec`` class describes the updates to be made to the
@@ -2600,11 +2687,14 @@ class Floppy(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, backing=..., start_connected=..., allow_guest_control=...) -> None:
+
+        def __init__(
+            self, backing=..., start_connected=..., allow_guest_control=...
+        ) -> None:
             """
             :type  backing: :class:`Floppy.BackingSpec` or ``None``
-            :param backing: Physical resource backing for the virtual floppy drive. 
-                
+            :param backing: Physical resource backing for the virtual floppy drive.
+
                 This attribute may only be modified if the virtual machine is not
                 powered on or the virtual floppy drive is not connected.
                 If None, the value is unchanged.
@@ -2618,9 +2708,7 @@ class Floppy(VapiInterface):
                 If None, the value is unchanged.
             """
             ...
-        
-    
-    
+
     class Summary(VapiStruct):
         """
         The ``Floppy.Summary`` class contains commonly used information about a
@@ -2630,6 +2718,7 @@ class Floppy(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, floppy=...) -> None:
             """
             :type  floppy: :class:`str`
@@ -2642,9 +2731,7 @@ class Floppy(VapiInterface):
                 ``com.vmware.vcenter.vm.hardware.Floppy``.
             """
             ...
-        
-    
-    
+
     def list(self, vm):
         """
         Returns commonly used information about the virtual floppy drives
@@ -2656,22 +2743,22 @@ class Floppy(VapiInterface):
             ``VirtualMachine``.
         :rtype: :class:`list` of :class:`Floppy.Summary`
         :return: List of commonly used information about virtual floppy drives.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def get(self, vm, floppy):
         """
         Returns information about a virtual floppy drive.
@@ -2686,22 +2773,22 @@ class Floppy(VapiInterface):
             ``com.vmware.vcenter.vm.hardware.Floppy``.
         :rtype: :class:`Floppy.Info`
         :return: Information about the specified virtual floppy drive.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or virtual floppy drive is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def create(self, vm, spec):
         """
         Adds a virtual floppy drive to the virtual machine.
@@ -2716,33 +2803,33 @@ class Floppy(VapiInterface):
         :return: Virtual floppy drive identifier.
             The return value will be an identifier for the resource type:
             ``com.vmware.vcenter.vm.hardware.Floppy``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reported that the floppy device was created but was
             unable to confirm the creation because the identifier of the new
             device could not be determined.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if the virtual machine is not powered off.
-        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource`
             if the virtual machine already has the maximum number of supported
             floppy drives.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def update(self, vm, floppy, spec):
         """
         Updates the configuration of a virtual floppy drive.
@@ -2757,29 +2844,29 @@ class Floppy(VapiInterface):
             ``com.vmware.vcenter.vm.hardware.Floppy``.
         :type  spec: :class:`Floppy.UpdateSpec`
         :param spec: Specification for updating the virtual floppy drive.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or virtual floppy drive is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if one or more of the attributes specified in the ``spec``
             parameter cannot be modified due to the current power state of the
             virtual machine or the connection state of the virtual floppy
             drive.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def delete(self, vm, floppy):
         """
         Removes a virtual floppy drive from the virtual machine.
@@ -2792,32 +2879,32 @@ class Floppy(VapiInterface):
         :param floppy: Virtual floppy drive identifier.
             The parameter must be an identifier for the resource type:
             ``com.vmware.vcenter.vm.hardware.Floppy``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or virtual floppy drive is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if the virtual machine is not powered off.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def connect(self, vm, floppy):
         """
         Connects a virtual floppy drive of a powered-on virtual machine to its
         backing. Connecting the virtual device makes the backing accessible
-        from the perspective of the guest operating system. 
-        
+        from the perspective of the guest operating system.
+
         For a powered-off virtual machine, the :func:`Floppy.update` method may
         be used to configure the virtual floppy drive to start in the connected
         state when the virtual machine is powered on.
@@ -2830,36 +2917,36 @@ class Floppy(VapiInterface):
         :param floppy: Virtual floppy drive identifier.
             The parameter must be an identifier for the resource type:
             ``com.vmware.vcenter.vm.hardware.Floppy``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or virtual floppy drive is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyInDesiredState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyInDesiredState`
             if the virtual floppy drive is already connected.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if the virtual machine is not powered on.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def disconnect(self, vm, floppy):
         """
         Disconnects a virtual floppy drive of a powered-on virtual machine from
         its backing. The virtual device is still present and its backing
         configuration is unchanged, but from the perspective of the guest
         operating system, the floppy drive is not connected to its backing
-        resource. 
-        
+        resource.
+
         For a powered-off virtual machine, the :func:`Floppy.update` method may
         be used to configure the virtual floppy floppy to start in the
         disconnected state when the virtual machine is powered on.
@@ -2872,35 +2959,34 @@ class Floppy(VapiInterface):
         :param floppy: Virtual floppy drive identifier.
             The parameter must be an identifier for the resource type:
             ``com.vmware.vcenter.vm.hardware.Floppy``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or virtual floppy drive is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyInDesiredState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyInDesiredState`
             if the virtual floppy drive is already disconnected.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if the virtual machine is not powered on.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
-
 
 class Memory(VapiInterface):
     """
     The ``Memory`` class provides methods for configuring the memory settings
     of a virtual machine.
     """
+
     _VAPI_SERVICE_ID = ...
     def __init__(self, config) -> None:
         """
@@ -2908,7 +2994,7 @@ class Memory(VapiInterface):
         :param config: Configuration to be used for creating the stub.
         """
         ...
-    
+
     class Info(VapiStruct):
         """
         The ``Memory.Info`` class contains memory-related information about a
@@ -2918,22 +3004,29 @@ class Memory(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _canonical_to_pep_names = ...
-        def __init__(self, size_mib=..., hot_add_enabled=..., hot_add_increment_size_mib=..., hot_add_limit_mib=...) -> None:
+        def __init__(
+            self,
+            size_mib=...,
+            hot_add_enabled=...,
+            hot_add_increment_size_mib=...,
+            hot_add_limit_mib=...,
+        ) -> None:
             """
             :type  size_mib: :class:`long`
             :param size_mib: Memory size in mebibytes.
             :type  hot_add_enabled: :class:`bool`
             :param hot_add_enabled: Flag indicating whether adding memory while the virtual machine is
-                running is enabled. 
-                
+                running is enabled.
+
                 Some guest operating systems may consume more resources or perform
                 less efficiently when they run on hardware that supports adding
                 memory while the machine is running.
             :type  hot_add_increment_size_mib: :class:`long` or ``None``
             :param hot_add_increment_size_mib: The granularity, in mebibytes, at which memory can be added to a
-                running virtual machine. 
-                
+                running virtual machine.
+
                 When adding memory to a running virtual machine, the amount of
                 memory added must be at least
                 :attr:`Memory.Info.hot_add_increment_size_mib` and the total memory
@@ -2948,9 +3041,7 @@ class Memory(VapiInterface):
                 virtual machine is running.
             """
             ...
-        
-    
-    
+
     class UpdateSpec(VapiStruct):
         """
         The ``Memory.UpdateSpec`` class describes the updates to be made to the
@@ -2960,16 +3051,17 @@ class Memory(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _canonical_to_pep_names = ...
         def __init__(self, size_mib=..., hot_add_enabled=...) -> None:
             """
             :type  size_mib: :class:`long` or ``None``
-            :param size_mib: New memory size in mebibytes. 
-                
+            :param size_mib: New memory size in mebibytes.
+
                 The supported range of memory sizes is constrained by the
                 configured guest operating system and virtual hardware version of
-                the virtual machine. 
-                
+                the virtual machine.
+
                 If the virtual machine is running, this value may only be changed
                 if :attr:`Memory.Info.hot_add_enabled` is true, and the new memory
                 size must satisfy the constraints specified by
@@ -2978,20 +3070,18 @@ class Memory(VapiInterface):
                 If None, the value is unchanged.
             :type  hot_add_enabled: :class:`bool` or ``None``
             :param hot_add_enabled: Flag indicating whether adding memory while the virtual machine is
-                running should be enabled. 
-                
+                running should be enabled.
+
                 Some guest operating systems may consume more resources or perform
                 less efficiently when they run on hardware that supports adding
-                memory while the machine is running. 
-                
+                memory while the machine is running.
+
                 This attribute may only be modified if the virtual machine is not
                 powered on.
                 If None, the value is unchanged.
             """
             ...
-        
-    
-    
+
     def get(self, vm):
         """
         Returns the memory-related settings of a virtual machine.
@@ -3002,22 +3092,22 @@ class Memory(VapiInterface):
             ``VirtualMachine``.
         :rtype: :class:`Memory.Info`
         :return: Memory-related settings of the virtual machine.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def update(self, vm, spec):
         """
         Updates the memory-related settings of a virtual machine.
@@ -3029,40 +3119,39 @@ class Memory(VapiInterface):
         :type  spec: :class:`Memory.UpdateSpec`
         :param spec: Specification for updating the memory-related settings of the
             virtual machine.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.InvalidArgument`
             if one of the provided settings is not permitted; for example,
             specifying a negative value for ``sizeMiB``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if ``hotAddEnabled`` is specified and the virtual machine is not
             powered off.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if ``sizeMiB`` is specified, ``hotAddEnabled`` is false, and the
             virtual machine is not powered off.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
-
 
 class Parallel(VapiInterface):
     """
     The ``Parallel`` class provides methods for configuring the virtual
     parallel ports of a virtual machine.
     """
+
     RESOURCE_TYPE = ...
     _VAPI_SERVICE_ID = ...
     def __init__(self, config) -> None:
@@ -3071,7 +3160,7 @@ class Parallel(VapiInterface):
         :param config: Configuration to be used for creating the stub.
         """
         ...
-    
+
     class BackingType(Enum):
         """
         The ``Parallel.BackingType`` class defines the valid backing types for a
@@ -3086,6 +3175,7 @@ class Parallel(VapiInterface):
             version of the API, you instantiate this class. See :ref:`enumerated
             type description page <enumeration_description>`.
         """
+
         FILE = ...
         HOST_DEVICE = ...
         def __init__(self, string) -> None:
@@ -3094,9 +3184,7 @@ class Parallel(VapiInterface):
             :param string: String value for the :class:`BackingType` instance.
             """
             ...
-        
-    
-    
+
     class BackingInfo(VapiStruct):
         """
         The ``Parallel.BackingInfo`` class contains information about the physical
@@ -3106,8 +3194,11 @@ class Parallel(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _validator_list = ...
-        def __init__(self, type=..., file=..., host_device=..., auto_detect=...) -> None:
+        def __init__(
+            self, type=..., file=..., host_device=..., auto_detect=...
+        ) -> None:
             """
             :type  type: :class:`Parallel.BackingType`
             :param type: Backing type for the virtual parallel port.
@@ -3116,7 +3207,7 @@ class Parallel(VapiInterface):
                 This attribute is optional and it is only relevant when the value
                 of ``type`` is :attr:`Parallel.BackingType.FILE`.
             :type  host_device: :class:`str` or ``None``
-            :param host_device: Name of the device backing the virtual parallel port. 
+            :param host_device: Name of the device backing the virtual parallel port.
                 This attribute will be None if ``autoDetect`` is true and the
                 virtual parallel port is not connected or no suitable device is
                 available on the host.
@@ -3127,9 +3218,7 @@ class Parallel(VapiInterface):
                 of ``type`` is :attr:`Parallel.BackingType.HOST_DEVICE`.
             """
             ...
-        
-    
-    
+
     class BackingSpec(VapiStruct):
         """
         The ``Parallel.BackingSpec`` class provides a specification of the physical
@@ -3139,6 +3228,7 @@ class Parallel(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _validator_list = ...
         def __init__(self, type=..., file=..., host_device=...) -> None:
             """
@@ -3156,9 +3246,7 @@ class Parallel(VapiInterface):
                 automatically detect a suitable host device.
             """
             ...
-        
-    
-    
+
     class Info(VapiStruct):
         """
         The ``Parallel.Info`` class contains information about a virtual parallel
@@ -3168,7 +3256,15 @@ class Parallel(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, label=..., backing=..., state=..., start_connected=..., allow_guest_control=...) -> None:
+
+        def __init__(
+            self,
+            label=...,
+            backing=...,
+            state=...,
+            start_connected=...,
+            allow_guest_control=...,
+        ) -> None:
             """
             :type  label: :class:`str`
             :param label: Device label.
@@ -3184,9 +3280,7 @@ class Parallel(VapiInterface):
                 device.
             """
             ...
-        
-    
-    
+
     class CreateSpec(VapiStruct):
         """
         The ``Parallel.CreateSpec`` class provides a specification for the
@@ -3196,7 +3290,10 @@ class Parallel(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, backing=..., start_connected=..., allow_guest_control=...) -> None:
+
+        def __init__(
+            self, backing=..., start_connected=..., allow_guest_control=...
+        ) -> None:
             """
             :type  backing: :class:`Parallel.BackingSpec` or ``None``
             :param backing: Physical resource backing for the virtual parallel port.
@@ -3211,9 +3308,7 @@ class Parallel(VapiInterface):
                 Defaults to false if None.
             """
             ...
-        
-    
-    
+
     class UpdateSpec(VapiStruct):
         """
         The ``Parallel.UpdateSpec`` class describes the updates to be made to the
@@ -3223,11 +3318,14 @@ class Parallel(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, backing=..., start_connected=..., allow_guest_control=...) -> None:
+
+        def __init__(
+            self, backing=..., start_connected=..., allow_guest_control=...
+        ) -> None:
             """
             :type  backing: :class:`Parallel.BackingSpec` or ``None``
-            :param backing: Physical resource backing for the virtual parallel port. 
-                
+            :param backing: Physical resource backing for the virtual parallel port.
+
                 This attribute may only be modified if the virtual machine is not
                 powered on or the virtual parallel port is not connected.
                 If None, the value is unchanged.
@@ -3241,9 +3339,7 @@ class Parallel(VapiInterface):
                 If None, the value is unchanged.
             """
             ...
-        
-    
-    
+
     class Summary(VapiStruct):
         """
         The ``Parallel.Summary`` class contains commonly used information about a
@@ -3253,6 +3349,7 @@ class Parallel(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, port=...) -> None:
             """
             :type  port: :class:`str`
@@ -3265,9 +3362,7 @@ class Parallel(VapiInterface):
                 ``com.vmware.vcenter.vm.hardware.ParallelPort``.
             """
             ...
-        
-    
-    
+
     def list(self, vm):
         """
         Returns commonly used information about the virtual parallel ports
@@ -3279,22 +3374,22 @@ class Parallel(VapiInterface):
             ``VirtualMachine``.
         :rtype: :class:`list` of :class:`Parallel.Summary`
         :return: List of commonly used information about virtual parallel ports.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def get(self, vm, port):
         """
         Returns information about a virtual parallel port.
@@ -3309,22 +3404,22 @@ class Parallel(VapiInterface):
             ``com.vmware.vcenter.vm.hardware.ParallelPort``.
         :rtype: :class:`Parallel.Info`
         :return: Information about the specified virtual parallel port.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or virtual parallel port is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def create(self, vm, spec):
         """
         Adds a virtual parallel port to the virtual machine.
@@ -3339,33 +3434,33 @@ class Parallel(VapiInterface):
         :return: Virtual parallel port identifier.
             The return value will be an identifier for the resource type:
             ``com.vmware.vcenter.vm.hardware.ParallelPort``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reported that the parallel port device was created
             but was unable to confirm the creation because the identifier of
             the new device could not be determined.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if the virtual machine is not powered off.
-        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource`
             if the virtual machine already has the maximum number of supported
             parallel ports.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def update(self, vm, port, spec):
         """
         Updates the configuration of a virtual parallel port.
@@ -3380,29 +3475,29 @@ class Parallel(VapiInterface):
             ``com.vmware.vcenter.vm.hardware.ParallelPort``.
         :type  spec: :class:`Parallel.UpdateSpec`
         :param spec: Specification for updating the virtual parallel port.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or virtual parallel port is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if one or more of the attributes specified in the ``spec``
             parameter cannot be modified due to the current power state of the
             virtual machine or the connection state of the virtual parallel
             port.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def delete(self, vm, port):
         """
         Removes a virtual parallel port from the virtual machine.
@@ -3415,32 +3510,32 @@ class Parallel(VapiInterface):
         :param port: Virtual parallel port identifier.
             The parameter must be an identifier for the resource type:
             ``com.vmware.vcenter.vm.hardware.ParallelPort``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or virtual parallel port is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if the virtual machine is not powered off.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def connect(self, vm, port):
         """
         Connects a virtual parallel port of a powered-on virtual machine to its
         backing. Connecting the virtual device makes the backing accessible
-        from the perspective of the guest operating system. 
-        
+        from the perspective of the guest operating system.
+
         For a powered-off virtual machine, the :func:`Parallel.update` method
         may be used to configure the virtual parallel port to start in the
         connected state when the virtual machine is powered on.
@@ -3453,35 +3548,35 @@ class Parallel(VapiInterface):
         :param port: Virtual parallel port identifier.
             The parameter must be an identifier for the resource type:
             ``com.vmware.vcenter.vm.hardware.ParallelPort``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or virtual parallel port is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyInDesiredState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyInDesiredState`
             if the virtual parallel port is already connected.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if the virtual machine is not powered on.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def disconnect(self, vm, port):
         """
         Disconnects a virtual parallel port of a powered-on virtual machine
         from its backing. The virtual device is still present and its backing
         configuration is unchanged, but from the perspective of the guest
-        operating system, the parallel port is not connected to its backing. 
-        
+        operating system, the parallel port is not connected to its backing.
+
         For a powered-off virtual machine, the :func:`Parallel.update` method
         may be used to configure the virtual parallel port to start in the
         disconnected state when the virtual machine is powered on.
@@ -3494,35 +3589,34 @@ class Parallel(VapiInterface):
         :param port: Virtual parallel port identifier.
             The parameter must be an identifier for the resource type:
             ``com.vmware.vcenter.vm.hardware.ParallelPort``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or virtual parallel port is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyInDesiredState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyInDesiredState`
             if the virtual parallel port is already disconnected.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if the virtual machine is not powered on.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
-
 
 class Serial(VapiInterface):
     """
     The ``Serial`` class provides methods for configuring the virtual serial
     ports of a virtual machine.
     """
+
     RESOURCE_TYPE = ...
     _VAPI_SERVICE_ID = ...
     def __init__(self, config) -> None:
@@ -3531,7 +3625,7 @@ class Serial(VapiInterface):
         :param config: Configuration to be used for creating the stub.
         """
         ...
-    
+
     class BackingType(Enum):
         """
         The ``Serial.BackingType`` class defines the valid backing types for a
@@ -3546,6 +3640,7 @@ class Serial(VapiInterface):
             version of the API, you instantiate this class. See :ref:`enumerated
             type description page <enumeration_description>`.
         """
+
         FILE = ...
         HOST_DEVICE = ...
         PIPE_SERVER = ...
@@ -3558,9 +3653,7 @@ class Serial(VapiInterface):
             :param string: String value for the :class:`BackingType` instance.
             """
             ...
-        
-    
-    
+
     class BackingInfo(VapiStruct):
         """
         The ``Serial.BackingInfo`` class contains information about the physical
@@ -3570,8 +3663,19 @@ class Serial(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _validator_list = ...
-        def __init__(self, type=..., file=..., host_device=..., auto_detect=..., pipe=..., no_rx_loss=..., network_location=..., proxy=...) -> None:
+        def __init__(
+            self,
+            type=...,
+            file=...,
+            host_device=...,
+            auto_detect=...,
+            pipe=...,
+            no_rx_loss=...,
+            network_location=...,
+            proxy=...,
+        ) -> None:
             """
             :type  type: :class:`Serial.BackingType`
             :param type: Backing type for the virtual serial port.
@@ -3580,7 +3684,7 @@ class Serial(VapiInterface):
                 This attribute is optional and it is only relevant when the value
                 of ``type`` is :attr:`Serial.BackingType.FILE`.
             :type  host_device: :class:`str` or ``None``
-            :param host_device: Name of the device backing the virtual serial port. 
+            :param host_device: Name of the device backing the virtual serial port.
                 This attribute will be None if ``autoDetect`` is true and the
                 virtual serial port is not connected or no suitable device is
                 available on the host.
@@ -3604,8 +3708,8 @@ class Serial(VapiInterface):
                 :attr:`Serial.BackingType.PIPE_CLIENT`.
             :type  network_location: :class:`str`
             :param network_location: URI specifying the location of the network service backing the
-                virtual serial port. 
-                
+                virtual serial port.
+
                 * If :attr:`Serial.BackingInfo.type` is
                   :attr:`Serial.BackingType.NETWORK_SERVER`, this attribute is the
                   location used by clients to connect to this server. The hostname
@@ -3625,9 +3729,7 @@ class Serial(VapiInterface):
                 If None, no proxy service is configured.
             """
             ...
-        
-    
-    
+
     class BackingSpec(VapiStruct):
         """
         The ``Serial.BackingSpec`` class provides a specification of the physical
@@ -3637,8 +3739,18 @@ class Serial(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         _validator_list = ...
-        def __init__(self, type=..., file=..., host_device=..., pipe=..., no_rx_loss=..., network_location=..., proxy=...) -> None:
+        def __init__(
+            self,
+            type=...,
+            file=...,
+            host_device=...,
+            pipe=...,
+            no_rx_loss=...,
+            network_location=...,
+            proxy=...,
+        ) -> None:
             """
             :type  type: :class:`Serial.BackingType`
             :param type: Backing type for the virtual serial port.
@@ -3647,7 +3759,7 @@ class Serial(VapiInterface):
                 This attribute is optional and it is only relevant when the value
                 of ``type`` is :attr:`Serial.BackingType.FILE`.
             :type  host_device: :class:`str` or ``None``
-            :param host_device: Name of the device backing the virtual serial port. 
+            :param host_device: Name of the device backing the virtual serial port.
                 If None, the virtual serial port will be configured to
                 automatically detect a suitable host device.
             :type  pipe: :class:`str`
@@ -3663,8 +3775,8 @@ class Serial(VapiInterface):
                 If None, defaults to false.
             :type  network_location: :class:`str`
             :param network_location: URI specifying the location of the network service backing the
-                virtual serial port. 
-                
+                virtual serial port.
+
                 * If :attr:`Serial.BackingSpec.type` is
                   :attr:`Serial.BackingType.NETWORK_SERVER`, this attribute is the
                   location used by clients to connect to this server. The hostname
@@ -3684,9 +3796,7 @@ class Serial(VapiInterface):
                 If None, no proxy service should be used.
             """
             ...
-        
-    
-    
+
     class Info(VapiStruct):
         """
         The ``Serial.Info`` class contains information about a virtual serial port.
@@ -3695,7 +3805,16 @@ class Serial(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, label=..., yield_on_poll=..., backing=..., state=..., start_connected=..., allow_guest_control=...) -> None:
+
+        def __init__(
+            self,
+            label=...,
+            yield_on_poll=...,
+            backing=...,
+            state=...,
+            start_connected=...,
+            allow_guest_control=...,
+        ) -> None:
             """
             :type  label: :class:`str`
             :param label: Device label.
@@ -3717,9 +3836,7 @@ class Serial(VapiInterface):
                 device.
             """
             ...
-        
-    
-    
+
     class CreateSpec(VapiStruct):
         """
         The ``Serial.CreateSpec`` class provides a specification for the
@@ -3729,7 +3846,14 @@ class Serial(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, yield_on_poll=..., backing=..., start_connected=..., allow_guest_control=...) -> None:
+
+        def __init__(
+            self,
+            yield_on_poll=...,
+            backing=...,
+            start_connected=...,
+            allow_guest_control=...,
+        ) -> None:
             """
             :type  yield_on_poll: :class:`bool` or ``None``
             :param yield_on_poll: CPU yield behavior. If set to true, the virtual machine will
@@ -3751,9 +3875,7 @@ class Serial(VapiInterface):
                 Defaults to false if None.
             """
             ...
-        
-    
-    
+
     class UpdateSpec(VapiStruct):
         """
         The ``Serial.UpdateSpec`` class describes the updates to be made to the
@@ -3763,21 +3885,28 @@ class Serial(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
-        def __init__(self, yield_on_poll=..., backing=..., start_connected=..., allow_guest_control=...) -> None:
+
+        def __init__(
+            self,
+            yield_on_poll=...,
+            backing=...,
+            start_connected=...,
+            allow_guest_control=...,
+        ) -> None:
             """
             :type  yield_on_poll: :class:`bool` or ``None``
             :param yield_on_poll: CPU yield behavior. If set to true, the virtual machine will
                 periodically relinquish the processor if its sole task is polling
                 the virtual serial port. The amount of time it takes to regain the
                 processor will depend on the degree of other virtual machine
-                activity on the host. 
-                
+                activity on the host.
+
                 This attribute may be modified at any time, and changes applied to
                 a connected virtual serial port take effect immediately.
                 If None, the value is unchanged.
             :type  backing: :class:`Serial.BackingSpec` or ``None``
-            :param backing: Physical resource backing for the virtual serial port. 
-                
+            :param backing: Physical resource backing for the virtual serial port.
+
                 This attribute may only be modified if the virtual machine is not
                 powered on or the virtual serial port is not connected.
                 If None, the value is unchanged.
@@ -3791,9 +3920,7 @@ class Serial(VapiInterface):
                 If None, the value is unchanged.
             """
             ...
-        
-    
-    
+
     class Summary(VapiStruct):
         """
         The ``Serial.Summary`` class contains commonly used information about a
@@ -3803,6 +3930,7 @@ class Serial(VapiInterface):
             The arguments are used to initialize data attributes with the same
             names.
         """
+
         def __init__(self, port=...) -> None:
             """
             :type  port: :class:`str`
@@ -3815,9 +3943,7 @@ class Serial(VapiInterface):
                 ``com.vmware.vcenter.vm.hardware.SerialPort``.
             """
             ...
-        
-    
-    
+
     def list(self, vm):
         """
         Returns commonly used information about the virtual serial ports
@@ -3829,22 +3955,22 @@ class Serial(VapiInterface):
             ``VirtualMachine``.
         :rtype: :class:`list` of :class:`Serial.Summary`
         :return: List of commonly used information about virtual serial ports.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def get(self, vm, port):
         """
         Returns information about a virtual serial port.
@@ -3859,22 +3985,22 @@ class Serial(VapiInterface):
             ``com.vmware.vcenter.vm.hardware.SerialPort``.
         :rtype: :class:`Serial.Info`
         :return: Information about the specified virtual serial port.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or virtual serial port is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def create(self, vm, spec):
         """
         Adds a virtual serial port to the virtual machine.
@@ -3889,33 +4015,33 @@ class Serial(VapiInterface):
         :return: Virtual serial port identifier.
             The return value will be an identifier for the resource type:
             ``com.vmware.vcenter.vm.hardware.SerialPort``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reported that the serial port device was created but
             was unable to confirm the creation because the identifier of the
             new device could not be determined.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if the virtual machine is not powered off.
-        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.UnableToAllocateResource`
             if the virtual machine already has the maximum number of supported
             serial ports.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def update(self, vm, port, spec):
         """
         Updates the configuration of a virtual serial port.
@@ -3930,28 +4056,28 @@ class Serial(VapiInterface):
             ``com.vmware.vcenter.vm.hardware.SerialPort``.
         :type  spec: :class:`Serial.UpdateSpec`
         :param spec: Specification for updating the virtual serial port.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or virtual serial port is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if one or more of the attributes specified in the ``spec``
             parameter cannot be modified due to the current power state of the
             virtual machine or the connection state of the virtual serial port.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def delete(self, vm, port):
         """
         Removes a virtual serial port from the virtual machine.
@@ -3964,32 +4090,32 @@ class Serial(VapiInterface):
         :param port: Virtual serial port identifier.
             The parameter must be an identifier for the resource type:
             ``com.vmware.vcenter.vm.hardware.SerialPort``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or virtual serial port is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if the virtual machine is not powered off.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def connect(self, vm, port):
         """
         Connects a virtual serial port of a powered-on virtual machine to its
         backing. Connecting the virtual device makes the backing accessible
-        from the perspective of the guest operating system. 
-        
+        from the perspective of the guest operating system.
+
         For a powered-off virtual machine, the :func:`Serial.update` method may
         be used to configure the virtual serial port to start in the connected
         state when the virtual machine is powered on.
@@ -4002,35 +4128,35 @@ class Serial(VapiInterface):
         :param port: Virtual serial port identifier.
             The parameter must be an identifier for the resource type:
             ``com.vmware.vcenter.vm.hardware.SerialPort``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or virtual serial port is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyInDesiredState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyInDesiredState`
             if the virtual serial port is already connected.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if the virtual machine is not powered on.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
+
     def disconnect(self, vm, port):
         """
         Disconnects a virtual serial port of a powered-on virtual machine from
         its backing. The virtual device is still present and its backing
         configuration is unchanged, but from the perspective of the guest
-        operating system, the serial port is not connected to its backing. 
-        
+        operating system, the serial port is not connected to its backing.
+
         For a powered-off virtual machine, the :func:`Serial.update` method may
         be used to configure the virtual serial port to start in the
         disconnected state when the virtual machine is powered on.
@@ -4043,85 +4169,54 @@ class Serial(VapiInterface):
         :param port: Virtual serial port identifier.
             The parameter must be an identifier for the resource type:
             ``com.vmware.vcenter.vm.hardware.SerialPort``.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Error` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Error`
             if the system reports an error while responding to the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotFound`
             if the virtual machine or virtual serial port is not found.
-        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyInDesiredState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.AlreadyInDesiredState`
             if the virtual serial port is already disconnected.
-        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.NotAllowedInCurrentState`
             if the virtual machine is not powered on.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceBusy`
             if the virtual machine is busy performing another operation.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ResourceInaccessible`
             if the virtual machine's configuration state cannot be accessed.
-        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.ServiceUnavailable`
             if the system is unable to communicate with a service to complete
             the request.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthenticated`
             if the user can not be authenticated.
-        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized` 
+        :raise: :class:`com.vmware.vapi.std.errors_client.Unauthorized`
             if the user doesn't have the required privileges.
         """
         ...
-    
-
 
 class _BootStub(ApiInterfaceStub):
-    def __init__(self, config) -> None:
-        ...
-    
-
+    def __init__(self, config) -> None: ...
 
 class _CdromStub(ApiInterfaceStub):
-    def __init__(self, config) -> None:
-        ...
-    
-
+    def __init__(self, config) -> None: ...
 
 class _CpuStub(ApiInterfaceStub):
-    def __init__(self, config) -> None:
-        ...
-    
-
+    def __init__(self, config) -> None: ...
 
 class _DiskStub(ApiInterfaceStub):
-    def __init__(self, config) -> None:
-        ...
-    
-
+    def __init__(self, config) -> None: ...
 
 class _EthernetStub(ApiInterfaceStub):
-    def __init__(self, config) -> None:
-        ...
-    
-
+    def __init__(self, config) -> None: ...
 
 class _FloppyStub(ApiInterfaceStub):
-    def __init__(self, config) -> None:
-        ...
-    
-
+    def __init__(self, config) -> None: ...
 
 class _MemoryStub(ApiInterfaceStub):
-    def __init__(self, config) -> None:
-        ...
-    
-
+    def __init__(self, config) -> None: ...
 
 class _ParallelStub(ApiInterfaceStub):
-    def __init__(self, config) -> None:
-        ...
-    
-
+    def __init__(self, config) -> None: ...
 
 class _SerialStub(ApiInterfaceStub):
-    def __init__(self, config) -> None:
-        ...
-    
-
+    def __init__(self, config) -> None: ...
 
 class StubFactory(StubFactoryBase):
     _attrs = ...
-
-

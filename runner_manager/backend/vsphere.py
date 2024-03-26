@@ -5,6 +5,7 @@ from typing import List, Literal
 from com.vmware.content.library_client import Item
 from com.vmware.content_client import Library
 from com.vmware.vcenter.ovf_client import (
+    DiskProvisioningType,
     IpAllocationParams,
     LibraryItem,
     Property,
@@ -140,7 +141,7 @@ class VsphereBackend(BaseBackend):
             return None
 
     def create(self, runner: Runner) -> Runner:
-        client = self._create_client()
+        client: VsphereClient = self._create_client()
         library_id = self.get_library_id(client, self.instance_config.library)
         library_item_id = self.get_library_item_id(
             client, self.instance_config.library_item, library_id
@@ -164,30 +165,24 @@ class VsphereBackend(BaseBackend):
             ],
             type="PropertyParams",
         )
-        ip_allocation = IpAllocationParams(
-            supported_allocation_scheme=[],
-            supported_ip_allocation_policy=["STATIC_MANUAL"],
-            supported_ip_protocol=["IPv4"],
-            ip_allocation_policy="STATIC_MANUAL",
-            type="IpAllocationParams",
-        )
-        size_param = SizeParams(
-            type="SizeParams",
-            variable_disk_size=False,
-            approximate_sparse_deployment_size=0,
-            approximate_download_size=-1,
-        )
+        for param in ovf.additional_params:
+            if param.to_dict().get("type") == "PropertyParams":
+                ovf.additional_params.remove(param)
+        ovf.additional_params.append(params)
+
         deployment_spec = LibraryItem.ResourcePoolDeploymentSpec(
             name=runner.name,
             annotation=ovf.annotation,
             accept_all_eula=True,
             network_mappings=None,
             storage_mappings=None,
-            storage_provisioning=None,
+            storage_provisioning=DiskProvisioningType(
+                self.instance_config.disk_provisioning
+            ),
             storage_profile_id=None,
             locale=None,
             flags=None,
-            additional_parameters=[params, size_param, ip_allocation],
+            additional_parameters=ovf.additional_params,
             default_datastore_id=None,
         )
         deploy = client.vcenter.ovf.LibraryItem.deploy(
