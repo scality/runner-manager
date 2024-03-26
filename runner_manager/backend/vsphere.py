@@ -214,7 +214,7 @@ class VsphereBackend(BaseBackend):
 
     def delete(self, runner: Runner):
         client = self._create_client()
-        vm = self.get_vm(client, runner.instance_id)
+        vm = self.get_vm(client, runner.name)
         if vm:
             state = client.vcenter.vm.Power.get(vm)
             if state == Power.Info(state=Power.State.POWERED_ON):
