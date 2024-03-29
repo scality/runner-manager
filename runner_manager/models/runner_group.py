@@ -7,8 +7,7 @@ from uuid import uuid4
 import redis
 from githubkit import Response
 from githubkit.exception import RequestFailed
-from githubkit.webhooks.models import WorkflowJobInProgress
-from githubkit.webhooks.types import WorkflowJobEvent
+from githubkit.versions.latest.webhooks import WorkflowJobEvent
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Field as PydanticField
 from pydantic import validator
@@ -161,7 +160,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             self.queued += 1
             self.save()
 
-    def update_runner(self: Self, webhook: WorkflowJobInProgress) -> Runner:
+    def update_runner(self: Self, webhook: WorkflowJobEvent) -> Runner:
         """Update a runner instance.
 
         Returns:
@@ -172,7 +171,11 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         ).first()
         runner.id = webhook.workflow_job.runner_id
         runner.status = RunnerStatus.online
-        runner.started_at = webhook.workflow_job.started_at
+        if isinstance(webhook.workflow_job.started_at, str):
+            started_at = datetime.fromisoformat(webhook.workflow_job.started_at)
+        else:
+            started_at = webhook.workflow_job.started_at
+        runner.started_at = started_at
         runner.busy = True
         runner.save()
         return self.backend.update(runner, webhook)

@@ -4,7 +4,7 @@ import re
 import time
 from typing import List, Literal, MutableMapping, Optional
 
-from githubkit.webhooks.types import WorkflowJobEvent
+from githubkit.versions.latest.webhooks import WorkflowJobEvent
 from google.api_core.exceptions import BadRequest, NotFound
 from google.api_core.extended_operation import ExtendedOperation
 from google.cloud.compute import (
@@ -177,7 +177,7 @@ class GCPBackend(BaseBackend):
         if webhook:
             labels["repository"] = self._sanitize_label_value(webhook.repository.name)
             labels["organization"] = self._sanitize_label_value(
-                webhook.repository.organization
+                str(webhook.repository.organization)
                 if webhook.repository.organization
                 else ""
             )

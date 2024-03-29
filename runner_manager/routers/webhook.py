@@ -1,8 +1,8 @@
 from typing import Annotated, Set
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Security
+from githubkit.versions.latest.models import WebhookPing
 from githubkit.webhooks import verify
-from githubkit.webhooks.types import PingEvent
 from rq import Queue
 
 from runner_manager.dependencies import get_queue, get_settings
@@ -43,7 +43,7 @@ def post(
     valid: bool = Security(validate_webhook),
     queue: Queue = Depends(get_queue),
 ) -> WebhookResponse:
-    if not isinstance(webhook, PingEvent):
+    if not isinstance(webhook, WebhookPing):
         action = webhook.action
     else:
         action = None
