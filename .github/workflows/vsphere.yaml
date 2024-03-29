@@ -29,7 +29,7 @@ jobs:
       - name: Boot compose services
         run: docker compose --profile tests up --build --detach
       - run: |
-          sudo apt-get install python3-pip
+          sudo apt-get install -y python3-pip
           pip install poetry
       - uses: actions/setup-python@v5
         with:
