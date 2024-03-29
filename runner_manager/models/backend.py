@@ -206,9 +206,6 @@ class VsphereConfig(BackendConfig):
 class VsphereInstanceConfig(InstanceConfig):
     """Configuration for vSphere backend instance."""
 
-    cpu: int = 1
-    memory_gb: int = 4
-    disk_size_gb: int = 20
     disk_provisioning: Literal["thin", "thick"] = "thin"
     datacenter: str
     datastore: str
