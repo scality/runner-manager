@@ -5,6 +5,8 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - 'runner_manager/backend/vsphere.py'
   push:
     branches:
       - main
@@ -29,8 +31,8 @@ jobs:
       - name: Boot compose services
         run: docker compose --profile tests up --build --detach
       - run: |
-          sudo apt-get install -y python3-pip
-          pip install poetry
+          sudo apt-get install -y pipx
+          pipx install poetry
       - uses: actions/setup-python@v5
         with:
           python-version: 3.11
