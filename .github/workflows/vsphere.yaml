@@ -32,7 +32,10 @@ jobs:
         run: docker compose --profile tests up --build --detach
       - run: |
           sudo apt-get install -y pipx
+          pipx ensurepath
           pipx install poetry
+      - name: ensure .local/bin is in PATH
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
       - uses: actions/setup-python@v5
         with:
           python-version: 3.11
