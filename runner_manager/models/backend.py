@@ -171,7 +171,7 @@ class AWSInstanceConfig(InstanceConfig):
                     VolumeType=self.volume_type,
                     VolumeSize=self.disk_size_gb,
                     DeleteOnTermination=True,
-                )
+                ),
             )
         ]
         tags_specification: Sequence[TagSpecificationTypeDef] = [
@@ -182,7 +182,7 @@ class AWSInstanceConfig(InstanceConfig):
             TagSpecificationTypeDef(
                 ResourceType="volume",
                 Tags=tags,
-            )
+            ),
         ]
         return AwsInstance(
             ImageId=self.image,
