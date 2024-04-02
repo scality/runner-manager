@@ -76,28 +76,6 @@ class VsphereBackend(BaseBackend):
         else:
             return None
 
-    def get_datastore(self, client, datacenter_name, datastore_name):
-        """
-        Returns the identifier of a datastore
-        Note: The method assumes that there is only one datastore and datacenter
-        with the mentioned names.
-        """
-        datacenter = self.get_datacenter(client, datacenter_name)
-        if not datacenter:
-            log.error("Datacenter '{}' not found".format(datacenter_name))
-            return None
-
-        filter_spec = Datastore.FilterSpec(
-            names=set([datastore_name]), datacenters=set([datacenter])
-        )
-
-        datastore_summaries = client.vcenter.Datastore.list(filter_spec)
-        if len(datastore_summaries) > 0:
-            datastore = datastore_summaries[0].datastore
-            return datastore
-        else:
-            return None
-
     def get_resource_pool(self, client, datacenter_name, resource_pool_name=None):
         """
         Returns the identifier of the resource pool with the given name or the
@@ -122,19 +100,6 @@ class VsphereBackend(BaseBackend):
             log.error(
                 "ResourcePool not found in Datacenter '{}'".format(datacenter_name)
             )
-            return None
-
-    def get_vm(self, client, name):
-        """
-        Returns the identifier of a VM
-        Note: The method assumes only one VM with the mentioned name.
-        """
-        filter_spec = VM.FilterSpec(names=set([name]))
-        vm_summaries = client.vcenter.VM.list(filter_spec)
-        if len(vm_summaries) > 0:
-            vm = vm_summaries[0].vm
-            return vm
-        else:
             return None
 
     def create(self, runner: Runner) -> Runner:
@@ -201,17 +166,13 @@ class VsphereBackend(BaseBackend):
 
     def delete(self, runner: Runner):
         client = self._create_client()
-        if runner.instance_id is None:
-            vm = self.get_vm(client, runner.name)
-        else:
-            vm = runner.instance_id
-        if vm:
-            state = client.vcenter.vm.Power.get(vm)
+        if runner.instance_id is not None:
+            state = client.vcenter.vm.Power.get(runner.instance_id)
             if state == Power.Info(state=Power.State.POWERED_ON):
-                client.vcenter.vm.Power.stop(vm)
+                client.vcenter.vm.Power.stop(runner.instance_id)
             elif state == Power.Info(state=Power.State.SUSPENDED):
-                client.vcenter.vm.Power.start(vm)
-                client.vcenter.vm.Power.stop(vm)
-            log.info(f"Deleting {vm}...")
-            client.vcenter.VM.delete(vm)
+                client.vcenter.vm.Power.start(runner.instance_id)
+                client.vcenter.vm.Power.stop(runner.instance_id)
+            log.info(f"Deleting {runner.name}...")
+            client.vcenter.VM.delete(runner.instance_id)
         return super().delete(runner)
