@@ -11,7 +11,7 @@ from com.vmware.vcenter.ovf_client import (
     PropertyParams,
 )
 from com.vmware.vcenter.vm_client import Power
-from com.vmware.vcenter_client import VM, Datacenter, Datastore, ResourcePool
+from com.vmware.vcenter_client import Datacenter, ResourcePool
 from pydantic import Field
 from requests import Session
 from vmware.vapi.vsphere.client import VsphereClient, create_vsphere_client

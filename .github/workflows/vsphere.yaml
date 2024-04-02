@@ -6,7 +6,7 @@ on:
     branches:
       - main
     paths:
-      - 'runner_manager/backend/vsphere.py'
+      - runner_manager/backend/vsphere.py
   push:
     branches:
       - main
@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   vsphere:
-    name: "vsphere"
+    name: vsphere
     runs-on:
       - self-hosted
       - vsphere
