@@ -56,6 +56,7 @@ def test_aws_instance_config(runner: Runner):
     assert TagTypeDef(Key="test", Value="test") in tags
     assert TagTypeDef(Key="Name", Value=runner.name) in tags
     assert runner.encoded_jit_config in instance["UserData"]
+    assert instance["TagSpecifications"][1]["ResourceType"] == "volume"
 
 
 @mark.skipif(not os.getenv("AWS_ACCESS_KEY_ID"), reason="AWS credentials not found")
