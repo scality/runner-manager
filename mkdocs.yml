@@ -48,7 +48,7 @@ nav:
       - Testing: development/testing.md
       - Workflows: development/workflows.md
 
-plugins: 
+plugins:
   - mermaid2
 
 markdown_extensions:
