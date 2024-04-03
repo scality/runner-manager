@@ -178,7 +178,11 @@ class AWSInstanceConfig(InstanceConfig):
             TagSpecificationTypeDef(
                 ResourceType="instance",
                 Tags=tags,
-            )
+            ),
+            TagSpecificationTypeDef(
+                ResourceType="volume",
+                Tags=tags,
+            ),
         ]
         return AwsInstance(
             ImageId=self.image,
