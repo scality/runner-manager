@@ -27,6 +27,7 @@ jobs:
     env:
       REDIS_OM_URL: redis://localhost:6379/0
       GITHUB_BASE_URL: http://localhost:4010
+      TRUNK_TOKEN: ${{ secrets.TRUNK_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - name: Boot compose services
@@ -48,6 +49,14 @@ jobs:
           name: ${{ matrix.test.name }}
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload results
+        if: "!cancelled() && env.TRUNK_TOKEN"
+        uses: trunk-io/analytics-uploader@main
+        with:
+          junit-paths: .reports/*.xml
+          org-slug: scality
+          token: ${{ env.TRUNK_TOKEN }}
+        continue-on-error: true
       - name: Dump logs
         run: docker compose --profile tests logs
         if: always()

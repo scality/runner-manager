@@ -11,3 +11,4 @@ site
 coverage.xml
 config.yaml*
 .env
+.reports
