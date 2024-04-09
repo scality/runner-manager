@@ -152,7 +152,7 @@ class AWSInstanceConfig(InstanceConfig):
     tags: Dict[str, str] = {}
     volume_type: VolumeTypeType = "gp3"
     disk_size_gb: int = 20
-    iam_instance_profile_name: Optional[str] = ""
+    iam_instance_profile_arn: str = ""
 
     def configure_instance(self, runner: Runner) -> AwsInstance:
         """Configure instance."""
@@ -188,7 +188,7 @@ class AWSInstanceConfig(InstanceConfig):
             ),
         ]
         iam_instance_profile: IamInstanceProfileTypeDef = IamInstanceProfileTypeDef(
-            Name=self.iam_instance_profile_name
+            Arn=self.iam_instance_profile_arn
         )
         return AwsInstance(
             ImageId=self.image,

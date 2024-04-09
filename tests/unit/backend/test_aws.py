@@ -48,14 +48,14 @@ def test_aws_instance_config(runner: Runner):
     instance_config = AWSInstanceConfig(
         tags={"test": "test"},
         subnet_id="i-0f9b0a3b7b3b3b3b3",
-        iam_instance_profile_name="test",
+        iam_instance_profile_arn="test",
     )
     instance: AwsInstance = instance_config.configure_instance(runner)
     assert instance["ImageId"] == instance_config.image
     assert instance["SubnetId"] == instance_config.subnet_id
     assert (
         instance["IamInstanceProfile"]["Name"]
-        == instance_config.iam_instance_profile_name
+        == instance_config.iam_instance_profile_arn
     )
     assert runner.name in instance["UserData"]
     tags = instance["TagSpecifications"][0]["Tags"]
