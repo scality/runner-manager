@@ -11,3 +11,13 @@ coverage:
 codecov:
   notify:
     wait_for_ci: true
+
+flag_management:
+  default_rules:
+    carryforward: true
+    statuses:
+      - type: project
+        target: auto
+        threshold: 1%
+      - type: patch
+        target: 80%

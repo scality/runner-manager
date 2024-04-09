@@ -63,7 +63,7 @@
     }
   },
   "remoteUser": "vscode",
-  "postCreateCommand": "poetry install --no-interaction --no-ansi --no-root --group=docs --group=dev",
+  "postCreateCommand": "poetry install --no-interaction --no-ansi --no-root --with docs,dev",
   "postAttachCommand": {},
   "portsAttributes": {
     "6379": {
