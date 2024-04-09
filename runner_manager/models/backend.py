@@ -7,9 +7,9 @@ from mypy_boto3_ec2.literals import InstanceTypeType, VolumeTypeType
 from mypy_boto3_ec2.type_defs import (
     BlockDeviceMappingTypeDef,
     EbsBlockDeviceTypeDef,
+    IamInstanceProfileTypeDef,
     TagSpecificationTypeDef,
     TagTypeDef,
-    IamInstanceProfileTypeDef,
 )
 from pydantic import BaseModel, BaseSettings
 
@@ -187,8 +187,9 @@ class AWSInstanceConfig(InstanceConfig):
                 Tags=tags,
             ),
         ]
-        iam_instance_profile: IamInstanceProfileTypeDef = IamInstanceProfileTypeDef(Name=self.iam_instance_profile_name)
-
+        iam_instance_profile: IamInstanceProfileTypeDef = IamInstanceProfileTypeDef(
+            Name=self.iam_instance_profile_name
+        )
         return AwsInstance(
             ImageId=self.image,
             InstanceType=self.instance_type,
