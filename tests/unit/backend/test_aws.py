@@ -54,7 +54,7 @@ def test_aws_instance_config(runner: Runner):
     assert instance["ImageId"] == instance_config.image
     assert instance["SubnetId"] == instance_config.subnet_id
     assert (
-        instance["IamInstanceProfile"]["Name"]
+        instance["IamInstanceProfile"]["Arn"]
         == instance_config.iam_instance_profile_arn
     )
     assert runner.name in instance["UserData"]
