@@ -7,6 +7,7 @@ from mypy_boto3_ec2.literals import InstanceTypeType, VolumeTypeType
 from mypy_boto3_ec2.type_defs import (
     BlockDeviceMappingTypeDef,
     EbsBlockDeviceTypeDef,
+    IamInstanceProfileTypeDef,
     TagSpecificationTypeDef,
     TagTypeDef,
 )
@@ -133,6 +134,7 @@ AwsInstance = TypedDict(
         "BlockDeviceMappings": Sequence[BlockDeviceMappingTypeDef],
         "MaxCount": int,
         "MinCount": int,
+        "IamInstanceProfile": IamInstanceProfileTypeDef,
     },
 )
 
@@ -150,6 +152,7 @@ class AWSInstanceConfig(InstanceConfig):
     tags: Dict[str, str] = {}
     volume_type: VolumeTypeType = "gp3"
     disk_size_gb: int = 20
+    iam_instance_profile_arn: str = ""
 
     def configure_instance(self, runner: Runner) -> AwsInstance:
         """Configure instance."""
@@ -184,6 +187,9 @@ class AWSInstanceConfig(InstanceConfig):
                 Tags=tags,
             ),
         ]
+        iam_instance_profile: IamInstanceProfileTypeDef = IamInstanceProfileTypeDef(
+            Arn=self.iam_instance_profile_arn
+        )
         return AwsInstance(
             ImageId=self.image,
             InstanceType=self.instance_type,
@@ -194,4 +200,5 @@ class AWSInstanceConfig(InstanceConfig):
             MaxCount=self.max_count,
             MinCount=self.min_count,
             BlockDeviceMappings=block_device_mappings,
+            IamInstanceProfile=iam_instance_profile,
         )
