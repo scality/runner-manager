@@ -51,7 +51,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
-addopts = "--disable-warnings --cov=runner_manager --cov-report=xml"
+addopts = "--disable-warnings --cov=runner_manager --cov-report=xml --junitxml=.reports/junit.xml"
 
 # Add poetry scripts
 [tool.poetry.scripts]
