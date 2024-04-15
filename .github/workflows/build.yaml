@@ -19,5 +19,5 @@ jobs:
     uses: scality/workflows/.github/workflows/docker-build.yaml@v2
     with:
       name: runner-manager
-      namespace: scality
+      namespace: ${{ github.repository_owner }}
       tag: ${{ github.ref_name == 'main' && 'latest' || github.sha }}
