@@ -54,7 +54,7 @@ jobs:
         uses: trunk-io/analytics-uploader@main
         with:
           junit-paths: .reports/*.xml
-          org-slug: scality
+          org-slug: ${{ github.repository_owner }}
           token: ${{ env.TRUNK_TOKEN }}
         continue-on-error: true
       - name: Dump logs
