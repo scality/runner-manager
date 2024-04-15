@@ -52,6 +52,7 @@ def test_find_from_webhook(runner: Runner, webhook: WorkflowJobCompleted):
     assert Runner.find_from_webhook(webhook) == runner
     runner.delete(runner.pk)
     assert Runner.find_from_webhook(webhook) is None
+    webhook.workflow_job.runner_id = None
 
 
 def test_update_from_github(runner: Runner, github: GitHub):
