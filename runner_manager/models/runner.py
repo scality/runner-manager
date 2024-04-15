@@ -83,7 +83,8 @@ class Runner(BaseModel):
         Returns:
             Runner: A runner object
         """
-
+        if webhook.workflow_job.runner_id is None:
+            return None
         try:
             runner: Runner | None = cls.find(
                 cls.id == webhook.workflow_job.runner_id

@@ -271,7 +271,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         return super().save(pipeline=pipeline)
 
     @classmethod
-    def find_from_webhook(cls, webhook: WorkflowJobEvent) -> "RunnerGroup":
+    def find_from_webhook(cls, webhook: WorkflowJobEvent) -> "RunnerGroup | None":
         """Find the runner group from a webhook instance.
 
         Args:
@@ -280,6 +280,8 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         Returns:
             RunnerGroup: Runner group instance.
         """
+        if webhook.workflow_job.runner_group_id is None:
+            return None
         try:
             group: RunnerGroup | None = cls.find(
                 (cls.id == webhook.workflow_job.runner_group_id)

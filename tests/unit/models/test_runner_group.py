@@ -94,6 +94,9 @@ def test_find_from_webhook(runner_group: RunnerGroup, webhook: WorkflowJobComple
     assert RunnerGroup.find_from_webhook(webhook) == runner_group
     runner_group.delete(runner_group.pk)
     assert RunnerGroup.find_from_webhook(webhook) is None
+    webhook.workflow_job.runner_group_name = None
+    webhook.workflow_job.runner_group_id = None
+    assert RunnerGroup.find_from_webhook(webhook) is None
 
 
 def test_runner_group_delete_method(runner_group: RunnerGroup, github: GitHub):
