@@ -21,7 +21,7 @@ def aws_group(settings) -> RunnerGroup:
     subnet_id = os.getenv("AWS_SUBNET_ID", "")
     runner_group: RunnerGroup = RunnerGroup(
         id=3,
-        name="test",
+        name="default",
         organization="test",
         manager=settings.name,
         backend=AWSBackend(
@@ -79,7 +79,8 @@ def test_create_delete(aws_runner, aws_group):
 @mark.skipif(not os.getenv("AWS_ACCESS_KEY_ID"), reason="AWS credentials not found")
 def test_list(aws_runner, aws_group):
     runner = aws_group.backend.create(aws_runner)
-    assert runner in aws_group.backend.list()
+    runners = aws_group.backend.list()
+    assert runner in runners
     aws_group.backend.delete(runner)
     with raises(NotFoundError):
         aws_group.backend.get(runner.instance_id)

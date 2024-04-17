@@ -171,9 +171,10 @@ class GCPBackend(BaseBackend):
     ) -> MutableMapping[str, str]:
         labels: MutableMapping[str, str] = self.instance_config.labels.copy()
         if self.manager:
-            labels["runner-manager"] = self.manager
+            labels["manager"] = self.manager
         labels["status"] = self._sanitize_label_value(runner.status)
         labels["busy"] = self._sanitize_label_value(str(runner.busy))
+        labels["runner_group"] = self._sanitize_label_value(self.runner_group)
         if webhook:
             labels["repository"] = self._sanitize_label_value(webhook.repository.name)
             labels["organization"] = self._sanitize_label_value(
@@ -252,12 +253,15 @@ class GCPBackend(BaseBackend):
                 zone=self.config.zone,
             )
             for instance in instances:
-                labels = instance.labels or {}
-                if self.manager and "runner-manager" in labels:
-                    runner = Runner(
+                manager = instance.labels.get("manager", "")
+                runner_group = instance.labels.get("runner_group", "")
+                if manager == self.manager and runner_group == self.runner_group:
+                    runner: Runner = Runner(
                         name=instance.name,
                         instance_id=instance.name,
-                        busy=False,
+                        runner_group_name=self.runner_group,
+                        busy=bool(instance.labels.get("busy", False)),
+                        created_at=instance.creation_timestamp,
                     )
                     runners.append(runner)
 

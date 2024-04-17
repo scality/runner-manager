@@ -158,9 +158,10 @@ class AWSInstanceConfig(InstanceConfig):
         """Configure instance."""
         tags: Sequence[TagTypeDef] = [
             TagTypeDef(Key="Name", Value=runner.name),
-            TagTypeDef(
-                Key="runner-manager", Value=runner.manager if runner.manager else ""
-            ),
+            TagTypeDef(Key="manager", Value=runner.manager if runner.manager else ""),
+            TagTypeDef(Key="runner_group", Value=runner.runner_group_name),
+            TagTypeDef(Key="busy", Value=str(runner.busy)),
+            TagTypeDef(Key="status", Value=runner.status),
         ]
         tags.extend(
             [TagTypeDef(Key=key, Value=value) for key, value in self.tags.items()]

@@ -16,9 +16,9 @@ from ...strategies import WorkflowJobInProgressStrategy
 
 
 @fixture()
-def gcp_group(settings, monkeypatch) -> RunnerGroup:
+def gcp_group(settings) -> RunnerGroup:
     config = GCPConfig(
-        project_id=os.environ.get("CLOUDSDK_CORE_PROJECT", ""),
+        project_id=os.environ.get("GOOGLE_CLOUD_PROJECT", ""),
         region=os.environ.get("CLOUDSDK_COMPUTE_REGION", ""),
         zone=os.environ.get("CLOUDSDK_COMPUTE_ZONE", ""),
         google_application_credentials=os.environ.get(
@@ -43,13 +43,18 @@ def gcp_group(settings, monkeypatch) -> RunnerGroup:
             "label",
         ],
     )
+    return runner_group
+
+
+@fixture()
+def fake_gcp_group(gcp_group, monkeypatch):
     fake_image = Image(
         self_link="my_image_link",
         source_image="my_image",
     )
 
     monkeypatch.setattr(GCPBackend, "image", fake_image)
-    return runner_group
+    return gcp_group
 
 
 @fixture()
@@ -59,25 +64,25 @@ def gcp_runner(runner: Runner, gcp_group: RunnerGroup) -> Runner:
     return runner
 
 
-def test_gcp_network_interfaces(gcp_group: RunnerGroup):
-    interfaces: List[NetworkInterface] = gcp_group.backend.network_interfaces
+def test_gcp_network_interfaces(fake_gcp_group: RunnerGroup):
+    interfaces: List[NetworkInterface] = fake_gcp_group.backend.network_interfaces
     assert len(interfaces) == 1
-    assert "default" in gcp_group.backend.network_interfaces[0].subnetwork
+    assert "default" in fake_gcp_group.backend.network_interfaces[0].subnetwork
     assert interfaces[0].access_configs[0].name == "External NAT"
     # Test disabling external IP
-    gcp_group.backend.instance_config.enable_external_ip = False
-    interfaces: List[NetworkInterface] = gcp_group.backend.network_interfaces
+    fake_gcp_group.backend.instance_config.enable_external_ip = False
+    interfaces: List[NetworkInterface] = fake_gcp_group.backend.network_interfaces
     assert len(interfaces) == 1
     assert len(interfaces[0].access_configs) == 0
 
 
-def test_gcp_group(gcp_group: RunnerGroup):
-    gcp_group.save()
-    gcp_group.delete(gcp_group.pk)
+def test_gcp_group(fake_gcp_group: RunnerGroup):
+    fake_gcp_group.save()
+    fake_gcp_group.delete(fake_gcp_group.pk)
 
 
-def test_gcp_metadata(runner: Runner, gcp_group):
-    metadata = gcp_group.backend.configure_metadata(runner)
+def test_gcp_metadata(runner: Runner, fake_gcp_group):
+    metadata = fake_gcp_group.backend.configure_metadata(runner)
 
     # Assert metadata are properly set
     startup: bool = False
@@ -92,8 +97,8 @@ def test_gcp_metadata(runner: Runner, gcp_group):
     assert startup is True
 
 
-def test_gcp_setup_labels(runner: Runner, gcp_group: RunnerGroup):
-    labels = gcp_group.backend.setup_labels(runner)
+def test_gcp_setup_labels(runner: Runner, fake_gcp_group: RunnerGroup):
+    labels = fake_gcp_group.backend.setup_labels(runner)
     assert labels["status"] == runner.status
     assert labels["busy"] == str(runner.busy).lower()
     assert labels["key"] == "value"
@@ -209,6 +214,7 @@ def test_list(gcp_runner, gcp_group):
     runner = gcp_group.backend.create(gcp_runner)
     runners: List[Runner] = gcp_group.backend.list()
     assert any(runner.name == r.name for r in runners)
+    assert len(runners) == 1
     gcp_group.backend.delete(runner)
     with raises(NotFoundError):
         gcp_group.backend.get(runner.instance_id)
