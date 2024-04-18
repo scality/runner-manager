@@ -130,45 +130,45 @@ def test_gcp_setup_labels_with_webhook(webhook: WorkflowJobEvent):
     assert "workflow" not in labels.keys()
 
 
-def test_gcp_spot_config(runner: Runner, gcp_group: RunnerGroup):
-    gcp_group.backend.instance_config.spot = True
-    scheduling = gcp_group.backend.scheduling
+def test_gcp_spot_config(runner: Runner, fake_gcp_group: RunnerGroup):
+    fake_gcp_group.backend.instance_config.spot = True
+    scheduling = fake_gcp_group.backend.scheduling
     assert scheduling.provisioning_model == "SPOT"
     assert scheduling.instance_termination_action == "DELETE"
-    gcp_group.backend.instance_config.spot = False
-    scheduling = gcp_group.backend.scheduling
+    fake_gcp_group.backend.instance_config.spot = False
+    scheduling = fake_gcp_group.backend.scheduling
     assert scheduling.provisioning_model == "STANDARD"
     assert scheduling.instance_termination_action == "DEFAULT"
 
 
-def test_gcp_disks(runner: Runner, gcp_group: RunnerGroup):
+def test_gcp_disks(runner: Runner, fake_gcp_group: RunnerGroup):
     # patch self.image.self_link to return a fake image
 
-    disks = gcp_group.backend.disks
-    zone = gcp_group.backend.config.zone
-    disk_type = gcp_group.backend.instance_config.disk_type
+    disks = fake_gcp_group.backend.disks
+    zone = fake_gcp_group.backend.config.zone
+    disk_type = fake_gcp_group.backend.instance_config.disk_type
     assert len(disks) == 1
     assert (
         disks[0].initialize_params.disk_size_gb
-        == gcp_group.backend.instance_config.disk_size_gb
+        == fake_gcp_group.backend.instance_config.disk_size_gb
     )
     assert disks[0].boot is True
     assert disks[0].auto_delete is True
     assert disks[0].initialize_params.disk_type == f"zones/{zone}/diskTypes/{disk_type}"
 
 
-def test_gcp_instance(runner: Runner, gcp_group: RunnerGroup):
-    instance = gcp_group.backend.configure_instance(runner)
+def test_gcp_instance(runner: Runner, fake_gcp_group: RunnerGroup):
+    instance = fake_gcp_group.backend.configure_instance(runner)
     assert instance.name == runner.name
 
 
-def test_sanitize_label(gcp_group: RunnerGroup):
-    assert "test" == gcp_group.backend._sanitize_label_value("test")
-    assert "42" == gcp_group.backend._sanitize_label_value(42)
-    assert "42" == gcp_group.backend._sanitize_label_value(42.0)
-    assert "" == gcp_group.backend._sanitize_label_value(None)
-    assert "test" == gcp_group.backend._sanitize_label_value("-test-")
-    assert "" == gcp_group.backend._sanitize_label_value(float("nan"))
+def test_sanitize_label(fake_gcp_group: RunnerGroup):
+    assert "test" == fake_gcp_group.backend._sanitize_label_value("test")
+    assert "42" == fake_gcp_group.backend._sanitize_label_value(42)
+    assert "42" == fake_gcp_group.backend._sanitize_label_value(42.0)
+    assert "" == fake_gcp_group.backend._sanitize_label_value(None)
+    assert "test" == fake_gcp_group.backend._sanitize_label_value("-test-")
+    assert "" == fake_gcp_group.backend._sanitize_label_value(float("nan"))
 
 
 @mark.skipif(
