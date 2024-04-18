@@ -68,9 +68,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             f"current: {len(self.get_runners())}, queued: {self.queued})"
         )
 
-    # When this class is initiated I want to setup the var self.backend.manager
-    # with the correct self.manager value as well as backend.runner_group to self.name
-    @root_validator
+    @root_validator(skip_on_failure=True)
     def setup_backend(cls, values):
         values["backend"].manager = values["manager"]
         values["backend"].runner_group = values["name"]
