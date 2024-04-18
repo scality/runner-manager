@@ -134,3 +134,52 @@ def test_healthcheck_job(
         settings.timeout_runner,
     )
     assert len(runner_group.get_runners()) == 1
+
+
+def test_healthcheck_backend_leak(
+    runner_group: RunnerGroup,
+    settings: Settings,
+    queue: Queue,
+    github: GitHub,
+    monkeypatch,
+):
+    runner_group.save()
+    runner = runner_group.create_runner(github)
+    # monkeypatch the runner_group.backend.list method to return a list
+    # with the recently created runner and a fake leaked runner
+    # This will simulate a leak in the backend
+    leaked_runner = Runner(
+        name="leak",
+        busy=False,
+        runner_group_name=runner_group.name,
+        runner_group_id=runner_group.id,
+    )
+    monkeypatch.setattr(
+        "runner_manager.backend.base.BaseBackend.list",
+        lambda self: [runner, leaked_runner],
+    )
+    # ensure the method is patched and that the group is unaware of the leaked runner
+    assert len(runner_group.get_runners()) == 1
+    assert len(runner_group.backend.list()) == 2
+    queue.enqueue(
+        healthcheck.group,
+        runner_group.pk,
+        settings.time_to_live,
+        settings.timeout_runner,
+    )
+    # the healthcheck job should add the runner to the group
+    # because the timestamp is not yet expired
+    assert len(runner_group.get_runners()) == 2
+    # Now we will expire the leaked runner
+    leaked_runner.created_at = datetime.now(timezone.utc) - (
+        settings.timeout_runner + timedelta(minutes=1)
+    )
+    leaked_runner.save()
+    queue.enqueue(
+        healthcheck.group,
+        runner_group.pk,
+        settings.time_to_live,
+        settings.timeout_runner,
+    )
+    # the healthcheck job should remove the leaked runner
+    assert len(runner_group.get_runners()) == 1

@@ -6,6 +6,7 @@ from githubkit.versions.latest.models import (
 )
 from hypothesis import given
 from hypothesis import strategies as st
+from pytest import raises
 from redis_om import Migrator, NotFoundError
 
 from runner_manager.clients.github import GitHub
@@ -43,6 +44,17 @@ def test_find_runner(runner: Runner):
     Runner.delete(runner.pk)
     with pytest.raises(NotFoundError):
         Runner.find(Runner.name == runner.name).first()
+
+
+def test_eq_method(runner: Runner):
+    assert runner == runner
+    assert runner == Runner(name=runner.name, busy=False)
+    assert runner != Runner(name="different", busy=False)
+    assert runner == Runner(id=runner.id, name="different", busy=False)
+    assert runner in [runner]
+    assert runner in [Runner(name=runner.name, busy=False)]
+    with raises(AssertionError):
+        assert runner == "runner"
 
 
 @given(webhook=WorkflowJobCompletedStrategy)

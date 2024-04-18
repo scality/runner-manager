@@ -24,13 +24,16 @@ def test_reset_job(runner_group: RunnerGroup, queue: Queue, github: GitHub):
     assert runner in runner_group.get_runners()
     # run reset job with offline runner
     runner.status = RunnerStatus.offline
+    runner.busy = False
+    runner.id = None
     runner.save()
     job = queue.enqueue(
         reset.group,
         runner_group.pk,
     )
     assert job.get_status() == JobStatus.FINISHED
-    assert runner not in runner_group.get_runners()
+    runners = runner_group.get_runners()
+    assert runner not in runners
     assert len(runner_group.get_runners()) == 1
 
 
