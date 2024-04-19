@@ -55,13 +55,14 @@ class AWSBackend(BaseBackend):
                     raise e
         return super().delete(runner)
 
-    def _get_instance_name(self, instance: InstanceTypeDef) -> str:
-        """Get the instance name."""
-        name = ""
+    def _get_tag_value(
+        self, instance: InstanceTypeDef, key: str, default: str = ""
+    ) -> str:
+        """Get the tag value."""
         for tag in instance.get("Tags", []):
-            if tag.get("Key") == "Name":
-                name = tag.get("Value", "")
-        return name
+            if tag.get("Key") == key:
+                return tag.get("Value", default)
+        return default
 
     def list(self) -> List[Runner]:
         """List runners."""
@@ -81,7 +82,7 @@ class AWSBackend(BaseBackend):
         for reservation in reservations:
             for instance in reservation.get("Instances", []):
                 instance_id = instance.get("InstanceId", "")
-                name = self._get_instance_name(instance)
+                name = self._get_tag_value(instance, "Name", instance_id)
                 try:
                     runner = Runner.find(
                         Runner.instance_id == instance_id,
@@ -91,8 +92,10 @@ class AWSBackend(BaseBackend):
                         name=name,
                         instance_id=instance_id,
                         runner_group_name=self.runner_group,
-                        busy=False,
+                        busy=bool(self._get_tag_value(instance, "busy")),
+                        status=self._get_tag_value(instance, "status", "online"),
                         created_at=instance.get("LaunchTime"),
+                        started_at=instance.get("LaunchTime"),
                     )
                 runners.append(runner)
         return runners
