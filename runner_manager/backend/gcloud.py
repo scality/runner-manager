@@ -25,6 +25,7 @@ from google.cloud.compute import (
     ZoneOperationsClient,
 )
 from pydantic import Field
+from redis_om import NotFoundError
 
 from runner_manager.backend.base import BaseBackend
 from runner_manager.models.backend import Backends, GCPConfig, GCPInstanceConfig
@@ -256,13 +257,20 @@ class GCPBackend(BaseBackend):
                 manager = instance.labels.get("manager", "")
                 runner_group = instance.labels.get("runner_group", "")
                 if manager == self.manager and runner_group == self.runner_group:
-                    runner: Runner = Runner(
-                        name=instance.name,
-                        instance_id=instance.name,
-                        runner_group_name=self.runner_group,
-                        busy=bool(instance.labels.get("busy", False)),
-                        created_at=instance.creation_timestamp,
-                    )
+                    try:
+                        runner = Runner.find(
+                            Runner.name == instance.name,
+                        ).first()
+                    except NotFoundError:
+                        runner: Runner = Runner(
+                            name=instance.name,
+                            instance_id=instance.name,
+                            runner_group_name=self.runner_group,
+                            busy=bool(instance.labels.get("busy", False)),
+                            status=instance.labels.get("status", "online"),
+                            created_at=instance.creation_timestamp,
+                            started_at=instance.creation_timestamp,
+                        )
                     runners.append(runner)
 
         except Exception as e:
