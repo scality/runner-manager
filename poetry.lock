@@ -2693,13 +2693,13 @@ cryptography = ">=35.0.0"
 
 [[package]]
 name = "types-redis"
-version = "4.6.0.20240311"
+version = "4.6.0.20240417"
 description = "Typing stubs for redis"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "types-redis-4.6.0.20240311.tar.gz", hash = "sha256:e049bbdff0e0a1f8e701b64636811291d21bff79bf1e7850850a44055224a85f"},
-    {file = "types_redis-4.6.0.20240311-py3-none-any.whl", hash = "sha256:6b9d68a29aba1ee400c823d8e5fe88675282eb69d7211e72fe65dbe54b33daca"},
+    {file = "types-redis-4.6.0.20240417.tar.gz", hash = "sha256:8be4b3e5945120acdef0a2348c04be42894e84c6d616288b908a3d8ed5e89a8d"},
+    {file = "types_redis-4.6.0.20240417-py3-none-any.whl", hash = "sha256:4c35cbd90ff18c8da6f97a05d2fe97eb3abfe09acf3a4357b6c5e2d4a59385a1"},
 ]
 
 [package.dependencies]
@@ -3062,4 +3062,4 @@ dev = ["doc8", "flake8", "flake8-import-order", "rstcheck[sphinx]", "sphinx"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "3eb51f19055586cc21ba6d695184200bba5ab245b1d9c15d41c0e4e6106ae324"
+content-hash = "165629e6750707367146b4abfbbaa5c251a3003805fd7b0f70278c3f0f260ee9"
