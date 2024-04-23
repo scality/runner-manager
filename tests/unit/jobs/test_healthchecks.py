@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 from hypothesis import given, settings
 from hypothesis import strategies as st
+from pytest import mark
 from redis_om import Migrator
 from rq import Queue
 
@@ -136,6 +137,7 @@ def test_healthcheck_job(
     assert len(runner_group.get_runners()) == 1
 
 
+@mark.skip(reason="The check was reverted due to killing healthy runners")
 def test_healthcheck_backend_leak(
     runner_group: RunnerGroup,
     settings: Settings,

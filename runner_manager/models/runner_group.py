@@ -313,16 +313,6 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
     ):
         """Healthcheck runner group."""
         runners = self.get_runners()
-        backend_runners = self.backend.list()
-        # Check if there's a runner that is not in the database
-        if len(runners) != len(backend_runners):
-            for backend_runner in backend_runners:
-                if backend_runner not in runners:
-                    # A runner has leaked from the database/runner manager
-                    # let's save it and add it to the list of runners
-                    backend_runner.save()
-                    runners.append(backend_runner)
-
         for runner in runners:
             runner.update_from_github(github)
             if runner.time_to_live_expired(time_to_live):
