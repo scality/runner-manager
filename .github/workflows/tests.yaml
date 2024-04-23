@@ -50,7 +50,7 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       - name: Upload results
-        if: "!cancelled() && env.TRUNK_TOKEN"
+        if: !cancelled() && env.TRUNK_TOKEN
         uses: trunk-io/analytics-uploader@main
         with:
           junit-paths: .reports/*.xml
