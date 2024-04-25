@@ -105,7 +105,7 @@ def queued(webhook: WorkflowJobQueued) -> str | None:
         webhook.workflow_job.labels
     )
     if not runner_group:
-        log.warning(f"Runner group with labels {labels} not found")
+        log.info(f"Runner group with labels {labels} not found")
         return None
     github: GitHub = get_github()
     log.info(f"Creating runner for {runner_group}")
