@@ -19,13 +19,18 @@ def test_startup(queue: Queue, settings: Settings, github: GitHub):
         RunnerGroup.name == settings_group.name
     ).first()
     assert runner_group.backend.name == settings_group.backend.name
+    assert runner_group.manager == settings.name
 
     # Run startup again
+    settings.name = "new-name"
     job: Job = queue.enqueue(startup, settings)
     status: JobStatus = job.get_status()
     assert status == JobStatus.FINISHED
     assert RunnerGroup.find().count() == 1
-
+    runner_group: RunnerGroup = RunnerGroup.find(
+        RunnerGroup.name == settings_group.name
+    ).first()
+    assert runner_group.manager == settings.name
     # Add leftover that should be deleted
     runner_group = RunnerGroup(
         name="leftover",

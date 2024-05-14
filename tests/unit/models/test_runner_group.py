@@ -79,6 +79,13 @@ def test_find_runner_group_labels(runner_group: RunnerGroup):
     assert RunnerGroup.find_from_labels(runner_group.labels) == runner_group
 
 
+def test_applied_config_backend(runner_group: RunnerGroup):
+    runner_group.save()
+    assert runner_group.manager is not None
+    assert runner_group.backend.manager == runner_group.manager
+    assert runner_group.backend.runner_group == runner_group.name
+
+
 def test_find_group_not_found(runner_group: RunnerGroup):
     runner_group.save()
     assert RunnerGroup.find_from_labels(["notfound"]) is None
@@ -93,6 +100,9 @@ def test_find_from_webhook(runner_group: RunnerGroup, webhook: WorkflowJobComple
     Migrator().run()
     assert RunnerGroup.find_from_webhook(webhook) == runner_group
     runner_group.delete(runner_group.pk)
+    assert RunnerGroup.find_from_webhook(webhook) is None
+    webhook.workflow_job.runner_group_name = None
+    webhook.workflow_job.runner_group_id = None
     assert RunnerGroup.find_from_webhook(webhook) is None
 
 

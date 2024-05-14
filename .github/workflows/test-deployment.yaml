@@ -4,17 +4,19 @@ name: test-deployment
 on: pull_request
 
 permissions:
-  contents: read
+  contents: write
+  packages: write
 
 jobs:
   docker-build:
     permissions:
-      contents: read
+      contents: write
       packages: write
     uses: scality/workflows/.github/workflows/docker-build.yaml@v2
     with:
       name: runner-manager
-      namespace: scality
+      namespace: ${{ github.repository_owner }}
+
   test-deployment:
     needs: docker-build
     runs-on: ubuntu-latest
@@ -23,7 +25,7 @@ jobs:
       - uses: helm/kind-action@v1
       - name: Edit the runner-manager image
         working-directory: manifests
-        run: kustomize edit set image ghcr.io/scality/runner-manager:${{ github.sha }}
+        run: kustomize edit set image ghcr.io/${{ github.repository_owner }}/runner-manager:${{ github.sha }}
       - name: Deploy runner-manager
         run: kubectl apply -k manifests
       - name: Check if deployment is ready

@@ -74,6 +74,11 @@ class Runner(BaseModel):
     def __str__(self):
         return f"{self.name} (status: {self.status}, busy: {self.busy})"
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Runner):
+            return NotImplemented
+        return self.id == other.id or self.name == other.name
+
     @classmethod
     def find_from_webhook(cls, webhook: WorkflowJobEvent) -> "Runner | None":
         """Find a runner from a webhook payload
@@ -83,7 +88,8 @@ class Runner(BaseModel):
         Returns:
             Runner: A runner object
         """
-
+        if webhook.workflow_job.runner_id is None:
+            return None
         try:
             runner: Runner | None = cls.find(
                 cls.id == webhook.workflow_job.runner_id

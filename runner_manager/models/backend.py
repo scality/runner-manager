@@ -7,6 +7,7 @@ from mypy_boto3_ec2.literals import InstanceTypeType, VolumeTypeType
 from mypy_boto3_ec2.type_defs import (
     BlockDeviceMappingTypeDef,
     EbsBlockDeviceTypeDef,
+    IamInstanceProfileTypeDef,
     TagSpecificationTypeDef,
     TagTypeDef,
 )
@@ -134,6 +135,7 @@ AwsInstance = TypedDict(
         "BlockDeviceMappings": Sequence[BlockDeviceMappingTypeDef],
         "MaxCount": int,
         "MinCount": int,
+        "IamInstanceProfile": IamInstanceProfileTypeDef,
     },
 )
 
@@ -151,14 +153,16 @@ class AWSInstanceConfig(InstanceConfig):
     tags: Dict[str, str] = {}
     volume_type: VolumeTypeType = "gp3"
     disk_size_gb: int = 20
+    iam_instance_profile_arn: str = ""
 
     def configure_instance(self, runner: Runner) -> AwsInstance:
         """Configure instance."""
         tags: Sequence[TagTypeDef] = [
             TagTypeDef(Key="Name", Value=runner.name),
-            TagTypeDef(
-                Key="runner-manager", Value=runner.manager if runner.manager else ""
-            ),
+            TagTypeDef(Key="manager", Value=runner.manager if runner.manager else ""),
+            TagTypeDef(Key="runner_group", Value=runner.runner_group_name),
+            TagTypeDef(Key="busy", Value=str(runner.busy)),
+            TagTypeDef(Key="status", Value=runner.status),
         ]
         tags.extend(
             [TagTypeDef(Key=key, Value=value) for key, value in self.tags.items()]
@@ -179,8 +183,15 @@ class AWSInstanceConfig(InstanceConfig):
             TagSpecificationTypeDef(
                 ResourceType="instance",
                 Tags=tags,
-            )
+            ),
+            TagSpecificationTypeDef(
+                ResourceType="volume",
+                Tags=tags,
+            ),
         ]
+        iam_instance_profile: IamInstanceProfileTypeDef = IamInstanceProfileTypeDef(
+            Arn=self.iam_instance_profile_arn
+        )
         return AwsInstance(
             ImageId=self.image,
             InstanceType=self.instance_type,
@@ -191,6 +202,7 @@ class AWSInstanceConfig(InstanceConfig):
             MaxCount=self.max_count,
             MinCount=self.min_count,
             BlockDeviceMappings=block_device_mappings,
+            IamInstanceProfile=iam_instance_profile,
         )
 
 

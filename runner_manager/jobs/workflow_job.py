@@ -34,9 +34,20 @@ def log_workflow_job(webhook: WorkflowJobEvent) -> None:
 def time_to_start(webhook: WorkflowJobEvent) -> timedelta:
     """From a given webhook, calculate the time it took to start the job"""
 
-    assert isinstance(webhook.workflow_job.started_at, datetime)
-    assert isinstance(webhook.workflow_job.created_at, datetime)
-    return webhook.workflow_job.started_at - webhook.workflow_job.created_at
+    if isinstance(webhook.workflow_job.created_at, str):
+        created_at = datetime.fromisoformat(webhook.workflow_job.created_at)
+    else:
+        created_at = webhook.workflow_job.created_at
+
+    if isinstance(webhook.workflow_job.started_at, str):
+        started_at = datetime.fromisoformat(webhook.workflow_job.started_at)
+    else:
+        started_at = webhook.workflow_job.started_at
+
+    assert isinstance(started_at, datetime)
+    assert isinstance(created_at, datetime)
+
+    return started_at - created_at
 
 
 def completed(webhook: WorkflowJobCompleted) -> int:
@@ -94,7 +105,7 @@ def queued(webhook: WorkflowJobQueued) -> str | None:
         webhook.workflow_job.labels
     )
     if not runner_group:
-        log.warning(f"Runner group with labels {labels} not found")
+        log.info(f"Runner group with labels {labels} not found")
         return None
     github: GitHub = get_github()
     log.info(f"Creating runner for {runner_group}")

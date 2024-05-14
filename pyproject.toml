@@ -10,19 +10,19 @@ include = ["pyproject.toml", "README.md", "LICENSE", "images/**/*"]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-fastapi = "^0.110.0"
+fastapi = "^0.111.0"
 uvicorn = { extras = ["standard"], version = "^0.29.0" }
 pydantic = ">=1.10.2,<2.0"
-redis-om = "^0.2.1"
-rq = "^1.16.1"
+redis-om = "^0.3.1"
+rq = "^1.16.2"
 pyyaml = "^6.0.1"
-redis = "^4.6.0"
+redis = "^5.0.4"
 docker = "^7.0.0"
 google-cloud-compute = "^1.18.0"
 boto3 = "^1.28.85"
 botocore = "^1.31.85"
-boto3-stubs = { extras = ["ec2"], version = "^1.34.70" }
-githubkit = { extras = ["auth-app"], version = "^0.11.3" }
+boto3-stubs = { extras = ["ec2"], version = "^1.34.104" }
+githubkit = { extras = ["auth-app"], version = "^0.11.4" }
 rq-scheduler = "^0.13.1"
 pyvmomi = "^8.0.2.0.1"
 vapi-runtime = { url = "https://raw.githubusercontent.com/vmware/vsphere-automation-sdk-python/v8.0.1.0/lib/vapi-runtime/vapi_runtime-2.40.0-py2.py3-none-any.whl" }
@@ -33,20 +33,20 @@ vcenter-bindings = { url = "https://raw.githubusercontent.com/vmware/vsphere-aut
 optional = true
 
 [tool.poetry.group.docs.dependencies]
-mkdocs-material = "^9.5.15"
+mkdocs-material = "^9.5.22"
 mkdocs = "^1.5.3"
 
 [tool.poetry.group.dev.dependencies]
 connexion = "^3.0.5"
-pytest = "^8.1.1"
+pytest = "^8.2.0"
 pytest-cov = "^5.0.0"
-hypothesis = "^6.99.13"
-pyright = "^1.1.355"
-black = "^24.3.0"
+hypothesis = "^6.102.1"
+pyright = "^1.1.362"
+black = "^24.4.2"
 isort = "^5.13.2"
-ruff = "^0.3.4"
+ruff = "^0.4.4"
 yamllint = "^1.35.1"
-types-redis = "^4.6.0.20240218"
+types-redis = "^4.6.0.20240425"
 
 
 [build-system]
@@ -54,7 +54,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
-addopts = "--disable-warnings --cov=runner_manager --cov-report=xml"
+addopts = "--disable-warnings --cov=runner_manager --cov-report=xml --junitxml=.reports/junit.xml"
 
 # Add poetry scripts
 [tool.poetry.scripts]

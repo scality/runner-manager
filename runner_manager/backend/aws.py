@@ -4,6 +4,7 @@ from boto3 import client
 from botocore.exceptions import ClientError
 from githubkit.versions.latest.webhooks import WorkflowJobEvent
 from mypy_boto3_ec2 import EC2Client
+from mypy_boto3_ec2.type_defs import FilterTypeDef, InstanceTypeDef, TagTypeDef
 from pydantic import Field
 from redis_om import NotFoundError
 
@@ -54,19 +55,24 @@ class AWSBackend(BaseBackend):
                     raise e
         return super().delete(runner)
 
+    def _get_tag_value(
+        self, instance: InstanceTypeDef, key: str, default: str = ""
+    ) -> str:
+        """Get the tag value."""
+        for tag in instance.get("Tags", []):
+            if tag.get("Key") == key:
+                return tag.get("Value", default)
+        return default
+
     def list(self) -> List[Runner]:
         """List runners."""
         try:
             reservations = self.client.describe_instances(
                 Filters=[
-                    {
-                        "Name": "tag-key",
-                        "Values": ["runner-manager"],
-                    },
-                    {
-                        "Name": "instance-state-name",
-                        "Values": ["running"],
-                    },
+                    FilterTypeDef(Name="tag:manager", Values=[str(self.manager)]),
+                    FilterTypeDef(
+                        Name="tag:runner_group", Values=[str(self.runner_group)]
+                    ),
                 ]
             ).get("Reservations")
         except Exception as e:
@@ -76,15 +82,20 @@ class AWSBackend(BaseBackend):
         for reservation in reservations:
             for instance in reservation.get("Instances", []):
                 instance_id = instance.get("InstanceId", "")
+                name = self._get_tag_value(instance, "Name", instance_id)
                 try:
                     runner = Runner.find(
                         Runner.instance_id == instance_id,
                     ).first()
                 except NotFoundError:
                     runner = Runner(
-                        name=instance_id,
+                        name=name,
                         instance_id=instance_id,
-                        busy=False,
+                        runner_group_name=self.runner_group,
+                        busy=bool(self._get_tag_value(instance, "busy")),
+                        status=self._get_tag_value(instance, "status", "online"),
+                        created_at=instance.get("LaunchTime"),
+                        started_at=instance.get("LaunchTime"),
                     )
                 runners.append(runner)
         return runners
@@ -97,7 +108,10 @@ class AWSBackend(BaseBackend):
             try:
                 self.client.create_tags(
                     Resources=[runner.instance_id],
-                    Tags=[{"Key": "tag:status", "Value": runner.status}],
+                    Tags=[
+                        TagTypeDef(Key="status", Value=runner.status),
+                        TagTypeDef(Key="busy", Value=str(runner.busy)),
+                    ],
                 )
             except Exception as e:
                 log.error(e)

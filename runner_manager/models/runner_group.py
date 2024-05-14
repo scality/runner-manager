@@ -10,7 +10,7 @@ from githubkit.exception import RequestFailed
 from githubkit.versions.latest.webhooks import WorkflowJobEvent
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Field as PydanticField
-from pydantic import validator
+from pydantic import root_validator, validator
 from redis_om import Field, NotFoundError
 from typing_extensions import Annotated
 
@@ -69,11 +69,11 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             f"current: {len(self.get_runners())}, queued: {self.queued})"
         )
 
-    def __post_init_post_parse__(self):
-        """Post init."""
-        super().__post_init_post_parse__()
-        if self.backend.manager is None:
-            self.backend.manager = self.manager
+    @root_validator(skip_on_failure=True)
+    def setup_backend(cls, values):
+        values["backend"].manager = values["manager"]
+        values["backend"].runner_group = values["name"]
+        return values
 
     @validator("name")
     def validate_name(cls, v):
@@ -272,7 +272,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         return super().save(pipeline=pipeline)
 
     @classmethod
-    def find_from_webhook(cls, webhook: WorkflowJobEvent) -> "RunnerGroup":
+    def find_from_webhook(cls, webhook: WorkflowJobEvent) -> "RunnerGroup | None":
         """Find the runner group from a webhook instance.
 
         Args:
@@ -281,6 +281,8 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         Returns:
             RunnerGroup: Runner group instance.
         """
+        if webhook.workflow_job.runner_group_id is None:
+            return None
         try:
             group: RunnerGroup | None = cls.find(
                 (cls.id == webhook.workflow_job.runner_group_id)
