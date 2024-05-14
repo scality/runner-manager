@@ -1,0 +1,65 @@
+---
+name: vsphere
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - runner_manager/backend/vsphere.py
+  push:
+    branches:
+      - main
+    paths:
+      - runner_manager/backend/vsphere.py
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  vsphere:
+    name: vsphere
+    runs-on:
+      - self-hosted
+      - vsphere
+      - jammy
+      - large
+    env:
+      REDIS_OM_URL: redis://localhost:6379/0
+      GITHUB_BASE_URL: http://localhost:4010
+    steps:
+      - uses: actions/checkout@v4
+      - name: Boot compose services
+        run: docker compose --profile tests up --build --detach
+      - run: |
+          sudo apt-get install -y pipx
+          pipx ensurepath
+          pipx install poetry
+      - name: ensure .local/bin is in PATH
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+          cache: poetry
+      - run: poetry install
+      - name: Run tests
+        run: poetry run pytest tests/unit/backend/test_vsphere.py
+        env:
+          GITHUB_TOKEN: test
+          GOVC_URL: ${{ secrets.GOVC_URL }}
+          GOVC_USERNAME: ${{ secrets.GOVC_USERNAME }}
+          GOVC_PASSWORD: ${{ secrets.GOVC_PASSWORD }}
+          GOVC_INSECURE: true
+          GOVC_DATACENTER: ${{ secrets.GOVC_DATACENTER }}
+          GOVC_DATASTORE: ${{ secrets.GOVC_DATASTORE }}
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          flags: vsphere
+          name: vsphere
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Dump logs
+        run: docker compose --profile tests logs
+        if: always()

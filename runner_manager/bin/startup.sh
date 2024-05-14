@@ -87,6 +87,18 @@ WantedBy=multi-user.target" | sudo tee /etc/systemd/system/actions.runner.servic
 
 }
 
+function setup_hostname {
+	# Ensure the hostname is defined in /etc/hosts
+	local hostname
+	hostname=$(hostname)
+
+	# Check if the hostname is in /etc/hosts
+	if ! grep -q "${hostname}" /etc/hosts; then
+		# If it's not in the file, append it
+		echo "127.0.0.1 ${hostname}" | sudo tee -a /etc/hosts
+	fi
+}
+
 function setup_runner {
 	sudo groupadd -f docker
 	sudo useradd -m actions
@@ -220,4 +232,5 @@ done
 
 init
 install_docker
+setup_hostname
 setup_runner

@@ -1,0 +1,7 @@
+---
+self-hosted-runner:
+  labels:
+    - vsphere
+    - ubuntu
+    - jammy
+    - large

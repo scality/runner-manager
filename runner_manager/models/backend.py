@@ -24,6 +24,7 @@ class Backends(str, Enum):
     docker = "docker"
     gcloud = "gcloud"
     aws = "aws"
+    vsphere = "vsphere"
 
 
 class BackendConfig(BaseModel):
@@ -203,3 +204,22 @@ class AWSInstanceConfig(InstanceConfig):
             BlockDeviceMappings=block_device_mappings,
             IamInstanceProfile=iam_instance_profile,
         )
+
+
+class VsphereConfig(BackendConfig):
+    """Configuration for vSphere backend."""
+
+    server: str
+    username: str
+    password: str
+    verify_ssl: bool = False
+
+
+class VsphereInstanceConfig(InstanceConfig):
+    """Configuration for vSphere backend instance."""
+
+    disk_provisioning: Literal["thin", "thick"] = "thin"
+    datacenter: str
+    datastore: str
+    library: str
+    library_item: str
