@@ -41,9 +41,11 @@ def test_workflow_job_hypothesis(workflow_job: WorkflowJobCompleted):
 @given(workflow_job=WorkflowJobCompletedStrategy)
 def test_webhook_authentication(workflow_job, client, authentified_app):
     data = workflow_job.json(exclude_unset=True)
+
     # First request without authentication
     response = client.post("/webhook/", content=data)
     assert response.status_code == 401
+
     # Second request with authentication
     signature = sign("secret", data, method="sha256")
     response = client.post(
@@ -52,6 +54,15 @@ def test_webhook_authentication(workflow_job, client, authentified_app):
         headers={"X-Hub-Signature-256": signature, "X-GitHub-Event": "workflow_job"},
     )
     assert response.status_code == 200
+
+    # Third request with incorrect authentication
+    signature = sign("wrong_secret", data, method="sha256")
+    response = client.post(
+        "/webhook/",
+        content=data,
+        headers={"X-Hub-Signature-256": signature, "X-GitHub-Event": "workflow_job"},
+    )
+    assert response.status_code == 401
 
 
 @given(ping=PingStrategy)

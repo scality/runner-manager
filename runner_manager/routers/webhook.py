@@ -1,6 +1,6 @@
 from typing import Annotated, Set
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Security
+from fastapi import APIRouter, Depends, Header, HTTPException, Security, Request
 from githubkit.versions.latest.models import WebhookPing
 from githubkit.webhooks import verify
 from rq import Queue
@@ -18,11 +18,13 @@ IMPLEMENTED_WEBHOOKS: Set[str] = {
 }
 
 
-def validate_webhook(
-    webhook: AcceptedWebhookEvents,
+async def validate_webhook(
+    request: Request,
     settings: Settings = Depends(get_settings),
     x_hub_signature_256: Annotated[str | None, Header()] = None,
 ) -> bool:
+
+    body = await request.body()
 
     if settings.github_webhook_secret is None:
         return True
@@ -30,9 +32,13 @@ def validate_webhook(
         raise HTTPException(status_code=401, detail="Missing signature")
     valid: bool = verify(
         settings.github_webhook_secret.get_secret_value(),
-        webhook.json(exclude_unset=True),
+        body,
         x_hub_signature_256,
     )
+
+    if not valid:
+      raise HTTPException(status_code=401, detail="Signature values do not match - check webhook secret value")
+
     return valid
 
 
@@ -43,6 +49,7 @@ def post(
     valid: bool = Security(validate_webhook),
     queue: Queue = Depends(get_queue),
 ) -> WebhookResponse:
+
     if not isinstance(webhook, WebhookPing):
         action = webhook.action
     else:
