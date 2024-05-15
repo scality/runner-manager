@@ -1,6 +1,6 @@
 from typing import Annotated, Set
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Security, Request
+from fastapi import APIRouter, Depends, Header, HTTPException, Request, Security
 from githubkit.versions.latest.models import WebhookPing
 from githubkit.webhooks import verify
 from rq import Queue
@@ -37,7 +37,10 @@ async def validate_webhook(
     )
 
     if not valid:
-      raise HTTPException(status_code=401, detail="Signature values do not match - check webhook secret value")
+        raise HTTPException(
+            status_code=401,
+            detail="Signature values do not match - check webhook secret value",
+        )
 
     return valid
 
