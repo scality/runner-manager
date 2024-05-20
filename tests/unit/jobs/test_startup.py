@@ -64,6 +64,7 @@ def test_scheduler(
         if job_type == "indexing":
             is_indexing = True
         elif job_type == "healthcheck":
+            assert settings.healthcheck_interval.total_seconds() / 2 == job.timeout
             is_healthcheck = True
 
     assert is_indexing is True

@@ -88,6 +88,7 @@ def bootstrap_scheduler(
             # rescheduled.
             result_ttl=settings.healthcheck_interval.total_seconds() * 10,
             repeat=None,
+            timeout=settings.healthcheck_interval.total_seconds() / 2,
         )
 
 
