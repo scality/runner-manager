@@ -10,7 +10,7 @@ from rq_scheduler import Scheduler
 
 from runner_manager.clients.github import GitHub
 from runner_manager.dependencies import get_github, get_scheduler, get_settings
-from runner_manager.jobs import healthcheck
+from runner_manager.jobs import healthcheck, leaks
 from runner_manager.models.runner_group import RunnerGroup
 from runner_manager.models.settings import Settings
 
@@ -54,7 +54,7 @@ def bootstrap_scheduler(
     for job in jobs:
         # Cancel any existing healthcheck jobs
         job_type = job.meta.get("type")
-        if job_type == "healthcheck" or job_type == "migrator":
+        if job_type == "healthcheck" or job_type == "migrator" or job_type == "leaks":
             log.info(f"Canceling {job_type} job: {job.id}")
             scheduler.cancel(job)
 
@@ -89,6 +89,19 @@ def bootstrap_scheduler(
             result_ttl=settings.healthcheck_interval.total_seconds() * 10,
             repeat=None,
             timeout=settings.healthcheck_interval.total_seconds() / 2,
+        )
+        log.info(f"Scheduling leaks job for group {group.name}")
+        scheduler.schedule(
+            scheduled_time=datetime.utcnow(),
+            func=leaks.runner_leaks,
+            args=[group.pk],
+            meta={
+                "type": "leaks",
+                "group": group.name,
+            },
+            interval=settings.healthcheck_interval.total_seconds() * 4,
+            result_ttl=60,
+            repeat=None,
         )
 
 
