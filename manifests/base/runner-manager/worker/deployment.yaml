@@ -11,6 +11,7 @@ spec:
             - worker
             - -c
             - runner_manager.jobs.settings
+            - --with-scheduler
           command:
             - rq
           envFrom:
