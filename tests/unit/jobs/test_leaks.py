@@ -36,3 +36,11 @@ def test_leak_job(runner_group: RunnerGroup, queue: Queue, github: GitHub, monke
     )
     # fake_runner is a leak since it is not in the group
     assert job.return_value() is True
+
+
+def test_leak_job_group_not_found(queue: Queue, github: GitHub):
+    job = queue.enqueue(
+        runner_leaks,
+        "fake_id",
+    )
+    assert job.return_value() is False

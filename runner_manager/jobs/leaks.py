@@ -21,6 +21,7 @@ def runner_leaks(pk: str) -> bool:
         group: RunnerGroup = RunnerGroup.get(pk)
     except NotFoundError:
         log.error(f"Runner group {pk} not found")
+        return False
     backend_runners = group.backend.list()
     group_runners = group.get_runners()
     if len(backend_runners) > len(group_runners):
