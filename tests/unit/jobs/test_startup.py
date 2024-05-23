@@ -59,6 +59,7 @@ def test_scheduler(
     jobs: List[Job] = scheduler.get_jobs()
     is_indexing: bool = False
     is_healthcheck: bool = False
+    is_runner_leaks: bool = False
     for job in jobs:
         job_type = job.meta.get("type")
         if job_type == "indexing":
@@ -66,9 +67,12 @@ def test_scheduler(
         elif job_type == "healthcheck":
             assert settings.healthcheck_interval.total_seconds() / 2 == job.timeout
             is_healthcheck = True
+        elif job_type == "leaks":
+            is_runner_leaks = True
 
     assert is_indexing is True
     assert is_healthcheck is True
+    assert is_runner_leaks is True
 
 
 def test_update_group_sync(settings: Settings, github: GitHub):
