@@ -3,7 +3,7 @@ from typing import Annotated, Set
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, Security
 from githubkit.versions.latest.models import WebhookPing
 from githubkit.webhooks import verify
-from rq import Queue
+from rq import Queue, Retry
 
 from runner_manager.dependencies import get_queue, get_settings
 from runner_manager.models.settings import Settings
@@ -62,7 +62,9 @@ def post(
     if event_name in IMPLEMENTED_WEBHOOKS:
         job_name = f"runner_manager.jobs.{event_name}"
 
-        job = queue.enqueue(job_name, webhook)
+        job = queue.enqueue(
+            job_name, webhook, retry=Retry(max=3, interval=[30, 60, 120])
+        )
 
         return WebhookResponse(success=True, message="Job queued", job_id=job.id)
     return WebhookResponse(success=False, message="Not implemented")
