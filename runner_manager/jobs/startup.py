@@ -106,7 +106,18 @@ def bootstrap_scheduler(
 
 
 def indexing():
+    """For RedisSearch to work, we need to run the Migrator to create the indexes.
+
+    This job is required when:
+    - Upon the first creation of the redis instance.
+    - A new schema is introduced.
+    - The Redis instance is rebooted.
+    - Changes are made to the RedisSearch schema.
+    """
+
+    log.info("Running indexing job...")
     Migrator().run()
+    log.info("Indexing job complete.")
 
 
 def startup(settings: Settings = get_settings()):
