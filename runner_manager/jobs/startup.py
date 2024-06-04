@@ -54,7 +54,7 @@ def bootstrap_scheduler(
     for job in jobs:
         # Cancel any existing healthcheck jobs
         job_type = job.meta.get("type")
-        if job_type == "healthcheck" or job_type == "migrator" or job_type == "leaks":
+        if job_type == "healthcheck" or job_type == "indexing" or job_type == "leaks":
             log.info(f"Canceling {job_type} job: {job.id}")
             scheduler.cancel(job)
 
