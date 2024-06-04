@@ -19,7 +19,7 @@ spec:
               name: redis
           volumeMounts:
             - name: redis-data
-              mountPath: /var/lib/redis-stack
+              mountPath: /data
           resources:
             requests:
               memory: 256Mi
