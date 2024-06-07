@@ -21,5 +21,3 @@ jobs:
       name: runner-manager
       namespace: ${{ github.repository_owner }}
       tag: ${{ github.ref_name == 'main' && 'latest' || github.sha }}
-      build-args: |
-        VERSION=${{ github.ref_name }}
