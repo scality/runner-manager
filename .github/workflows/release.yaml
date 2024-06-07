@@ -11,3 +11,5 @@ jobs:
       name: runner-manager
       namespace: scality
       tag: ${{ github.ref_name }}
+      build-args: |
+        VERSION=${{ github.ref_name }}

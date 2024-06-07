@@ -1,5 +1,13 @@
 FROM python:3.11-slim
 
+ARG VERSION=dev
+
+LABEL org.opencontainers.image.title=runner-manager
+LABEL org.opencontainers.image.source=https://github.com/scality/runner-manager
+LABEL org.opencontainers.image.description="Manager for GitHub Actions self-hosted runners" 
+LABEL org.opencontainers.image.licenses="Apache-2.0"
+LABEL org.opencontainers.image.version=$VERSION
+
 EXPOSE 8000
 HEALTHCHECK NONE
 
