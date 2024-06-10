@@ -62,6 +62,7 @@ jobs:
         uses: codecov/test-results-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          flags: ${{ matrix.test.name }}
       - name: Dump logs
         run: docker compose --profile tests logs
         if: always()
