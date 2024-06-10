@@ -57,6 +57,11 @@ jobs:
           org-slug: ${{ github.repository_owner }}
           token: ${{ env.TRUNK_TOKEN }}
         continue-on-error: true
+      - name: Upload test results to Codecov
+      	if: ${{ always() }}
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
       - name: Dump logs
         run: docker compose --profile tests logs
         if: always()
