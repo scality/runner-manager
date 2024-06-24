@@ -1,7 +1,3 @@
-from prometheus_client import make_asgi_app, Gauge
-
-runners = Gauge("runners", "Number of runners")
-
-runners.set(4)
+from prometheus_client import make_asgi_app
 
 app = make_asgi_app()

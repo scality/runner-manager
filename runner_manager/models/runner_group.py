@@ -13,6 +13,7 @@ from pydantic import Field as PydanticField
 from pydantic import root_validator, validator
 from redis_om import Field, NotFoundError
 from typing_extensions import Annotated
+from prometheus_client import Gauge
 
 from runner_manager.backend.aws import AWSBackend
 from runner_manager.backend.base import BaseBackend
@@ -27,6 +28,8 @@ from runner_manager.models.runner import Runner, RunnerLabel, RunnerStatus
 log = logging.getLogger(__name__)
 
 regex = re.compile(r"[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}")
+
+runners_count = Gauge("runners", "Number of runners", ['runner_group'])
 
 
 class BaseRunnerGroup(PydanticBaseModel):
@@ -113,6 +116,7 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         runners: List[Runner] = []
         try:
             runners = Runner.find(Runner.runner_group_name == self.name).all()
+            runners_count.labels(runner_group=self.name).set(len(runners))
         except NotFoundError:
             pass
         return runners
@@ -248,6 +252,9 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             group = github.rest.actions.update_self_hosted_runner_group_for_org(
                 org=self.organization, runner_group_id=self.id, data=data
             )
+
+        runners_count.labels(runner_group=self.name)
+
         return group.parsed_data
 
     def save(
