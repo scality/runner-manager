@@ -1,14 +1,7 @@
-import logging
+from prometheus_client import make_asgi_app, Gauge
 
-from fastapi import APIRouter, Response
+runners = Gauge("runners", "Number of runners")
 
-router = APIRouter(prefix="/metrics")
+runners.set(4)
 
-log = logging.getLogger(__name__)
-
-
-@router.get("/", status_code=200)
-def metrics():
-    """Metrics endpoint that answers to GET requests on /metrics"""
-
-    return Response(status_code=200)
+app = make_asgi_app()

@@ -46,7 +46,7 @@ app.include_router(_health.router)
 app.include_router(private.router)
 app.include_router(public.router)
 app.include_router(runner_groups.router)
-app.include_router(metrics.router)
+app.mount("/metrics", metrics.app)
 
 
 @app.get("/")
