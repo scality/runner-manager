@@ -23,6 +23,15 @@ def test_get_group(client: TestClient, runner_group: RunnerGroup):
     runner_group.save()
 
 
+def test_get_group_runners(client: TestClient, runner_group: RunnerGroup):
+    response = client.get(f"/groups/{runner_group.name}/list")
+    assert response.status_code == 404
+    runner_group.save()
+    response = client.get(f"/groups/{runner_group.name}/list")
+    assert response.status_code == 200
+    assert response.json() == runner_group.get_runners()
+
+
 def test_delete_group(client: TestClient, runner_group: RunnerGroup):
     response = client.delete(f"/groups/{runner_group.name}")
     assert response.status_code == 404
