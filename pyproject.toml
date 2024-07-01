@@ -27,7 +27,6 @@ rq-scheduler = "^0.13.1"
 pyvmomi = "^8.0.2.0.1"
 vapi-runtime = { url = "https://raw.githubusercontent.com/vmware/vsphere-automation-sdk-python/v8.0.1.0/lib/vapi-runtime/vapi_runtime-2.40.0-py2.py3-none-any.whl" }
 vcenter-bindings = { url = "https://raw.githubusercontent.com/vmware/vsphere-automation-sdk-python/v8.0.1.0/lib/vcenter-bindings/vcenter_bindings-4.1.0-py2.py3-none-any.whl" }
-=======
 prometheus-client = "^0.20.0"
 
 [tool.poetry.group.docs]

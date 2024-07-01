@@ -5,9 +5,16 @@ from runner_manager import RunnerGroup
 from runner_manager.clients.github import GitHub
 
 
-def test_metrics_endpoint(client: TestClient):
+def test_metrics_endpoint(client: TestClient, runner_group: RunnerGroup):
+    runner_group.save()
     response = client.get("/metrics")
     assert response.status_code == 200
+    runner_lines = [
+        line for line in response.text.splitlines() if line.startswith("runners_")
+    ]
+    assert 'runners_count{runner_group="test"} 0.0' in runner_lines
+    assert 'runners_created_total{runner_group="test"} 0.0' in runner_lines
+    assert 'runners_deleted_total{runner_group="test"} 0.0' in runner_lines
 
 
 def test_runner_count(runner_group: RunnerGroup, github: GitHub):
