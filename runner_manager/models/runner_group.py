@@ -8,12 +8,12 @@ import redis
 from githubkit import Response
 from githubkit.exception import RequestFailed
 from githubkit.versions.latest.webhooks import WorkflowJobEvent
+from prometheus_client import Counter, Gauge
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Field as PydanticField
 from pydantic import root_validator, validator
 from redis_om import Field, NotFoundError
 from typing_extensions import Annotated
-from prometheus_client import Gauge
 
 from runner_manager.backend.aws import AWSBackend
 from runner_manager.backend.base import BaseBackend
@@ -29,7 +29,13 @@ log = logging.getLogger(__name__)
 
 regex = re.compile(r"[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}")
 
-runners_count = Gauge("runners", "Number of runners", ['runner_group'])
+runners_count = Gauge("runners_count", "Number of runners", ["runner_group"])
+runners_created = Counter(
+    "runners_created_total", "Counter of runners created", ["runner_group"]
+)
+runners_deleted = Counter(
+    "runners_deleted_total", "Counter of runners deleted", ["runner_group"]
+)
 
 
 class BaseRunnerGroup(PydanticBaseModel):
@@ -156,6 +162,8 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             )
             runner.save()
             runner.generate_jit_config(github)
+            runners_created.labels(runner_group=self.name).inc()
+            runners_count.labels(runner_group=self.name).inc()
             if self.queued > 0:
                 self.queued -= 1
                 self.save()
@@ -202,6 +210,8 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
                 github.rest.actions.delete_self_hosted_runner_from_org(
                     org=self.organization, runner_id=runner.id
                 )
+                runners_deleted.labels(runner_group=self.name).inc()
+                runners_count.labels(runner_group=self.name).dec()
         return self.backend.delete(runner)
 
     def find_github_group(self, github: GitHub) -> GitHubRunnerGroup | None:
@@ -252,9 +262,6 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
             group = github.rest.actions.update_self_hosted_runner_group_for_org(
                 org=self.organization, runner_group_id=self.id, data=data
             )
-
-        runners_count.labels(runner_group=self.name)
-
         return group.parsed_data
 
     def save(
@@ -276,6 +283,9 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
         if github:
             github_group: GitHubRunnerGroup = self.create_github_group(github)
             self.id = github_group.id
+        runners_count.labels(runner_group=self.name)
+        runners_created.labels(runner_group=self.name)
+        runners_deleted.labels(runner_group=self.name)
         return super().save(pipeline=pipeline)
 
     @classmethod
