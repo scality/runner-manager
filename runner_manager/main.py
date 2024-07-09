@@ -8,7 +8,14 @@ from rq.job import Job
 from runner_manager import Runner, RunnerGroup, Settings, log
 from runner_manager.dependencies import get_queue, get_redis, get_settings
 from runner_manager.jobs.startup import startup
-from runner_manager.routers import _health, private, public, runner_groups, webhook
+from runner_manager.routers import (
+    _health,
+    metrics,
+    private,
+    public,
+    runner_groups,
+    webhook,
+)
 
 settings = get_settings()
 log.setLevel(settings.log_level)
@@ -39,6 +46,7 @@ app.include_router(_health.router)
 app.include_router(private.router)
 app.include_router(public.router)
 app.include_router(runner_groups.router)
+app.include_router(metrics.router)
 
 
 @app.get("/")
