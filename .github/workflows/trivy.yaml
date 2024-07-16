@@ -1,0 +1,28 @@
+---
+name: Trivy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: {}
+  schedule:
+    - cron: 0 0 * * 0
+
+permissions:
+  contents: write
+
+jobs:
+  trivy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Scan image in a private registry and upload results to GitHub
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: ghcr.io/${{ github.repository }}:${{ github.ref_name == 'main' && 'latest' || github.sha }}
+          scan-type: image
+          format: github
+          output: dependency-results.sbom.json
+          github-pat: ${{ secrets.GITHUB_TOKEN }}
+          severity: CRITICAL
+          scanners: vuln
