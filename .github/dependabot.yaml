@@ -7,6 +7,17 @@ registries:
     username: ${{ secrets.DOCKERHUB_LOGIN }}
     password: ${{ secrets.DOCKERHUB_PASSWORD }}
 updates:
+  - package-ecosystem: devcontainers
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      devcontainers:
+        patterns:
+          - "*"
+        update-types:
+          - patch
+          - minor
   - package-ecosystem: github-actions
     directory: /
     schedule:
