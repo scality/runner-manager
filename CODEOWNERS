@@ -1,4 +1,4 @@
 * @scality/platform-eng
-.github/workflows/* @scality/platform-eng eve-ci-cd[bot]
-poetry.lock @scality/platform-eng eve-ci-cd[bot]
-pyproject.toml @scality/platform-eng eve-ci-cd[bot]
+.github/workflows/* @scality/platform-eng eve-ci-cd
+poetry.lock @scality/platform-eng eve-ci-cd
+pyproject.toml @scality/platform-eng eve-ci-cd
