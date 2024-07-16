@@ -50,6 +50,8 @@ updates:
       interval: weekly
     groups:
       python:
+        patterns:
+          - "*"
         exclude-patterns:
           - pydantic
           - githubkit
