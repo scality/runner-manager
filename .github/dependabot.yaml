@@ -37,3 +37,11 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    groups:
+      python:
+        exclude-patterns:
+          - pydantic
+          - githubkit
+        update-types:
+          - patch
+          - minor
