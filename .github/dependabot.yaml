@@ -7,16 +7,21 @@ registries:
     username: ${{ secrets.DOCKERHUB_LOGIN }}
     password: ${{ secrets.DOCKERHUB_PASSWORD }}
 updates:
+  - package-ecosystem: devcontainers
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      devcontainers:
+        patterns:
+          - "*"
+        update-types:
+          - patch
+          - minor
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
-    commit-message:
-      prefix: github-actions
-      include: scope
-    labels:
-      - github-actions
-      - dependencies
     groups:
       actions:
         patterns:
@@ -32,12 +37,6 @@ updates:
       - manifests/base/runner-manager/redis
     schedule:
       interval: weekly
-    commit-message:
-      prefix: docker
-      include: scope
-    labels:
-      - docker
-      - dependencies
     groups:
       docker:
         patterns:
@@ -49,17 +48,11 @@ updates:
     directory: /
     schedule:
       interval: weekly
-    commit-message:
-      prefix: pip
-      include: scope
-    labels:
-      - pip
-      - dependencies
     groups:
-      pip:
-        patterns:
-          - "*"
+      python:
+        exclude-patterns:
+          - pydantic
+          - githubkit
         update-types:
           - patch
           - minor
-
