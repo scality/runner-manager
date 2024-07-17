@@ -54,6 +54,9 @@ function job_started {
 			sleep 5
 		done
 	fi
+	# Run bash injected through runner group config
+	bash /opt/runner/started_script.sh
+
 	echo "Done"
 }
 
@@ -125,6 +128,16 @@ function setup_runner {
 	else
 		sudo -H -u actions bash -c "nohup /home/actions/actions-runner/run.sh --jitconfig \"${JIT_CONFIG}\" 2>/home/actions/actions-runner/logs &"
 	fi
+
+	cat << EOF > /opt/runner/started_script.sh
+${RUNNER_STARTED_SCRIPT}
+EOF
+	cat /opt/runner/started_script.sh
+
+	cat << EOF > /opt/runner/completed_script.sh
+${RUNNER_COMPLETED_SCRIPT}
+EOF
+	cat /opt/runner/completed_script.sh
 
 }
 

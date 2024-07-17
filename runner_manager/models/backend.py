@@ -42,6 +42,8 @@ class RunnerEnv(BaseModel):
     RUNNER_GROUP: Optional[str] = None
     RUNNER_REDHAT_USERNAME: Optional[str] = None
     RUNNER_REDHAT_PASSWORD: Optional[str] = None
+    RUNNER_STARTED_SCRIPT: Optional[str] = None
+    RUNNER_COMPLETED_SCRIPT: Optional[str] = None
 
 
 class InstanceConfig(BaseSettings):
@@ -63,6 +65,8 @@ class InstanceConfig(BaseSettings):
             RUNNER_REDHAT_PASSWORD=(
                 self.redhat_password if self.redhat_password else None
             ),
+            RUNNER_STARTED_SCRIPT = runner.job_started_script,
+            RUNNER_COMPLETED_SCRIPT = runner.job_completed_script
         )
 
     def template_startup(self, runner: Runner) -> str:
