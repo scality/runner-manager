@@ -56,12 +56,13 @@ function job_started {
 	fi
 	# Run bash injected through runner group config
 	bash /opt/runner/started_script.sh
-
 	echo "Done"
 }
 
 function job_completed {
 	# This function is called when the job is completed
+	# Run bash injected through runner group config
+	bash /opt/runner/completed_script.sh
 	echo "Job completed"
 
 }
@@ -129,6 +130,7 @@ function setup_runner {
 		sudo -H -u actions bash -c "nohup /home/actions/actions-runner/run.sh --jitconfig \"${JIT_CONFIG}\" 2>/home/actions/actions-runner/logs &"
 	fi
 
+	#
 	cat << EOF > /opt/runner/started_script.sh
 ${RUNNER_STARTED_SCRIPT}
 EOF
