@@ -130,7 +130,6 @@ function setup_runner {
 		sudo -H -u actions bash -c "nohup /home/actions/actions-runner/run.sh --jitconfig \"${JIT_CONFIG}\" 2>/home/actions/actions-runner/logs &"
 	fi
 
-	#
 	cat << EOF > /opt/runner/job_started_script.sh
 ${RUNNER_JOB_STARTED_SCRIPT}
 EOF
