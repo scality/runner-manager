@@ -55,14 +55,14 @@ function job_started {
 		done
 	fi
 	# Run bash injected through runner group config
-	bash /opt/runner/started_script.sh
+	bash /opt/runner/job_started_script.sh
 	echo "Done"
 }
 
 function job_completed {
 	# This function is called when the job is completed
 	# Run bash injected through runner group config
-	bash /opt/runner/completed_script.sh
+	bash /opt/runner/job_completed_script.sh
 	echo "Job completed"
 
 }
@@ -131,15 +131,15 @@ function setup_runner {
 	fi
 
 	#
-	cat << EOF > /opt/runner/started_script.sh
-${RUNNER_STARTED_SCRIPT}
+	cat << EOF > /opt/runner/job_started_script.sh
+${RUNNER_JOB_STARTED_SCRIPT}
 EOF
-	cat /opt/runner/started_script.sh
+	cat /opt/runner/job_started_script.sh
 
-	cat << EOF > /opt/runner/completed_script.sh
-${RUNNER_COMPLETED_SCRIPT}
+	cat << EOF > /opt/runner/job_completed_script.sh
+${RUNNER_JOB_COMPLETED_SCRIPT}
 EOF
-	cat /opt/runner/completed_script.sh
+	cat /opt/runner/job_completed_script.sh
 
 }
 
