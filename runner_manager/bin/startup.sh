@@ -133,12 +133,10 @@ function setup_runner {
 	cat << EOF > /opt/runner/job_started_script.sh
 ${RUNNER_JOB_STARTED_SCRIPT}
 EOF
-	cat /opt/runner/job_started_script.sh
 
 	cat << EOF > /opt/runner/job_completed_script.sh
 ${RUNNER_JOB_COMPLETED_SCRIPT}
 EOF
-	cat /opt/runner/job_completed_script.sh
 
 }
 

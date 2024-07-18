@@ -70,8 +70,8 @@ class Runner(BaseModel):
     organization: str = Field(default=None, index=True, description="Organization name")
     created_at: Optional[datetime]
     started_at: Optional[datetime]
-    job_started_script: Optional[str]
-    job_completed_script: Optional[str]
+    job_started_script: Optional[str] = ""
+    job_completed_script: Optional[str] = ""
 
     def __str__(self):
         return f"{self.name} (status: {self.status}, busy: {self.busy})"

@@ -42,8 +42,8 @@ class RunnerEnv(BaseModel):
     RUNNER_GROUP: Optional[str] = None
     RUNNER_REDHAT_USERNAME: Optional[str] = None
     RUNNER_REDHAT_PASSWORD: Optional[str] = None
-    RUNNER_JOB_STARTED_SCRIPT: Optional[str] = None
-    RUNNER_JOB_COMPLETED_SCRIPT: Optional[str] = None
+    RUNNER_JOB_STARTED_SCRIPT: Optional[str] = ""
+    RUNNER_JOB_COMPLETED_SCRIPT: Optional[str] = ""
 
 
 class InstanceConfig(BaseSettings):
