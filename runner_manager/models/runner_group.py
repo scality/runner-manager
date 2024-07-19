@@ -44,6 +44,8 @@ class BaseRunnerGroup(PydanticBaseModel):
     max: Optional[int] = Field(ge=1, default=20)
     min: Optional[int] = Field(ge=0, default=0)
     labels: List[str]
+    job_started_script: Optional[str] = ""
+    job_completed_script: Optional[str] = ""
 
     backend: Annotated[
         Union[BaseBackend, DockerBackend, GCPBackend, AWSBackend, VsphereBackend],
@@ -62,6 +64,8 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
     queued: int = Field(default=0, ge=0)
     os: str = Field(default="linux")
     arch: str = Field(default="x64")
+    job_started_script: Optional[str] = Field(default="")
+    job_completed_script: Optional[str] = Field(default="")
 
     def __str__(self) -> str:
         return (
@@ -149,6 +153,8 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
                 labels=self.runner_labels,
                 manager=self.manager,
                 download_url=self.download_url(github),
+                job_started_script=self.job_started_script,
+                job_completed_script=self.job_completed_script,
             )
             runner.save()
             runner.generate_jit_config(github)

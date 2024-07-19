@@ -59,6 +59,8 @@ def test_create_runner_from_group(runner_group: RunnerGroup, github: GitHub):
     assert runner.encoded_jit_config is not None
     assert runner.created_at is not None
     assert runner.created_at.tzinfo == timezone.utc
+    assert runner.job_started_script == ""
+    assert runner.job_completed_script == ""
 
 
 def test_list_runners_from_group(runner_group: RunnerGroup, github: GitHub):
@@ -161,6 +163,15 @@ def test_runner_group_name():
                 backend={"name": "base"},
                 labels=["test"],
             )
+
+
+def test_job_scripts(runner_group: RunnerGroup, github: GitHub):
+    runner_group.job_started_script = "Hello"
+    runner_group.min = 1
+    runner_group.save()
+    runner = runner_group.create_runner(github)
+    assert runner.job_completed_script == ""
+    assert runner.job_started_script == runner_group.job_started_script
 
 
 def test_need_new_runner(runner_group: RunnerGroup, github: GitHub):
