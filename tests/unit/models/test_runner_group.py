@@ -164,6 +164,7 @@ def test_runner_group_name():
                 labels=["test"],
             )
 
+
 def test_job_scripts(runner_group: RunnerGroup, github: GitHub):
     runner_group.job_started_script = "Hello"
     runner_group.min = 1

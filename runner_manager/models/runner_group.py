@@ -153,8 +153,8 @@ class RunnerGroup(BaseModel, BaseRunnerGroup):
                 labels=self.runner_labels,
                 manager=self.manager,
                 download_url=self.download_url(github),
-                job_started_script = self.job_started_script,
-                job_completed_script = self.job_completed_script,
+                job_started_script=self.job_started_script,
+                job_completed_script=self.job_completed_script,
             )
             runner.save()
             runner.generate_jit_config(github)

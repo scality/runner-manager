@@ -68,9 +68,9 @@ def test_setup_redhat_credentials(runner, monkeypatch):
 
 
 def test_job_scripts(runner_group, runner):
-    runner.job_started_script = "echo \"job started\""
-    runner.job_completed_script = "echo \"job completed\""
+    runner.job_started_script = 'echo "job started"'
+    runner.job_completed_script = 'echo "job completed"'
     # Ensure that the template is rendered correctly
     template = runner_group.backend.instance_config.template_startup(runner)
-    assert "echo \"Hello\"" in template
-    assert "echo \"job completed\"" in template
+    assert 'echo "job started"' in template
+    assert 'echo "job completed"' in template
