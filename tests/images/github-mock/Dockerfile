@@ -15,7 +15,7 @@ RUN curl https://github.com/stoplightio/prism/releases/download/${PRISM_VERSION}
 
 WORKDIR /app
 
-RUN curl -O -L https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/ghec/ghec.2022-11-28.json
+RUN curl -O -L https://raw.githubusercontent.com/github/rest-api-description/a2f6c1ddb1840778cf7a4119c4446d697f77500e/descriptions/ghec/ghec.2022-11-28.json
 
 # There's a misconfiguration in the openapi file, we are going to replace the following strings:
 # - "server-statistics-actions.yaml" -> "#/components/schemas/server-statistics-actions"
