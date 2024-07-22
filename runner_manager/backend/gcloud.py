@@ -73,6 +73,11 @@ class GCPBackend(BaseBackend):
 
     @property
     def image(self) -> Image:
+        if self.instance_config.image is not None:
+            return self.image_client.get(
+                project=self.instance_config.image_project,
+                image=self.instance_config.image,
+            )
         return self.image_client.get_from_family(
             project=self.instance_config.image_project,
             family=self.instance_config.image_family,
