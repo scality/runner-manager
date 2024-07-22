@@ -195,6 +195,11 @@ function init {
 			gnupg \
 			lsb-release
 	elif [[ ${LINUX_OS} == "centos" ]] || [[ ${LINUX_OS} == "rocky" ]] || [[ ${LINUX_OS} == "almalinux" ]]; then
+		if [[ ${LINUX_OS_VERSION} == "7" ]]; then
+			# CentOS 7 is EOL and mirrorlist does no longer exists
+			# using another mirror as a temporary workaround
+			sed -i 's/^mirrorlist=/#mirrorlist=/; s/^#baseurl=/baseurl=/; s/mirror\.centos\.org/vault\.centos\.org/' /etc/yum.repos.d/*.repo
+		fi
 		sudo yum install -y bind-utils yum-utils
 	elif [[ ${LINUX_OS} == "rhel" ]]; then
 		echo "
