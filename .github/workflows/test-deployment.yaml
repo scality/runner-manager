@@ -8,24 +8,31 @@ permissions:
   packages: write
 
 jobs:
-  docker-build:
-    permissions:
-      contents: write
-      packages: write
-    uses: scality/workflows/.github/workflows/docker-build.yaml@v2
-    with:
-      name: runner-manager
-      namespace: ${{ github.repository_owner }}
-
   test-deployment:
-    needs: docker-build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build runner-manager image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          load: true
+          tags: ghcr.io/${{ github.repository }}:${{ github.sha }}
+          cache-from: type=gha,scope=runner-manager
+          cache-to: type=gha,mode=max,scope=runner-manager
       - uses: helm/kind-action@v1
+        with:
+          cluster_name: kind
+      - name: Wait for kind node to be ready
+        run: kubectl wait --for=condition=Ready node/kind-control-plane --timeout=120s
+      - name: Load image to kind cluster
+        run: kind load docker-image ghcr.io/${{ github.repository }}:${{ github.sha }}
       - name: Edit the runner-manager image
         working-directory: manifests
-        run: kustomize edit set image ghcr.io/${{ github.repository_owner }}/runner-manager:${{ github.sha }}
+        run: kustomize edit set image ghcr.io/${{ github.repository }}:${{ github.sha }}
       - name: Deploy runner-manager
         run: kubectl apply -k manifests
       - name: Check if deployment is ready

@@ -12,7 +12,18 @@ permissions:
   contents: read
 
 jobs:
+  setup:
+    if: github.event_name == 'pull_request'
+    outputs:
+      is_fork: ${{ steps.fork.outputs.is_fork }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Identify if the PR comes from a fork
+        id: fork
+        run: echo "is_fork=$(gh pr view --json isCrossRepository  --jq .isCrossRepository)" >> $GITHUB_OUTPUT
   docker-build:
+    needs: setup
     permissions:
       contents: read
       packages: write
@@ -21,3 +32,4 @@ jobs:
       name: runner-manager
       namespace: ${{ github.repository_owner }}
       tag: ${{ github.ref_name == 'main' && 'latest' || github.sha }}
+      push: ${{ needs.setup.outputs.is_fork == 'true' && false || true }}
