@@ -108,6 +108,7 @@ class GCPConfig(BackendConfig):
 class GCPInstanceConfig(InstanceConfig):
     image_family: str = "ubuntu-2004-lts"
     image_project: str = "ubuntu-os-cloud"
+    image: Optional[str] = None
     machine_type: str = "e2-small"
     subnetwork: str = "default"
     enable_nested_virtualization: bool = True
