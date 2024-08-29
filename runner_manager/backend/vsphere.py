@@ -4,6 +4,7 @@ from typing import List, Literal
 
 from com.vmware.content.library_client import Item
 from com.vmware.content_client import Library
+from com.vmware.vapi.std.errors_client import NotFound
 from com.vmware.vcenter.ovf_client import (
     DiskProvisioningType,
     LibraryItem,
@@ -167,7 +168,12 @@ class VsphereBackend(BaseBackend):
     def delete(self, runner: Runner):
         client = self._create_client()
         if runner.instance_id is not None:
-            state = client.vcenter.vm.Power.get(runner.instance_id)
+            try:
+                state = client.vcenter.vm.Power.get(runner.instance_id)
+                log.debug(f"VM {runner.name} state: {state}")
+            except NotFound:
+                log.info(f"VM {runner.name} not found.")
+                return super().delete(runner)
             if state == Power.Info(state=Power.State.POWERED_ON):
                 client.vcenter.vm.Power.stop(runner.instance_id)
             elif state == Power.Info(state=Power.State.SUSPENDED):
