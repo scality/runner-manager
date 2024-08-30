@@ -40,6 +40,9 @@ def vsphere_group(settings) -> RunnerGroup:
 
 @mark.skipif(not os.getenv("GOVC_URL"), reason="GOVC_URL environment variable not set")
 def test_vsphere_client(vsphere_group: RunnerGroup, runner: Runner):
+    # deleting the runner should not raise an exception
+    runner.instance_id = "i-1234"
+    vsphere_group.backend.delete(runner)
     runner = vsphere_group.backend.create(runner)
     assert runner.instance_id is not None
     vsphere_group.backend.delete(runner)
