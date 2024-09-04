@@ -53,6 +53,7 @@ updates:
         exclude-patterns:
           - pydantic
           - githubkit
+          - redis-om
         update-types:
           - patch
           - minor
