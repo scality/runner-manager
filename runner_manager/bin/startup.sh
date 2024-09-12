@@ -43,15 +43,29 @@ function job_started {
 	echo "Running preliminary checks..."
 	# Check if apt, dnf, or yum is running
 	echo "Ensure no package manager is running"
+	local tries=0
 	while pgrep -x "apt" >/dev/null || pgrep -x "dnf" >/dev/null || pgrep -x "yum" >/dev/null; do
 		echo "Waiting for package manager to finish"
-		sleep 5
+		((tries++))
+		sleep "${tries}"
+		if [[ ${tries} -eq 10 ]]; then
+			echo "::warning::Package manager did not finish"
+			break
+		fi
 	done
+
+	# reset tries counter
+	tries=0
 	if [[ ! ${LABELS} =~ "no-docker" ]]; then
 		echo "Ensure docker is running"
 		while ! docker info >/dev/null 2>&1; do
 			echo "Waiting for docker to start"
-			sleep 5
+			((tries++))
+			sleep "${tries}"
+			if [[ ${tries} -eq 10 ]]; then
+				echo "::warning::Docker did not start"
+				break
+			fi
 		done
 	fi
 	# Run bash injected through runner group config
