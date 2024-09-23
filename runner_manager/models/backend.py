@@ -3,11 +3,16 @@ from pathlib import Path
 from string import Template
 from typing import Dict, List, Literal, Optional, Sequence, TypedDict
 
-from mypy_boto3_ec2.literals import InstanceTypeType, VolumeTypeType
+from mypy_boto3_ec2.literals import (
+    InstanceMetadataTagsStateType,
+    InstanceTypeType,
+    VolumeTypeType,
+)
 from mypy_boto3_ec2.type_defs import (
     BlockDeviceMappingTypeDef,
     EbsBlockDeviceTypeDef,
     IamInstanceProfileTypeDef,
+    InstanceMetadataOptionsResponseTypeDef,
     TagSpecificationTypeDef,
     TagTypeDef,
 )
@@ -141,6 +146,7 @@ AwsInstance = TypedDict(
         "MaxCount": int,
         "MinCount": int,
         "IamInstanceProfile": IamInstanceProfileTypeDef,
+        "MetadataOptions": InstanceMetadataOptionsResponseTypeDef,
     },
 )
 
@@ -159,6 +165,7 @@ class AWSInstanceConfig(InstanceConfig):
     volume_type: VolumeTypeType = "gp3"
     disk_size_gb: int = 20
     iam_instance_profile_arn: str = ""
+    instance_metadata_tags: InstanceMetadataTagsStateType = "disabled"
 
     def configure_instance(self, runner: Runner) -> AwsInstance:
         """Configure instance."""
@@ -197,6 +204,11 @@ class AWSInstanceConfig(InstanceConfig):
         iam_instance_profile: IamInstanceProfileTypeDef = IamInstanceProfileTypeDef(
             Arn=self.iam_instance_profile_arn
         )
+        instance_metadata_options: InstanceMetadataOptionsResponseTypeDef = (
+            InstanceMetadataOptionsResponseTypeDef(
+                InstanceMetadataTags=self.instance_metadata_tags,
+            )
+        )
         return AwsInstance(
             ImageId=self.image,
             InstanceType=self.instance_type,
@@ -208,6 +220,7 @@ class AWSInstanceConfig(InstanceConfig):
             MinCount=self.min_count,
             BlockDeviceMappings=block_device_mappings,
             IamInstanceProfile=iam_instance_profile,
+            MetadataOptions=instance_metadata_options,
         )
 
 
