@@ -12,7 +12,7 @@ from mypy_boto3_ec2.type_defs import (
     BlockDeviceMappingTypeDef,
     EbsBlockDeviceTypeDef,
     IamInstanceProfileTypeDef,
-    InstanceMetadataOptionsResponseTypeDef,
+    InstanceMetadataOptionsRequestTypeDef,
     TagSpecificationTypeDef,
     TagTypeDef,
 )
@@ -146,7 +146,7 @@ AwsInstance = TypedDict(
         "MaxCount": int,
         "MinCount": int,
         "IamInstanceProfile": IamInstanceProfileTypeDef,
-        "MetadataOptions": InstanceMetadataOptionsResponseTypeDef,
+        "MetadataOptions": InstanceMetadataOptionsRequestTypeDef,
     },
 )
 
@@ -204,8 +204,8 @@ class AWSInstanceConfig(InstanceConfig):
         iam_instance_profile: IamInstanceProfileTypeDef = IamInstanceProfileTypeDef(
             Arn=self.iam_instance_profile_arn
         )
-        instance_metadata_options: InstanceMetadataOptionsResponseTypeDef = (
-            InstanceMetadataOptionsResponseTypeDef(
+        instance_metadata_options: InstanceMetadataOptionsRequestTypeDef = (
+            InstanceMetadataOptionsRequestTypeDef(
                 InstanceMetadataTags=self.instance_metadata_tags,
             )
         )
