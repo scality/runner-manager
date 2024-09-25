@@ -49,6 +49,7 @@ def test_aws_instance_config(runner: Runner):
         tags={"test": "test"},
         subnet_id="i-0f9b0a3b7b3b3b3b3",
         iam_instance_profile_arn="test",
+        instance_metadata_tags="enabled",
     )
     instance: AwsInstance = instance_config.configure_instance(runner)
     assert instance["ImageId"] == instance_config.image
@@ -56,6 +57,10 @@ def test_aws_instance_config(runner: Runner):
     assert (
         instance["IamInstanceProfile"]["Arn"]
         == instance_config.iam_instance_profile_arn
+    )
+    assert (
+        instance["MetadataOptions"]["InstanceMetadataTags"]
+        == instance_config.instance_metadata_tags
     )
     assert runner.name in instance["UserData"]
     tags = instance["TagSpecifications"][0]["Tags"]
