@@ -1023,17 +1023,17 @@ dev = ["flake8", "markdown", "twine", "wheel"]
 
 [[package]]
 name = "githubkit"
-version = "0.11.8"
+version = "0.11.11"
 description = "GitHub SDK for Python"
 optional = false
 python-versions = "<4.0,>=3.8"
 files = [
-    {file = "githubkit-0.11.8-py3-none-any.whl", hash = "sha256:fb6cf775ef38c21d38226565219606009cecd67358e46db99c2499199ab3b94b"},
-    {file = "githubkit-0.11.8.tar.gz", hash = "sha256:e6114f66cd1fcf9fa1c58987366ce75b98325d5ea708a0108533ab7417701c8f"},
+    {file = "githubkit-0.11.11-py3-none-any.whl", hash = "sha256:1296548278c8e2a9aeff21f2415d1cbd7cb1aca337730789947c486bcaf580a8"},
+    {file = "githubkit-0.11.11.tar.gz", hash = "sha256:575a601a80d2d2a4d1bb75f63a27f0e1c316d8f0d3e8bea8613af2681a4bf6fb"},
 ]
 
 [package.dependencies]
-hishel = ">=0.0.21,<=0.0.30"
+hishel = ">=0.0.21,<=0.0.32"
 httpx = ">=0.23.0,<1.0.0"
 pydantic = ">=1.9.1,<2.5.0 || >2.5.0,<2.5.1 || >2.5.1,<3.0.0"
 PyJWT = {version = ">=2.4.0,<3.0.0", extras = ["crypto"], optional = true, markers = "extra == \"jwt\" or extra == \"auth-app\" or extra == \"auth\" or extra == \"all\""}
@@ -3206,4 +3206,4 @@ dev = ["doc8", "flake8", "flake8-import-order", "rstcheck[sphinx]", "sphinx"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "61ee5fe793ec73a6c734621cc27fe04cb7c1f4d0dfd1d654f7e7752e3006f129"
+content-hash = "a2653ac9c22fdf9e7029e6def54e57d894f4419e86ada04d3436a78b4dd19147"
