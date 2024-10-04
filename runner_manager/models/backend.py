@@ -29,6 +29,7 @@ class Backends(str, Enum):
     docker = "docker"
     gcloud = "gcloud"
     aws = "aws"
+    openstack = "openstack"
     vsphere = "vsphere"
 
 
@@ -221,6 +222,55 @@ class AWSInstanceConfig(InstanceConfig):
             BlockDeviceMappings=block_device_mappings,
             IamInstanceProfile=iam_instance_profile,
             MetadataOptions=instance_metadata_options,
+        )
+
+
+OpenstackInstance = TypedDict(
+    "OpenstackInstance",
+    {
+        "name": str,
+        "image": str,
+        "flavor": str,
+        "volume_size": int,
+        "userdata": str,
+        "meta": dict[str, str],
+        "network": str,
+    },
+)
+
+
+class OpenstackConfig(BackendConfig):
+    cloud: Optional[str] = ""
+    region_name: Optional[str] = ""
+
+
+class OpenstackInstanceConfig(InstanceConfig):
+    image: str = ""
+    flavor: str = ""
+    volume_size: int = 20
+    network: str = ""
+    meta: dict[str, str] = {}
+
+    def configure_instance(self, runner: Runner) -> OpenstackInstance:
+        """Configure Instance"""
+        meta: dict[str, str] = {
+            "Name": runner.name,
+            "manager": runner.manager if runner.manager else "",
+            "runner_group": runner.runner_group_name,
+            "busy": str(runner.busy),
+            "status": runner.status,
+        }
+        self.meta.update(meta)
+        userdata = self.template_startup(runner)
+
+        return OpenstackInstance(
+            name=runner.name,
+            image=self.image,
+            flavor=self.flavor,
+            network=self.network,
+            volume_size=self.volume_size,
+            userdata=userdata,
+            meta=self.meta,
         )
 
 

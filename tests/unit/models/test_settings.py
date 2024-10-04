@@ -30,7 +30,20 @@ def yaml_data():
                 },
                 "organization": "octo-org",
                 "labels": ["label"],
-            }
+            },
+            {
+                "name": "test-openstack",
+                "backend": {
+                    "name": "openstack",
+                    "config": {
+                        "cloud": "test-cloud-01",
+                        "region_name": "test-region-01",
+                    },
+                    "instance_config": {},
+                },
+                "organization": "octo-org",
+                "labels": ["label"],
+            },
         ],
     }
 
@@ -78,6 +91,18 @@ def test_redhat_credentials(config_file, monkeypatch):
     )
     assert (
         settings.runner_groups[0].backend.instance_config.redhat_password == "password"
+    )
+
+
+def test_openstack_credentials_yaml(config_file, yaml_data):
+    settings = Settings()
+    assert (
+        settings.runner_groups[1].backend.config.cloud
+        == yaml_data["runner_groups"][1]["backend"]["config"]["cloud"]
+    )
+    assert (
+        settings.runner_groups[1].backend.config.region_name
+        == yaml_data["runner_groups"][1]["backend"]["config"]["region_name"]
     )
 
 
