@@ -27,6 +27,7 @@ services:
     volumes:
       - ./runner_manager:/app/runner_manager
       - ./config.yaml:/app/config.yaml
+      - ./clouds.yaml:/app/clouds.yaml
       - /var/run/docker.sock:/var/run/docker.sock
   webhook:
     profiles:

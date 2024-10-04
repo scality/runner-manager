@@ -18,6 +18,7 @@ from runner_manager.backend.aws import AWSBackend
 from runner_manager.backend.base import BaseBackend
 from runner_manager.backend.docker import DockerBackend
 from runner_manager.backend.gcloud import GCPBackend
+from runner_manager.backend.openstack import OpenstackBackend
 from runner_manager.backend.vsphere import VsphereBackend
 from runner_manager.clients.github import GitHub
 from runner_manager.clients.github import RunnerGroup as GitHubRunnerGroup
@@ -50,7 +51,14 @@ class BaseRunnerGroup(PydanticBaseModel):
     job_completed_script: Optional[str] = ""
 
     backend: Annotated[
-        Union[BaseBackend, DockerBackend, GCPBackend, AWSBackend, VsphereBackend],
+        Union[
+            BaseBackend,
+            DockerBackend,
+            GCPBackend,
+            AWSBackend,
+            VsphereBackend,
+            OpenstackBackend,
+        ],
         PydanticField(..., discriminator="name"),
     ]
 
