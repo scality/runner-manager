@@ -54,7 +54,7 @@ jobs:
           GOVC_DATACENTER: ${{ secrets.GOVC_DATACENTER }}
           GOVC_DATASTORE: ${{ secrets.GOVC_DATASTORE }}
       - name: Upload coverage
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           flags: vsphere
           name: vsphere
