@@ -57,7 +57,7 @@ class OpenstackBackend(BaseBackend):
         try:
             servers: List[Server] = list(
                 self.client.compute.servers(
-                    tags={
+                    metadata={
                         "manager": str(self.manager),
                         "runner_group": str(self.runner_group),
                     }
