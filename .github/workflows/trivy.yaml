@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Scan image in a private registry and upload results to GitHub
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@0.29.0
         with:
           image-ref: ghcr.io/${{ github.repository }}:${{ github.ref_name == 'main' && 'latest' || github.sha }}
           scan-type: image
