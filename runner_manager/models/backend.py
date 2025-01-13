@@ -2,6 +2,7 @@ from enum import Enum
 from pathlib import Path
 from string import Template
 from typing import Dict, List, Literal, Optional, Sequence, TypedDict
+from os import getenv
 
 from mypy_boto3_ec2.literals import (
     InstanceMetadataTagsStateType,
@@ -16,7 +17,7 @@ from mypy_boto3_ec2.type_defs import (
     TagSpecificationTypeDef,
     TagTypeDef,
 )
-from pydantic import BaseModel, BaseSettings
+from pydantic import BaseModel, BaseSettings, Field
 
 from runner_manager.bin import startup_sh
 from runner_manager.models.runner import Runner
@@ -31,6 +32,7 @@ class Backends(str, Enum):
     aws = "aws"
     openstack = "openstack"
     vsphere = "vsphere"
+    scaleway = "scaleway"
 
 
 class BackendConfig(BaseModel):
@@ -272,6 +274,25 @@ class OpenstackInstanceConfig(InstanceConfig):
             userdata=userdata,
             meta=self.meta,
         )
+
+
+class ScalewayConfig(BackendConfig):
+    """Configuration for Scaleway backend."""
+
+    # defaults to the env var SCW_ACCESS_KEY
+    access_key: str = Field(default=getenv("SCW_ACCESS_KEY"))
+    secret_key: str = Field(default=getenv("SCW_SECRET_KEY"))
+    project_id: str = Field(default=getenv("SCW_DEFAULT_PROJECT_ID"))
+    region: str = Field(default=getenv("SCW_DEFAULT_REGION", "fr-par"))
+
+
+class ScalewayInstanceConfig(InstanceConfig):
+    """Configuration for Scaleway backend instance."""
+    commercial_type: str = "DEV1-M"
+    image: str = "ubuntu_noble" # Ubuntu 24.04
+    zone: str = "fr-par-1"
+    security_group: str | None = None
+    placement_group: str | None = None
 
 
 class VsphereConfig(BackendConfig):
