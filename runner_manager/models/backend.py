@@ -1,7 +1,7 @@
 from enum import Enum
 from pathlib import Path
 from string import Template
-from typing import Dict, List, Literal, Optional, Sequence, TypedDict
+from typing import Dict, List, Literal, Optional, Sequence, TypedDict, NotRequired
 
 from mypy_boto3_ec2.literals import (
     InstanceMetadataTagsStateType,
@@ -134,6 +134,14 @@ class AWSConfig(BackendConfig):
     region: str = "us-west-2"
 
 
+AwsSubnetListConfig = TypedDict(
+    "AwsSubnetListConfig",
+    {
+        "subnet_id": str,
+        "security_group_ids": NotRequired[Sequence[str]],
+    }
+)
+
 AwsInstance = TypedDict(
     "AwsInstance",
     {
@@ -157,7 +165,7 @@ class AWSInstanceConfig(InstanceConfig):
 
     image: str = "ami-0735c191cf914754d"  # Ubuntu 22.04 for us-west-2
     instance_type: InstanceTypeType = "t3.micro"
-    subnet_id: str
+    subnet_id: str = ""
     security_group_ids: Sequence[str] = []
     max_count: int = 1
     min_count: int = 1
@@ -167,6 +175,7 @@ class AWSInstanceConfig(InstanceConfig):
     disk_size_gb: int = 20
     iam_instance_profile_arn: str = ""
     instance_metadata_tags: InstanceMetadataTagsStateType = "disabled"
+    subnet_configs: Sequence[AwsSubnetListConfig] = []
 
     def configure_instance(self, runner: Runner) -> AwsInstance:
         """Configure instance."""
