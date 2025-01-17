@@ -1,7 +1,7 @@
 from enum import Enum
 from pathlib import Path
 from string import Template
-from typing import Dict, List, Literal, Optional, Sequence, TypedDict, NotRequired
+from typing import Dict, List, Literal, NotRequired, Optional, Sequence, TypedDict
 
 from mypy_boto3_ec2.literals import (
     InstanceMetadataTagsStateType,
@@ -139,7 +139,7 @@ AwsSubnetListConfig = TypedDict(
     {
         "subnet_id": str,
         "security_group_ids": NotRequired[Sequence[str]],
-    }
+    },
 )
 
 AwsInstance = TypedDict(

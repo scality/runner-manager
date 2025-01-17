@@ -1,8 +1,8 @@
 import os
+from unittest.mock import patch
 
 from mypy_boto3_ec2.type_defs import TagTypeDef
 from pytest import fixture, mark, raises
-from unittest.mock import patch
 from redis_om import NotFoundError
 
 from runner_manager.backend.aws import AWSBackend
@@ -36,6 +36,7 @@ def aws_group(settings) -> RunnerGroup:
     )
     return runner_group
 
+
 @fixture()
 def aws_multi_subnet_group(settings) -> RunnerGroup:
     config = AWSConfig()
@@ -63,6 +64,7 @@ def aws_multi_subnet_group(settings) -> RunnerGroup:
     )
     return runner_group
 
+
 @fixture()
 def aws_multi_subnet_group_invalid_subnets(settings) -> RunnerGroup:
     config = AWSConfig()
@@ -81,7 +83,7 @@ def aws_multi_subnet_group_invalid_subnets(settings) -> RunnerGroup:
                     },
                     {
                         "subnet_id": "also-does-not-exist",
-                    }
+                    },
                 ]
             ),
         ),
@@ -127,7 +129,10 @@ def test_aws_instance_config(runner: Runner):
     assert instance["TagSpecifications"][1]["ResourceType"] == "volume"
 
 
-@mark.skipif(not os.getenv("AWS_ACCESS_KEY_ID") and not os.getenv("AWS_PROFILE"), reason="AWS credentials not found")
+@mark.skipif(
+    not os.getenv("AWS_ACCESS_KEY_ID") and not os.getenv("AWS_PROFILE"),
+    reason="AWS credentials not found",
+)
 def test_create_delete(aws_runner, aws_group):
     runner = aws_group.backend.create(aws_runner)
     assert runner.instance_id is not None
@@ -138,7 +143,10 @@ def test_create_delete(aws_runner, aws_group):
         Runner.find(Runner.instance_id == runner.instance_id).first()
 
 
-@mark.skipif(not os.getenv("AWS_ACCESS_KEY_ID") and not os.getenv("AWS_PROFILE"), reason="AWS credentials not found")
+@mark.skipif(
+    not os.getenv("AWS_ACCESS_KEY_ID") and not os.getenv("AWS_PROFILE"),
+    reason="AWS credentials not found",
+)
 def test_list(aws_runner, aws_group):
     runner = aws_group.backend.create(aws_runner)
     runners = aws_group.backend.list()
@@ -148,7 +156,10 @@ def test_list(aws_runner, aws_group):
         aws_group.backend.get(runner.instance_id)
 
 
-@mark.skipif(not os.getenv("AWS_ACCESS_KEY_ID") and not os.getenv("AWS_PROFILE"), reason="AWS credentials not found")
+@mark.skipif(
+    not os.getenv("AWS_ACCESS_KEY_ID") and not os.getenv("AWS_PROFILE"),
+    reason="AWS credentials not found",
+)
 def test_update(aws_runner, aws_group):
     runner = aws_group.backend.create(aws_runner)
     runner.labels = [RunnerLabel(name="test", type="custom")]
@@ -159,7 +170,10 @@ def test_update(aws_runner, aws_group):
         aws_group.backend.get(runner.instance_id)
 
 
-@mark.skipif(not os.getenv("AWS_ACCESS_KEY_ID") and not os.getenv("AWS_PROFILE"), reason="AWS credentials not found")
+@mark.skipif(
+    not os.getenv("AWS_ACCESS_KEY_ID") and not os.getenv("AWS_PROFILE"),
+    reason="AWS credentials not found",
+)
 def test_create_delete_multi_subnet(aws_runner, aws_multi_subnet_group):
     runner = aws_multi_subnet_group.backend.create(aws_runner)
     print(f"{runner.instance_id}")
@@ -171,9 +185,18 @@ def test_create_delete_multi_subnet(aws_runner, aws_multi_subnet_group):
         Runner.find(Runner.instance_id == runner.instance_id).first()
 
 
-@mark.skipif(not os.getenv("AWS_ACCESS_KEY_ID") and not os.getenv("AWS_PROFILE"), reason="AWS credentials not found")
-def test_create_delete_multi_subnet_invalid_subnets(aws_runner, aws_multi_subnet_group_invalid_subnets):
-    with patch.object(AWSBackend, '_create', wraps=aws_multi_subnet_group_invalid_subnets.backend._create) as mock:
+@mark.skipif(
+    not os.getenv("AWS_ACCESS_KEY_ID") and not os.getenv("AWS_PROFILE"),
+    reason="AWS credentials not found",
+)
+def test_create_delete_multi_subnet_invalid_subnets(
+    aws_runner, aws_multi_subnet_group_invalid_subnets
+):
+    with patch.object(
+        AWSBackend,
+        "_create",
+        wraps=aws_multi_subnet_group_invalid_subnets.backend._create,
+    ) as mock:
         with raises(Exception):
             aws_multi_subnet_group_invalid_subnets.backend.create(aws_runner)
         # Check that the code tries once for each subnet.

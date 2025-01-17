@@ -1,6 +1,6 @@
 from copy import deepcopy
-from typing import List, Literal, Optional, Sequence
 from random import shuffle
+from typing import List, Literal, Optional, Sequence
 
 from boto3 import client
 from botocore.exceptions import ClientError
@@ -15,8 +15,8 @@ from runner_manager.logging import log
 from runner_manager.models.backend import (
     AWSConfig,
     AwsInstance,
-    AwsSubnetListConfig,
     AWSInstanceConfig,
+    AwsSubnetListConfig,
     Backends,
 )
 from runner_manager.models.runner import Runner
@@ -35,12 +35,18 @@ class AWSBackend(BaseBackend):
     def create(self, runner: Runner) -> Runner:
         """Create a runner."""
         if self.instance_config.subnet_id and self.instance_config.subnet_configs:
-            raise Exception("Instance config contains both subnet_id and subnet_configs, only one allowed.")
+            raise Exception(
+                "Instance config contains both subnet_id and subnet_configs, only one allowed."
+            )
         if len(self.instance_config.subnet_configs) > 0:
-            runner = self._create_from_subnet_config(runner, self.instance_config.subnet_configs)
+            runner = self._create_from_subnet_config(
+                runner, self.instance_config.subnet_configs
+            )
             log.warn(f"Instance id: {runner.instance_id}")
         else:
-            instance_resource: AwsInstance = self.instance_config.configure_instance(runner)
+            instance_resource: AwsInstance = self.instance_config.configure_instance(
+                runner
+            )
             try:
                 runner = self._create(runner, instance_resource)
                 log.warn(f"Instance id: {runner.instance_id}")
@@ -49,7 +55,9 @@ class AWSBackend(BaseBackend):
                 raise e
         return super().create(runner)
 
-    def _create_from_subnet_config(self, runner: Runner, subnet_configs: Sequence[AwsSubnetListConfig]) -> Runner:
+    def _create_from_subnet_config(
+        self, runner: Runner, subnet_configs: Sequence[AwsSubnetListConfig]
+    ) -> Runner:
         # Randomize the order of the Subnets - very coarse load balancing.
         # TODO: Skip subnets that have failed recently. Maybe with an increasing backoff.
         order = list(range(len(subnet_configs)))
@@ -61,16 +69,22 @@ class AWSBackend(BaseBackend):
             try:
                 # Copy the object to avoid modifying the object we were passed.
                 count = self.instance_config.max_count - self.instance_config.min_count
-                log.info(f"Trying to launch {count} containers on subnet {subnet_config['subnet_id']}")
+                log.info(
+                    f"Trying to launch {count} containers on subnet {subnet_config['subnet_id']}"
+                )
                 concrete_instance_config = deepcopy(self.instance_config)
                 concrete_instance_config.subnet_id = subnet_config["subnet_id"]
                 concrete_instance_config.security_group_ids.extend(
                     subnet_config.get("security_group_ids", [])
                 )
-                instance_resource: AwsInstance = concrete_instance_config.configure_instance(runner)
+                instance_resource: AwsInstance = (
+                    concrete_instance_config.configure_instance(runner)
+                )
                 return self._create(runner, instance_resource)
             except Exception as e:
-                log.warn(f"Creating instance in subnet {subnet_config['subnet_id']} failed with '{e}'. Retrying with another subnet.")
+                log.warn(
+                    f"Creating instance in subnet {subnet_config['subnet_id']} failed with '{e}'. Retrying with another subnet."
+                )
                 if idx >= len(order) - 1:
                     raise e
         return runner
