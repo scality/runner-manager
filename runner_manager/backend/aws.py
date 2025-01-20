@@ -92,8 +92,10 @@ class AWSBackend(BaseBackend):
         return runner
 
     def _create(self, runner: Runner, instance_resource: AwsInstance) -> Runner:
-        instance = self.client.run_instances(**instance_resource) # type: ignore
-        runner.instance_id = instance["Instances"][0]["InstanceId"] # type: ignore
+        instance = self.client.run_instances(**instance_resource)
+        # Allow this to raise exception as we don't want to track an instance that
+        # doesn't have an instance ID.
+        runner.instance_id = instance["Instances"][0]["InstanceId"]  # type: ignore
         return runner
 
     def delete(self, runner: Runner):
