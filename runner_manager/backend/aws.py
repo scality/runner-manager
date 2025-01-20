@@ -74,9 +74,11 @@ class AWSBackend(BaseBackend):
                 )
                 concrete_instance_config = deepcopy(self.instance_config)
                 concrete_instance_config.subnet_id = subnet_config["subnet_id"]
-                concrete_instance_config.security_group_ids.extend(
-                    subnet_config.get("security_group_ids", [])
-                )
+                subnet_security_groups = subnet_config.get("security_group_ids", [])
+                if subnet_security_groups:
+                    security_groups = list(concrete_instance_config.security_group_ids)
+                    security_groups += subnet_security_groups
+                    concrete_instance_config.security_group_ids = security_groups
                 instance_resource: AwsInstance = (
                     concrete_instance_config.configure_instance(runner)
                 )
@@ -90,8 +92,8 @@ class AWSBackend(BaseBackend):
         return runner
 
     def _create(self, runner: Runner, instance_resource: AwsInstance) -> Runner:
-        instance = self.client.run_instances(**instance_resource)
-        runner.instance_id = instance["Instances"][0]["InstanceId"]
+        instance = self.client.run_instances(**instance_resource) # type: ignore
+        runner.instance_id = instance["Instances"][0]["InstanceId"] # type: ignore
         return runner
 
     def delete(self, runner: Runner):
