@@ -62,8 +62,7 @@ class AWSBackend(BaseBackend):
         # TODO: Skip subnets that have failed recently. Maybe with an increasing backoff.
         order = list(range(len(subnet_configs)))
         shuffle(order)
-        subnet_config = self.instance_config.subnet_configs
-        print(f"Order: {order}")
+        log.debug(f"Order: {order}")
         for idx, i in enumerate(order):
             subnet_config = subnet_configs[i]
             try:
