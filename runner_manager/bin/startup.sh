@@ -90,7 +90,8 @@ Description=GitHub Actions Runner
 After=network.target
 
 [Service]
-ExecStart=/bin/bash /home/actions/actions-runner/run.sh --jitconfig \"${JIT_CONFIG}\"
+Environment=\"JIT_BASE64=${JIT_CONFIG}\"
+ExecStart=/bin/bash /home/actions/actions-runner/run.sh --jitconfig \"${JIT_BASE64}\"
 User=actions
 WorkingDirectory=/home/actions/actions-runner
 KillMode=process
