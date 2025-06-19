@@ -91,7 +91,7 @@ After=network.target
 
 [Service]
 Environment=\"JIT_BASE64=${JIT_CONFIG}\"
-ExecStart=/bin/bash /home/actions/actions-runner/run.sh --jitconfig \"${JIT_BASE64}\"
+ExecStart=/bin/bash /home/actions/actions-runner/run.sh --jitconfig \"\${JIT_BASE64}\"
 User=actions
 WorkingDirectory=/home/actions/actions-runner
 KillMode=process
