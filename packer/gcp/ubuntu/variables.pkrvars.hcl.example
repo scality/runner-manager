@@ -1,0 +1,32 @@
+# Packer Variables File (Optional)
+# This file allows you to set default values for variables
+# You can create a copy of this file as `variables.auto.pkrvars.hcl`
+# and Packer will automatically load it.
+
+# GCP Project Configuration
+zone       = "europe-west1-b"
+
+# Image Configuration
+source_image_family  = "ubuntu-2204-lts"
+source_image_project = "ubuntu-os-cloud"
+image_family         = "github-runner-base"
+
+# Build VM Configuration
+machine_type = "n2-standard-2"
+disk_size    = 80
+disk_type    = "pd-ssd"
+
+# Network Configuration
+network    = "default"
+subnetwork = ""
+tags       = ["packer-build"]
+
+# Image Labels
+image_labels = {
+  created_by = "packer"
+  purpose    = "github-actions-runner"
+  team       = "platform"
+}
+
+# Note: image_name should be set dynamically, not in this file
+# Use: packer build -var="image_name=github-runner-base-$(date +%Y%m%d)" .
