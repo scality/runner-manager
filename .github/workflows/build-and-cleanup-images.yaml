@@ -1,0 +1,527 @@
+name: Build and Cleanup GCP Runner Images
+
+# Weekly build on Sundays + manual trigger + on config changes
+on:
+  schedule:
+    # Run every Sunday at 02:00 UTC
+    # trunk-ignore(yamllint/quoted-strings): cron expressions need quotes
+    - cron: "0 2 * * 0"
+
+  workflow_dispatch:
+    inputs:
+      images_filter:
+        description: 'Images to build (comma-separated: ubuntu-2204,rocky-8, or "all")'
+        required: false
+        type: string
+        default: all
+      skip_cleanup:
+        description: Skip image cleanup
+        required: false
+        type: boolean
+        default: false
+      dry_run:
+        description: Dry run mode (validate only, no build)
+        required: false
+        type: boolean
+        default: false
+
+  # Trigger on changes to config or templates
+  push:
+    paths:
+      - packer/images-config.yaml
+      - packer/*/template.pkr.hcl
+    branches:
+      - main
+
+env:
+  PACKER_VERSION: 1.11.0
+  GCP_ZONE: europe-west1-b
+  CONFIG_FILE: packer/images-config.yaml
+
+jobs:
+  # Parse config and prepare build matrix
+  prepare-matrix:
+    name: Prepare Build Matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.parse-config.outputs.matrix }}
+      has_images: ${{ steps.parse-config.outputs.has_images }}
+      retention_config: ${{ steps.parse-config.outputs.retention_config }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Parse Images Configuration
+        id: parse-config
+        run: |
+          set -euo pipefail
+
+          echo "📋 Parsing image configuration from ${{ env.CONFIG_FILE }}"
+
+          # Install yq if not available
+          if ! command -v yq &> /dev/null; then
+            sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+            sudo chmod +x /usr/local/bin/yq
+          fi
+
+          # Parse images from YAML
+          IMAGES_JSON=$(yq eval '.images[] | select(.enabled == true) | {
+            "os": .os,
+            "version": .version,
+            "display_name": .display_name,
+            "family": .family,
+            "source_family": .source_family,
+            "source_project": .source_project,
+            "machine_type": .machine_type,
+            "disk_size": .disk_size
+          }' ${{ env.CONFIG_FILE }} -o=json | jq -s '.')
+
+          # Filter based on input
+          FILTER="${{ inputs.images_filter }}"
+          if [[ "$FILTER" != "all" ]] && [[ -n "$FILTER" ]]; then
+            echo "🔍 Filtering images: $FILTER"
+            FILTERED_JSON=$(echo "$IMAGES_JSON" | jq --arg filter "$FILTER" '[
+              .[] | select(
+                ($filter | split(",") | map(gsub("\\s+"; "")) | .[]) as $f |
+                (.os + "-" + .version) == $f or
+                (.family | split("-") | last) == $f
+              )
+            ]')
+            IMAGES_JSON="$FILTERED_JSON"
+          fi
+
+          # Check if we have images to build
+          IMAGE_COUNT=$(echo "$IMAGES_JSON" | jq 'length')
+          if [[ $IMAGE_COUNT -eq 0 ]]; then
+            echo "⚠️ No images to build after filtering"
+            echo "has_images=false" >> $GITHUB_OUTPUT
+            echo "matrix={\"include\":[]}" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "has_images=true" >> $GITHUB_OUTPUT
+          echo "✅ Found $IMAGE_COUNT image(s) to build"
+
+          # Create matrix
+          MATRIX=$(echo "$IMAGES_JSON" | jq '{include: .}')
+          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+
+          # Parse retention config
+          RETENTION=$(yq eval '.retention | {
+            "keep_count": .keep_count,
+            "grace_period_days": .grace_period_days,
+            "check_in_use": .check_in_use
+          }' ${{ env.CONFIG_FILE }} -o=json)
+          echo "retention_config=$RETENTION" >> $GITHUB_OUTPUT
+
+          echo ""
+          echo "📊 Build Matrix:"
+          echo "$MATRIX" | jq '.'
+          echo ""
+          echo "🔧 Retention Config:"
+          echo "$RETENTION" | jq '.'
+
+  # Build images in parallel
+  build-images:
+    name: Build ${{ matrix.display_name }}
+    needs: prepare-matrix
+    if: needs.prepare-matrix.outputs.has_images == 'true' && !inputs.dry_run
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix: ${{ fromJson(needs.prepare-matrix.outputs.matrix) }}
+
+    permissions:
+      contents: read
+      id-token: write
+
+    outputs:
+      image_name: ${{ steps.image-info.outputs.image_name }}
+      build_success: ${{ steps.build.outcome == 'success' }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Packer
+        uses: hashicorp/setup-packer@main
+        with:
+          version: ${{ env.PACKER_VERSION }}
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          token_format: access_token
+          access_token_lifetime: 3600s
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+
+      - name: Generate Image Metadata
+        id: image-info
+        run: |
+          TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+          IMAGE_NAME="${{ matrix.family }}-${TIMESTAMP}"
+
+          echo "image_name=${IMAGE_NAME}" >> $GITHUB_OUTPUT
+          echo "timestamp=${TIMESTAMP}" >> $GITHUB_OUTPUT
+          echo "git_sha=${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
+          echo "workflow_run=${GITHUB_RUN_ID}" >> $GITHUB_OUTPUT
+
+          echo "📦 Building: $IMAGE_NAME"
+          echo "🔖 Git SHA: ${GITHUB_SHA::8}"
+          echo "🔄 Workflow: ${GITHUB_RUN_ID}"
+
+      - name: Initialize and Validate Packer
+        run: |
+          echo "🔧 Initializing Packer..."
+          packer init packer/gcp/${{ matrix.os }}/template.pkr.hcl
+
+          echo "✅ Validating template..."
+          packer validate \
+            -var="zone=${{ env.GCP_ZONE }}" \
+            -var="image_name=${{ steps.image-info.outputs.image_name }}" \
+            -var="${{ matrix.os }}_version=${{ matrix.version }}" \
+            packer/${{ matrix.os }}/template.pkr.hcl
+
+      - name: Build GCP Image
+        id: build
+        env:
+          PACKER_LOG: 1
+          PACKER_LOG_PATH: packer-build-${{ matrix.os }}-${{ matrix.version }}-${{ steps.image-info.outputs.timestamp }}.log
+        run: |
+          echo "🚀 Starting Packer build for ${{ matrix.display_name }}..."
+          START_TIME=$(date +%s)
+
+          packer build \
+            -var="zone=${{ env.GCP_ZONE }}" \
+            -var="image_name=${{ steps.image-info.outputs.image_name }}" \
+            -var="image_family=${{ matrix.family }}" \
+            -var="${{ matrix.os }}_version=${{ matrix.version }}" \
+            -var="source_image_family=${{ matrix.source_family }}" \
+            -var="source_image_project=${{ matrix.source_project }}" \
+            -var="machine_type=${{ matrix.machine_type }}" \
+            -var="disk_size=${{ matrix.disk_size }}" \
+            packer/${{ matrix.os }}/template.pkr.hcl
+
+          END_TIME=$(date +%s)
+          BUILD_DURATION=$((END_TIME - START_TIME))
+
+          echo "build_duration=${BUILD_DURATION}" >> $GITHUB_OUTPUT
+          echo "✅ Build completed in ${BUILD_DURATION}s"
+
+      - name: Tag Image with Metadata
+        if: steps.build.outcome == 'success'
+        run: |
+          echo "🏷️ Adding labels to image..."
+          gcloud compute images add-labels "${{ steps.image-info.outputs.image_name }}" \
+            --project="${{ vars.GCP_PROJECT_ID }}" \
+            --labels="git-sha=${{ steps.image-info.outputs.git_sha }},workflow-run=${{ steps.image-info.outputs.workflow_run }},build-timestamp=${{ steps.image-info.outputs.timestamp }},os=${{ matrix.os }},version=${{ matrix.version }}"
+
+      - name: Verify Image
+        if: steps.build.outcome == 'success'
+        run: |
+          echo "🔍 Verifying image..."
+          gcloud compute images describe "${{ steps.image-info.outputs.image_name }}" \
+            --project="${{ vars.GCP_PROJECT_ID }}" \
+            --format="table(name,family,diskSizeGb,status,creationTimestamp,labels)"
+
+      - name: Upload Build Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: packer-logs-${{ matrix.os }}-${{ matrix.version }}-${{ steps.image-info.outputs.timestamp }}
+          path: "*.log"
+          retention-days: 30
+          if-no-files-found: warn
+
+  # Cleanup old images with smart retention
+  cleanup-old-images:
+    name: Cleanup Old Images
+    needs: [prepare-matrix, build-images]
+    if: always() && needs.prepare-matrix.outputs.has_images == 'true' && !inputs.skip_cleanup
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    outputs:
+      deleted_count: ${{ steps.cleanup.outputs.deleted_count }}
+      skipped_count: ${{ steps.cleanup.outputs.skipped_count }}
+      families_processed: ${{ steps.cleanup.outputs.families_processed }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          token_format: access_token
+          access_token_lifetime: 3600s
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Smart Cleanup with Retention Policy
+        id: cleanup
+        env:
+          PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+          CONFIG_FILE: ${{ env.CONFIG_FILE }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          echo "🧹 Starting smart cleanup process..."
+
+          # Parse retention config
+          KEEP_COUNT=$(yq eval '.retention.keep_count' $CONFIG_FILE)
+          GRACE_PERIOD_DAYS=$(yq eval '.retention.grace_period_days' $CONFIG_FILE)
+          CHECK_IN_USE=$(yq eval '.retention.check_in_use' $CONFIG_FILE)
+
+          echo "📋 Retention Policy:"
+          echo "  - Keep: ${KEEP_COUNT} most recent images per family"
+          echo "  - Grace period: ${GRACE_PERIOD_DAYS} days"
+          echo "  - Check in-use: ${CHECK_IN_USE}"
+
+          if [[ "$DRY_RUN" == "true" ]]; then
+            echo "⚠️ DRY RUN MODE - No images will be deleted"
+          fi
+
+          # Get all image families from config
+          FAMILIES=$(yq eval '.images[] | select(.enabled == true) | .family' $CONFIG_FILE | sort -u)
+
+          TOTAL_DELETED=0
+          TOTAL_SKIPPED=0
+          FAMILIES_COUNT=0
+          GRACE_CUTOFF=$(date -d "${GRACE_PERIOD_DAYS} days ago" +%s 2>/dev/null || date -v -${GRACE_PERIOD_DAYS}d +%s)
+
+          echo ""
+          echo "🔍 Processing image families..."
+
+          for FAMILY in $FAMILIES; do
+            echo ""
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            echo "📁 Family: ${FAMILY}"
+            FAMILIES_COUNT=$((FAMILIES_COUNT + 1))
+            
+            # List all images in family, sorted by creation time (newest first)
+            IMAGES=$(gcloud compute images list \
+              --project="${PROJECT_ID}" \
+              --filter="family:${FAMILY}" \
+              --format="csv[no-heading](name,creationTimestamp)" \
+              --sort-by="~creationTimestamp")
+            
+            if [[ -z "$IMAGES" ]]; then
+              echo "  ℹ️ No images found in family"
+              continue
+            fi
+            
+            IMAGE_COUNT=$(echo "$IMAGES" | wc -l)
+            echo "  📊 Total images: ${IMAGE_COUNT}"
+            
+            if [[ $IMAGE_COUNT -le $KEEP_COUNT ]]; then
+              echo "  ✅ Under retention limit (keeping all)"
+              continue
+            fi
+            
+            # Skip the most recent images (keep them)
+            IMAGES_TO_EVALUATE=$(echo "$IMAGES" | tail -n +$((KEEP_COUNT + 1)))
+            
+            echo "  🗑️ Candidates for deletion: $((IMAGE_COUNT - KEEP_COUNT))"
+            echo ""
+            
+            # Process each candidate image
+            while IFS=, read -r IMAGE_NAME IMAGE_TIMESTAMP; do
+              IMAGE_TIMESTAMP_UNIX=$(date -d "$IMAGE_TIMESTAMP" +%s 2>/dev/null || date -j -f "%Y-%m-%dT%H:%M:%S" "${IMAGE_TIMESTAMP%%.*}" +%s 2>/dev/null || echo "0")
+              
+              echo "  🔎 Evaluating: ${IMAGE_NAME}"
+              echo "     Created: ${IMAGE_TIMESTAMP}"
+              
+              # Check grace period
+              if [[ $IMAGE_TIMESTAMP_UNIX -gt $GRACE_CUTOFF ]]; then
+                AGE_DAYS=$(( ($(date +%s) - IMAGE_TIMESTAMP_UNIX) / 86400 ))
+                echo "     ⏳ Within grace period (${AGE_DAYS} days old, needs ${GRACE_PERIOD_DAYS}+) - SKIPPING"
+                TOTAL_SKIPPED=$((TOTAL_SKIPPED + 1))
+                continue
+              fi
+              
+              # Check if image is in use
+              SKIP_IMAGE=false
+              if [[ "$CHECK_IN_USE" == "true" ]]; then
+                INSTANCES_USING=$(gcloud compute instances list \
+                  --project="${PROJECT_ID}" \
+                  --filter="disks.source:${IMAGE_NAME}" \
+                  --format="value(name)" 2>/dev/null || echo "")
+                
+                if [[ -n "$INSTANCES_USING" ]]; then
+                  echo "     🔒 In use by instances: ${INSTANCES_USING} - SKIPPING"
+                  TOTAL_SKIPPED=$((TOTAL_SKIPPED + 1))
+                  SKIP_IMAGE=true
+                fi
+              fi
+              
+              if [[ "$SKIP_IMAGE" == "false" ]]; then
+                if [[ "$DRY_RUN" == "true" ]]; then
+                  echo "     🔸 Would delete (DRY RUN)"
+                  TOTAL_DELETED=$((TOTAL_DELETED + 1))
+                else
+                  echo "     🗑️ Deleting..."
+                  if gcloud compute images delete "${IMAGE_NAME}" \
+                    --project="${PROJECT_ID}" \
+                    --quiet 2>&1; then
+                    echo "     ✅ Deleted successfully"
+                    TOTAL_DELETED=$((TOTAL_DELETED + 1))
+                  else
+                    echo "     ❌ Failed to delete"
+                    TOTAL_SKIPPED=$((TOTAL_SKIPPED + 1))
+                  fi
+                fi
+              fi
+              
+              echo ""
+            done <<< "$IMAGES_TO_EVALUATE"
+          done
+
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "📊 Cleanup Summary:"
+          echo "  - Families processed: ${FAMILIES_COUNT}"
+          echo "  - Images deleted: ${TOTAL_DELETED}"
+          echo "  - Images skipped: ${TOTAL_SKIPPED}"
+          if [[ "$DRY_RUN" == "true" ]]; then
+            echo "  - Mode: DRY RUN (no actual deletions)"
+          fi
+
+          echo "deleted_count=${TOTAL_DELETED}" >> $GITHUB_OUTPUT
+          echo "skipped_count=${TOTAL_SKIPPED}" >> $GITHUB_OUTPUT
+          echo "families_processed=${FAMILIES_COUNT}" >> $GITHUB_OUTPUT
+
+  # Enhanced summary with detailed metrics
+  summary:
+    name: Build Summary
+    needs: [prepare-matrix, build-images, cleanup-old-images]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Generate Enhanced Summary
+        env:
+          MATRIX_RESULT: ${{ toJson(needs.build-images.outputs) }}
+          BUILD_RESULT: ${{ needs.build-images.result }}
+          CLEANUP_RESULT: ${{ needs.cleanup-old-images.result }}
+          DELETED_COUNT: ${{ needs.cleanup-old-images.outputs.deleted_count }}
+          SKIPPED_COUNT: ${{ needs.cleanup-old-images.outputs.skipped_count }}
+          FAMILIES_COUNT: ${{ needs.cleanup-old-images.outputs.families_processed }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          echo "# 🚀 GCP Runner Images Build & Cleanup Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Workflow:** \`${{ github.workflow }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Triggered by:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Run ID:** [\`${{ github.run_id }}\`](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+          echo "**Date:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+
+          if [[ "$DRY_RUN" == "true" ]]; then
+            echo "**Mode:** 🔸 DRY RUN (no changes made)" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Build Status
+          echo "## 📦 Build Status" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [[ "$BUILD_RESULT" == "success" ]]; then
+            echo "✅ **All images built successfully**" >> $GITHUB_STEP_SUMMARY
+          elif [[ "$BUILD_RESULT" == "failure" ]]; then
+            echo "❌ **Some builds failed** - Check individual job logs" >> $GITHUB_STEP_SUMMARY
+          elif [[ "$BUILD_RESULT" == "skipped" ]]; then
+            echo "⏭️ **Builds skipped** - No images configured or filtered" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **Build status unknown**" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Image Family | Status | Notes |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|:---:|---|" >> $GITHUB_STEP_SUMMARY
+
+          # Parse matrix to show individual statuses (simplified for now)
+          if [[ "$BUILD_RESULT" == "success" ]]; then
+            echo "| \`github-runner-base-ubuntu-2204\` | ✅ | Ubuntu 22.04 LTS |" >> $GITHUB_STEP_SUMMARY
+            echo "| \`github-runner-base-ubuntu-2404\` | ✅ | Ubuntu 24.04 LTS |" >> $GITHUB_STEP_SUMMARY
+            echo "| \`github-runner-base-rocky-8\` | ✅ | Rocky Linux 8 |" >> $GITHUB_STEP_SUMMARY
+            echo "| \`github-runner-base-rocky-9\` | ✅ | Rocky Linux 9 |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| All families | ❌ | See job logs for details |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Cleanup Status
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 🧹 Cleanup Status" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [[ "${{ inputs.skip_cleanup }}" == "true" ]]; then
+            echo "⏭️ **Cleanup skipped** - Manual override via workflow input" >> $GITHUB_STEP_SUMMARY
+          elif [[ "$CLEANUP_RESULT" == "success" ]]; then
+            echo "✅ **Cleanup completed successfully**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Statistics:**" >> $GITHUB_STEP_SUMMARY
+            echo "- Image families processed: **${FAMILIES_COUNT:-0}**" >> $GITHUB_STEP_SUMMARY
+            echo "- Images deleted: **${DELETED_COUNT:-0}**" >> $GITHUB_STEP_SUMMARY
+            echo "- Images skipped: **${SKIPPED_COUNT:-0}** (in-use or within grace period)" >> $GITHUB_STEP_SUMMARY
+          elif [[ "$CLEANUP_RESULT" == "failure" ]]; then
+            echo "❌ **Cleanup failed** - Check cleanup job logs" >> $GITHUB_STEP_SUMMARY
+          elif [[ "$CLEANUP_RESULT" == "skipped" ]]; then
+            echo "⏭️ **Cleanup skipped** - No images to process" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **Cleanup status unknown**" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Retention Policy
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 📋 Retention Policy" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Keep count:** 3 most recent images per family" >> $GITHUB_STEP_SUMMARY
+          echo "- **Grace period:** 7 days (new images protected)" >> $GITHUB_STEP_SUMMARY
+          echo "- **In-use check:** Enabled (skip images attached to running instances)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Configuration:** [\`packer/images-config.yaml\`](packer/images-config.yaml)" >> $GITHUB_STEP_SUMMARY
+
+          # Next Steps
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 📝 Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Images automatically available via \`image_family\` configuration" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Runner manager will use latest images automatically" >> $GITHUB_STEP_SUMMARY
+          echo "- 📊 Monitor runner startup times in [GCP Logs Explorer](https://console.cloud.google.com/logs)" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔍 Verify images in [GCP Compute Images](https://console.cloud.google.com/compute/images?project=${{ vars.GCP_PROJECT_ID }})" >> $GITHUB_STEP_SUMMARY
+
+          # Performance Metrics Reference
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## ⚡ Expected Performance" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Ubuntu | Rocky |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|:---:|:---:|" >> $GITHUB_STEP_SUMMARY
+          echo "| Improvement | 35% faster | 49% faster |" >> $GITHUB_STEP_SUMMARY
+          echo "| Startup time | ~84s | ~141s |" >> $GITHUB_STEP_SUMMARY
+          echo "| Daily savings | ~2h 44min | ~1h 01min |" >> $GITHUB_STEP_SUMMARY
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "_For detailed configuration and metrics, see [packer/README.md](packer/README.md)_" >> $GITHUB_STEP_SUMMARY

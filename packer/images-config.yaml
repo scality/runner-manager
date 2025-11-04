@@ -1,0 +1,57 @@
+# Packer Image Build Configuration
+# This file defines all images to build and their parameters
+# Used by .github/workflows/build-and-cleanup-images.yaml
+
+images:
+  - os: ubuntu
+    version: "2204"
+    display_name: Ubuntu 22.04 LTS
+    family: github-runner-base-ubuntu-2204
+    source_family: ubuntu-2204-lts
+    source_project: ubuntu-os-cloud
+    machine_type: n2-standard-2
+    disk_size: 80
+    enabled: true
+
+  - os: ubuntu
+    version: "2404"
+    display_name: Ubuntu 24.04 LTS
+    family: github-runner-base-ubuntu-2404
+    source_family: ubuntu-2404-lts
+    source_project: ubuntu-os-cloud
+    machine_type: n2-standard-2
+    disk_size: 80
+    enabled: true
+
+  - os: rocky
+    version: "8"
+    display_name: Rocky Linux 8
+    family: github-runner-base-rocky-8
+    source_family: rocky-linux-8
+    source_project: rocky-linux-cloud
+    machine_type: e2-standard-2
+    disk_size: 80
+    enabled: true
+
+  - os: rocky
+    version: "9"
+    display_name: Rocky Linux 9
+    family: github-runner-base-rocky-9
+    source_family: rocky-linux-9
+    source_project: rocky-linux-cloud
+    machine_type: e2-standard-2
+    disk_size: 80
+    enabled: true
+
+# Retention policy
+retention:
+  # Keep N most recent images per family
+  keep_count: 3
+
+  # Grace period: Don't delete images newer than N days (even if exceeds keep_count)
+  # This provides a safety net for recent builds
+  grace_period_days: 7
+
+  # Safety: Never delete images currently in use by runners
+  # (requires querying GCP instances)
+  check_in_use: true
