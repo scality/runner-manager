@@ -1,0 +1,1 @@
+# Scaleway instance module stub

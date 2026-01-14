@@ -19,6 +19,7 @@ from runner_manager.backend.base import BaseBackend
 from runner_manager.backend.docker import DockerBackend
 from runner_manager.backend.gcloud import GCPBackend
 from runner_manager.backend.openstack import OpenstackBackend
+from runner_manager.backend.scaleway import ScalewayBackend
 from runner_manager.backend.vsphere import VsphereBackend
 from runner_manager.clients.github import GitHub
 from runner_manager.clients.github import RunnerGroup as GitHubRunnerGroup
@@ -58,6 +59,7 @@ class BaseRunnerGroup(PydanticBaseModel):
             AWSBackend,
             VsphereBackend,
             OpenstackBackend,
+            ScalewayBackend,
         ],
         PydanticField(..., discriminator="name"),
     ]

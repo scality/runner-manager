@@ -31,6 +31,7 @@ class Backends(str, Enum):
     aws = "aws"
     openstack = "openstack"
     vsphere = "vsphere"
+    scaleway = "scaleway"
 
 
 class BackendConfig(BaseModel):
@@ -300,3 +301,32 @@ class VsphereInstanceConfig(InstanceConfig):
     datastore: str
     library: str
     library_item: str
+
+
+class ScalewayConfig(BackendConfig):
+    """Configuration for Scaleway backend."""
+
+    access_key: Optional[str] = None
+    secret_key: Optional[str] = None
+    project_id: str
+    zone: str = "fr-par-1"
+    region: str = "fr-par"
+    organization_id: Optional[str] = None
+
+
+class ScalewayInstanceConfig(InstanceConfig):
+    """Configuration for Scaleway backend instance."""
+
+    commercial_type: str = "DEV1-S"
+    image: str = "ubuntu_jammy"
+    enable_ipv6: bool = False
+    enable_public_ip: bool = True
+    public_gateway_id: Optional[str] = None
+    private_network_id: Optional[str] = None
+    security_group_ids: List[str] = []
+    ssh_public_key: Optional[str] = (
+        None  # SSH public key for debugging (added as AUTHORIZED_KEY tag)
+    )
+    boot_type: str = "local"
+    volumes: Dict[str, str] = {}
+    tags: List[str] = []
