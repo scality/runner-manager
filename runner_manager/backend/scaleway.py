@@ -17,6 +17,7 @@ from scaleway.instance.v1 import (  # type: ignore[import-untyped]
 from scaleway.instance.v1.custom_api import (
     InstanceUtilsV1API,  # type: ignore[import-untyped]
 )
+from scaleway.marketplace.v2 import MarketplaceV2API  # type: ignore[import-untyped]
 
 from runner_manager.backend.base import BaseBackend
 from runner_manager.models.backend import (
@@ -74,24 +75,121 @@ class ScalewayBackend(BaseBackend):
         return sanitized
 
     def get_image(self, image_name: str) -> Image:
-        """Get image by name or ID."""
+        """Get image by name or ID.
+
+        Supports three lookup methods in order:
+        1. Direct UUID lookup (for explicit image IDs)
+        2. User's custom images by name (e.g., Packer-built images)
+        3. Scaleway Marketplace images by label
+
+        Args:
+            image_name: Image UUID, custom image name, or marketplace label
+
+        Returns:
+            Image object from Scaleway Instance API
+
+        Raises:
+            ValueError: If image is not found
+        """
+        import re
+
+        # Check if it's a UUID format
+        uuid_pattern = re.compile(
+            r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            re.IGNORECASE,
+        )
+        is_uuid = bool(uuid_pattern.match(image_name))
+
+        # 1. Try direct UUID lookup
+        if is_uuid:
+            try:
+                return self.client.get_image(
+                    zone=self.config.zone,
+                    image_id=image_name,
+                ).image
+            except Exception as e:
+                log.debug(f"Image ID lookup failed: {e}")
+                raise ValueError(
+                    f"Image with ID '{image_name}' not found in zone {self.config.zone}"
+                )
+
+        # 2. Try to find in user's custom images by name (e.g., Packer images)
         try:
-            # Try to get by ID first
-            return self.client.get_image(
-                zone=self.config.zone,
-                image_id=image_name,
-            ).image
-        except Exception:
-            # Otherwise, list images and find by name
             images = self.client.list_images(
                 zone=self.config.zone,
                 name=image_name,
             ).images
             if images:
+                log.info(f"Found user image '{image_name}': {images[0].id}")
                 return images[0]
-            raise ValueError(
-                f"Image '{image_name}' not found in zone {self.config.zone}"
+        except Exception as e:
+            log.debug(f"User images lookup failed: {e}")
+
+        # 3. Try Scaleway Marketplace
+        try:
+            # Create marketplace client
+            scw_client = Client(
+                access_key=self.config.access_key or os.getenv("SCW_ACCESS_KEY"),
+                secret_key=self.config.secret_key or os.getenv("SCW_SECRET_KEY"),
+                default_project_id=self.config.project_id,
+                default_zone=self.config.zone,
+                default_region=self.config.region,
             )
+            marketplace_client = MarketplaceV2API(scw_client)
+
+            # List all marketplace images with pagination
+            all_images = []
+            page = 1
+            page_size = 100
+
+            while True:
+                images_result = marketplace_client.list_images(
+                    include_eol=True,
+                    page=page,
+                    page_size=page_size,
+                )
+                all_images.extend(images_result.images)
+
+                if len(images_result.images) < page_size:
+                    break
+                page += 1
+
+            # Find image by label
+            marketplace_image = None
+            for img in all_images:
+                if img.label == image_name:
+                    marketplace_image = img
+                    break
+
+            if not marketplace_image:
+                raise ValueError(f"Image label '{image_name}' not found in marketplace")
+
+            log.info(f"Found marketplace image '{image_name}': {marketplace_image.id}")
+
+            # Get the local version for the current zone
+            local_images = marketplace_client.list_local_images(
+                image_id=marketplace_image.id,
+                zone=self.config.zone,
+            )
+
+            if local_images.local_images:
+                for local_img in local_images.local_images:
+                    if local_img.zone == self.config.zone:
+                        log.info(f"Resolved to local image ID: {local_img.id}")
+                        return self.client.get_image(
+                            zone=self.config.zone,
+                            image_id=local_img.id,
+                        ).image
+
+        except Exception as marketplace_error:
+            log.debug(
+                f"Marketplace lookup failed for '{image_name}': {marketplace_error}"
+            )
+
+        raise ValueError(
+            f"Image '{image_name}' not found in zone {self.config.zone}. "
+            f"Tried: UUID lookup, user images, and marketplace."
+        )
 
     def wait_for_server_state(
         self,
