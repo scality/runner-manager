@@ -124,12 +124,113 @@ def test_backend_name(fake_scaleway_group):
 
 
 def test_get_image(fake_scaleway_group):
-    """Test getting image by name."""
+    """Test getting image by name from user images."""
     backend = fake_scaleway_group.backend
     image = backend.get_image("ubuntu_jammy")
 
     assert image.id == "test-image-id"
     assert image.name == "ubuntu_jammy"
+
+
+def test_get_image_by_uuid(fake_scaleway_group):
+    """Test getting image by UUID."""
+    backend = fake_scaleway_group.backend
+
+    # UUID format should trigger direct get_image call
+    uuid = "ec31d73d-ca36-4536-adf4-0feb76d30379"
+    image = backend.get_image(uuid)
+
+    assert image.id == "test-image-id"
+
+
+def test_get_image_marketplace(fake_scaleway_group, monkeypatch):
+    """Test getting image from Scaleway Marketplace."""
+    # Mock marketplace image
+    mock_marketplace_img = MagicMock()
+    mock_marketplace_img.id = "marketplace-img-id"
+    mock_marketplace_img.label = "ubuntu_noble"
+
+    # Mock local image
+    mock_local_img = MagicMock()
+    mock_local_img.id = "local-img-uuid"
+    mock_local_img.zone = "fr-par-1"
+
+    # Mock marketplace API
+    mock_marketplace_api = MagicMock()
+    mock_marketplace_api.list_images.return_value = MagicMock(
+        images=[mock_marketplace_img]
+    )
+    mock_marketplace_api.list_local_images.return_value = MagicMock(
+        local_images=[mock_local_img]
+    )
+
+    # Mock MarketplaceV2API where it's imported in the backend module
+    monkeypatch.setattr(
+        "runner_manager.backend.scaleway.MarketplaceV2API",
+        lambda client: mock_marketplace_api,
+    )
+
+    # Mock list_images to return empty (force marketplace lookup)
+    backend = fake_scaleway_group.backend
+    mock_client = backend.client
+    mock_client.list_images.return_value = MagicMock(images=[])
+
+    # Get image from marketplace
+    image = backend.get_image("ubuntu_noble")
+
+    # Verify it called marketplace API
+    assert mock_marketplace_api.list_images.called
+    assert mock_marketplace_api.list_local_images.called
+    assert image.id == "test-image-id"
+
+
+def test_get_image_not_found(fake_scaleway_group, monkeypatch):
+    """Test error when image is not found anywhere."""
+    backend = fake_scaleway_group.backend
+
+    # Mock all lookups to fail
+    mock_client = backend.client
+    mock_client.list_images.return_value = MagicMock(images=[])
+
+    # Mock marketplace to also fail
+    mock_marketplace_api = MagicMock()
+    mock_marketplace_api.list_images.return_value = MagicMock(images=[])
+
+    monkeypatch.setattr(
+        "runner_manager.backend.scaleway.MarketplaceV2API",
+        lambda client: mock_marketplace_api,
+    )
+
+    with pytest.raises(ValueError, match="not found in zone"):
+        backend.get_image("non-existent-image")
+
+
+def test_get_image_user_priority(fake_scaleway_group, monkeypatch):
+    """Test that user images take priority over marketplace images."""
+    backend = fake_scaleway_group.backend
+
+    # Mock user image found
+    mock_user_image = MagicMock()
+    mock_user_image.id = "user-custom-image-id"
+    mock_user_image.name = "my-custom-ubuntu"
+
+    mock_client = backend.client
+    mock_client.list_images.return_value = MagicMock(images=[mock_user_image])
+
+    # Mock marketplace (should not be called)
+    mock_marketplace_api = MagicMock()
+    monkeypatch.setattr(
+        "runner_manager.backend.scaleway.MarketplaceV2API",
+        lambda client: mock_marketplace_api,
+    )
+
+    image = backend.get_image("my-custom-ubuntu")
+
+    # Verify user image was returned
+    assert image.id == "user-custom-image-id"
+
+    # Verify marketplace was NOT called (user image found first)
+    assert not mock_marketplace_api.list_images.called
 
 
 def test_create_instance_mock(scaleway_runner, fake_scaleway_group):
@@ -436,18 +537,6 @@ def test_get_image_by_id(fake_scaleway_group):
     image = backend.get_image("test-image-id")
 
     assert image.id == "test-image-id"
-
-
-def test_get_image_not_found(fake_scaleway_group, monkeypatch):
-    """Test get_image when image is not found."""
-    backend = fake_scaleway_group.backend
-
-    mock_client = backend.client
-    mock_client.get_image.side_effect = Exception("Image not found")
-    mock_client.list_images.return_value = MagicMock(images=[])
-
-    with pytest.raises(ValueError, match="not found in zone"):
-        backend.get_image("non-existent-image")
 
 
 # Real API tests (skipped if credentials not available)
