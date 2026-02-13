@@ -443,6 +443,74 @@ def test_delete_with_volume_error(
     assert result == 1
 
 
+def test_delete_with_volume_not_found_404(
+    scaleway_runner, fake_scaleway_group, caplog, monkeypatch
+):
+    """Test instance deletion when volume returns 404 error."""
+    backend = fake_scaleway_group.backend
+    scaleway_runner.instance_id = "test-server-id"
+    scaleway_runner.save()
+
+    # Mock server with volumes
+    mock_volume = MagicMock()
+    mock_volume.id = "test-volume-id"
+    mock_server = MagicMock()
+    mock_server.id = "test-server-id"
+    mock_server.state = ServerState.RUNNING
+    mock_server.volumes = {"0": mock_volume}
+
+    mock_client = backend.client
+    mock_client.get_server.return_value = MagicMock(server=mock_server)
+    mock_client.delete_volume.side_effect = Exception("Error 404: Volume not found")
+
+    # Restore wait_for_server_state mock
+    def mock_wait(self, server_id, target_state, timeout=300):
+        return mock_server
+
+    monkeypatch.setattr(ScalewayBackend, "wait_for_server_state", mock_wait)
+
+    result = backend.delete(scaleway_runner)
+
+    # Verify info log for not_found volume (not warning)
+    assert "not found - may have been auto-deleted" in caplog.text
+    assert "Failed to delete volume" not in caplog.text
+    assert result == 1
+
+
+def test_delete_with_volume_not_found_string(
+    scaleway_runner, fake_scaleway_group, caplog, monkeypatch
+):
+    """Test instance deletion when volume returns 'not_found' in error message."""
+    backend = fake_scaleway_group.backend
+    scaleway_runner.instance_id = "test-server-id"
+    scaleway_runner.save()
+
+    # Mock server with volumes
+    mock_volume = MagicMock()
+    mock_volume.id = "test-volume-id"
+    mock_server = MagicMock()
+    mock_server.id = "test-server-id"
+    mock_server.state = ServerState.RUNNING
+    mock_server.volumes = {"0": mock_volume}
+
+    mock_client = backend.client
+    mock_client.get_server.return_value = MagicMock(server=mock_server)
+    mock_client.delete_volume.side_effect = Exception("resource_not_found")
+
+    # Restore wait_for_server_state mock
+    def mock_wait(self, server_id, target_state, timeout=300):
+        return mock_server
+
+    monkeypatch.setattr(ScalewayBackend, "wait_for_server_state", mock_wait)
+
+    result = backend.delete(scaleway_runner)
+
+    # Verify info log for not_found volume (not warning)
+    assert "not found - may have been auto-deleted" in caplog.text
+    assert "Failed to delete volume" not in caplog.text
+    assert result == 1
+
+
 def test_delete_stopped_server(scaleway_runner, fake_scaleway_group):
     """Test deletion of already stopped server."""
     backend = fake_scaleway_group.backend
@@ -606,3 +674,171 @@ def test_list(scaleway_runner, scaleway_group):
     scaleway_group.backend.delete(runner)
     with pytest.raises(NotFoundError):
         scaleway_group.backend.get(runner.instance_id)
+
+
+def test_create_with_default_sbs_volume(
+    scaleway_runner, fake_scaleway_group, monkeypatch, caplog
+):
+    """Test instance creation with default sbs_volume configuration."""
+    # Mock image with root_volume
+    mock_image = MagicMock()
+    mock_image.id = "test-image-id"
+    mock_root_volume = MagicMock()
+    mock_root_volume.id = "snapshot-id"
+    mock_image.root_volume = mock_root_volume
+
+    # Patch get_image at class level
+    def mock_get_image(self, image_name):
+        return mock_image
+
+    monkeypatch.setattr(ScalewayBackend, "get_image", mock_get_image)
+
+    backend = fake_scaleway_group.backend
+    backend.create(scaleway_runner)
+
+    # Verify volumes parameter was passed to _create_server
+    mock_client = backend.client
+    create_call = mock_client._create_server.call_args
+    volumes = create_call.kwargs.get("volumes")
+
+    assert volumes is not None
+    assert "0" in volumes
+    assert volumes["0"].volume_type == "sbs_volume"
+    assert volumes["0"].size == 20_000_000_000  # 20GB default
+    assert volumes["0"].base_snapshot == "snapshot-id"
+
+    # Verify log message
+    assert "Creating sbs_volume boot volume: 20GB" in caplog.text
+    assert "from snapshot snapshot-id" in caplog.text
+
+
+def test_create_with_l_ssd_volume(
+    scaleway_runner, fake_scaleway_group, monkeypatch, caplog
+):
+    """Test instance creation with l_ssd volume type."""
+    # Mock image
+    mock_image = MagicMock()
+    mock_image.id = "test-image-id"
+
+    # Patch get_image at class level
+    def mock_get_image(self, image_name):
+        return mock_image
+
+    monkeypatch.setattr(ScalewayBackend, "get_image", mock_get_image)
+
+    # Configure l_ssd
+    fake_scaleway_group.backend.instance_config.volume_type = "l_ssd"
+    fake_scaleway_group.backend.instance_config.volume_size_gb = 80
+
+    backend = fake_scaleway_group.backend
+    backend.create(scaleway_runner)
+
+    # Verify volumes parameter
+    mock_client = backend.client
+    create_call = mock_client._create_server.call_args
+    volumes = create_call.kwargs.get("volumes")
+
+    assert volumes is not None
+    assert "0" in volumes
+    assert volumes["0"].volume_type == "l_ssd"
+    assert volumes["0"].size == 80_000_000_000  # 80GB
+    # For l_ssd, no base_snapshot should be set
+    assert (
+        not hasattr(volumes["0"], "base_snapshot") or volumes["0"].base_snapshot is None
+    )
+
+    # Verify log message
+    assert "Creating l_ssd boot volume: 80GB" in caplog.text
+
+
+def test_create_with_custom_volume_size(
+    scaleway_runner, fake_scaleway_group, monkeypatch
+):
+    """Test instance creation with custom volume size."""
+    mock_image = MagicMock()
+    mock_image.id = "test-image-id"
+    mock_root_volume = MagicMock()
+    mock_root_volume.id = "snapshot-id"
+    mock_image.root_volume = mock_root_volume
+
+    # Patch get_image at class level
+    def mock_get_image(self, image_name):
+        return mock_image
+
+    monkeypatch.setattr(ScalewayBackend, "get_image", mock_get_image)
+
+    # Set custom size
+    fake_scaleway_group.backend.instance_config.volume_size_gb = 100
+    backend = fake_scaleway_group.backend
+
+    backend.create(scaleway_runner)
+
+    mock_client = backend.client
+    create_call = mock_client._create_server.call_args
+    volumes = create_call.kwargs.get("volumes")
+
+    assert volumes["0"].size == 100_000_000_000  # 100GB
+
+
+def test_create_with_no_root_volume_fallback(
+    scaleway_runner, fake_scaleway_group, monkeypatch, caplog
+):
+    """Test fallback when image has no root_volume."""
+    mock_image = MagicMock()
+    mock_image.id = "test-image-id"
+    mock_image.root_volume = None  # No root volume
+
+    # Patch get_image at class level
+    def mock_get_image(self, image_name):
+        return mock_image
+
+    monkeypatch.setattr(ScalewayBackend, "get_image", mock_get_image)
+
+    backend = fake_scaleway_group.backend
+    backend.create(scaleway_runner)
+
+    # Verify warning was logged
+    assert "has no root_volume, using default volume from image" in caplog.text
+
+    # Verify volumes=None was passed
+    mock_client = backend.client
+    create_call = mock_client._create_server.call_args
+    volumes = create_call.kwargs.get("volumes")
+    assert volumes is None
+
+
+def test_create_with_user_provided_volumes(
+    scaleway_runner, fake_scaleway_group, monkeypatch
+):
+    """Test instance creation with user-provided volumes configuration."""
+    from scaleway.instance.v1 import VolumeServerTemplate
+
+    # Mock image
+    mock_image = MagicMock()
+    mock_image.id = "test-image-id"
+
+    # Patch get_image at class level
+    def mock_get_image(self, image_name):
+        return mock_image
+
+    monkeypatch.setattr(ScalewayBackend, "get_image", mock_get_image)
+
+    # Set user-provided volumes
+    custom_volumes = {
+        "0": VolumeServerTemplate(
+            volume_type="sbs_volume",
+            size=50_000_000_000,
+            base_snapshot="custom-snapshot-id",
+        )
+    }
+    fake_scaleway_group.backend.instance_config.volumes = custom_volumes
+
+    backend = fake_scaleway_group.backend
+    backend.create(scaleway_runner)
+
+    # Verify user-provided volumes were used
+    mock_client = backend.client
+    create_call = mock_client._create_server.call_args
+    volumes = create_call.kwargs.get("volumes")
+
+    assert volumes == custom_volumes

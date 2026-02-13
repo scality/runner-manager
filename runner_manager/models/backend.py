@@ -330,3 +330,7 @@ class ScalewayInstanceConfig(InstanceConfig):
     boot_type: str = "local"
     volumes: Dict[str, str] = {}
     tags: List[str] = []
+    volume_size_gb: int = 20  # Size of boot volume in GB
+    volume_type: Literal["l_ssd", "sbs_volume"] = (
+        "sbs_volume"  # Local or block storage (sbs_volume is more universal)
+    )

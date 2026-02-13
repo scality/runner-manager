@@ -1,4 +1,4 @@
-# pyright: reportOptionalMemberAccess=false, reportArgumentType=false, reportReturnType=false, reportMissingTypeStubs=false
+# pyright: reportOptionalMemberAccess=false, reportArgumentType=false, reportReturnType=false, reportMissingTypeStubs=false, reportAttributeAccessIssue=false
 import logging
 import os
 import re
@@ -7,17 +7,16 @@ from typing import List, Literal
 
 from pydantic import Field
 from redis_om import NotFoundError
-from scaleway import Client  # type: ignore[import-untyped]
-from scaleway.instance.v1 import (  # type: ignore[import-untyped]
+from scaleway import Client
+from scaleway.instance.v1 import (
     Image,
     Server,
     ServerAction,
     ServerState,
+    VolumeServerTemplate,
 )
-from scaleway.instance.v1.custom_api import (
-    InstanceUtilsV1API,  # type: ignore[import-untyped]
-)
-from scaleway.marketplace.v2 import MarketplaceV2API  # type: ignore[import-untyped]
+from scaleway.instance.v1.custom_api import InstanceUtilsV1API
+from scaleway.marketplace.v2 import MarketplaceV2API
 
 from runner_manager.backend.base import BaseBackend
 from runner_manager.models.backend import (
@@ -264,6 +263,52 @@ class ScalewayBackend(BaseBackend):
         use_gateway = bool(self.instance_config.public_gateway_id)
         dynamic_ip_required = self.instance_config.enable_public_ip and not use_gateway
 
+        # Prepare volumes configuration
+        # Create explicit boot volume with specified size to avoid default 10GB
+        # Volume types:
+        # - l_ssd: Local SSD storage (fast, can create raw volumes)
+        # - sbs_volume: Block Storage (cannot create raw, must use base_snapshot from image)
+        volumes_config = None
+
+        if not self.instance_config.volumes:
+            volume_size_bytes = self.instance_config.volume_size_gb * 1000000000
+
+            if self.instance_config.volume_type == "l_ssd":
+                volumes_config = {
+                    "0": VolumeServerTemplate(
+                        name=f"{runner.name}-boot",
+                        size=volume_size_bytes,
+                        volume_type="l_ssd",
+                    )
+                }
+                log.info(
+                    f"Creating l_ssd boot volume: {self.instance_config.volume_size_gb}GB"
+                )
+            else:
+                img = self.get_image(self.instance_config.image)
+                if img.root_volume and img.root_volume.id:
+                    volumes_config = {
+                        "0": VolumeServerTemplate(
+                            name=f"{runner.name}-boot",
+                            size=volume_size_bytes,
+                            volume_type="sbs_volume",
+                            base_snapshot=img.root_volume.id,
+                            boot=True,
+                        )
+                    }
+                    log.info(
+                        f"Creating sbs_volume boot volume: {self.instance_config.volume_size_gb}GB "
+                        f"from snapshot {img.root_volume.id}"
+                    )
+                else:
+                    log.warning(
+                        f"Image {img.id} has no root_volume, using default volume from image"
+                    )
+                    volumes_config = None
+        else:
+            # Use user-provided volumes configuration
+            volumes_config = self.instance_config.volumes
+
         # Create server using _create_server
         # Note: In SDK 2.10.3, 'protected' is a required parameter
         response = self.client._create_server(
@@ -278,6 +323,7 @@ class ScalewayBackend(BaseBackend):
             project=self.config.project_id,
             organization=self.config.organization_id,
             security_group=security_group,
+            volumes=volumes_config,
         )
 
         server = response.server
@@ -391,6 +437,10 @@ class ScalewayBackend(BaseBackend):
             log.info(f"Server {runner.instance_id} deleted successfully")
 
             # Delete associated volumes
+            # Note: The behavior differs by volume type:
+            # - l_ssd (local storage): Usually auto-deleted with the server
+            # - sbs_volume (block storage): Persists after server deletion, must be deleted manually
+            # The Instance API manages both types, but sbs volumes need explicit cleanup
             for volume_id in volume_ids:
                 try:
                     self.client.delete_volume(
@@ -399,7 +449,15 @@ class ScalewayBackend(BaseBackend):
                     )
                     log.info(f"Volume {volume_id} deleted successfully")
                 except Exception as vol_error:
-                    log.warning(f"Failed to delete volume {volume_id}: {vol_error}")
+                    error_msg = str(vol_error)
+                    # Volume may already be deleted automatically (especially l_ssd volumes)
+                    # or might not be found if searching in wrong scope
+                    if "404" in error_msg or "not_found" in error_msg.lower():
+                        log.info(
+                            f"Volume {volume_id} not found - may have been auto-deleted with server or already cleaned up"
+                        )
+                    else:
+                        log.warning(f"Failed to delete volume {volume_id}: {vol_error}")
 
         except Exception as e:
             if "404" in str(e) or "not found" in str(e).lower():
