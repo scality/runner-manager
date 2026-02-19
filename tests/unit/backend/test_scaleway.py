@@ -72,9 +72,21 @@ def fake_scaleway_group(scaleway_group, monkeypatch):
     mock_client.server_action.return_value = None
     mock_client.update_server.return_value = None
     mock_client.delete_server.return_value = None
+    mock_client.delete_volume.return_value = None  # For fallback from Block API
+
+    # Mock Block Storage API client
+    # By default, simulate that volumes are not found in Block API (like l_ssd volumes)
+    # This will trigger fallback to Instance API, maintaining compatibility with existing tests
+    mock_block_client = MagicMock()
+    mock_block_client.delete_volume.side_effect = Exception(
+        "404 not_found: Volume not in Block API"
+    )
 
     # Patch the client property
     monkeypatch.setattr(ScalewayBackend, "client", property(lambda self: mock_client))
+    monkeypatch.setattr(
+        ScalewayBackend, "block_client", property(lambda self: mock_block_client)
+    )
 
     # Mock wait_for_server_state to return immediately
     def mock_wait(self, server_id, target_state, timeout=300):
@@ -376,40 +388,6 @@ def test_create_without_jit_config(scaleway_runner, fake_scaleway_group, caplog)
     assert "No JIT config provided" in caplog.text
 
 
-def test_delete_with_volumes(scaleway_runner, fake_scaleway_group, monkeypatch):
-    """Test instance deletion with attached volumes."""
-    backend = fake_scaleway_group.backend
-    scaleway_runner.instance_id = "test-server-id"
-    scaleway_runner.save()
-
-    # Mock server with volumes
-    mock_volume = MagicMock()
-    mock_volume.id = "test-volume-id"
-    mock_server = MagicMock()
-    mock_server.id = "test-server-id"
-    mock_server.state = ServerState.RUNNING
-    mock_server.volumes = {"0": mock_volume}
-
-    mock_client = backend.client
-    mock_client.get_server.return_value = MagicMock(server=mock_server)
-    mock_client.delete_volume.return_value = None
-
-    # Restore wait_for_server_state mock
-    def mock_wait(self, server_id, target_state, timeout=300):
-        return mock_server
-
-    monkeypatch.setattr(ScalewayBackend, "wait_for_server_state", mock_wait)
-
-    result = backend.delete(scaleway_runner)
-
-    # Verify volume was deleted
-    mock_client.delete_volume.assert_called_once_with(
-        zone=backend.config.zone,
-        volume_id="test-volume-id",
-    )
-    assert result == 1
-
-
 def test_delete_with_volume_error(
     scaleway_runner, fake_scaleway_group, caplog, monkeypatch
 ):
@@ -477,40 +455,6 @@ def test_delete_with_volume_not_found_404(
     assert result == 1
 
 
-def test_delete_with_volume_not_found_string(
-    scaleway_runner, fake_scaleway_group, caplog, monkeypatch
-):
-    """Test instance deletion when volume returns 'not_found' in error message."""
-    backend = fake_scaleway_group.backend
-    scaleway_runner.instance_id = "test-server-id"
-    scaleway_runner.save()
-
-    # Mock server with volumes
-    mock_volume = MagicMock()
-    mock_volume.id = "test-volume-id"
-    mock_server = MagicMock()
-    mock_server.id = "test-server-id"
-    mock_server.state = ServerState.RUNNING
-    mock_server.volumes = {"0": mock_volume}
-
-    mock_client = backend.client
-    mock_client.get_server.return_value = MagicMock(server=mock_server)
-    mock_client.delete_volume.side_effect = Exception("resource_not_found")
-
-    # Restore wait_for_server_state mock
-    def mock_wait(self, server_id, target_state, timeout=300):
-        return mock_server
-
-    monkeypatch.setattr(ScalewayBackend, "wait_for_server_state", mock_wait)
-
-    result = backend.delete(scaleway_runner)
-
-    # Verify info log for not_found volume (not warning)
-    assert "not found - may have been auto-deleted" in caplog.text
-    assert "Failed to delete volume" not in caplog.text
-    assert result == 1
-
-
 def test_delete_stopped_server(scaleway_runner, fake_scaleway_group):
     """Test deletion of already stopped server."""
     backend = fake_scaleway_group.backend
@@ -546,6 +490,119 @@ def test_delete_not_found(scaleway_runner, fake_scaleway_group, caplog):
 
     # Verify warning was logged
     assert "not found" in caplog.text
+    assert result == 1
+
+
+def test_delete_with_block_storage_volume(
+    scaleway_runner, fake_scaleway_group, caplog, monkeypatch
+):
+    """Test instance deletion with block storage (sbs_volume) using Block API."""
+    backend = fake_scaleway_group.backend
+    scaleway_runner.instance_id = "test-server-id"
+    scaleway_runner.save()
+
+    # Mock server with block storage volume
+    mock_volume = MagicMock()
+    mock_volume.id = "test-block-volume-id"
+    mock_server = MagicMock()
+    mock_server.id = "test-server-id"
+    mock_server.state = ServerState.RUNNING
+    mock_server.volumes = {"0": mock_volume}
+
+    # Mock Instance API client
+    mock_client = MagicMock()
+    mock_client.get_server.return_value = MagicMock(server=mock_server)
+    mock_client.delete_server.return_value = None
+    mock_client.delete_volume.return_value = None
+    mock_client.server_action.return_value = None
+
+    # Mock Block Storage API client
+    mock_block_client = MagicMock()
+    mock_block_client.delete_volume.return_value = None
+
+    # Patch both clients
+    monkeypatch.setattr(ScalewayBackend, "client", property(lambda self: mock_client))
+    monkeypatch.setattr(
+        ScalewayBackend, "block_client", property(lambda self: mock_block_client)
+    )
+
+    # Mock wait_for_server_state
+    def mock_wait(self, server_id, target_state, timeout=300):
+        return mock_server
+
+    monkeypatch.setattr(ScalewayBackend, "wait_for_server_state", mock_wait)
+
+    result = backend.delete(scaleway_runner)
+
+    # Verify Block Storage API was called first
+    mock_block_client.delete_volume.assert_called_once_with(
+        zone=backend.config.zone,
+        volume_id="test-block-volume-id",
+    )
+    # Verify Instance API delete_volume was NOT called
+    mock_client.delete_volume.assert_not_called()
+    # Verify successful deletion was logged
+    assert (
+        "Block storage volume test-block-volume-id deleted successfully" in caplog.text
+    )
+    assert result == 1
+
+
+def test_delete_with_volume_fallback_to_instance_api(
+    scaleway_runner, fake_scaleway_group, caplog, monkeypatch
+):
+    """Test volume deletion fallback from Block API to Instance API for l_ssd volumes."""
+    backend = fake_scaleway_group.backend
+    scaleway_runner.instance_id = "test-server-id"
+    scaleway_runner.save()
+
+    # Mock server with l_ssd volume
+    mock_volume = MagicMock()
+    mock_volume.id = "test-lssd-volume-id"
+    mock_server = MagicMock()
+    mock_server.id = "test-server-id"
+    mock_server.state = ServerState.RUNNING
+    mock_server.volumes = {"0": mock_volume}
+
+    # Mock Instance API client
+    mock_client = MagicMock()
+    mock_client.get_server.return_value = MagicMock(server=mock_server)
+    mock_client.delete_server.return_value = None
+    mock_client.delete_volume.return_value = None
+    mock_client.server_action.return_value = None
+
+    # Mock Block Storage API client to return 404 (volume not found in Block API)
+    mock_block_client = MagicMock()
+    mock_block_client.delete_volume.side_effect = Exception(
+        "404 not_found: Volume not found in Block API"
+    )
+
+    # Patch both clients
+    monkeypatch.setattr(ScalewayBackend, "client", property(lambda self: mock_client))
+    monkeypatch.setattr(
+        ScalewayBackend, "block_client", property(lambda self: mock_block_client)
+    )
+
+    # Mock wait_for_server_state
+    def mock_wait(self, server_id, target_state, timeout=300):
+        return mock_server
+
+    monkeypatch.setattr(ScalewayBackend, "wait_for_server_state", mock_wait)
+
+    result = backend.delete(scaleway_runner)
+
+    # Verify Block Storage API was called first
+    mock_block_client.delete_volume.assert_called_once_with(
+        zone=backend.config.zone,
+        volume_id="test-lssd-volume-id",
+    )
+    # Verify Instance API was called as fallback
+    mock_client.delete_volume.assert_called_once_with(
+        zone=backend.config.zone,
+        volume_id="test-lssd-volume-id",
+    )
+    # Verify successful deletion through Instance API was logged
+    assert "Instance volume test-lssd-volume-id deleted successfully" in caplog.text
     assert result == 1
 
 
@@ -842,3 +899,157 @@ def test_create_with_user_provided_volumes(
     volumes = create_call.kwargs.get("volumes")
 
     assert volumes == custom_volumes
+
+
+def test_block_client_with_credentials(scaleway_group, monkeypatch):
+    """Test block_client property with valid credentials format."""
+    backend = scaleway_group.backend
+    # Set fake credentials with valid format (SCW prefix for access key)
+    monkeypatch.setenv("SCW_ACCESS_KEY", "SCWXXXXXXXXXXXXXXXXX")
+    monkeypatch.setenv("SCW_SECRET_KEY", "11111111-1111-1111-1111-111111111111")
+
+    # Mock the Client validation to avoid actual API calls
+    from scaleway import Client
+
+    original_validate = Client.validate
+
+    def mock_validate(self):
+        return True
+
+    monkeypatch.setattr(Client, "validate", mock_validate)
+
+    # This should not raise an error about credentials
+    client = backend.block_client
+    assert client is not None
+
+    # Restore
+    monkeypatch.setattr(Client, "validate", original_validate)
+
+
+def test_block_client_without_credentials(scaleway_group, monkeypatch):
+    """Test block_client raises ValueError without credentials."""
+    backend = scaleway_group.backend
+    # Clear environment variables and config
+    monkeypatch.delenv("SCW_ACCESS_KEY", raising=False)
+    monkeypatch.delenv("SCW_SECRET_KEY", raising=False)
+    backend.config.access_key = None
+    backend.config.secret_key = None
+
+    with pytest.raises(ValueError, match="Scaleway credentials not found"):
+        _ = backend.block_client
+
+
+def test_client_without_credentials(scaleway_group, monkeypatch):
+    """Test client property raises ValueError without credentials."""
+    backend = scaleway_group.backend
+    # Clear environment variables and config
+    monkeypatch.delenv("SCW_ACCESS_KEY", raising=False)
+    monkeypatch.delenv("SCW_SECRET_KEY", raising=False)
+    backend.config.access_key = None
+    backend.config.secret_key = None
+
+    with pytest.raises(ValueError, match="Scaleway credentials not found"):
+        _ = backend.client
+
+
+def test_delete_with_block_api_non_404_error(
+    scaleway_runner, fake_scaleway_group, caplog, monkeypatch
+):
+    """Test volume deletion when Block API fails with non-404 error and Instance API also fails."""
+    backend = fake_scaleway_group.backend
+    scaleway_runner.instance_id = "test-server-id"
+    scaleway_runner.save()
+
+    # Mock server with volume
+    mock_volume = MagicMock()
+    mock_volume.id = "test-volume-id"
+    mock_server = MagicMock()
+    mock_server.id = "test-server-id"
+    mock_server.state = ServerState.RUNNING
+    mock_server.volumes = {"0": mock_volume}
+
+    # Mock Instance API client
+    mock_client = MagicMock()
+    mock_client.get_server.return_value = MagicMock(server=mock_server)
+    mock_client.delete_server.return_value = None
+    mock_client.server_action.return_value = None
+    # Instance API also fails with permission error
+    mock_client.delete_volume.side_effect = Exception("Permission denied")
+
+    # Mock Block Storage API client - fails with permission error (not 404)
+    mock_block_client = MagicMock()
+    mock_block_client.delete_volume.side_effect = Exception(
+        "Permission denied: insufficient permissions"
+    )
+
+    # Patch both clients
+    monkeypatch.setattr(ScalewayBackend, "client", property(lambda self: mock_client))
+    monkeypatch.setattr(
+        ScalewayBackend, "block_client", property(lambda self: mock_block_client)
+    )
+
+    # Mock wait_for_server_state
+    def mock_wait(self, server_id, target_state, timeout=300):
+        return mock_server
+
+    monkeypatch.setattr(ScalewayBackend, "wait_for_server_state", mock_wait)
+
+    result = backend.delete(scaleway_runner)
+
+    # Verify warning was logged for the failed volume deletion
+    assert "Failed to delete volume test-volume-id" in caplog.text
+    assert "Permission denied" in caplog.text
+    assert result == 1
+
+
+def test_delete_with_block_api_no_fallback_on_permission_error(
+    scaleway_runner, fake_scaleway_group, caplog, monkeypatch
+):
+    """Test volume deletion when Block API fails with non-404 error (no fallback to Instance API)."""
+    backend = fake_scaleway_group.backend
+    scaleway_runner.instance_id = "test-server-id"
+    scaleway_runner.save()
+
+    # Mock server with volume
+    mock_volume = MagicMock()
+    mock_volume.id = "test-volume-id"
+    mock_server = MagicMock()
+    mock_server.id = "test-server-id"
+    mock_server.state = ServerState.RUNNING
+    mock_server.volumes = {"0": mock_volume}
+
+    # Mock Instance API client - succeeds on fallback (shouldn't be called)
+    mock_client = MagicMock()
+    mock_client.get_server.return_value = MagicMock(server=mock_server)
+    mock_client.delete_server.return_value = None
+    mock_client.server_action.return_value = None
+    mock_client.delete_volume.return_value = None
+
+    # Mock Block Storage API client - fails with permission error (not 404)
+    mock_block_client = MagicMock()
+    mock_block_client.delete_volume.side_effect = Exception(
+        "403 Permission denied: insufficient permissions"
+    )
+
+    # Patch both clients
+    monkeypatch.setattr(ScalewayBackend, "client", property(lambda self: mock_client))
+    monkeypatch.setattr(
+        ScalewayBackend, "block_client", property(lambda self: mock_block_client)
+    )
+
+    # Mock wait_for_server_state
+    def mock_wait(self, server_id, target_state, timeout=300):
+        return mock_server
+
+    monkeypatch.setattr(ScalewayBackend, "wait_for_server_state", mock_wait)
+
+    result = backend.delete(scaleway_runner)
+
+    # Verify Block API was called
+    mock_block_client.delete_volume.assert_called_once()
+    # Verify Instance API was NOT called (error was not 404)
+    mock_client.delete_volume.assert_not_called()
+    # Verify warning was logged
+    assert "Failed to delete volume test-volume-id" in caplog.text
+    assert "Permission denied" in caplog.text
+    assert result == 1

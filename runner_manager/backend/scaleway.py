@@ -8,6 +8,7 @@ from typing import List, Literal
 from pydantic import Field
 from redis_om import NotFoundError
 from scaleway import Client
+from scaleway.block.v1alpha1 import BlockV1Alpha1API
 from scaleway.instance.v1 import (
     Image,
     Server,
@@ -55,6 +56,26 @@ class ScalewayBackend(BaseBackend):
             default_region=self.config.region,
         )
         return InstanceUtilsV1API(scw_client)
+
+    @property
+    def block_client(self) -> BlockV1Alpha1API:
+        """Returns a Scaleway Block Storage API client."""
+        access_key = self.config.access_key or os.getenv("SCW_ACCESS_KEY")
+        secret_key = self.config.secret_key or os.getenv("SCW_SECRET_KEY")
+
+        if not access_key or not secret_key:
+            raise ValueError(
+                "Scaleway credentials not found. Set SCW_ACCESS_KEY and SCW_SECRET_KEY."
+            )
+
+        scw_client = Client(
+            access_key=access_key,
+            secret_key=secret_key,
+            default_project_id=self.config.project_id,
+            default_zone=self.config.zone,
+            default_region=self.config.region,
+        )
+        return BlockV1Alpha1API(scw_client)
 
     def sanitize_tags(self, tags: List[str]) -> List[str]:
         """Sanitize tags to comply with Scaleway requirements.
@@ -438,20 +459,41 @@ class ScalewayBackend(BaseBackend):
 
             # Delete associated volumes
             # Note: The behavior differs by volume type:
-            # - l_ssd (local storage): Usually auto-deleted with the server
-            # - sbs_volume (block storage): Persists after server deletion, must be deleted manually
-            # The Instance API manages both types, but sbs volumes need explicit cleanup
+            # - l_ssd (local storage): Usually auto-deleted with the server, use Instance API
+            # - sbs_volume (block storage): Persists after server deletion, must be deleted manually using Block API
             for volume_id in volume_ids:
                 try:
-                    self.client.delete_volume(
-                        zone=self.config.zone,
-                        volume_id=volume_id,
-                    )
-                    log.info(f"Volume {volume_id} deleted successfully")
+                    # First, try to delete using Block Storage API (for sbs_volume)
+                    try:
+                        self.block_client.delete_volume(
+                            zone=self.config.zone,
+                            volume_id=volume_id,
+                        )
+                        log.info(
+                            f"Block storage volume {volume_id} deleted successfully"
+                        )
+                    except Exception as block_error:
+                        block_error_msg = str(block_error)
+                        # If volume not found in Block API, try Instance API (for l_ssd volumes)
+                        if (
+                            "404" in block_error_msg
+                            or "not_found" in block_error_msg.lower()
+                        ):
+                            log.debug(
+                                f"Volume {volume_id} not found in Block API, trying Instance API"
+                            )
+                            self.client.delete_volume(
+                                zone=self.config.zone,
+                                volume_id=volume_id,
+                            )
+                            log.info(
+                                f"Instance volume {volume_id} deleted successfully"
+                            )
+                        else:
+                            raise block_error
                 except Exception as vol_error:
                     error_msg = str(vol_error)
                     # Volume may already be deleted automatically (especially l_ssd volumes)
-                    # or might not be found if searching in wrong scope
                     if "404" in error_msg or "not_found" in error_msg.lower():
                         log.info(
                             f"Volume {volume_id} not found - may have been auto-deleted with server or already cleaned up"
