@@ -4,6 +4,7 @@ from unittest.mock import MagicMock
 import pytest
 from redis_om import NotFoundError
 from scaleway.instance.v1 import ServerState
+from scaleway_core.api import ScalewayException
 
 from runner_manager.backend.scaleway import ScalewayBackend
 from runner_manager.models.backend import (
@@ -13,6 +14,14 @@ from runner_manager.models.backend import (
 )
 from runner_manager.models.runner import Runner
 from runner_manager.models.runner_group import RunnerGroup
+
+
+def make_scaleway_error(status_code: int, text: str = "") -> ScalewayException:
+    """Create a ScalewayException with a given HTTP status code for use in tests."""
+    response = MagicMock()
+    response.status_code = status_code
+    response.text = text
+    return ScalewayException(response=response)
 
 
 @pytest.fixture()
@@ -78,8 +87,8 @@ def fake_scaleway_group(scaleway_group, monkeypatch):
     # By default, simulate that volumes are not found in Block API (like l_ssd volumes)
     # This will trigger fallback to Instance API, maintaining compatibility with existing tests
     mock_block_client = MagicMock()
-    mock_block_client.delete_volume.side_effect = Exception(
-        "404 not_found: Volume not in Block API"
+    mock_block_client.delete_volume.side_effect = make_scaleway_error(
+        404, "not_found: Volume not in Block API"
     )
 
     # Patch the client property
@@ -406,7 +415,9 @@ def test_delete_with_volume_error(
 
     mock_client = backend.client
     mock_client.get_server.return_value = MagicMock(server=mock_server)
-    mock_client.delete_volume.side_effect = Exception("Volume deletion failed")
+    mock_client.delete_volume.side_effect = make_scaleway_error(
+        500, "Volume deletion failed"
+    )
 
     # Restore wait_for_server_state mock
     def mock_wait(self, server_id, target_state, timeout=300):
@@ -439,7 +450,7 @@ def test_delete_with_volume_not_found_404(
 
     mock_client = backend.client
     mock_client.get_server.return_value = MagicMock(server=mock_server)
-    mock_client.delete_volume.side_effect = Exception("Error 404: Volume not found")
+    mock_client.delete_volume.side_effect = make_scaleway_error(404, "Volume not found")
 
     # Restore wait_for_server_state mock
     def mock_wait(self, server_id, target_state, timeout=300):
@@ -573,8 +584,8 @@ def test_delete_with_volume_fallback_to_instance_api(
 
     # Mock Block Storage API client to return 404 (volume not found in Block API)
     mock_block_client = MagicMock()
-    mock_block_client.delete_volume.side_effect = Exception(
-        "404 not_found: Volume not found in Block API"
+    mock_block_client.delete_volume.side_effect = make_scaleway_error(
+        404, "not_found: Volume not found in Block API"
     )
 
     # Patch both clients
@@ -974,12 +985,14 @@ def test_delete_with_block_api_non_404_error(
     mock_client.delete_server.return_value = None
     mock_client.server_action.return_value = None
     # Instance API also fails with permission error
-    mock_client.delete_volume.side_effect = Exception("Permission denied")
+    mock_client.delete_volume.side_effect = make_scaleway_error(
+        403, "Permission denied"
+    )
 
     # Mock Block Storage API client - fails with permission error (not 404)
     mock_block_client = MagicMock()
-    mock_block_client.delete_volume.side_effect = Exception(
-        "Permission denied: insufficient permissions"
+    mock_block_client.delete_volume.side_effect = make_scaleway_error(
+        403, "Permission denied: insufficient permissions"
     )
 
     # Patch both clients
@@ -1027,8 +1040,8 @@ def test_delete_with_block_api_no_fallback_on_permission_error(
 
     # Mock Block Storage API client - fails with permission error (not 404)
     mock_block_client = MagicMock()
-    mock_block_client.delete_volume.side_effect = Exception(
-        "403 Permission denied: insufficient permissions"
+    mock_block_client.delete_volume.side_effect = make_scaleway_error(
+        403, "Permission denied: insufficient permissions"
     )
 
     # Patch both clients
@@ -1052,4 +1065,96 @@ def test_delete_with_block_api_no_fallback_on_permission_error(
     # Verify warning was logged
     assert "Failed to delete volume test-volume-id" in caplog.text
     assert "Permission denied" in caplog.text
+    assert result == 1
+
+
+def test_delete_volume_in_use_retry_succeeds(
+    scaleway_runner, fake_scaleway_group, caplog, monkeypatch
+):
+    """Test that volume deletion retries when volume is in_use, and succeeds eventually."""
+    backend = fake_scaleway_group.backend
+    scaleway_runner.instance_id = "test-server-id"
+    scaleway_runner.save()
+
+    mock_volume = MagicMock()
+    mock_volume.id = "test-block-volume-id"
+    mock_server = MagicMock()
+    mock_server.id = "test-server-id"
+    mock_server.state = ServerState.STOPPED
+    mock_server.volumes = {"0": mock_volume}
+
+    mock_client = MagicMock()
+    mock_client.get_server.return_value = MagicMock(server=mock_server)
+    mock_client.delete_server.return_value = None
+    mock_client.server_action.return_value = None
+
+    # Fail twice with 412 (in_use), then succeed on 3rd attempt
+    in_use_error = make_scaleway_error(
+        412, "precondition is not respected: protected_resource"
+    )
+    mock_block_client = MagicMock()
+    mock_block_client.delete_volume.side_effect = [in_use_error, in_use_error, None]
+
+    monkeypatch.setattr(ScalewayBackend, "client", property(lambda self: mock_client))
+    monkeypatch.setattr(
+        ScalewayBackend, "block_client", property(lambda self: mock_block_client)
+    )
+
+    def mock_wait(self, server_id, target_state, timeout=300):
+        return mock_server
+
+    monkeypatch.setattr(ScalewayBackend, "wait_for_server_state", mock_wait)
+    monkeypatch.setattr("runner_manager.backend.scaleway.time.sleep", lambda _: None)
+
+    result = backend.delete(scaleway_runner)
+
+    assert mock_block_client.delete_volume.call_count == 3
+    assert (
+        "Block storage volume test-block-volume-id deleted successfully" in caplog.text
+    )
+    assert "Failed to delete volume" not in caplog.text
+    assert result == 1
+
+
+def test_delete_volume_in_use_retry_exhausted(
+    scaleway_runner, fake_scaleway_group, caplog, monkeypatch
+):
+    """Test that a warning is logged when volume stays in_use after all retries."""
+    backend = fake_scaleway_group.backend
+    scaleway_runner.instance_id = "test-server-id"
+    scaleway_runner.save()
+
+    mock_volume = MagicMock()
+    mock_volume.id = "test-block-volume-id"
+    mock_server = MagicMock()
+    mock_server.id = "test-server-id"
+    mock_server.state = ServerState.STOPPED
+    mock_server.volumes = {"0": mock_volume}
+
+    mock_client = MagicMock()
+    mock_client.get_server.return_value = MagicMock(server=mock_server)
+    mock_client.delete_server.return_value = None
+    mock_client.server_action.return_value = None
+
+    in_use_error = make_scaleway_error(
+        412, "precondition is not respected: protected_resource"
+    )
+    mock_block_client = MagicMock()
+    mock_block_client.delete_volume.side_effect = in_use_error
+
+    monkeypatch.setattr(ScalewayBackend, "client", property(lambda self: mock_client))
+    monkeypatch.setattr(
+        ScalewayBackend, "block_client", property(lambda self: mock_block_client)
+    )
+
+    def mock_wait(self, server_id, target_state, timeout=300):
+        return mock_server
+
+    monkeypatch.setattr(ScalewayBackend, "wait_for_server_state", mock_wait)
+    monkeypatch.setattr("runner_manager.backend.scaleway.time.sleep", lambda _: None)
+
+    result = backend.delete(scaleway_runner)
+
+    assert mock_block_client.delete_volume.call_count == 5  # max_attempts
+    assert "Failed to delete volume test-block-volume-id" in caplog.text
     assert result == 1
