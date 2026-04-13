@@ -18,6 +18,7 @@ from scaleway.instance.v1 import (
 )
 from scaleway.instance.v1.custom_api import InstanceUtilsV1API
 from scaleway.marketplace.v2 import MarketplaceV2API
+from scaleway_core.api import ScalewayException
 
 from runner_manager.backend.base import BaseBackend
 from runner_manager.models.backend import (
@@ -464,37 +465,51 @@ class ScalewayBackend(BaseBackend):
             for volume_id in volume_ids:
                 try:
                     # First, try to delete using Block Storage API (for sbs_volume)
-                    try:
-                        self.block_client.delete_volume(
-                            zone=self.config.zone,
-                            volume_id=volume_id,
-                        )
-                        log.info(
-                            f"Block storage volume {volume_id} deleted successfully"
-                        )
-                    except Exception as block_error:
-                        block_error_msg = str(block_error)
-                        # If volume not found in Block API, try Instance API (for l_ssd volumes)
-                        if (
-                            "404" in block_error_msg
-                            or "not_found" in block_error_msg.lower()
-                        ):
-                            log.debug(
-                                f"Volume {volume_id} not found in Block API, trying Instance API"
-                            )
-                            self.client.delete_volume(
+                    # Retry with exponential backoff because SBS volumes can remain in
+                    # "in_use" status briefly after server deletion while Scaleway detaches them.
+                    max_attempts = 5
+                    deleted = False
+                    for attempt in range(max_attempts):
+                        try:
+                            self.block_client.delete_volume(
                                 zone=self.config.zone,
                                 volume_id=volume_id,
                             )
                             log.info(
-                                f"Instance volume {volume_id} deleted successfully"
+                                f"Block storage volume {volume_id} deleted successfully"
                             )
-                        else:
-                            raise block_error
-                except Exception as vol_error:
-                    error_msg = str(vol_error)
+                            deleted = True
+                            break
+                        except ScalewayException as block_error:
+                            if block_error.status_code == 404:
+                                # Not a block storage volume, fall through to Instance API
+                                break
+                            if (
+                                block_error.status_code == 412
+                                and attempt + 1 < max_attempts
+                            ):
+                                wait = 2**attempt
+                                log.debug(
+                                    f"Volume {volume_id} still in_use, retrying in {wait}s "
+                                    f"(attempt {attempt + 1}/{max_attempts})"
+                                )
+                                time.sleep(wait)
+                            else:
+                                raise block_error
+
+                    if not deleted:
+                        # Volume not found in Block API, try Instance API (for l_ssd volumes)
+                        log.debug(
+                            f"Volume {volume_id} not found in Block API, trying Instance API"
+                        )
+                        self.client.delete_volume(
+                            zone=self.config.zone,
+                            volume_id=volume_id,
+                        )
+                        log.info(f"Instance volume {volume_id} deleted successfully")
+                except ScalewayException as vol_error:
                     # Volume may already be deleted automatically (especially l_ssd volumes)
-                    if "404" in error_msg or "not_found" in error_msg.lower():
+                    if vol_error.status_code == 404:
                         log.info(
                             f"Volume {volume_id} not found - may have been auto-deleted with server or already cleaned up"
                         )
