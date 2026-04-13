@@ -1,0 +1,5 @@
+{
+  "enabledPlugins": {
+    "scality-skills@scality-agent-hub": true
+  }
+}
