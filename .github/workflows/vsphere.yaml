@@ -29,7 +29,7 @@ jobs:
       REDIS_OM_URL: redis://localhost:6379/0
       GITHUB_BASE_URL: http://localhost:4010
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Boot compose services
         run: docker compose --profile tests up --build --detach
       - run: |
@@ -38,7 +38,7 @@ jobs:
           pipx install poetry
       - name: ensure .local/bin is in PATH
         run: echo "$HOME/.local/bin" >> $GITHUB_PATH
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: 3.11
           cache: poetry
@@ -54,7 +54,7 @@ jobs:
           GOVC_DATACENTER: ${{ secrets.GOVC_DATACENTER }}
           GOVC_DATASTORE: ${{ secrets.GOVC_DATASTORE }}
       - name: Upload coverage
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           flags: vsphere
           name: vsphere
